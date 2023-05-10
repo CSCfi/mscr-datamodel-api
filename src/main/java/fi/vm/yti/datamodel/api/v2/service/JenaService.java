@@ -43,6 +43,11 @@ public class JenaService {
     private final RDFConnection conceptRead;
     private final RDFConnection conceptWrite;
     private final RDFConnection conceptSparql;
+    
+    private final RDFConnection schemaRead;
+    private final RDFConnection schemaWrite;
+    private final RDFConnection schemaSparql;
+       
 
     private final Cache<String, Model> modelCache;
 
@@ -58,7 +63,11 @@ public class JenaService {
         this.conceptWrite = RDFConnection.connect(endpoint + "/concept/data");
         this.conceptRead = RDFConnection.connect(endpoint + "/concept/get");
         this.conceptSparql = RDFConnection.connect(endpoint + "/concept/sparql");
-
+   
+        this.schemaWrite = RDFConnection.connect(endpoint + "/schema/data");
+        this.schemaRead = RDFConnection.connect(endpoint + "/schema/get");
+        this.schemaSparql = RDFConnection.connect(endpoint + "/schema/sparql");
+   
         this.modelCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, TimeUnit.SECONDS)
                 .maximumSize(1000)
@@ -316,4 +325,42 @@ public class JenaService {
     public void setVersionNumber(int version) {
         // TODO: migrations
     }
+    
+    public void putToSchema(String graphName, Model model) {
+        schemaWrite.put(graphName, model);
+    }
+    
+    public void updateSchema(String graphName, Model model) {
+    	schemaWrite.delete(graphName);
+    	schemaWrite.put(graphName, model);
+    }
+
+	public Model getSchema(String graph) {
+        logger.debug("Getting schema {}", graph);
+        try {
+            return schemaRead.fetch(graph);
+        } catch (HttpException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.warn("Schema not found with PID {}", graph);
+                throw new ResourceNotFoundException(graph);
+            } else {
+                throw new JenaQueryException();
+            }
+        }
+	}
+	
+    /**
+     * Check if Data model exists, this method just asks if a given graph can be found.
+     * @param graph Graph url of data model
+     * @return exists
+     */
+    public boolean doesSchemaExist(String graph){
+        var askBuilder = new AskBuilder()
+                .addGraph(NodeFactory.createURI(graph), "?s", "?p", "?o");
+        try {
+            return schemaSparql.queryAsk(askBuilder.build());
+        }catch(HttpException ex){
+            throw new JenaQueryException();
+        }
+    }	    
 }

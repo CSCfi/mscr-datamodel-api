@@ -10,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 
 import org.springframework.web.reactive.function.client.WebClient;
+
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
@@ -17,6 +20,7 @@ import java.time.Duration;
 
 
 @Configuration
+@SecurityScheme(name = "Bearer Authentication", scheme="bearer", bearerFormat="JWT", type=SecuritySchemeType.HTTP)
 public class RestConfig {
     public static final String URI_SUOMI_FI = "http://uri.suomi.fi";
     @Value("${defaultGroupManagementAPI}")

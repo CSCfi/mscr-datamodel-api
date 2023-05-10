@@ -252,5 +252,21 @@ public class MapperUtils {
         return Arrays.stream(type)
                 .anyMatch(t -> t.equals(resource.getProperty(RDF.type).getResource()));
     }
+    
+    public static String getMSCRPrefix(String PID) {
+        try {
+            return "pid" + PID.replace("urn:IAMNOTAPID:", "").replace("-", "");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public static Map<String, String> listsToMap(String[] languages, String[] values) {
+    	var map = new HashMap<String, String>();
+    	for(var index = 0; index < languages.length; index++) {
+    		map.put(languages[index], values[index]);
+    	}
+    	return map;
+    }
 
 }
