@@ -3,6 +3,7 @@ buildscript {
         mavenCentral()
         google()
         jcenter()
+        maven()
     }
     dependencies {
         classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.24.16')
@@ -39,7 +40,12 @@ repositories {
     jcenter {
         content { excludeGroupByRegex "fi\\.vm\\.yti.*" }
     }
-
+    maven {
+        url = uri("https://maven.pkg.github.com/CSCfi/yti-spring-security")
+    }
+    maven {
+        url = uri("https://maven.pkg.github.com/CSCfi/yti-spring-migration")
+    }
     // put your artifactory parameters to $HOME/.gradle/gradle.properties
     if (project.hasProperty('artifactoryUrl')) {
         maven {
