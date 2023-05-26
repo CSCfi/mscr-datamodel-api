@@ -47,7 +47,11 @@ public class JenaService {
     private final RDFConnection schemaRead;
     private final RDFConnection schemaWrite;
     private final RDFConnection schemaSparql;
-       
+
+    private final RDFConnection crosswalkRead;
+    private final RDFConnection crosswalkWrite;
+    private final RDFConnection crosswalkSparql;
+
 
     private final Cache<String, Model> modelCache;
 
@@ -67,7 +71,12 @@ public class JenaService {
         this.schemaWrite = RDFConnection.connect(endpoint + "/schema/data");
         this.schemaRead = RDFConnection.connect(endpoint + "/schema/get");
         this.schemaSparql = RDFConnection.connect(endpoint + "/schema/sparql");
-   
+
+        this.crosswalkWrite = RDFConnection.connect(endpoint + "/schema/data");
+        this.crosswalkRead = RDFConnection.connect(endpoint + "/schema/get");
+        this.crosswalkSparql = RDFConnection.connect(endpoint + "/schema/sparql");
+
+        
         this.modelCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheExpireTime, TimeUnit.SECONDS)
                 .maximumSize(1000)
@@ -362,5 +371,24 @@ public class JenaService {
         }catch(HttpException ex){
             throw new JenaQueryException();
         }
-    }	    
+    }
+
+	public void putToCrosswalk(String graph, Model model) {
+		crosswalkWrite.put(graph, model);
+		
+	}	  
+	
+	public Model getCrosswalk(String graph) {
+        logger.debug("Getting crosswalk {}", graph);
+        try {
+            return crosswalkRead.fetch(graph);
+        } catch (HttpException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.warn("Crosswalk not found with PID {}", graph);
+                throw new ResourceNotFoundException(graph);
+            } else {
+                throw new JenaQueryException();
+            }
+        }
+	}	
 }
