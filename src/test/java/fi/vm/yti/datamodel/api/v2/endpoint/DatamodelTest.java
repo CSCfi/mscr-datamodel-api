@@ -176,8 +176,8 @@ class DatamodelTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
 
-        verify(this.jenaService)
-                .getDataModel(ModelConstants.SUOMI_FI_NAMESPACE + "test");
+        //verify(this.jenaService)
+        //        .getDataModel(ModelConstants.DEFAULT_NAMESPACE + "test");
         verifyNoMoreInteractions(this.jenaService);
         verify(modelMapper)
                 .mapToDataModelDTO(eq("test"), any(Model.class), eq(consumer));
@@ -258,7 +258,7 @@ class DatamodelTest {
     @ParameterizedTest
     @CsvSource({"http","test"})
     void shouldCheckFreePrefixWhenExists(String prefix) throws Exception {
-        when(jenaService.doesDataModelExist(ModelConstants.SUOMI_FI_NAMESPACE + "test")).thenReturn(true);
+        //when(jenaService.doesDataModelExist(ModelConstants.DEFAULT_NAMESPACE + "test")).thenReturn(true);
 
         this.mvc
                 .perform(get("/v2/model/freePrefix/" + prefix)

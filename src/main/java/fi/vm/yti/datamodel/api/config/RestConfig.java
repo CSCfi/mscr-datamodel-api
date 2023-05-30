@@ -22,7 +22,10 @@ import java.time.Duration;
 @Configuration
 @SecurityScheme(name = "Bearer Authentication", scheme="bearer", bearerFormat="JWT", type=SecuritySchemeType.HTTP)
 public class RestConfig {
-    public static final String URI_SUOMI_FI = "http://uri.suomi.fi";
+    
+    @Value("${defaultResolveBase}")
+    private String resolveBase;
+    
     @Value("${defaultGroupManagementAPI}")
     private String defaultGroupManagementUrl;
     private final HttpHeaders defaultHttpHeaders = new HttpHeaders();
@@ -44,7 +47,7 @@ public class RestConfig {
     WebClient terminologyWebClient() {
         return WebClient.builder()
                 .defaultHeaders(headers -> headers.addAll(defaultHttpHeaders))
-                .baseUrl(URI_SUOMI_FI)
+                .baseUrl(resolveBase)
                 .clientConnector(new ReactorClientHttpConnector(
                                 HttpClient.create(getConnectionProvider("uriResolve"))
                                         .followRedirect(true)

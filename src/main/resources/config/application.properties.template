@@ -1,3 +1,7 @@
+# Base url for resolving resources
+defaultResolveBase=http://custom.resolver.fi
+defaultResolveBaseDomain=custom.resolver.fi
+
 server.port=9004
 
 devMode=true
@@ -5,7 +9,7 @@ env=dev
 spring.application.name=yti-datamodel-api
 endpoint=http://localhost:3030
 endpointPassword=admin
-defaultNamespace=http://uri.suomi.fi/datamodel/ns/
+defaultNamespace=${defaultResolveBase}/datamodel/ns/
 provenance=true
 defaultGroupManagementAPI=https://rhp.dev.yti.cloud.dvv.fi/public-api/
 privateGroupManagementAPI=https://rhp.dev.yti.cloud.dvv.fi/private-api/
@@ -46,3 +50,4 @@ fake.login.lastName=Testaaja
 
 spring.elasticsearch.uris=http://localhost:9002
 management.endpoints.web.exposure.include=health,info
+

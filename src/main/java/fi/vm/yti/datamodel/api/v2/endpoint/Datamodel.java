@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,8 @@ public class Datamodel {
     private final AuthenticatedUserProvider userProvider;
 
     private final GroupManagementService groupManagementService;
+    
+    private String defaultNamespace;
 
     public Datamodel(JenaService jenaService,
                      AuthorizationManager authorizationManager,
@@ -52,7 +55,8 @@ public class Datamodel {
                      ModelMapper modelMapper,
                      TerminologyService terminologyService,
                      AuthenticatedUserProvider userProvider,
-                     GroupManagementService groupManagementService) {
+                     GroupManagementService groupManagementService,
+                     @Value("${defaultNamespace}") String defaultNamespace) {
         this.authorizationManager = authorizationManager;
         this.mapper = modelMapper;
         this.openSearchIndexer = openSearchIndexer;
@@ -60,6 +64,7 @@ public class Datamodel {
         this.terminologyService = terminologyService;
         this.userProvider = userProvider;
         this.groupManagementService = groupManagementService;
+        this.defaultNamespace = defaultNamespace;
     }
 
     @Operation(summary = "Create a new model")
@@ -73,7 +78,7 @@ public class Datamodel {
         terminologyService.resolveTerminology(modelDTO.getTerminologies());
         var jenaModel = mapper.mapToJenaModel(modelDTO, userProvider.getUser());
 
-        jenaService.putDataModelToCore(ModelConstants.SUOMI_FI_NAMESPACE + modelDTO.getPrefix(), jenaModel);
+        jenaService.putDataModelToCore(this.defaultNamespace + modelDTO.getPrefix(), jenaModel);
 
         var indexModel = mapper.mapToIndexModel(modelDTO.getPrefix(), jenaModel);
         openSearchIndexer.createModelToIndex(indexModel);
@@ -87,7 +92,7 @@ public class Datamodel {
                             @PathVariable String prefix) {
         logger.info("Updating model {}", modelDTO);
 
-        var oldModel = jenaService.getDataModel(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        var oldModel = jenaService.getDataModel(this.defaultNamespace + prefix);
         if(oldModel == null){
             throw new ResourceNotFoundException(prefix);
         }
@@ -98,7 +103,7 @@ public class Datamodel {
 
         var jenaModel = mapper.mapToUpdateJenaModel(prefix, modelDTO, oldModel, userProvider.getUser());
 
-        jenaService.putDataModelToCore(ModelConstants.SUOMI_FI_NAMESPACE + prefix, jenaModel);
+        jenaService.putDataModelToCore(this.defaultNamespace + prefix, jenaModel);
 
 
         var indexModel = mapper.mapToIndexModel(prefix, jenaModel);
@@ -109,7 +114,7 @@ public class Datamodel {
     @ApiResponse(responseCode = "200", description = "Datamodel object for the found model")
     @GetMapping(value = "/{prefix}", produces = APPLICATION_JSON_VALUE)
     public DataModelInfoDTO getModel(@PathVariable String prefix){
-        var model = jenaService.getDataModel(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        var model = jenaService.getDataModel(this.defaultNamespace + prefix);
         var hasRightsToModel = authorizationManager.hasRightToModel(prefix, model);
 
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
@@ -123,14 +128,14 @@ public class Datamodel {
         if (ValidationConstants.RESERVED_WORDS.contains(prefix)) {
             return false;
         }
-        return !jenaService.doesDataModelExist(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        return !jenaService.doesDataModelExist(this.defaultNamespace + prefix);
     }
 
     @Operation(summary = "Delete a model from fuseki")
     @ApiResponse(responseCode = "200", description = "Model deleted successfully")
     @DeleteMapping(value = "/{prefix}")
     public void deleteModel(@PathVariable String prefix) {
-        var modelUri = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var modelUri = this.defaultNamespace + prefix;
         if(!jenaService.doesDataModelExist(modelUri)){
             throw new ResourceNotFoundException(modelUri);
         }

@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,26 +38,29 @@ public class ClassController {
     private final GroupManagementService groupManagementService;
     private final AuthenticatedUserProvider userProvider;
     private final TerminologyService terminologyService;
+    private final String defaultNamespace;
 
     public ClassController(AuthorizationManager authorizationManager,
                            JenaService jenaService,
                            OpenSearchIndexer openSearchIndexer,
                            GroupManagementService groupManagementService,
                            AuthenticatedUserProvider userProvider,
-                           TerminologyService terminologyService){
+                           TerminologyService terminologyService,
+                           @Value("${defaultNamespace}") String defaultNamespace){
         this.authorizationManager = authorizationManager;
         this.jenaService = jenaService;
         this.openSearchIndexer = openSearchIndexer;
         this.groupManagementService = groupManagementService;
         this.userProvider = userProvider;
         this.terminologyService = terminologyService;
+        this.defaultNamespace = defaultNamespace;
     }
 
     @Operation(summary = "Add a class to a model")
     @ApiResponse(responseCode = "200", description = "Class added to model successfully")
     @PutMapping(value = "/{prefix}", consumes = APPLICATION_JSON_VALUE)
     public void createClass(@PathVariable String prefix, @RequestBody @ValidClass ClassDTO classDTO){
-        var modelURI = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var modelURI = this.defaultNamespace + prefix;
         if(jenaService.doesResourceExistInGraph(modelURI, modelURI + "#" + classDTO.getIdentifier())){
             throw new MappingError("Class already exists");
         }
@@ -79,7 +83,7 @@ public class ClassController {
     public void updateClass(@PathVariable String prefix, @PathVariable String classIdentifier, @RequestBody @ValidClass(updateClass = true) ClassDTO classDTO){
         logger.info("Updating class {}", classIdentifier);
 
-        var graph = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var graph = this.defaultNamespace + prefix;
         var classURI = graph + "#" + classIdentifier;
         if(!jenaService.doesResourceExistInGraph(graph, graph + "#" + classIdentifier)){
             throw new ResourceNotFoundException(classIdentifier);
@@ -102,7 +106,7 @@ public class ClassController {
     @ApiResponse(responseCode = "200", description = "Class found successfully")
     @GetMapping(value = "/{prefix}/{classIdentifier}", produces = APPLICATION_JSON_VALUE)
     public ClassInfoDTO getClass(@PathVariable String prefix, @PathVariable String classIdentifier){
-        var modelURI = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var modelURI = this.defaultNamespace + prefix;
         var classURI = modelURI + "#" + classIdentifier;
         if(!jenaService.doesResourceExistInGraph(modelURI , classURI)){
             throw new ResourceNotFoundException(classURI);
@@ -127,7 +131,7 @@ public class ClassController {
     @ApiResponse(responseCode = "200", description = "Class deleted successfully")
     @DeleteMapping(value = "/{prefix}/{classIdentifier}")
     public void deleteClass(@PathVariable String prefix, @PathVariable String classIdentifier){
-        var modelURI = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var modelURI = this.defaultNamespace + prefix;
         var classURI  = modelURI + "#" + classIdentifier;
         if(!jenaService.doesResourceExistInGraph(modelURI , classURI)){
             throw new ResourceNotFoundException(classURI);

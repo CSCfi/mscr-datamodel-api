@@ -6,6 +6,7 @@ import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.SKOS;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -18,8 +19,15 @@ public class DataModelValidator extends BaseValidator implements
 
     boolean updateModel;
 
+    @Value("${defaultResolveBaseDomain:uri.suomi.fi}")
+    private String resolveBaseDomain;
+    
+    @Value("${defaultNamespace}")
+    private String defaultNamespace;
+    
+    
     @Override
-    public void initialize(ValidDatamodel constraintAnnotation) {
+    public void initialize(ValidDatamodel constraintAnnotation    		) {
         updateModel = constraintAnnotation.updateModel();
     }
 
@@ -63,7 +71,7 @@ public class DataModelValidator extends BaseValidator implements
         //Check prefix text content
         checkPrefixContent(context, prefix, prefixPropertyLabel);
         //Checking if in use is different for datamodels and its resources so it is not in the above function
-        if(jenaService.doesDataModelExist(ModelConstants.SUOMI_FI_NAMESPACE + prefix)){
+        if(jenaService.doesDataModelExist(defaultNamespace + prefix)){
             addConstraintViolation(context, "prefix-in-use", prefixPropertyLabel);
         }
     }
@@ -208,7 +216,7 @@ public class DataModelValidator extends BaseValidator implements
      */
     private void checkInternalNamespaces(ConstraintValidatorContext context, DataModelDTO dataModel){
         var namespaces = dataModel.getInternalNamespaces();
-        if(namespaces != null && namespaces.stream().anyMatch(ns -> !ns.startsWith(ModelConstants.SUOMI_FI_NAMESPACE))){
+        if(namespaces != null && namespaces.stream().anyMatch(ns -> !ns.startsWith(defaultNamespace))){
             addConstraintViolation(context, "namespace-not-internal", "internalNamespaces");
         }
     }
@@ -227,7 +235,7 @@ public class DataModelValidator extends BaseValidator implements
                 if(namespace.getPrefix() == null || namespace.getName() == null || namespace.getNamespace() == null){
                     addConstraintViolation(context, "namespace-missing-value", externalNamespace);
                 }else {
-                    if(namespace.getNamespace().startsWith(ModelConstants.SUOMI_FI_NAMESPACE)){
+                    if(namespace.getNamespace().startsWith(defaultNamespace)){
                         addConstraintViolation(context, "namespace-not-external", externalNamespace);
                     }
                     checkPrefixContent(context, namespace.getPrefix(), externalNamespace);
@@ -262,7 +270,7 @@ public class DataModelValidator extends BaseValidator implements
             return;
         }
 
-        if (!dataModel.getTerminologies().stream().allMatch(uri -> uri.matches("^https?://uri.suomi.fi/terminology/(.*)"))) {
+        if (!dataModel.getTerminologies().stream().allMatch(uri -> uri.matches("^https?://" + resolveBaseDomain + "/terminology/(.*)"))) {
             addConstraintViolation(context, "invalid-terminology-uri", "terminologies");
         }
     }

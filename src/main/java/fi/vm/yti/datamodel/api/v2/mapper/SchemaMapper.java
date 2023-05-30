@@ -59,7 +59,7 @@ public class SchemaMapper {
 		var modelUri = PID;
 		// TODO: type of application profile?
 		model.setNsPrefixes(ModelConstants.PREFIXES);
-		Resource type = MSCR.SCHEMAGROUP;
+		Resource type = MSCR.SCHEMA;
 		var creationDate = new XSDDateTime(Calendar.getInstance());
 		var modelResource = model.createResource(modelUri).addProperty(RDF.type, type)
 				.addProperty(OWL.versionInfo, schemaDTO.getStatus().name()).addProperty(DCTerms.identifier, PID)

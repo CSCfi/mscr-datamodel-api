@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @RestController
 @RequestMapping("v2/resource")
 @Tag(name = "Resource" )
@@ -34,26 +36,29 @@ public class ResourceController {
     private final AuthenticatedUserProvider userProvider;
     private final GroupManagementService groupManagementService;
     private final TerminologyService terminologyService;
+    private final String defaultNamespace;
 
     public ResourceController(JenaService jenaService,
                               AuthorizationManager authorizationManager,
                               OpenSearchIndexer openSearchIndexer,
                               AuthenticatedUserProvider userProvider,
                               GroupManagementService groupManagementService,
-                              TerminologyService terminologyService) {
+                              TerminologyService terminologyService,
+                              @Value("${defaultNamespace}") String defaultNamespace) {
         this.jenaService = jenaService;
         this.authorizationManager = authorizationManager;
         this.openSearchIndexer = openSearchIndexer;
         this.userProvider = userProvider;
         this.groupManagementService = groupManagementService;
         this.terminologyService = terminologyService;
+        this.defaultNamespace = defaultNamespace;
     }
 
     @Operation(summary = "Add a class to a model")
     @ApiResponse(responseCode = "200", description = "Class added to model successfully")
     @PutMapping(value = "/{prefix}", consumes = APPLICATION_JSON_VALUE)
     public void createResource(@PathVariable String prefix, @RequestBody @ValidResource ResourceDTO dto){
-        var graphUri = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var graphUri = defaultNamespace + prefix;
         if(jenaService.doesResourceExistInGraph(graphUri, graphUri + prefix + "#" + dto.getIdentifier())){
             throw new MappingError("Already exists");
         }
@@ -75,7 +80,7 @@ public class ResourceController {
     @ApiResponse(responseCode = "200", description = "Resource updated to model successfully")
     @PutMapping(value = "/{prefix}/{resourceIdentifier}", consumes = APPLICATION_JSON_VALUE)
     public void updateResource(@PathVariable String prefix, @PathVariable String resourceIdentifier, @RequestBody @ValidResource(updateProperty = true) ResourceDTO dto){
-        var graphUri = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var graphUri = defaultNamespace + prefix;
 
         if(!jenaService.doesResourceExistInGraph(graphUri, graphUri + "#" + resourceIdentifier)){
             throw new ResourceNotFoundException("Resource does not exist");
@@ -101,7 +106,7 @@ public class ResourceController {
     @ApiResponse(responseCode = "200", description = "Class found")
     @GetMapping(value = "/{prefix}/{resourceIdentifier}", produces = APPLICATION_JSON_VALUE)
     public ResourceInfoDTO getResource(@PathVariable String prefix, @PathVariable String resourceIdentifier){
-        var graphUri = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var graphUri = defaultNamespace + prefix;
         if(!jenaService.doesResourceExistInGraph(graphUri,graphUri + "#" + resourceIdentifier)){
             throw new ResourceNotFoundException("Resource does not exist");
         }
@@ -123,7 +128,7 @@ public class ResourceController {
     @ApiResponse(responseCode = "200", description = "Resource deleted successfully")
     @DeleteMapping(value = "/{prefix}/{resourceIdentifier}")
     public void deleteResource(@PathVariable String prefix, @PathVariable String resourceIdentifier){
-        var modelURI = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var modelURI = defaultNamespace + prefix;
         var resourceUri  = modelURI + "#" + resourceIdentifier;
         if(!jenaService.doesResourceExistInGraph(modelURI , resourceUri)){
             throw new ResourceNotFoundException(resourceUri);

@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,12 @@ public class ModelMapper {
     private final Logger log = LoggerFactory.getLogger(ModelMapper.class);
 
     private final JenaService jenaService;
-
-    public ModelMapper (JenaService jenaService){
+    private final String defaultNamespace;
+    
+    public ModelMapper (JenaService jenaService,
+    		@Value("${defaultNamespace}") String defaultNamespace){
         this.jenaService = jenaService;
+        this.defaultNamespace = defaultNamespace;
     }
 
     /**
@@ -39,7 +43,7 @@ public class ModelMapper {
     public Model mapToJenaModel(DataModelDTO modelDTO, YtiUser user) {
         log.info("Mapping DatamodelDTO to Jena Model");
         var model = ModelFactory.createDefaultModel();
-        var modelUri = ModelConstants.SUOMI_FI_NAMESPACE + modelDTO.getPrefix();
+        var modelUri = defaultNamespace + modelDTO.getPrefix();
         // TODO: type of application profile?
         model.setNsPrefixes(ModelConstants.PREFIXES);
         Resource type = modelDTO.getType().equals(ModelType.LIBRARY)
@@ -90,7 +94,7 @@ public class ModelMapper {
 
     public Model mapToUpdateJenaModel(String prefix, DataModelDTO dataModelDTO, Model model, YtiUser user){
         var updateDate = new XSDDateTime(Calendar.getInstance());
-        var modelResource = model.getResource(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        var modelResource = model.getResource(defaultNamespace + prefix);
 
         //update languages before getting and using the languages for localized properties
         if(dataModelDTO.getLanguages() != null){
@@ -161,12 +165,12 @@ public class ModelMapper {
             var next = statements.next();
             var namespace = next.getObject().toString();
             if(internal) {
-                if(namespace.startsWith(ModelConstants.SUOMI_FI_NAMESPACE)){
+                if(namespace.startsWith(defaultNamespace)){
                     statements.remove();
                     model.removeNsPrefix(model.getNsURIPrefix(namespace));
                 }
             }else{
-                if(!namespace.startsWith(ModelConstants.SUOMI_FI_NAMESPACE)){
+                if(!namespace.startsWith(defaultNamespace)){
                     statements.remove();
                     model.removeNsPrefix(model.getNsURIPrefix(namespace));
                 }
@@ -186,7 +190,7 @@ public class ModelMapper {
         var datamodelDTO = new DataModelInfoDTO();
         datamodelDTO.setPrefix(prefix);
 
-        var modelResource = model.getResource(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        var modelResource = model.getResource(defaultNamespace + prefix);
 
         var types = modelResource.listProperties(RDF.type).mapWith(Statement::getResource).toList();
         if(types.contains(DCAP.DCAP) || types.contains(ResourceFactory.createProperty("http://www.w3.org/2002/07/dcap#DCAP"))){
@@ -256,9 +260,9 @@ public class ModelMapper {
      * @return Index model
      */
     public IndexModel mapToIndexModel(String prefix, Model model){
-        var resource = model.getResource(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        var resource = model.getResource(defaultNamespace + prefix);
         var indexModel = new IndexModel();
-        indexModel.setId(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        indexModel.setId(defaultNamespace + prefix);
         indexModel.setStatus(Status.valueOf(resource.getProperty(OWL.versionInfo).getString()));
         indexModel.setModified(resource.getProperty(DCTerms.modified).getString());
         indexModel.setCreated(resource.getProperty(DCTerms.created).getString());
@@ -311,7 +315,7 @@ public class ModelMapper {
 
     /**
      * Add namespaces from model to two sets
-     * @param intNs Internal namespaces set - Defined by having http://uri.suomi.fi/ as the namespace
+     * @param intNs Internal namespaces set - Defined by having configured default namespace
      * @param extNs External namespaces set - Everything not internal
      * @param model Model to get external namespace information from
      * @param resource Model resource where the given property lies
@@ -320,7 +324,7 @@ public class ModelMapper {
     private void addNamespacesToList(Set<String> intNs, Set<ExternalNamespaceDTO> extNs, Model model, Resource resource, Property property){
         resource.listProperties(property).forEach(prop -> {
             var ns = prop.getObject().toString();
-            if(ns.startsWith(ModelConstants.SUOMI_FI_NAMESPACE)){
+            if(ns.startsWith(defaultNamespace)){
                 intNs.add(ns);
             }else {
                 var extNsModel = model.getResource(ns);

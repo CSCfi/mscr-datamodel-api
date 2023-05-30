@@ -9,6 +9,7 @@ import org.apache.jena.vocabulary.RDFS;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.topbraid.shacl.vocabulary.SH;
 
 import java.net.URI;
@@ -17,11 +18,16 @@ import java.util.*;
 public class VisualizationMapper {
     private static final Logger LOG = LoggerFactory.getLogger(VisualizationMapper.class);
 
-    private VisualizationMapper() {
+    private final String _defaultNamespace;
+    private static String defaultNamespace;
+    
+    private VisualizationMapper(@Value("${defaultNamespace}") String defaultNamespace) {
+    	this._defaultNamespace = defaultNamespace;
+    	VisualizationMapper.defaultNamespace = defaultNamespace;
     }
 
     public static List<VisualizationClassDTO> mapVisualizationData(String prefix, Model model, Model positions) {
-        var graph = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var graph = defaultNamespace + prefix;
         LOG.info("Map visualization data for {}", graph);
 
         var modelResource = model.getResource(graph);
@@ -96,8 +102,8 @@ public class VisualizationMapper {
         Arrays.asList(OWL.imports, DCTerms.requires)
                 .forEach(prop -> modelResource.listProperties(prop).toList().forEach(ns -> {
                     var uri = ns.getObject().toString();
-                    if (uri.startsWith(ModelConstants.SUOMI_FI_NAMESPACE)) {
-                        namespaces.put(uri, uri.replace(ModelConstants.SUOMI_FI_NAMESPACE, ""));
+                    if (uri.startsWith(defaultNamespace)) {
+                        namespaces.put(uri, uri.replace(defaultNamespace, ""));
                     } else {
                         namespaces.put(uri, model.getResource(uri).getProperty(DCAP.preferredXMLNamespacePrefix).getString());
                     }

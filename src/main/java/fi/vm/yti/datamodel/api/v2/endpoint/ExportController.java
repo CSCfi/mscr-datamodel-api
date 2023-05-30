@@ -13,6 +13,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.SKOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,11 +30,14 @@ public class ExportController {
     private static final Logger LOG = LoggerFactory.getLogger(ExportController.class);
     private final JenaService jenaService;
     private final AuthorizationManager authorizationManager;
+    private String defaultNamespace;
 
     public ExportController(JenaService jenaService,
-                            AuthorizationManager authorizationManager) {
+                            AuthorizationManager authorizationManager,
+                            @Value("${defaultNamespace}") String defaultNamespace) {
         this.jenaService = jenaService;
         this.authorizationManager = authorizationManager;
+        this.defaultNamespace = defaultNamespace;
     }
 
     @Operation(summary = "Get a datamodel or a single resource serialized")
@@ -44,7 +48,7 @@ public class ExportController {
     public ResponseEntity<String> export(@PathVariable String prefix,
                                          @PathVariable(required = false) String resource,
                                          @RequestHeader(value = HttpHeaders.ACCEPT) String accept){
-        var modelURI = ModelConstants.SUOMI_FI_NAMESPACE + prefix;
+        var modelURI = this.defaultNamespace + prefix;
         LOG.info("Exporting datamodel {}, {}", modelURI, accept);
 
         Model exportedModel;

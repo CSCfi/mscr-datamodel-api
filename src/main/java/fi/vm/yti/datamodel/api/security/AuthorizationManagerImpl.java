@@ -23,9 +23,12 @@ import static fi.vm.yti.security.Role.DATA_MODEL_EDITOR;
 public class AuthorizationManagerImpl implements AuthorizationManager {
 
     private final AuthenticatedUserProvider userProvider;
+    private final ModelConstants modelConstants;
 
-    AuthorizationManagerImpl(AuthenticatedUserProvider userProvider) {
+    AuthorizationManagerImpl(AuthenticatedUserProvider userProvider,
+    		ModelConstants modelConstants) {
         this.userProvider = userProvider;
+        this.modelConstants = modelConstants;
     }
 
     public boolean hasRightToAnyOrganization(Collection<UUID> organizations) {
@@ -34,7 +37,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
     }
 
     public boolean hasRightToModel(String prefix, Model model){
-        var oldRes = model.getResource(ModelConstants.SUOMI_FI_NAMESPACE + prefix);
+        var oldRes = model.getResource(modelConstants.getDefaultNamespace() + prefix);
         var organizations = oldRes.listProperties(DCTerms.contributor).toList().stream().map(prop -> {
             var orgUri = prop.getObject().toString();
             return UUID.fromString(

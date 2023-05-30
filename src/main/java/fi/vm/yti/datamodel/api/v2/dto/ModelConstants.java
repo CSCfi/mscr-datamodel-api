@@ -3,13 +3,23 @@ package fi.vm.yti.datamodel.api.v2.dto;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
 public class ModelConstants {
 
-    private ModelConstants(){
-        //utility class
-    }
-
-    public static final String SUOMI_FI_NAMESPACE = "http://uri.suomi.fi/datamodel/ns/";
+	
+	private final String defaultNamespace;
+	
+	public ModelConstants(@Value("${defaultNamespace}") String defaultNamespace) {
+		this.defaultNamespace = defaultNamespace;
+	}
+	
+	public String getDefaultNamespace() {
+		return this.defaultNamespace;
+	}
+	
     public static final String URN_UUID = "urn:uuid:";
     public static final String DEFAULT_LANGUAGE = "fi";
     public static final List<String> USED_LANGUAGES = List.of("fi", "sv", "en");
