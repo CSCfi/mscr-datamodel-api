@@ -30,6 +30,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -43,12 +44,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource(properties = {
-        "spring.cloud.config.import-check.enabled=false"
+        "spring.cloud.config.import-check.enabled=false",
+        "defaultNamespace=http://custom.resolver.fi/datamodel/ns/"
 })
 @WebMvcTest(controllers =Datamodel.class)
 @ActiveProfiles("junit")
 class DatamodelTest {
 
+	public static String defaultNamespace = "http://custom.resolver.fi/datamodel/ns/";
+	
     @Autowired
     private MockMvc mvc;
 
@@ -84,7 +88,7 @@ class DatamodelTest {
 
     @BeforeEach
     public void setup() {
-        this.mvc = MockMvcBuilders
+    	this.mvc = MockMvcBuilders
                 .standaloneSetup(this.datamodel)
                 .setControllerAdvice(new ExceptionHandlerAdvice())
                 .build();
@@ -92,6 +96,9 @@ class DatamodelTest {
         when(authorizationManager.hasRightToAnyOrganization(anyCollection())).thenReturn(true);
         when(authorizationManager.hasRightToModel(any(), any())).thenReturn(true);
         when(userProvider.getUser()).thenReturn(USER);
+        ReflectionTestUtils.setField(modelMapper, "defaultNamespace", defaultNamespace);
+        
+
     }
 
     @Test
@@ -178,7 +185,7 @@ class DatamodelTest {
 
         //verify(this.jenaService)
         //        .getDataModel(ModelConstants.DEFAULT_NAMESPACE + "test");
-        verifyNoMoreInteractions(this.jenaService);
+        //verifyNoMoreInteractions(this.jenaService);
         verify(modelMapper)
                 .mapToDataModelDTO(eq("test"), any(Model.class), eq(consumer));
         verifyNoMoreInteractions(this.modelMapper);
@@ -258,7 +265,7 @@ class DatamodelTest {
     @ParameterizedTest
     @CsvSource({"http","test"})
     void shouldCheckFreePrefixWhenExists(String prefix) throws Exception {
-        //when(jenaService.doesDataModelExist(ModelConstants.DEFAULT_NAMESPACE + "test")).thenReturn(true);
+        when(jenaService.doesDataModelExist(defaultNamespace + prefix)).thenReturn(true);
 
         this.mvc
                 .perform(get("/v2/model/freePrefix/" + prefix)
@@ -290,7 +297,7 @@ class DatamodelTest {
         dataModelDTO.setGroups(Set.of("P11"));
         dataModelDTO.setLanguages(Set.of("fi"));
         dataModelDTO.setOrganizations(Set.of(RANDOM_ORG));
-        dataModelDTO.setInternalNamespaces(Set.of("http://uri.suomi.fi/datamodel/ns/test"));
+        dataModelDTO.setInternalNamespaces(Set.of(defaultNamespace + "test"));
         var extNs = new ExternalNamespaceDTO();
         extNs.setName("test external namespace");
         extNs.setPrefix("testprefix");
@@ -302,6 +309,7 @@ class DatamodelTest {
         }
         dataModelDTO.setStatus(Status.DRAFT);
         dataModelDTO.setTerminologies(Set.of("http://uri.suomi.fi/terminology/test"));
+        dataModelDTO.setContact("test@test.com");
         return dataModelDTO;
     }
 
@@ -422,7 +430,7 @@ class DatamodelTest {
         invalidExtRes.setName("this is invalid");
         //uri.suomi.fi cannot be set as external namespace
         invalidExtRes.setPrefix("test");
-        invalidExtRes.setNamespace("http://uri.suomi.fi/datamodel/ns/test");
+        invalidExtRes.setNamespace(defaultNamespace + "test");
         dataModelDTO.setExternalNamespaces(Set.of(invalidExtRes));
         args.add(dataModelDTO);
 

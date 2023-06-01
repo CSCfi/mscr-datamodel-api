@@ -5,9 +5,9 @@
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix ext:     <https://www.example.com/ns/ext> .
-@prefix int:     <http://uri.suomi.fi/datamodel/ns/int> .
+@prefix int:     <http://custom.resolver.fi/datamodel/ns/int> .
 
-<http://uri.suomi.fi/datamodel/ns/test>
+<http://custom.resolver.fi/datamodel/ns/test>
         a                               owl:Ontology ;
         rdfs:comment                    "test desc"@fi ;
         rdfs:label                      "testlabel"@fi ;
@@ -16,10 +16,10 @@
         dcterms:identifier              "d2edb497-ba0b-49c9-aeb7-49749d836434" ;
         dcterms:isPartOf                <http://urn.fi/URN:NBN:fi:au:ptvl:v1105> ;
         dcterms:language                "fi" ;
-        owl:imports                     <http://uri.suomi.fi/datamodel/ns/int> ;
+        owl:imports                     <http://custom.resolver.fi/datamodel/ns/int> ;
         dcterms:requires                <https://www.example.com/ns/ext> ;
         dcterms:modified                "2023-01-03T12:44:45.799Z"^^xsd:dateTime ;
-        dcap:preferredXMLNamespaceName  "http://uri.suomi.fi/datamodel/ns/test" ;
+        dcap:preferredXMLNamespaceName  "http://custom.resolver.fi/datamodel/ns/test" ;
         dcap:preferredXMLNamespacePrefix
                 "test" ;
         iow:contentModified             "2023-01-03T12:44:45.799Z"^^xsd:dateTime ;

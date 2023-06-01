@@ -1,21 +1,44 @@
 package fi.vm.yti.datamodel.api.mapper;
 
+import fi.vm.yti.datamodel.api.v2.mapper.ModelMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.VisualizationMapper;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@ExtendWith(SpringExtension.class)
+@Import({
+    VisualizationMapper.class
+})
 class VisualizationDataMapperTest {
 
+    @Autowired
+    VisualizationMapper mapper;
+    
+    String defaultNamespace = "http://custom.resolver.fi/datamodel/ns/";
+
+    @BeforeEach
+    public void init(){    	
+    	ReflectionTestUtils.setField(mapper, "defaultNamespace", defaultNamespace);
+    }
     @Test
     void mapVisualizationData() {
         var positions = ModelFactory.createDefaultModel();
         var model = MapperTestUtils.getModelFromFile("/models/test_datamodel_visualization.ttl");
 
-        var result = VisualizationMapper.mapVisualizationData("test", model, positions);
+        var result = mapper.mapVisualizationData("test", model, positions);
 
         assertEquals(3, result.size());
 

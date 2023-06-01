@@ -14,9 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,12 +33,16 @@ import static org.mockito.Mockito.when;
 @Import({
         ModelMapper.class
 })
+
 class ModelMapperTest {
 
     @MockBean
     JenaService jenaService;
     @Autowired
     ModelMapper mapper;
+    
+
+    String defaultNamespace = "http://custom.resolver.fi/datamodel/ns/";
 
     @BeforeEach
     public void init(){
@@ -50,12 +57,14 @@ class ModelMapperTest {
                 .addProperty(RDF.type, FOAF.Organization)
                 .addProperty(SKOS.prefLabel, ResourceFactory.createLangLiteral("test org", "fi"));
         when(jenaService.getOrganizations()).thenReturn(mockOrgs);
+        
+        ReflectionTestUtils.setField(mapper, "defaultNamespace", defaultNamespace);
     }
 
     @Test
     void testMapToJenaModel() {
         var mockModel = ModelFactory.createDefaultModel();
-        mockModel.createResource("http://uri.suomi.fi/datamodel/ns/newint")
+        mockModel.createResource(defaultNamespace + "newint")
                         .addProperty(RDF.type, DCAP.DCAP)
                         .addProperty(DCAP.preferredXMLNamespacePrefix, "test");
         when(jenaService.getDataModel(anyString())).thenReturn(mockModel);
@@ -77,7 +86,7 @@ class ModelMapperTest {
         dto.setLanguages(Set.of("fi", "sv"));
         dto.setOrganizations(Set.of(organizationId));
         dto.setType(ModelType.PROFILE);
-        dto.setInternalNamespaces(Set.of("http://uri.suomi.fi/datamodel/ns/newint"));
+        dto.setInternalNamespaces(Set.of(defaultNamespace + "newint"));
         dto.setContact("test@localhost");
         var externalDTO = new ExternalNamespaceDTO();
         externalDTO.setName("test dto");
@@ -87,7 +96,7 @@ class ModelMapperTest {
 
         Model model = mapper.mapToJenaModel(dto, mockUser);
 
-        Resource modelResource = model.getResource("http://uri.suomi.fi/datamodel/ns/test");
+        Resource modelResource = model.getResource(defaultNamespace + "test");
         Resource groupResource = model.getResource("http://urn.fi/URN:NBN:fi:uuid:au:ptvl:v1105");
         Resource organizationResource = model.getResource(String.format("urn:uuid:%s", organizationId));
 
@@ -115,7 +124,7 @@ class ModelMapperTest {
 
         when(jenaService.getDataModel("test")).thenReturn(m);
         var mockModel = ModelFactory.createDefaultModel();
-        mockModel.createResource("http://uri.suomi.fi/datamodel/ns/newint")
+        mockModel.createResource(defaultNamespace + "newint")
                 .addProperty(RDF.type, DCAP.DCAP)
                 .addProperty(DCAP.preferredXMLNamespacePrefix, "test");
         when(jenaService.getDataModel(anyString())).thenReturn(mockModel);
@@ -134,7 +143,7 @@ class ModelMapperTest {
         dto.setOrganizations(Set.of(organizationId));
         dto.setContact("new@localhost");
 
-        dto.setInternalNamespaces(Set.of("http://uri.suomi.fi/datamodel/ns/newint"));
+        dto.setInternalNamespaces(Set.of(defaultNamespace + "newint"));
         var externalDTO = new ExternalNamespaceDTO();
         externalDTO.setName("test dto");
         externalDTO.setNamespace("http://www.w3.org/2000/01/rdf-schema#");
@@ -143,7 +152,7 @@ class ModelMapperTest {
         dto.setExternalNamespaces(Set.of(externalDTO));
 
         //unchanged values
-        Resource modelResource = m.getResource("http://uri.suomi.fi/datamodel/ns/test");
+        Resource modelResource = m.getResource(defaultNamespace + "test");
         assertEquals(1, modelResource.listProperties(RDFS.label).toList().size());
         assertEquals("testlabel", modelResource.listProperties(RDFS.label).next().getString());
 
@@ -153,7 +162,7 @@ class ModelMapperTest {
         assertEquals(Status.VALID, Status.valueOf(modelResource.getProperty(OWL.versionInfo).getString()));
 
         assertEquals(1, modelResource.listProperties(OWL.imports).toList().size());
-        assertEquals("http://uri.suomi.fi/datamodel/ns/int", modelResource.listProperties(OWL.imports).next().getObject().toString());
+        assertEquals(defaultNamespace + "int", modelResource.listProperties(OWL.imports).next().getObject().toString());
 
         assertEquals(1, modelResource.listProperties(DCTerms.requires).toList().size());
         assertEquals("https://www.example.com/ns/ext", modelResource.listProperties(DCTerms.requires).next().getObject().toString());
@@ -163,7 +172,7 @@ class ModelMapperTest {
         Model model = mapper.mapToUpdateJenaModel("test", dto, m, mockUser);
 
         //changed values
-        modelResource = model.getResource("http://uri.suomi.fi/datamodel/ns/test");
+        modelResource = model.getResource(defaultNamespace + "test");
         Resource groupResource = model.getResource("http://urn.fi/URN:NBN:fi:uuid:au:ptvl:v1105");
         Resource organizationResource = model.getResource(String.format("urn:uuid:%s", organizationId));
 
@@ -177,7 +186,7 @@ class ModelMapperTest {
         assertEquals(Status.DRAFT, Status.valueOf(modelResource.getProperty(OWL.versionInfo).getString()));
 
         assertEquals(1, modelResource.listProperties(DCTerms.requires).toList().size());
-        assertEquals("http://uri.suomi.fi/datamodel/ns/newint", modelResource.listProperties(DCTerms.requires).next().getObject().toString());
+        assertEquals(defaultNamespace + "newint", modelResource.listProperties(DCTerms.requires).next().getObject().toString());
 
         assertEquals(1, modelResource.listProperties(OWL.imports).toList().size());
         assertEquals("http://www.w3.org/2000/01/rdf-schema#", modelResource.listProperties(OWL.imports).next().getObject().toString());

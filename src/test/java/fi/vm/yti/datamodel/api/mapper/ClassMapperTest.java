@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 class ClassMapperTest {
 
+	private String defaultNamespace = "http://custom.resolver.fi/datamodel/ns/";
+	
     @Test
     void testCreateClassAndMapToModelLibrary() {
         var m = MapperTestUtils.getModelFromFile("/test_datamodel_library.ttl");
@@ -32,23 +34,23 @@ class ClassMapperTest {
         ClassDTO dto = new ClassDTO();
         dto.setIdentifier("TestClass");
         dto.setSubject("http://uri.suomi.fi/terminology/test/test1");
-        dto.setEquivalentClass(Set.of("http://uri.suomi.fi/datamodel/ns/int#EqClass"));
+        dto.setEquivalentClass(Set.of(defaultNamespace + "int#EqClass"));
         dto.setSubClassOf(Set.of("https://www.example.com/ns/ext#SubClass"));
         dto.setEditorialNote("comment");
         dto.setLabel(Map.of("fi", "test label"));
         dto.setStatus(Status.DRAFT);
         dto.setNote(Map.of("fi", "test note"));
 
-        ClassMapper.createClassAndMapToModel("http://uri.suomi.fi/datamodel/ns/test", m, dto, mockUser);
+        ClassMapper.createClassAndMapToModel(defaultNamespace + "test", m, dto, mockUser);
 
-        Resource modelResource = m.getResource("http://uri.suomi.fi/datamodel/ns/test");
-        Resource classResource = m.getResource("http://uri.suomi.fi/datamodel/ns/test#TestClass");
+        Resource modelResource = m.getResource(defaultNamespace + "test");
+        Resource classResource = m.getResource(defaultNamespace + "test#TestClass");
 
         assertNotNull(modelResource);
         assertNotNull(classResource);
 
         assertEquals(1, modelResource.listProperties(DCTerms.hasPart).toList().size());
-        assertEquals("http://uri.suomi.fi/datamodel/ns/test#TestClass", modelResource.getProperty(DCTerms.hasPart).getObject().toString());
+        assertEquals(defaultNamespace + "test#TestClass", modelResource.getProperty(DCTerms.hasPart).getObject().toString());
 
         assertEquals(1, classResource.listProperties(RDFS.label).toList().size());
         assertEquals("test label", classResource.getProperty(RDFS.label).getLiteral().getString());
@@ -56,7 +58,7 @@ class ClassMapperTest {
 
         assertEquals(OWL.Class, classResource.getProperty(RDF.type).getResource());
         assertEquals(Status.DRAFT, Status.valueOf(classResource.getProperty(OWL.versionInfo).getObject().toString()));
-        assertEquals("http://uri.suomi.fi/datamodel/ns/test", classResource.getProperty(RDFS.isDefinedBy).getObject().toString());
+        assertEquals(defaultNamespace + "test", classResource.getProperty(RDFS.isDefinedBy).getObject().toString());
 
         assertEquals(XSDDatatype.XSDNCName, classResource.getProperty(DCTerms.identifier).getLiteral().getDatatype());
         assertEquals("TestClass", classResource.getProperty(DCTerms.identifier).getLiteral().getString());
@@ -67,7 +69,7 @@ class ClassMapperTest {
         assertEquals(1, classResource.listProperties(RDFS.subClassOf).toList().size());
         assertEquals("https://www.example.com/ns/ext#SubClass", classResource.getProperty(RDFS.subClassOf).getObject().toString());
         assertEquals(1, classResource.listProperties(OWL.equivalentClass).toList().size());
-        assertEquals("http://uri.suomi.fi/datamodel/ns/int#EqClass", classResource.getProperty(OWL.equivalentClass).getObject().toString());
+        assertEquals(defaultNamespace + "int#EqClass", classResource.getProperty(OWL.equivalentClass).getObject().toString());
         assertEquals(mockUser.getId().toString(), classResource.getProperty(Iow.creator).getString());
         assertEquals(mockUser.getId().toString(), classResource.getProperty(Iow.modifier).getString());
     }
@@ -82,10 +84,10 @@ class ClassMapperTest {
         dto.setStatus(Status.VALID);
         dto.setIdentifier("Identifier");
 
-        ClassMapper.createClassAndMapToModel("http://uri.suomi.fi/datamodel/ns/test", m, dto, mockUser);
+        ClassMapper.createClassAndMapToModel(defaultNamespace + "test", m, dto, mockUser);
 
-        Resource modelResource = m.getResource("http://uri.suomi.fi/datamodel/ns/test");
-        Resource classResource = m.getResource("http://uri.suomi.fi/datamodel/ns/test#Identifier");
+        Resource modelResource = m.getResource(defaultNamespace + "test");
+        Resource classResource = m.getResource(defaultNamespace + "test#Identifier");
 
         assertNotNull(modelResource);
         assertNotNull(classResource);

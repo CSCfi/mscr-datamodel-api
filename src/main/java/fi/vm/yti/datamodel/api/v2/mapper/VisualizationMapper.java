@@ -10,23 +10,23 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
 
 import java.net.URI;
 import java.util.*;
 
+@Service
 public class VisualizationMapper {
-    private static final Logger LOG = LoggerFactory.getLogger(VisualizationMapper.class);
+    private final Logger LOG = LoggerFactory.getLogger(VisualizationMapper.class);
 
-    private final String _defaultNamespace;
-    private static String defaultNamespace;
+    private String defaultNamespace;
     
-    private VisualizationMapper(@Value("${defaultNamespace}") String defaultNamespace) {
-    	this._defaultNamespace = defaultNamespace;
-    	VisualizationMapper.defaultNamespace = defaultNamespace;
+    public VisualizationMapper(@Value("${defaultNamespace}") String defaultNamespace) {
+    	this.defaultNamespace = defaultNamespace;
     }
 
-    public static List<VisualizationClassDTO> mapVisualizationData(String prefix, Model model, Model positions) {
+    public List<VisualizationClassDTO> mapVisualizationData(String prefix, Model model, Model positions) {
         var graph = defaultNamespace + prefix;
         LOG.info("Map visualization data for {}", graph);
 
@@ -83,7 +83,7 @@ public class VisualizationMapper {
         return result;
     }
 
-    private static StmtIterator getClassURIs(Model model, String graph) {
+    private StmtIterator getClassURIs(Model model, String graph) {
         var classType = MapperUtils.hasType(model.getResource(graph), OWL.Ontology)
                 ? OWL.Class
                 : SH.NodeShape;
@@ -96,7 +96,7 @@ public class VisualizationMapper {
      * @param model model
      * @param graph graph
      */
-    private static HashMap<String, String> getNamespaces(Model model, String graph) {
+    private HashMap<String, String> getNamespaces(Model model, String graph) {
         var namespaces = new HashMap<String, String>();
         var modelResource = model.getResource(graph);
         Arrays.asList(OWL.imports, DCTerms.requires)
@@ -112,7 +112,7 @@ public class VisualizationMapper {
     }
 
     @NotNull
-    private static HashSet<String> getParentClasses(Resource resource, Map<String, String> namespaceMap) {
+    private HashSet<String> getParentClasses(Resource resource, Map<String, String> namespaceMap) {
         var parentClasses = new HashSet<String>();
         var subClassOf = resource.listProperties(RDFS.subClassOf).toList();
         subClassOf.forEach(parent -> {
@@ -126,7 +126,7 @@ public class VisualizationMapper {
         return parentClasses;
     }
 
-    private static String getReferenceIdentifier(String uri, Map<String, String> namespaces) {
+    private String getReferenceIdentifier(String uri, Map<String, String> namespaces) {
         try {
             var u = new URI(uri);
             String fragment = u.getFragment();
@@ -151,7 +151,7 @@ public class VisualizationMapper {
         }
     }
 
-    private static List<Resource> getAttributeAndAssociationResource(
+    private List<Resource> getAttributeAndAssociationResource(
             Model model, Resource modelResource, Resource classResource) {
         if (MapperUtils.hasType(modelResource, OWL.Ontology)) {
             return model.listSubjectsWithProperty(RDFS.domain, classResource).toList();

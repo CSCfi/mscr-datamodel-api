@@ -1,6 +1,5 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
-import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.VisualizationClassDTO;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.VisualizationMapper;
@@ -24,13 +23,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Tag(name = "Visualization" )
 public class VisualizationController {
 
+	private final VisualizationMapper visualizationMapper;
     private final JenaService jenaService;
     
     @Value("${defaultNamespace}")
     private String defaultNamespace;
 
-    public VisualizationController(JenaService jenaService) {
+    public VisualizationController(JenaService jenaService, VisualizationMapper visualizationMapper) {
         this.jenaService = jenaService;
+        this.visualizationMapper = visualizationMapper;
     }
 
     @Operation(summary = "Get data for model visualization")
@@ -45,6 +46,6 @@ public class VisualizationController {
             throw new ResourceNotFoundException(graph);
         }
 
-        return VisualizationMapper.mapVisualizationData(prefix, model, positions);
+        return visualizationMapper.mapVisualizationData(prefix, model, positions);
     }
 }

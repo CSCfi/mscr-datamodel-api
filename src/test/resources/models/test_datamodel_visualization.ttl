@@ -1,59 +1,59 @@
 @prefix dcap:    <http://purl.org/ws-mmi-dc/terms/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix iow:     <http://uri.suomi.fi/datamodel/ns/iow#> .
+@prefix iow:     <http://custom.resolver.fi/datamodel/ns/iow#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-@prefix test:    <http://uri.suomi.fi/datamodel/ns/test#> .
+@prefix test:    <http://custom.resolver.fi/datamodel/ns/test#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 
-<http://uri.suomi.fi/datamodel/ns/test>
+<http://custom.resolver.fi/datamodel/ns/test>
         a                     owl:Ontology ;
         dcterms:requires      <https://www.example.com/ns/external> ;
-        owl:imports           <http://uri.suomi.fi/datamodel/ns/yti-model> .
+        owl:imports           <http://custom.resolver.fi/datamodel/ns/yti-model> .
 
 test:testclass1  rdf:type     owl:Class ;
-        rdfs:isDefinedBy     <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:isDefinedBy     <http://custom.resolver.fi/datamodel/ns/test> ;
         dcterms:identifier   "testclass1"^^xsd:NCName ;
         rdfs:label           "Label 1"@fi ;
-        rdfs:subClassOf      <http://uri.suomi.fi/datamodel/ns/yti-model#TestClass> .
+        rdfs:subClassOf      <http://custom.resolver.fi/datamodel/ns/yti-model#TestClass> .
 
 test:testclass2  rdf:type     owl:Class ;
-        rdfs:isDefinedBy     <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:isDefinedBy     <http://custom.resolver.fi/datamodel/ns/test> ;
         dcterms:identifier   "testclass2"^^xsd:NCName ;
         rdfs:label           "Label 2"@fi ;
-        rdfs:subClassOf      <http://uri.suomi.fi/datamodel/ns/test#testclass1> .
+        rdfs:subClassOf      <http://custom.resolver.fi/datamodel/ns/test#testclass1> .
 
 test:testclass3  rdf:type     owl:Class ;
-        rdfs:isDefinedBy     <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:isDefinedBy     <http://custom.resolver.fi/datamodel/ns/test> ;
         dcterms:identifier   "testclass3"^^xsd:NCName ;
         rdfs:label           "Label 3"@fi ;
         rdfs:subClassOf      <https://www.example.com/ns/external#ExternalClass> .
 
 test:attribute-1  rdf:type  owl:DatatypeProperty ;
-        rdfs:domain         <http://uri.suomi.fi/datamodel/ns/test#testclass1> ;
-        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:domain         <http://custom.resolver.fi/datamodel/ns/test#testclass1> ;
+        rdfs:isDefinedBy    <http://custom.resolver.fi/datamodel/ns/test> ;
         dcterms:identifier  "attribute-1"^^xsd:NCName ;
         rdfs:label          "testiattribuutti"@fi .
 
 test:association-1 rdf:type  owl:ObjectProperty ;
-        rdfs:domain         <http://uri.suomi.fi/datamodel/ns/test#testclass1> ;
-        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:domain         <http://custom.resolver.fi/datamodel/ns/test#testclass1> ;
+        rdfs:isDefinedBy    <http://custom.resolver.fi/datamodel/ns/test> ;
         rdfs:label          "testiassosiaatio"@fi ;
         dcterms:identifier  "association-1"^^xsd:NCName ;
-        rdfs:range          <http://uri.suomi.fi/datamodel/ns/visu#testclass2> .
+        rdfs:range          <http://custom.resolver.fi/datamodel/ns/visu#testclass2> .
 
 test:association-2 rdf:type  owl:ObjectProperty ;
-        rdfs:domain         <http://uri.suomi.fi/datamodel/ns/test#testclass2> ;
-        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:domain         <http://custom.resolver.fi/datamodel/ns/test#testclass2> ;
+        rdfs:isDefinedBy    <http://custom.resolver.fi/datamodel/ns/test> ;
         rdfs:label          "testiassosiaatio ext"@fi ;
         dcterms:identifier  "association-2"^^xsd:NCName ;
-        rdfs:range          <http://uri.suomi.fi/datamodel/ns/yti-model#SomeClass> .
+        rdfs:range          <http://custom.resolver.fi/datamodel/ns/yti-model#SomeClass> .
 
 test:association-3 rdf:type  owl:ObjectProperty ;
-        rdfs:domain         <http://uri.suomi.fi/datamodel/ns/test#testclass3> ;
-        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/test> ;
+        rdfs:domain         <http://custom.resolver.fi/datamodel/ns/test#testclass3> ;
+        rdfs:isDefinedBy    <http://custom.resolver.fi/datamodel/ns/test> ;
         rdfs:label          "testiassosiaatio ext"@fi ;
         dcterms:identifier  "association-3"^^xsd:NCName ;
         rdfs:range          <https://www.example.com/ns/external#ExternalClass> .

@@ -5,7 +5,7 @@
 @prefix skosxl: <http://www.w3.org/2008/05/skos-xl#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix dcam:  <http://purl.org/dc/dcam/> .
-@prefix testaa: <http://uri.suomi.fi/datamodel/ns/testaa#> .
+@prefix testaa: <http://custom.resolver.fi/datamodel/ns/testaa#> .
 @prefix afn:   <http://jena.hpl.hp.com/ARQ/function#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -57,7 +57,7 @@ testaa:test-property  a     owl:DatatypeProperty ;
         dcterms:modified    "2018-03-22T10:04:58"^^xsd:dateTime ;
         owl:versionInfo     "DRAFT" .
 
-<http://uri.suomi.fi/datamodel/ns/testaa>
+<http://custom.resolver.fi/datamodel/ns/testaa>
         a                               owl:Ontology , dcap:DCAP ;
         rdfs:comment                    "Testaa desc"@fi ;
         rdfs:label                      "Testaa"@fi ;
@@ -69,7 +69,7 @@ testaa:test-property  a     owl:DatatypeProperty ;
         dcterms:language                ( "fi" "en" ) ;
         dcterms:modified                "2018-03-20T16:21:07.067Z"^^xsd:dateTime ;
         dcterms:references              <http://uri.suomi.fi/terminology/jhs/terminological-vocabulary-1> ;
-        dcap:preferredXMLNamespaceName  "http://uri.suomi.fi/datamodel/ns/testaa#" ;
+        dcap:preferredXMLNamespaceName  "http://custom.resolver.fi/datamodel/ns/testaa#" ;
         dcap:preferredXMLNamespacePrefix
                 "testaa" ;
         owl:versionInfo                 "DRAFT" .
@@ -80,7 +80,7 @@ testaa:test-property  a     owl:DatatypeProperty ;
         dcterms:identifier  "P1" .
 
 testaa:Test  a              rdfs:Class ;
-        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/testaa> ;
+        rdfs:isDefinedBy    <http://custom.resolver.fi/datamodel/ns/testaa> ;
         rdfs:label          "Test"@fi ;
         dcterms:created     "2018-03-20T18:00:44"^^xsd:dateTime ;
         dcterms:identifier  "urn:uuid:fdda4783-0a4f-4800-ae37-529fdadedf7d" ;
