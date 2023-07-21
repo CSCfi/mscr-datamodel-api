@@ -146,12 +146,12 @@ public class PostgresStorageService implements StorageService {
 		try {
 			jdbcTemplate.update(con -> {
 				PreparedStatement ps = con
-						.prepareStatement("delete from mscr_files where id2 = ?");
+						.prepareStatement("delete from mscr_files where id = ?");
 				ps.setLong(1, fileID);
 				return ps;
 			});
 		} catch (DataAccessException dae) {
-			throw new RuntimeException("Error occurred while deleting file." + dae.getCause());
+			throw new RuntimeException("An error occurred while attempting to delete a file." + dae.getCause());
 		}
 		return true;
 	}
