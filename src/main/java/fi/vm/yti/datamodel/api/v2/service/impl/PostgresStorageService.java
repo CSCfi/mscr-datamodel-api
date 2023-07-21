@@ -140,4 +140,19 @@ public class PostgresStorageService implements StorageService {
 			}
 		});
 	}
+	
+	@Override
+	public boolean removeFile(long fileID) {
+		try {
+			jdbcTemplate.update(con -> {
+				PreparedStatement ps = con
+						.prepareStatement("delete from mscr_files where id2 = ?");
+				ps.setLong(1, fileID);
+				return ps;
+			});
+		} catch (DataAccessException dae) {
+			throw new RuntimeException("Error occurred while deleting file." + dae.getCause());
+		}
+		return true;
+	}
 }
