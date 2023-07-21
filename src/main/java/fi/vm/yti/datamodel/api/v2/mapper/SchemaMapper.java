@@ -36,6 +36,7 @@ import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
+import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFileMetadata;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexModel;
@@ -172,10 +173,10 @@ public class SchemaMapper {
 		schemaInfoDTO.setCreated(created);
 		schemaInfoDTO.setModified(modified);
 
-		List<StoredFile> retrievedSchemaFiles = storageService.retrieveAllSchemaFiles(PID);
+		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.data().length, file.fileID()));
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
 		});
 		schemaInfoDTO.setFileMetadata(fileMetadatas);
 

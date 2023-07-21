@@ -140,4 +140,60 @@ public class PostgresStorageService implements StorageService {
 			}
 		});
 	}
+	
+	@Override
+	public List<StoredFileMetadata> retrieveAllSchemaFilesMetadata(String pid) {
+		return jdbcTemplate.query(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con
+						.prepareStatement("select content_type, length(data) as size, id from mscr_files where pid = ? and type = ?");
+				ps.setString(1, pid);
+				ps.setString(2, MSCRType.SCHEMA.name());
+				return ps;
+			}
+		}, new ResultSetExtractor<List<StoredFileMetadata>>() {
+
+			@Override
+			public List<StoredFileMetadata> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				List<StoredFileMetadata> files = new ArrayList<StoredFileMetadata>();
+				while (rs.next()) {
+					String contentType = rs.getString(1);
+					int size = rs.getInt(2);
+					long fileID = rs.getLong(3);
+					files.add(new StoredFileMetadata(contentType, size, fileID));
+				}
+				return files;
+			}
+		});
+	}
+	
+	@Override
+	public List<StoredFileMetadata> retrieveAllCrosswalkFilesMetadata(String pid) {
+		return jdbcTemplate.query(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con
+						.prepareStatement("select content_type, length(data) as size, id from mscr_files where pid = ? and type = ?");
+				ps.setString(1, pid);
+				ps.setString(2, MSCRType.CROSSWALK.name());
+				return ps;
+			}
+		}, new ResultSetExtractor<List<StoredFileMetadata>>() {
+
+			@Override
+			public List<StoredFileMetadata> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				List<StoredFileMetadata> files = new ArrayList<StoredFileMetadata>();
+				while (rs.next()) {
+					String contentType = rs.getString(1);
+					int size = rs.getInt(2);
+					long fileID = rs.getLong(3);
+					files.add(new StoredFileMetadata(contentType, size, fileID));
+				}
+				return files;
+			}
+		});
+	}
 }
