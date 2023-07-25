@@ -8,10 +8,12 @@ import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -236,6 +238,19 @@ public class Schema {
 			model.write(httpResponseOutputStream, "TURTLE");
 		};
 		return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+	}
+	
+    @Operation(summary = "Delete a file")
+    @ApiResponse(responseCode = "200", description = "")
+    @DeleteMapping(path = "/schema/{pid}/delete/{id}")
+	public ResponseEntity<?> deleteFile(@PathVariable("pid") String pid ,@PathVariable("id") Long id) {
+    	try {
+    		storageService.removeFile(pid,id);
+		} catch (DataAccessException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(e.getCause().toString());
+		}
+    	return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
 }

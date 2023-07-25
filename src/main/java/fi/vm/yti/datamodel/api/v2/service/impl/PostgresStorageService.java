@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.atlas.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,17 +143,12 @@ public class PostgresStorageService implements StorageService {
 	}
 	
 	@Override
-	public boolean removeFile(long fileID) {
-		try {
-			jdbcTemplate.update(con -> {
-				PreparedStatement ps = con
-						.prepareStatement("delete from mscr_files where id = ?");
-				ps.setLong(1, fileID);
-				return ps;
-			});
-		} catch (DataAccessException dae) {
-			throw new RuntimeException("An error occurred while attempting to delete a file." + dae.getCause());
-		}
-		return true;
+	public void removeFile(String schemaPID, long fileID) throws DataAccessException {
+		jdbcTemplate.update(con -> {
+			PreparedStatement ps = con.prepareStatement("delete from mscr_files where pid = ? and id = ?");
+			ps.setString(1, schemaPID);
+			ps.setLong(2, fileID);
+			return ps;
+		});
 	}
 }

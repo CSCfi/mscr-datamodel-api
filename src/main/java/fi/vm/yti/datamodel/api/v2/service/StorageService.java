@@ -19,6 +19,6 @@ public interface StorageService {
 
 	public List<StoredFile> retrieveAllCrosswalkFiles(String pid);
 	
-	public boolean removeFile(long fileID);
+	public void removeFile(String schemaPID, long fileID);
 
 }
