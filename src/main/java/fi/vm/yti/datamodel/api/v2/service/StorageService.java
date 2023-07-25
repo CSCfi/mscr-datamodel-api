@@ -9,15 +9,11 @@ public interface StorageService {
 	public int storeSchemaFile(String schemaPID, String contentType, byte[] data);
 	public int storeCrosswalkFile(String schemaPID, String contentType, byte[] data);
 	
-	public List<StoredFile> retrieveAllSchemaFiles(String schemaPID);
-	public List<StoredFile> retrieveAllCrosswalkFiles(String pid);
-	
-	public StoredFile retrieveSchemaFile(String schemaPID, long fileID);
-	
-	public List<StoredFileMetadata> retrieveAllSchemaFilesMetadata(String schemaPID);
-	public List<StoredFileMetadata> retrieveAllCrosswalkFilesMetadata(String pid);
+	public StoredFile retrieveFile(String pid, long fileID, MSCRType type);
+	public List<StoredFile> retrieveAllFiles(String pid, MSCRType type);
+	public List<StoredFileMetadata> retrieveAllFilesMetadata(String pid, MSCRType type);
 	
 	public record StoredFile(String contentType, byte[] data, long fileID, MSCRType type) {}
-	public record StoredFileMetadata(String contentType, int dataSize, long fileID) {}
+	public record StoredFileMetadata(String contentType, int dataSize, long fileID, MSCRType type) {}
 
 }

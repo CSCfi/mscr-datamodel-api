@@ -25,6 +25,7 @@ import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
@@ -152,7 +153,7 @@ public class Crosswalk {
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(path = "/crosswalk/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable String pid) {
-    	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
+    	List<StoredFile> files = storageService.retrieveAllFiles(pid, MSCRType.CROSSWALK);
     	if(files.size() == 1) {
     		StoredFile file = files.get(0);
 			return ResponseEntity.ok()

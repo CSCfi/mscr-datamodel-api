@@ -139,7 +139,7 @@ public class CrosswalkMapper {
 		
 		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
 		
-		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
+		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllFilesMetadata(PID, MSCRType.CROSSWALK);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
 			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));

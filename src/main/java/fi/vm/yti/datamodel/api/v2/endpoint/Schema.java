@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
@@ -192,7 +193,7 @@ public class Schema {
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(path = "/schema/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable("pid") String pid) throws IOException {
-    	List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
+    	List<StoredFile> files = storageService.retrieveAllFiles(pid, MSCRType.SCHEMA);
     	
     	if (files.isEmpty()) {
     		return ResponseEntity.notFound().build();   				
