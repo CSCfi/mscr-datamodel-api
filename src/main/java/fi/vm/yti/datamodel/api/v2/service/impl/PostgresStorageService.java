@@ -143,12 +143,13 @@ public class PostgresStorageService implements StorageService {
 	}
 	
 	@Override
-	public void removeFile(String schemaPID, long fileID) throws DataAccessException {
+	public void removeFile(long fileID) throws DataAccessException {
 		jdbcTemplate.update(con -> {
-			PreparedStatement ps = con.prepareStatement("delete from mscr_files where pid = ? and id = ?");
-			ps.setString(1, schemaPID);
-			ps.setLong(2, fileID);
+			PreparedStatement ps = con.prepareStatement("delete from mscr_files where id = ?");
+			ps.setLong(1, fileID);
 			return ps;
 		});
 	}
+	
+	
 }
