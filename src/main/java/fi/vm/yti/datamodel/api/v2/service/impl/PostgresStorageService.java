@@ -65,7 +65,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id from mscr_files where pid = ? and id = ? and type = ?");
+						.prepareStatement("select content_type, data from mscr_files where pid = ? and id = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setLong(2, fileID);
 				ps.setString(3, type.name());
@@ -91,7 +91,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id, type from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, data, id from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setString(2, type.name());
 				return ps;
@@ -120,7 +120,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, length(data) as size, id, type from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, length(data) as size, id from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setString(2, type.name());
 				return ps;
