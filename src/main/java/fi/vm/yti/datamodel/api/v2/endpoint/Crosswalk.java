@@ -153,7 +153,7 @@ public class Crosswalk {
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(path = "/crosswalk/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable String pid) {
-    	List<StoredFile> files = storageService.retrieveAllFiles(pid, MSCRType.CROSSWALK);
+    	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
     	if(files.size() == 1) {
     		StoredFile file = files.get(0);
 			return ResponseEntity.ok()

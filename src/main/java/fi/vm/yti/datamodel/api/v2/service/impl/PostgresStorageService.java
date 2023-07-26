@@ -83,9 +83,17 @@ public class PostgresStorageService implements StorageService {
 		});
 	}
 
+	@Override
+	public List<StoredFile> retrieveAllSchemaFiles(String pid) {
+		return retrieveAllFiles(pid, MSCRType.SCHEMA);
+	}
 	
 	@Override
-	public List<StoredFile> retrieveAllFiles(String pid, MSCRType type) {
+	public List<StoredFile> retrieveAllCrosswalkFiles(String pid) {
+		return retrieveAllFiles(pid, MSCRType.CROSSWALK);
+	}
+
+	private List<StoredFile> retrieveAllFiles(String pid, MSCRType type) {
 		return jdbcTemplate.query(new PreparedStatementCreator() {
 
 			@Override
@@ -112,9 +120,17 @@ public class PostgresStorageService implements StorageService {
 		});
 	}
 
+	@Override
+	public List<StoredFileMetadata> retrieveAllSchemaFilesMetadata(String pid) {
+		return retrieveAllFilesMetadata(pid, MSCRType.SCHEMA);
+	}
 	
 	@Override
-	public List<StoredFileMetadata> retrieveAllFilesMetadata(String pid, MSCRType type) {
+	public List<StoredFileMetadata> retrieveAllCrosswalkFilesMetadata(String pid) {
+		return retrieveAllFilesMetadata(pid, MSCRType.CROSSWALK);
+	}
+
+	private List<StoredFileMetadata> retrieveAllFilesMetadata(String pid, MSCRType type) {
 		return jdbcTemplate.query(new PreparedStatementCreator() {
 
 			@Override

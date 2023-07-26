@@ -193,7 +193,7 @@ public class Schema {
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(path = "/schema/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable("pid") String pid) throws IOException {
-    	List<StoredFile> files = storageService.retrieveAllFiles(pid, MSCRType.SCHEMA);
+    	List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
     	
     	if (files.isEmpty()) {
     		return ResponseEntity.notFound().build();   				
