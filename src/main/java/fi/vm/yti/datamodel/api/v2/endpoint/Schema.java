@@ -3,14 +3,18 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
@@ -48,11 +53,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.ZipOutputStream;
-import java.util.zip.ZipEntry;
 
 @RestController
 @RequestMapping("v2")
@@ -103,6 +103,18 @@ public class Schema {
 
 		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO);
 		jenaService.putToSchema(PID, jenaModel);
+		
+		// handle possible versioning data
+		var schemaResource = jenaModel.createResource(PID);
+		if(jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {			
+			Model prevVersion = jenaService.getSchema(schemaDTO.getRevisionOf());
+			Resource prevVersionResource = prevVersion.getResource(schemaDTO.getRevisionOf());
+			prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
+			jenaService.updateSchema(schemaDTO.getRevisionOf(), prevVersion);
+			
+		}
+		
+
 		
 		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
         openSearchIndexer.createSchemaToIndex(indexModel);
@@ -215,9 +227,9 @@ public class Schema {
     @Operation(summary = "Get a schema metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
-    public SchemaInfoDTO getSchemaMetadata(@PathVariable String pid){
+    public SchemaInfoDTO getSchemaMetadata(@PathVariable String pid, @RequestParam(defaultValue = "false") String includeVersionInfo){    	
     	var jenaModel = jenaService.getSchema(pid);
-    	return mapper.mapToSchemaDTO(pid, jenaModel);
+    	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo));
     }
     
 
