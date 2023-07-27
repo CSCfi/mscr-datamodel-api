@@ -227,7 +227,7 @@ public class Schema {
     @Operation(summary = "Get a schema metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
-    public SchemaInfoDTO getSchemaMetadata(@PathVariable String pid, @RequestParam(defaultValue = "false") String includeVersionInfo){    	
+    public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "PID") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){    	
     	var jenaModel = jenaService.getSchema(pid);
     	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo));
     }
