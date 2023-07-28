@@ -192,7 +192,7 @@ public class Schema {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(required = false) CreateActions action, @RequestParam(required = false) String target) {
+	public SchemaInfoDTO createSchema(@RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {
 		validateActionParams(schemaDTO, action, target); 
 		String aggregationKey = null;
 		if(action != null) {			
@@ -243,7 +243,7 @@ public class Schema {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
-			@RequestParam("file") MultipartFile file, @RequestParam CreateActions action, @RequestParam String target) {		
+			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {		
 		SchemaDTO schemaDTO = null;
 		try {
 			ObjectMapper mapper = new ObjectMapper();
