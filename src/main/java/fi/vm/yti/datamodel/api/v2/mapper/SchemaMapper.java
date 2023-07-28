@@ -58,8 +58,11 @@ public class SchemaMapper {
 		this.jenaService = jenaService;
 		this.storageService = storageService;
 	}
-
 	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO) {
+		return mapToJenaModel(PID, schemaDTO, null, null);
+	}
+
+	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey) {
 		log.info("Mapping SchemaDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -97,15 +100,14 @@ public class SchemaMapper {
 		
 		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(schemaDTO.getNamespace()));
 		modelResource.addProperty(MSCR.versionLabel, schemaDTO.getVersionLabel());
-		if(schemaDTO.getRevisionOf() != null) {
-			final String revisionOf = schemaDTO.getRevisionOf();
+		if(aggregationKey != null) {
 			if(jenaService.doesSchemaExist(revisionOf)) {
 				Resource prevResource = model.createResource(revisionOf);
 				modelResource.addProperty(MSCR.PROV_wasRevisionOf, prevResource);
 				//  aggregationkey from the prev version because this is a revision
-				Model aggModel = jenaService.constructWithQuerySchemas(getAggregationKeyFromPrevQuery(schemaDTO.getRevisionOf()));
-				Resource aggKey = aggModel.getProperty(prevResource, MSCR.aggregationKey).getObject().asResource();
-				modelResource.addProperty(MSCR.aggregationKey, aggKey);
+				//Model aggModel = jenaService.constructWithQuerySchemas(getAggregationKeyFromPrevQuery(revisionOf));
+				//Resource aggKey = aggModel.getProperty(prevResource, MSCR.aggregationKey).getObject().asResource();
+				modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
 			}
 		}
 		else {
@@ -232,7 +234,10 @@ public class SchemaMapper {
 			revisionsModel.listSubjects().forEach(res -> {
 				revs.add(mapToSchemaRevision(res));				
 			});
-			schemaInfoDTO.setRevisions(revs);
+			List<SchemaRevision> orderedRevs = revs.stream()
+					.sorted((SchemaRevision r1, SchemaRevision r2) -> r1.created.compareTo(r2.created))
+					.collect(Collectors.toList());
+			schemaInfoDTO.setRevisions(orderedRevs);
 			
 			List<SchemaVariant> variants = new ArrayList<SchemaVariant>();
 			try {
@@ -364,8 +369,9 @@ public class SchemaMapper {
     private SchemaRevision mapToSchemaRevision(Resource rev) {
     	var pid = rev.getURI();
     	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
-    	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel);
-    	return new SchemaRevision(pid, label, versionLabel);
+    	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel); 
+    	var created = ((XSDDateTime)rev.getProperty(DCTerms.created).getLiteral().getValue()).asCalendar().getTime();    	
+    	return new SchemaRevision(pid, created, label, versionLabel);
     }
     
     private SchemaVariant mapToSchemaVariant(Resource rev) {
@@ -376,8 +382,25 @@ public class SchemaMapper {
     	return new SchemaVariant(pid, label, versionLabel, aggregationKey);
     }    
     
-    public record SchemaRevision(String pid, Map<String, String> label, String versionLabel) {} 
-    public record SchemaVariant(String pid, Map<String, String> label, String versionLabel, String aggregationKey) {} 
+    public record SchemaRevision(String pid, java.util.Date created, Map<String, String> label, String versionLabel) {} 
+    public record SchemaVariant(String pid, Map<String, String> label, String versionLabel, String aggregationKey) {}
+    
+	public SchemaDTO mapToSchemaDTO(SchemaInfoDTO source) {		
+		SchemaDTO s = new SchemaDTO();
+		s.setStatus(source.getStatus());
+		s.setLabel(source.getLabel());
+		s.setDescription(source.getDescription());
+		s.setLanguages(source.getLanguages());
+		s.setNamespace(source.getNamespace());
+		s.setOrganizations(source.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
+		s.setVersionLabel(source.getVersionLabel());
+		s.setFormat(source.getFormat());
+		
+		return s;
+		
+		
+		
+	} 
 
 
 }

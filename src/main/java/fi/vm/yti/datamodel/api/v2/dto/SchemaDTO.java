@@ -7,7 +7,6 @@ public class SchemaDTO extends DataModelDTO {
 	private SchemaFormat format;
 	private String namespace;
 	private String versionLabel;
-	private String revisionOf;
 	
 	public SchemaFormat getFormat() {
 		return format;
@@ -32,16 +31,6 @@ public class SchemaDTO extends DataModelDTO {
 	public void setVersionLabel(String versionLabel) {
 		this.versionLabel = versionLabel;
 	}
-	
-	public String getRevisionOf() {
-		return revisionOf;
-	}
-
-	public void setRevisionOf(String revisionOf) {
-		this.revisionOf = revisionOf;
-	}
-
-
 
 	@Override
 	public String toString() {

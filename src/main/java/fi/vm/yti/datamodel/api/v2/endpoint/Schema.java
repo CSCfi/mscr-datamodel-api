@@ -6,6 +6,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +39,7 @@ import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
@@ -59,6 +63,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Schema")
 //@Validated
 public class Schema {
+	
+	public enum CreateActions {
+		copyOf, revisionOf
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(Schema.class);
 
@@ -97,31 +105,6 @@ public class Schema {
 		this.userProvider = userProvider;
 	}
 	
-	private SchemaInfoDTO createSchemaMetadata(SchemaDTO schemaDTO) {
-		check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));		
-		final String PID = PIDService.mint(PIDType.HANDLE);
-
-		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO);
-		jenaService.putToSchema(PID, jenaModel);
-		
-		// handle possible versioning data
-		var schemaResource = jenaModel.createResource(PID);
-		if(jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {			
-			Model prevVersion = jenaService.getSchema(schemaDTO.getRevisionOf());
-			Resource prevVersionResource = prevVersion.getResource(schemaDTO.getRevisionOf());
-			prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
-			jenaService.updateSchema(schemaDTO.getRevisionOf(), prevVersion);
-			
-		}
-		
-
-		
-		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
-        openSearchIndexer.createSchemaToIndex(indexModel);
-
-        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID));
-
-	}
 	
 	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file) {
 		Model metadataModel = jenaService.getSchema(pid);
@@ -156,14 +139,93 @@ public class Schema {
 		}
 		return mapper.mapToSchemaDTO(pid, metadataModel);
 	}
+	
+	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, boolean isRevision) {
+		if(inputSchema == null) {
+			return mapper.mapToSchemaDTO(prevSchema);
+		}
+		SchemaDTO s = new SchemaDTO();
+		// in case of revision the following data cannot be overridden
+		// - organization
+		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : Status.DRAFT);		
+		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
+		s.setDescription(!inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
+		s.setLanguages(!inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
+		s.setNamespace(inputSchema.getNamespace() != null ? inputSchema.getNamespace() : prevSchema.getNamespace());		
+		if(isRevision || inputSchema.getOrganizations().isEmpty()) {
+			s.setOrganizations(prevSchema.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
+		}	
+		else {
+			s.setOrganizations(inputSchema.getOrganizations());			
+		}	
+		s.setVersionLabel(inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
+		s.setFormat(inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
+		return s;
+		
+	}
+	
+	private SchemaInfoDTO getSchemaDTO(String pid, boolean includeVersionInfo) {
+        var model = jenaService.getSchema(pid);
+        if(model == null){
+            throw new ResourceNotFoundException(pid);
+        }
 
+        check(authorizationManager.hasRightToModel(pid, model));
+        return mapper.mapToSchemaDTO(pid, model, includeVersionInfo);
+	}
+
+	
+
+	private void validateActionParams(SchemaDTO dto, CreateActions action, String target) {
+		if(dto == null && action == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body must present if no action is provided.");
+		}
+		if(action ==null && target != null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Target parameter requires an action.");
+		}
+		if(action !=null && target == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Action parameter requires a target");
+		}		
+	}
+	
 	@Operation(summary = "Create schema metadata")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@RequestBody SchemaDTO schemaDTO) {
+	public SchemaInfoDTO createSchema(@RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(required = false) CreateActions action, @RequestParam(required = false) String target) {
+		validateActionParams(schemaDTO, action, target); 
+		String aggregationKey = null;
+		if(action != null) {			
+			SchemaInfoDTO prevSchema = getSchemaDTO(target, true);
+			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CreateActions.revisionOf);			
+			if(action == CreateActions.revisionOf) {
+				// revision must be made from the latest version
+				if(prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
+				}
+				aggregationKey = prevSchema.getAggregationKey();
+				
+			}
+		}
 		logger.info("Create Schema {}", schemaDTO);
-		return createSchemaMetadata(schemaDTO);
+		check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));		
+		final String PID = PIDService.mint(PIDType.HANDLE);
+
+		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey);
+		jenaService.putToSchema(PID, jenaModel);
+		
+		// handle possible versioning data
+		var schemaResource = jenaModel.createResource(PID);
+		if(jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {			
+			Model prevVersionModel = jenaService.getSchema(target);
+			Resource prevVersionResource = prevVersionModel.getResource(target);
+			prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
+			jenaService.updateSchema(target, prevVersionModel);
+			
+		}
+		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
+        openSearchIndexer.createSchemaToIndex(indexModel);
+        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID));
 				
 	}
     
@@ -181,21 +243,16 @@ public class Schema {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
-			@RequestParam("file") MultipartFile file) {
-		
+			@RequestParam("file") MultipartFile file, @RequestParam CreateActions action, @RequestParam String target) {		
 		SchemaDTO schemaDTO = null;
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			schemaDTO = mapper.readValue(metadataString, SchemaDTO.class);
-
 		}catch(Exception ex) {
-			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());
-			
+			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());			
 		}
-		logger.info("Create Schema {}", schemaDTO);
-		SchemaInfoDTO dto = createSchemaMetadata(schemaDTO);
-		return addFileToSchema(dto.getPID(), file.getContentType(), file);
-		
+		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
+		return addFileToSchema(dto.getPID(), file.getContentType(), file);						
 	}
   
     @Operation(summary = "Modify schema")
@@ -227,7 +284,7 @@ public class Schema {
     @Operation(summary = "Get a schema metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
-    public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "PID") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){    	
+    public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){    	
     	var jenaModel = jenaService.getSchema(pid);
     	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo));
     }
