@@ -101,12 +101,8 @@ public class SchemaMapper {
 		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(schemaDTO.getNamespace()));
 		modelResource.addProperty(MSCR.versionLabel, schemaDTO.getVersionLabel());
 		if(aggregationKey != null) {
-			if(jenaService.doesSchemaExist(revisionOf)) {
-				Resource prevResource = model.createResource(revisionOf);
-				modelResource.addProperty(MSCR.PROV_wasRevisionOf, prevResource);
-				//  aggregationkey from the prev version because this is a revision
-				//Model aggModel = jenaService.constructWithQuerySchemas(getAggregationKeyFromPrevQuery(revisionOf));
-				//Resource aggKey = aggModel.getProperty(prevResource, MSCR.aggregationKey).getObject().asResource();
+			if(jenaService.doesSchemaExist(revisionOf)) {				
+				modelResource.addProperty(MSCR.PROV_wasRevisionOf, ResourceFactory.createResource(revisionOf));
 				modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
 			}
 		}
