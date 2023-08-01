@@ -15,6 +15,12 @@ public class PropertyShapeDTO extends BaseDTO {
     private Integer minLength;
     private Integer maxCount;
     private Integer minCount;
+    private Integer minInclusive;
+    private Integer maxInclusive;
+    private Integer minExclusive;
+    private Integer maxExclusive;
+
+    private String codeList;
 
     public String getPath() {
         return path;
@@ -102,5 +108,45 @@ public class PropertyShapeDTO extends BaseDTO {
 
     public void setMinCount(Integer minCount) {
         this.minCount = minCount;
+    }
+
+    public Integer getMinInclusive() {
+        return minInclusive;
+    }
+
+    public void setMinInclusive(Integer minInclusive) {
+        this.minInclusive = minInclusive;
+    }
+
+    public Integer getMaxInclusive() {
+        return maxInclusive;
+    }
+
+    public void setMaxInclusive(Integer maxInclusive) {
+        this.maxInclusive = maxInclusive;
+    }
+
+    public Integer getMinExclusive() {
+        return minExclusive;
+    }
+
+    public void setMinExclusive(Integer minExclusive) {
+        this.minExclusive = minExclusive;
+    }
+
+    public Integer getMaxExclusive() {
+        return maxExclusive;
+    }
+
+    public void setMaxExclusive(Integer maxExclusive) {
+        this.maxExclusive = maxExclusive;
+    }
+
+    public String getCodeList() {
+        return codeList;
+    }
+
+    public void setCodeList(String codeList) {
+        this.codeList = codeList;
     }
 }

@@ -1,0 +1,64 @@
+@prefix dcap:       <http://purl.org/ws-mmi-dc/terms/> .
+@prefix dcterms:    <http://purl.org/dc/terms/> .
+@prefix iow:        <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix owl:        <http://www.w3.org/2002/07/owl#> .
+@prefix personprof: <http://uri.suomi.fi/datamodel/ns/personprof/> .
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:         <http://www.w3.org/ns/shacl#> .
+@prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
+@prefix visuprof:   <http://uri.suomi.fi/datamodel/ns/visuprof/> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix ytm:        <http://uri.suomi.fi/datamodel/ns/ytm/> .
+
+visuprof:age  rdf:type      sh:PropertyShape , owl:DatatypeProperty ;
+        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/visuprof> ;
+        rdfs:label          "Ikä"@fi ;
+        dcterms:identifier  "age"^^xsd:NCName ;
+        sh:datatype         "xsd:integer" ;
+        sh:maxCount         1 ;
+        sh:minCount         1 ;
+        sh:path             ytm:age .
+
+<http://uri.suomi.fi/datamodel/ns/visuprof>
+        rdf:type                    owl:Ontology , iow:ApplicationProfile ;
+        rdfs:label                  "Soveltamisprofiili visu"@fi ;
+        dcterms:identifier          "1ff6db8a-78fa-4411-9cd9-21df40ef4418" ;
+        dcterms:language            "fi" ;
+        dcterms:requires            <http://uri.suomi.fi/datamodel/ns/ytm> ;
+        dcap:preferredXMLNamespace  "http://uri.suomi.fi/datamodel/ns/visuprof" ;
+        dcap:preferredXMLNamespacePrefix  "visuprof" ;
+        owl:imports                 <http://uri.suomi.fi/datamodel/ns/personprof> .
+
+visuprof:name  rdf:type     sh:PropertyShape , owl:DatatypeProperty ;
+        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/visuprof> ;
+        rdfs:label          "Nimi"@fi ;
+        dcterms:identifier  "name"^^xsd:NCName ;
+        sh:datatype         "xsd:string" ;
+        sh:maxCount         3 ;
+        sh:minCount         1 ;
+        sh:path             ytm:name .
+
+visuprof:is-address  rdf:type  sh:PropertyShape , owl:ObjectProperty ;
+        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/visuprof> ;
+        rdfs:label          "onOsoite"@fi ;
+        dcterms:identifier  "is-address"^^xsd:NCName ;
+        sh:class            ytm:address ;
+        sh:maxCount         2 ;
+        sh:minCount         1 ;
+        sh:path             ytm:is-address .
+
+visuprof:address  rdf:type  sh:NodeShape ;
+        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/visuprof> ;
+        rdfs:label          "Osoite"@fi ;
+        dcterms:identifier  "address"^^xsd:NCName ;
+        sh:node             personprof:address ;
+        sh:property         personprof:zipcode , personprof:street ;
+        sh:targetClass      ytm:address .
+
+visuprof:person  rdf:type   sh:NodeShape ;
+        rdfs:isDefinedBy    <http://uri.suomi.fi/datamodel/ns/visuprof> ;
+        rdfs:label          "Henkilö"@fi ;
+        dcterms:identifier  "person"^^xsd:NCName ;
+        sh:property         visuprof:age , visuprof:name , visuprof:is-address ;
+        sh:targetClass      ytm:person .

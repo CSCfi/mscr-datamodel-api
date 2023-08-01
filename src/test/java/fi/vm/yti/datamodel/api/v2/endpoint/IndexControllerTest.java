@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(properties = {
@@ -47,47 +47,16 @@ class IndexControllerTest {
     }
 
     @Test
-    void shouldReIndex() throws Exception {
-        this.mvc
-            .perform(get("/v2/index/reindex"))
+    void shouldCallOpenSearchIndexer() throws Exception {
+        mvc.perform(post("/v2/index/reindex"))
             .andExpect(status().isOk());
 
-        verify(this.openSearchIndexer).reindex();
-    }
+        verify(openSearchIndexer).reindex(eq(null));
 
-    @Test
-    void shouldReIndexParameter() throws Exception {
-        this.mvc
-                .perform(get("/v2/index/reindex")
-                        .param("index", "models_v2"))
-                .andExpect(status().isOk());
-        verify(openSearchIndexer).initModelIndex();
+        mvc.perform(post("/v2/index/reindex")
+                    .param("index", "models_v2"))
+            .andExpect(status().isOk());
 
-        this.mvc
-                .perform(get("/v2/index/reindex")
-                        .param("index", "resources_v2"))
-                .andExpect(status().isOk());
-        verify(openSearchIndexer).initResourceIndex();
-
-        this.mvc
-                .perform(get("/v2/index/reindex")
-                        .param("index", "external_v2"))
-                .andExpect(status().isOk());
-        verify(openSearchIndexer).initExternalResourceIndex();
-        
-        this.mvc
-		        .perform(get("/v2/index/reindex")
-		                .param("index", "crosswalks_v2"))
-		        .andExpect(status().isOk());
-		verify(openSearchIndexer).initCrosswalkIndex();        
-    }
-
-    @Test
-    void reindexThrowOnInvalidParamater() throws Exception{
-        this.mvc
-                .perform(get("/v2/index/reindex")
-                        .param("index", "invalid"))
-                .andExpect(status().isBadRequest());
-        verifyNoInteractions(openSearchIndexer);
+        verify(openSearchIndexer).reindex(eq("models_v2"));
     }
 }

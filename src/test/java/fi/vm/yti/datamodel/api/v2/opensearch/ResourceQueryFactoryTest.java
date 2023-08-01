@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
@@ -45,6 +43,22 @@ class ResourceQueryFactoryTest {
 
         assertEquals("Page from value not matching", 1, classQuery.from());
         assertEquals("Page size value not matching", 100, classQuery.size());
+    }
+
+    @Test
+    void listAttributesInModelWithAdditionalResources() throws Exception {
+        var request = new ResourceSearchRequest();
+
+        request.setPageFrom(1);
+        request.setPageSize(100);
+        request.setLimitToDataModel("http://uri.suomi.fi/datamodel/ns/test");
+        request.setResourceTypes(Set.of(ResourceType.ATTRIBUTE));
+        request.setAdditionalResources(Set.of("http://uri.suomi.fi/datamodel/ns/ext/some-property"));
+
+        var attributeListQuery = ResourceQueryFactory.createInternalResourceQuery(request, new ArrayList<>(),
+                new ArrayList<>(), new HashSet<>());
+        String expected = OpenSearchUtils.getJsonString("/es/attributeListRequest.json");
+        JSONAssert.assertEquals(expected, OpenSearchUtils.getPayload(attributeListQuery), JSONCompareMode.LENIENT);
     }
 
     @Test

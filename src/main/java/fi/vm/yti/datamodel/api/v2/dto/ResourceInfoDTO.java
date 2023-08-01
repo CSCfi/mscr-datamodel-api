@@ -5,10 +5,10 @@ import java.util.Set;
 public class ResourceInfoDTO extends ResourceInfoBaseDTO {
 
     private ResourceType type;
-    private Set<String> subResourceOf;
-    private Set<String> equivalentResource;
-    private String domain;
-    private String range;
+    private Set<UriDTO> subResourceOf;
+    private Set<UriDTO> equivalentResource;
+    private UriDTO domain;
+    private UriDTO range;
 
     public ResourceType getType() {
         return type;
@@ -18,35 +18,35 @@ public class ResourceInfoDTO extends ResourceInfoBaseDTO {
         this.type = type;
     }
 
-    public Set<String> getSubResourceOf() {
+    public Set<UriDTO> getSubResourceOf() {
         return subResourceOf;
     }
 
-    public void setSubResourceOf(Set<String> subResourceOf) {
+    public void setSubResourceOf(Set<UriDTO> subResourceOf) {
         this.subResourceOf = subResourceOf;
     }
 
-    public Set<String> getEquivalentResource() {
+    public Set<UriDTO> getEquivalentResource() {
         return equivalentResource;
     }
 
-    public void setEquivalentResource(Set<String> equivalentResource) {
+    public void setEquivalentResource(Set<UriDTO> equivalentResource) {
         this.equivalentResource = equivalentResource;
     }
 
-    public String getDomain() {
+    public UriDTO getDomain() {
         return domain;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(UriDTO domain) {
         this.domain = domain;
     }
 
-    public String getRange() {
+    public UriDTO getRange() {
         return range;
     }
 
-    public void setRange(String range) {
+    public void setRange(UriDTO range) {
         this.range = range;
     }
 }

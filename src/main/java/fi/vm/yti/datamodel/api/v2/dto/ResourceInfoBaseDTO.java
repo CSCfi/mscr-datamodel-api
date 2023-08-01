@@ -11,6 +11,7 @@ public class ResourceInfoBaseDTO extends ResourceCommonDTO {
     private String identifier;
     private Map<String, String> note;
     private String uri;
+    private String curie;
     private Set<OrganizationDTO> contributor;
     private String contact;
 
@@ -68,6 +69,14 @@ public class ResourceInfoBaseDTO extends ResourceCommonDTO {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public String getCurie() {
+        return curie;
+    }
+
+    public void setCurie(String curie) {
+        this.curie = curie;
     }
 
     public Set<OrganizationDTO> getContributor() {

@@ -35,6 +35,7 @@ import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ModelType;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
@@ -45,14 +46,14 @@ import fi.vm.yti.security.YtiUser;
 public class CrosswalkMapper {
 	private final Logger log = LoggerFactory.getLogger(CrosswalkMapper.class);
 	private final StorageService storageService;
-	private final JenaService jenaService;
+	private final CoreRepository coreRepository;
     private final String defaultNamespace;
     
 	public CrosswalkMapper(
-			JenaService jenaService,
+			CoreRepository coreRepository,
 			PostgresStorageService storageService,
 			@Value("${defaultNamespace}") String defaultNamespace) {
-		this.jenaService = jenaService;
+		this.coreRepository = coreRepository;
 		this.storageService = storageService;
 		this.defaultNamespace = defaultNamespace;
 	}
@@ -100,7 +101,7 @@ public class CrosswalkMapper {
 	}
 	
     private void addOrgsToModel(CrosswalkDTO modelDTO, Resource modelResource) {
-        var organizationsModel = jenaService.getOrganizations();
+        var organizationsModel = coreRepository.getOrganizations();
         modelDTO.getOrganizations().forEach(org -> {
             var orgUri = ModelConstants.URN_UUID + org;
             var queryRes = ResourceFactory.createResource(orgUri);
@@ -129,7 +130,7 @@ public class CrosswalkMapper {
 		dto.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));
 
 		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
-		dto.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, jenaService.getOrganizations()));
+		dto.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 
 		var created = modelResource.getProperty(DCTerms.created).getLiteral().getString();
 		var modified = modelResource.getProperty(DCTerms.modified).getLiteral().getString();
@@ -175,7 +176,7 @@ public class CrosswalkMapper {
 
         if(dto.getGroups() != null){
             modelResource.removeAll(DCTerms.isPartOf);
-            var groupModel = jenaService.getServiceCategories();
+            var groupModel = coreRepository.getServiceCategories();
             dto.getGroups().forEach(group -> {
                 var groups = groupModel.listResourcesWithProperty(SKOS.notation, group);
                 if (groups.hasNext()) {
@@ -223,7 +224,7 @@ public class CrosswalkMapper {
         });
         indexModel.setContributor(contributors);
         var isPartOf = MapperUtils.arrayPropertyToList(resource, DCTerms.isPartOf);
-        var serviceCategories = jenaService.getServiceCategories();
+        var serviceCategories = coreRepository.getServiceCategories();
         var groups = isPartOf.stream().map(serviceCat -> MapperUtils.propertyToString(serviceCategories.getResource(serviceCat), SKOS.notation)).collect(Collectors.toList());
         indexModel.setIsPartOf(groups);
         indexModel.setLanguage(MapperUtils.arrayPropertyToList(resource, DCTerms.language));

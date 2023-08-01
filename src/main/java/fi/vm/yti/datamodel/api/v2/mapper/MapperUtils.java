@@ -16,6 +16,7 @@ import org.apache.jena.vocabulary.RDF;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class MapperUtils {
 
@@ -42,10 +43,9 @@ public class MapperUtils {
     }
 
     public static ModelType getModelTypeFromResource(Resource resource){
-        var modelTypes = resource.listProperties(RDF.type).toList();
-        if(modelTypes.stream().anyMatch(stm -> stm.getResource().equals(DCAP.DCAP))){
+        if(isApplicationProfile(resource)) {
             return ModelType.PROFILE;
-        }else if(modelTypes.stream().anyMatch(stm -> stm.getResource().equals(OWL.Ontology))){
+        }else if(isLibrary(resource)) {
             return ModelType.LIBRARY;
         }
         return ModelType.PROFILE;
@@ -191,6 +191,8 @@ public class MapperUtils {
             return type.cast(literal.getInt());
         } else if (type.equals(Boolean.class)) {
             return type.cast(literal.getBoolean());
+        } else if (type.equals(Double.class)) {
+            return type.cast(literal.getDouble());
         }
         return null;
     }
@@ -292,11 +294,11 @@ public class MapperUtils {
     }
 
     public static boolean isApplicationProfile(Resource resource) {
-        return hasType(resource, DCAP.DCAP, ResourceFactory.createProperty("http://www.w3.org/2002/07/dcap#DCAP"));
+        return hasType(resource, Iow.ApplicationProfile);
     }
 
-    public static boolean isOntology(Resource resource) {
-        return hasType(resource, OWL.Ontology);
+    public static boolean isLibrary(Resource resource) {
+        return hasType(resource, OWL.Ontology) && !hasType(resource, Iow.ApplicationProfile);
     }
 
     public static void addCreationMetadata(Resource resource, YtiUser user) {
@@ -344,5 +346,31 @@ public class MapperUtils {
         if (userMapper != null) {
             userMapper.accept(dto);
         }
+    }
+
+    public static UriDTO uriToURIDTO(String uri, Model model) {
+        if (uri == null) {
+            return null;
+        }
+        var u = NodeFactory.createURI(uri);
+        var prefix = model.getNsURIPrefix(u.getNameSpace());
+        if (prefix != null) {
+            return new UriDTO(uri, String.format("%s:%s", prefix, u.getLocalName()));
+        } else if (uri.startsWith(ModelConstants.SUOMI_FI_NAMESPACE)) {
+            return new UriDTO(uri, uri
+                    .replace(ModelConstants.SUOMI_FI_NAMESPACE, "")
+                    .replace(ModelConstants.RESOURCE_SEPARATOR, ":")
+            );
+        } else {
+            // use last element of the path as a prefix, if it could not determine
+            var parts = u.getNameSpace().split("\\W");
+            return new UriDTO(uri, String.format("%s:%s", parts[parts.length - 1], u.getLocalName()));
+        }
+    }
+
+    public static Set<UriDTO> uriToURIDTOs(Collection<String> uris, Model model) {
+        return uris.stream()
+                .map(s -> uriToURIDTO(s, model))
+                .collect(Collectors.toSet());
     }
 }

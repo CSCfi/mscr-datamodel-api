@@ -11,7 +11,7 @@
 
 
 <http://uri.suomi.fi/datamodel/ns/test>
-a                               dcap:DCAP ;
+a                               iow:ApplicationProfile , owl:Ontology ;
 rdfs:comment                    "test desc"@fi ;
 rdfs:label                      "testlabel"@fi ;
 dcterms:contributor             <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;
@@ -66,7 +66,13 @@ test:TestPropertyShape  rdf:type  sh:PropertyShape ;
         sh:maxLength         100 ;
         sh:minCount          1 ;
         sh:minLength         2 ;
-        sh:path              <http://uri.suomi.fi/datamodel/ns/ytm/some-attribute> .
+        sh:minInclusive      5 ;
+        sh:maxInclusive      7 ;
+        sh:minExclusive      6 ;
+        sh:maxExclusive      8 ;
+        iow:codeList         <http://uri.suomi.fi/codelist/Test> ;
+        sh:path              <http://uri.suomi.fi/datamodel/ns/ytm/some-attribute> ;
+        sh:class             <http://uri.suomi.fi/datamodel/ns/ytm/some-class> .
 
 test:DeactivatedPropertyShape  rdf:type  sh:PropertyShape ;
         rdf:type             owl:DatatypeProperty ;

@@ -8,7 +8,7 @@
 @prefix int:     <http://uri.suomi.fi/datamodel/ns/int> .
 
 <http://uri.suomi.fi/datamodel/ns/test>
-        a                               dcap:DCAP ;
+        a                               iow:ApplicationProfile , owl:Ontology  ;
         rdfs:comment                    "test desc"@fi ;
         rdfs:label                      "testlabel"@fi ;
         dcterms:contributor             <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;

@@ -1,26 +1,27 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
-import static fi.vm.yti.datamodel.api.v2.dto.ModelConstants.*;
-
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ServiceCategoryMapper;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static fi.vm.yti.datamodel.api.v2.dto.ModelConstants.DEFAULT_LANGUAGE;
+
 @Service
 public class FrontendService {
 
-    private final JenaService jenaService;
-    public FrontendService(JenaService jenaService) {
-        this.jenaService = jenaService;
+    private final CoreRepository coreRepository;
+    public FrontendService(CoreRepository coreRepository) {
+        this.coreRepository = coreRepository;
     }
 
     public List<OrganizationDTO> getOrganizations(@NotNull String sortLanguage, boolean includeChildOrganizations) {
-        var organizations = jenaService.getOrganizations();
+        var organizations = coreRepository.getOrganizations();
         var dtos = OrganizationMapper.mapToListOrganizationDTO(organizations);
 
         dtos.sort((a, b) -> {
@@ -35,7 +36,7 @@ public class FrontendService {
     }
 
     public List<ServiceCategoryDTO> getServiceCategories(@NotNull String sortLanguage) {
-        var serviceCategories = jenaService.getServiceCategories();
+        var serviceCategories = coreRepository.getServiceCategories();
         var dtos = ServiceCategoryMapper.mapToListServiceCategoryDTO(serviceCategories);
 
         dtos.sort((a, b) -> {

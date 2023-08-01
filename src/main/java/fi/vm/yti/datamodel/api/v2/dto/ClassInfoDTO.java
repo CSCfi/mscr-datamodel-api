@@ -5,24 +5,24 @@ import java.util.List;
 import java.util.Set;
 
 public class ClassInfoDTO extends ResourceInfoBaseDTO {
-    private Set<String> equivalentClass;
-    private Set<String> subClassOf;
+    private Set<UriDTO> equivalentClass;
+    private Set<UriDTO> subClassOf;
     private List<SimpleResourceDTO> attribute = new ArrayList<>();
     private List<SimpleResourceDTO> association = new ArrayList<>();
 
-    public Set<String> getEquivalentClass() {
+    public Set<UriDTO> getEquivalentClass() {
         return equivalentClass;
     }
 
-    public void setEquivalentClass(Set<String> equivalentClass) {
+    public void setEquivalentClass(Set<UriDTO> equivalentClass) {
         this.equivalentClass = equivalentClass;
     }
 
-    public Set<String> getSubClassOf() {
+    public Set<UriDTO> getSubClassOf() {
         return subClassOf;
     }
 
-    public void setSubClassOf(Set<String> subClassOf) {
+    public void setSubClassOf(Set<UriDTO> subClassOf) {
         this.subClassOf = subClassOf;
     }
 

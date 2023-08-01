@@ -4,7 +4,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fi.vm.yti.datamodel.api.v2.dto.GroupManagementOrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.GroupManagementUserDTO;
+import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.security.YtiUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,7 @@ import static fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper.mapGroupManag
 public class GroupManagementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupManagementService.class);
-    private final JenaService jenaService;
+    private final CoreRepository coreRepository;
 
     private final WebClient webClient;
 
@@ -35,9 +37,9 @@ public class GroupManagementService {
 
     public GroupManagementService(
             @Qualifier("groupManagementClient") WebClient webClient,
-            JenaService jenaService) {
-        this.jenaService = jenaService;
+            CoreRepository coreRepository) {
         this.webClient = webClient;
+        this.coreRepository = coreRepository;
         userCache = CacheBuilder.newBuilder().build();
     }
 
@@ -54,7 +56,7 @@ public class GroupManagementService {
                     .block();
 
             var model = mapGroupManagementOrganizationToModel(organizations);
-            jenaService.saveOrganizations(model);
+            coreRepository.put(ModelConstants.ORGANIZATION_GRAPH, model);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }

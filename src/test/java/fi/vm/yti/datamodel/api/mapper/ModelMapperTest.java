@@ -5,6 +5,11 @@ import fi.vm.yti.datamodel.api.v2.dto.*;
 import fi.vm.yti.datamodel.api.v2.endpoint.EndpointUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.ModelMapper;
+import fi.vm.yti.datamodel.api.v2.repository.ConceptRepository;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
+import fi.vm.yti.datamodel.api.v2.repository.ImportsRepository;
+import fi.vm.yti.datamodel.api.v2.repository.SchemesRepository;
+import fi.vm.yti.datamodel.api.v2.service.DataModelService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.security.YtiUser;
 import org.apache.jena.rdf.model.Model;
@@ -43,7 +48,18 @@ import static org.mockito.Mockito.when;
 
 class ModelMapperTest {
 
+    
     @MockBean
+    CoreRepository coreRepository;
+    @MockBean
+    DataModelService dataModelService;
+    @MockBean
+    ConceptRepository conceptRepository;
+    @MockBean
+    ImportsRepository importsRepository;
+    @MockBean
+    SchemesRepository schemesRepository;
+	@MockBean
     JenaService jenaService;
     @Autowired
     ModelMapper mapper;
@@ -60,13 +76,13 @@ class ModelMapperTest {
         mockGroups.createResource("http://urn.fi/URN:NBN:fi:au:ptvl:v1105")
                 .addProperty(SKOS.notation, "P11")
                 .addProperty(RDFS.label, ResourceFactory.createLangLiteral("test group", "fi"));
-        when(jenaService.getServiceCategories()).thenReturn(mockGroups);
+        when(coreRepository.getServiceCategories()).thenReturn(mockGroups);
 
         var mockOrgs = ModelFactory.createDefaultModel();
         mockOrgs.createResource("urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63")
                 .addProperty(RDF.type, FOAF.Organization)
                 .addProperty(SKOS.prefLabel, ResourceFactory.createLangLiteral("test org", "fi"));
-        when(jenaService.getOrganizations()).thenReturn(mockOrgs);
+        when(coreRepository.getOrganizations()).thenReturn(mockOrgs);
         
         ReflectionTestUtils.setField(mapper, "defaultNamespace", defaultNamespace);
         ReflectionTestUtils.setField(modelConstants, "defaultNamespace", defaultNamespace);
@@ -80,7 +96,7 @@ class ModelMapperTest {
         mockModel.createResource(defaultNamespace + "newint")
                         .addProperty(RDF.type, DCAP.DCAP)
                         .addProperty(DCAP.preferredXMLNamespacePrefix, "test");
-        when(jenaService.getDataModel(anyString())).thenReturn(mockModel);
+        when(coreRepository.fetch(anyString())).thenReturn(mockModel);
 
         UUID organizationId = UUID.randomUUID();
         YtiUser mockUser = EndpointUtils.mockUser;
@@ -172,12 +188,12 @@ class ModelMapperTest {
     void testMapToUpdateJenaModel() {
         var m = MapperTestUtils.getModelFromFile("/test_datamodel_library.ttl");
 
-        when(jenaService.getDataModel("test")).thenReturn(m);
+        when(coreRepository.fetch("test")).thenReturn(m);
         var mockModel = ModelFactory.createDefaultModel();
         mockModel.createResource(defaultNamespace + "newint")
         		.addProperty(RDF.type, OWL.Ontology)
                 .addProperty(DCAP.preferredXMLNamespacePrefix, "test");
-        when(jenaService.getDataModel(anyString())).thenReturn(mockModel);
+        when(coreRepository.fetch(anyString())).thenReturn(mockModel);
 
         UUID organizationId = UUID.randomUUID();
         YtiUser mockUser = EndpointUtils.mockUser;
@@ -265,12 +281,12 @@ class ModelMapperTest {
     void testMapToUpdateModelProfile(){
         //Testing profile specific properties
         var m = MapperTestUtils.getModelFromFile("/test_datamodel_profile.ttl");
-        when(jenaService.getDataModel("test")).thenReturn(m);
+        when(coreRepository.fetch("test")).thenReturn(m);
         var mockModel = ModelFactory.createDefaultModel();
         mockModel.createResource("http://uri.suomi.fi/datamodel/ns/newint")
                 .addProperty(RDF.type, DCAP.DCAP)
                 .addProperty(DCAP.preferredXMLNamespacePrefix, "test");
-        when(jenaService.getDataModel(anyString())).thenReturn(mockModel);
+        when(coreRepository.fetch(anyString())).thenReturn(mockModel);
 
         YtiUser mockUser = EndpointUtils.mockUser;
 

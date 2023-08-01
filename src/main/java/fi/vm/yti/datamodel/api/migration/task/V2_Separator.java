@@ -1,6 +1,6 @@
 package fi.vm.yti.datamodel.api.migration.task;
 
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.migration.MigrationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +11,9 @@ public class V2_Separator implements MigrationTask {
 
     private static final Logger logger = LoggerFactory.getLogger(V2_Separator.class);
 
-    private final JenaService jenaService;
-
-    public V2_Separator(JenaService jenaService) {
-        this.jenaService = jenaService;
+    private final CoreRepository coreRepository;
+    public V2_Separator(CoreRepository coreRepository) {
+        this.coreRepository = coreRepository;
     }
 
     @Override
@@ -38,7 +37,7 @@ public class V2_Separator implements MigrationTask {
               }
             }
         """;
-        jenaService.sendUpdateStringQuery(query);
+        coreRepository.queryUpdate(query);
 
         var xmlNamespaceUpdateQuery = """
             DELETE{
@@ -58,7 +57,7 @@ public class V2_Separator implements MigrationTask {
              }
             }
         """;
-        jenaService.sendUpdateStringQuery(xmlNamespaceUpdateQuery);
+        coreRepository.queryUpdate(xmlNamespaceUpdateQuery);
 
         var updateSubjectQuery = """
             DELETE{
@@ -77,6 +76,6 @@ public class V2_Separator implements MigrationTask {
               }
             }
         """;
-        jenaService.sendUpdateStringQuery(updateSubjectQuery);
+        coreRepository.queryUpdate(updateSubjectQuery);
     }
 }

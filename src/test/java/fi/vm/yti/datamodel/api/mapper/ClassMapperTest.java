@@ -105,9 +105,9 @@ class ClassMapperTest {
         assertEquals(Status.VALID, dto.getStatus());
         assertEquals("TestClass", dto.getIdentifier());
         assertEquals(1, dto.getEquivalentClass().size());
-        assertEquals("http://uri.suomi.fi/datamodel/ns/test/EqClass", dto.getEquivalentClass().stream().findFirst().orElse(null));
+        assertEquals(new UriDTO("http://uri.suomi.fi/datamodel/ns/test/EqClass"), dto.getEquivalentClass().stream().findFirst().orElse(null));
         assertEquals(1, dto.getSubClassOf().size());
-        assertEquals("http://uri.suomi.fi/datamodel/ns/test/SubClass", dto.getSubClassOf().stream().findFirst().orElse(null));
+        assertEquals(new UriDTO("http://uri.suomi.fi/datamodel/ns/test/SubClass"), dto.getSubClassOf().stream().findFirst().orElse(null));
         assertEquals(1, dto.getLabel().size());
         assertEquals("test label", dto.getLabel().get("fi"));
         assertEquals("http://uri.suomi.fi/terminology/test/test1", dto.getSubject().getConceptURI());

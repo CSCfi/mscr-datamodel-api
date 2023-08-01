@@ -14,13 +14,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 
 @ExtendWith(SpringExtension.class)
 @Import({
 	SchemaService.class,
 	ClassMapper.class,
 	ResourceMapper.class,
-	JenaService.class
+	CoreRepository.class
 })
 public class SchemaServiceTest {
 
