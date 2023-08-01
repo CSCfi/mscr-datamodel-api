@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
@@ -70,12 +73,7 @@ public class Crosswalk {
 		this.userProvider = userProvider;
 	}
 	
-	@Operation(summary = "Create crosswalk")
-	@ApiResponse(responseCode = "200")
-	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path="/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public CrosswalkInfoDTO createCrosswalk(@RequestBody CrosswalkDTO dto) {
-		logger.info("Create Crosswalk {}", dto);
+	private CrosswalkInfoDTO createCrosswalkMetadata(CrosswalkDTO dto) {
 		check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));		
 		final String PID = PIDService.mint(PIDType.HANDLE);
 
@@ -89,13 +87,7 @@ public class Crosswalk {
 		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID));
 	}
 	
-	
-	@Operation(summary = "Upload and associate a crosswalk description file to an existing crosswalk")
-	@ApiResponse(responseCode = "200", description = "")
-	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public CrosswalkInfoDTO uploadSCrosswalkFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
-			@RequestParam("file") MultipartFile file) throws Exception {
+	private CrosswalkInfoDTO addFileToCrosswalk(String pid, String contentType, MultipartFile file) {
 		Model metadataModel = jenaService.getCrosswalk(pid);
 		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel);
 		check(authorizationManager.hasRightToModel(pid, metadataModel));
@@ -113,8 +105,49 @@ public class Crosswalk {
 			throw new RuntimeException("Error occured while ingesting file based crosswalk description", ex);
 		}
 		return mapper.mapToCrosswalkDTO(pid, metadataModel);
+	}
+	
+	@Operation(summary = "Create crosswalk")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public CrosswalkInfoDTO createCrosswalk(@RequestBody CrosswalkDTO dto) {
+		logger.info("Create Crosswalk {}", dto);
+		return createCrosswalkMetadata(dto);
+	}
+	
+	
+	@Operation(summary = "Upload and associate a crosswalk description file to an existing crosswalk")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public CrosswalkInfoDTO uploadSCrosswalkFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
+			@RequestParam("file") MultipartFile file) throws Exception {
+		return addFileToCrosswalk(pid, contentType, file);
 		
 	}
+	
+	@Operation(summary = "Create crosswalk by uploading metadata and files in one multipart request")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public CrosswalkInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
+			@RequestParam("file") MultipartFile file) {
+		
+		CrosswalkDTO dto = null;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			dto = mapper.readValue(metadataString, CrosswalkDTO.class);
+
+		}catch(Exception ex) {
+			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());
+			
+		}
+		logger.info("Create Crosswalk {}", dto);
+		CrosswalkInfoDTO infoDto = createCrosswalkMetadata(dto);
+		return addFileToCrosswalk(infoDto.getPID(), file.getContentType(), file);
+		
+	}	
 	
     @Operation(summary = "Modify crosswalk")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")

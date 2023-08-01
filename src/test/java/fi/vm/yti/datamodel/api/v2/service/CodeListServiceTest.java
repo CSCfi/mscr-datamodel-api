@@ -3,6 +3,7 @@ package fi.vm.yti.datamodel.api.v2.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.yti.datamodel.api.v2.dto.CodeListDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
+import fi.vm.yti.datamodel.api.v2.repository.SchemesRepository;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.vocabulary.RDFS;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class CodeListServiceTest {
     @Qualifier("uriResolveClient")
     private WebClient client;
     @MockBean
-    private JenaService jenaService;
+    private SchemesRepository schemesRepository;
     private final ObjectMapper mapper = new ObjectMapper();
     @Captor
     private ArgumentCaptor<String> stringCaptor;
@@ -57,7 +58,7 @@ class CodeListServiceTest {
 
         service.resolveCodelistScheme(Set.of(GRAPH));
 
-        verify(jenaService).putCodelistSchemeToSchemes(stringCaptor.capture(), modelCaptor.capture());
+        verify(schemesRepository).put(stringCaptor.capture(), modelCaptor.capture());
         var label = MapperUtils.localizedPropertyToMap(modelCaptor.getValue().getResource(GRAPH), RDFS.label);
 
         assertEquals(GRAPH, stringCaptor.getValue());
@@ -68,7 +69,7 @@ class CodeListServiceTest {
     void testTerminologyNotFound() {
         mockWebClient(null);
         service.resolveCodelistScheme(Set.of(GRAPH));
-        verifyNoInteractions(jenaService);
+        verifyNoInteractions(schemesRepository);
     }
 
     private void mockWebClient(CodeListDTO result) {

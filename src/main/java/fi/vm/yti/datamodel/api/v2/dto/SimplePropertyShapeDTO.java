@@ -8,6 +8,7 @@ public class SimplePropertyShapeDTO {
     private String modelId;
     private Map<String, String> label;
     private boolean deactivated;
+    private boolean fromShNode;
 
     public String getIdentifier() {
         return identifier;
@@ -47,5 +48,13 @@ public class SimplePropertyShapeDTO {
 
     public void setDeactivated(boolean deactivated) {
         this.deactivated = deactivated;
+    }
+
+    public boolean isFromShNode() {
+        return fromShNode;
+    }
+
+    public void setFromShNode(boolean fromShNode) {
+        this.fromShNode = fromShNode;
     }
 }

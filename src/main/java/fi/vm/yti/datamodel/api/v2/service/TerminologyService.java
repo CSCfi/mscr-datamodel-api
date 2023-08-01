@@ -1,10 +1,19 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import fi.vm.yti.datamodel.api.v2.dto.ConceptDTO;
+import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceInfoBaseDTO;
 import fi.vm.yti.datamodel.api.v2.dto.TerminologyNodeDTO;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResolvingException;
 import fi.vm.yti.datamodel.api.v2.mapper.TerminologyMapper;
+import fi.vm.yti.datamodel.api.v2.repository.ConceptRepository;
+import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.SKOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,12 +39,12 @@ public class TerminologyService {
     @Value("${env:}")
     private String awsEnv;
     private final WebClient client;
-    private final JenaService jenaService;
+    private final ConceptRepository conceptRepository;
 
     public TerminologyService(
             @Qualifier("uriResolveClient") WebClient webClient,
-            JenaService jenaService) {
-        this.jenaService = jenaService;
+            ConceptRepository conceptRepository) {
+        this.conceptRepository = conceptRepository;
         this.client = webClient;
     }
 
@@ -69,7 +78,7 @@ public class TerminologyService {
 
                 if (node.isPresent()) {
                     var model = TerminologyMapper.mapTerminologyToJenaModel(u, node.get());
-                    jenaService.putTerminologyToConcepts(uri.toString(), model);
+                    conceptRepository.put(uri.toString(), model);
                 } else {
                     LOG.warn("Could not find node with type TerminologicalVocabulary from {}", uri);
                 }
@@ -105,7 +114,7 @@ public class TerminologyService {
         }
 
         var terminologyURI = conceptURI.substring(0, conceptURI.lastIndexOf("/"));
-        var terminologyModel = jenaService.getTerminology(terminologyURI);
+        var terminologyModel = conceptRepository.fetch(terminologyURI);
         if (terminologyModel == null) {
             LOG.warn("Terminology {} not added to model", terminologyURI);
             throw new ResolvingException("Terminology not added to the model",
@@ -115,7 +124,7 @@ public class TerminologyService {
         TerminologyMapper.mapConceptToTerminologyModel(terminologyModel, terminologyURI,
                 conceptURI, result.get(0));
 
-        jenaService.putTerminologyToConcepts(terminologyURI, terminologyModel);
+        conceptRepository.put(terminologyURI, terminologyModel);
     }
 
     public Consumer<ResourceInfoBaseDTO> mapConcept() {
@@ -126,8 +135,41 @@ public class TerminologyService {
         if (dto == null || dto.getConceptURI() == null || dto.getConceptURI().isEmpty()) {
             return null;
         }
-        var conceptModel = jenaService.getConcept(dto.getConceptURI());
+        var conceptModel = getConcept(dto.getConceptURI());
         return TerminologyMapper.mapToConceptDTO(conceptModel, dto.getConceptURI());
+    }
+
+    public Model getConcept(String conceptURI) {
+        var builder = new ConstructBuilder();
+        var res = ResourceFactory.createResource(conceptURI);
+
+        var label = "?label";
+        var inScheme = "?inScheme";
+        var definition = "?definition";
+        var terminologyLabel = "?terminologyLabel";
+        var status = "?status";
+
+        builder.addPrefixes(ModelConstants.PREFIXES)
+                .addConstruct(res, SKOS.prefLabel, label)
+                .addConstruct(res, SKOS.inScheme, inScheme)
+                .addConstruct(res, SKOS.definition, definition)
+                .addConstruct(res, OWL.versionInfo, status)
+                .addConstruct(res, RDFS.label, terminologyLabel)
+                .addWhere(res, SKOS.prefLabel, label)
+                .addWhere(res, SKOS.inScheme, inScheme)
+                .addOptional(res, SKOS.definition, definition)
+                .addWhere(res, OWL.versionInfo, status)
+                .addWhere(inScheme, RDFS.label, terminologyLabel);
+
+        return conceptRepository.queryConstruct(builder.build());
+    }
+
+    public Model getAllConcepts() {
+        var builder = new ConstructBuilder().addPrefixes(ModelConstants.PREFIXES);
+        SparqlUtils.addConstructProperty("?concept", builder, SKOS.prefLabel, "?label");
+        SparqlUtils.addConstructProperty("?concept", builder, SKOS.inScheme, "?terminology");
+        SparqlUtils.addConstructProperty("?terminology", builder, RDFS.label, "?terminologyLabel");
+        return conceptRepository.queryConstruct(builder.build());
     }
 
 }

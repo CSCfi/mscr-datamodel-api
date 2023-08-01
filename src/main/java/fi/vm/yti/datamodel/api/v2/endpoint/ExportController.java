@@ -1,31 +1,13 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
-import fi.vm.yti.datamodel.api.security.AuthorizationManager;
-import fi.vm.yti.datamodel.api.v2.dto.DCAP;
-import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
-import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
-import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.DataModelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.SimpleSelector;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.SKOS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.StringWriter;
-import java.util.List;
 
 @RestController
 @RequestMapping("v2/export")
@@ -33,17 +15,10 @@ import java.util.List;
 @Validated
 public class ExportController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExportController.class);
-    private final JenaService jenaService;
-    private final AuthorizationManager authorizationManager;
-    private final String defaultNamespace;
+    private final DataModelService dataModelService;
 
-    public ExportController(JenaService jenaService,
-                            AuthorizationManager authorizationManager,
-                            @Value("${defaultNamespace}") String defaultNamespace) {
-        this.jenaService = jenaService;
-        this.authorizationManager = authorizationManager;
-        this.defaultNamespace = defaultNamespace;
+    public ExportController(DataModelService dataModelService) {
+        this.dataModelService = dataModelService;
     }
 
     @Operation(summary = "Get a datamodel or a single resource serialized")
@@ -54,78 +29,6 @@ public class ExportController {
     public ResponseEntity<String> export(@PathVariable String prefix,
                                          @PathVariable(required = false) String resource,
                                          @RequestHeader(value = HttpHeaders.ACCEPT) String accept){
-        var modelURI = this.defaultNamespace + prefix;
-        LOG.info("Exporting datamodel {}, {}", modelURI, accept);
-
-        Model exportedModel;
-        Model model;
-
-        try {
-            model = jenaService.getDataModel(modelURI);
-        } catch (ResourceNotFoundException e) {
-            // cannot throw ResourceNotFoundException because accept header is not application/json
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            LOG.error("Error exporting datamodel", e);
-            return ResponseEntity.internalServerError().build();
-        }
-
-        if (resource != null) {
-            var res = model.getResource(modelURI + ModelConstants.RESOURCE_SEPARATOR + resource);
-            var properties = res.listProperties();
-            if (!properties.hasNext()) {
-                return ResponseEntity.notFound().build();
-            }
-            exportedModel = properties.toModel();
-        } else {
-            exportedModel = model;
-        }
-
-        addNsPrefixes(modelURI, exportedModel);
-
-        // remove editorial notes from resources
-        if (!authorizationManager.hasRightToModel(prefix, model)) {
-            var hiddenValues = model.listStatements(
-                    new SimpleSelector(null, SKOS.editorialNote, (String) null)).toList();
-            exportedModel.remove(hiddenValues);
-        }
-
-        var stringWriter = new StringWriter();
-        switch (accept) {
-            case "text/turtle":
-                RDFDataMgr.write(stringWriter, exportedModel, Lang.TURTLE);
-                break;
-            case "application/rdf+xml":
-                RDFDataMgr.write(stringWriter, exportedModel, Lang.RDFXML);
-                break;
-            case "application/ld+json":
-            default:
-                RDFDataMgr.write(stringWriter, exportedModel, Lang.JSONLD);
-        }
-        return ResponseEntity.ok().body(stringWriter.toString());
-    }
-
-    private void addNsPrefixes(String modelURI, Model model) {
-        model.setNsPrefixes(ModelConstants.PREFIXES);
-        model.setNsPrefix(MapperUtils.getModelIdFromNamespace(modelURI), modelURI + ModelConstants.RESOURCE_SEPARATOR);
-
-        var modelResource = model.getResource(modelURI);
-
-        List.of(OWL.imports, DCTerms.requires).forEach(property ->
-            modelResource.listProperties(property).forEach(res -> {
-                var uri = res.getObject().toString();
-                if (uri.startsWith(defaultNamespace)) {
-                    var prefix = MapperUtils.getModelIdFromNamespace(uri);
-                    model.setNsPrefix(prefix, uri + ModelConstants.RESOURCE_SEPARATOR);
-                } else if (!uri.contains("uri.suomi.fi")) {
-                    // handle external namespaces, skip for now terminologies and code lists
-                    var extResource = model.getResource(uri);
-                    var extPrefix = MapperUtils.propertyToString(extResource, DCAP.preferredXMLNamespacePrefix);
-                    if (extPrefix != null) {
-                        model.setNsPrefix(extPrefix, uri);
-                    }
-                }
-            })
-        );
+        return dataModelService.export(prefix, resource, accept);
     }
 }

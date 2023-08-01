@@ -30,10 +30,22 @@
           }
         },
         {
-          "terms": {
-            "isDefinedBy": [
-              "http://uri.suomi.fi/datamodel/ns/addedNs",
-              "http://external-data.com/test"
+          "bool": {
+            "should": [
+              {
+                "terms": {
+                  "isDefinedBy": [
+                    "http://uri.suomi.fi/datamodel/ns/addedNs",
+                    "http://external-data.com/test",
+                    "http://uri.suomi.fi/datamodel/ns/test"
+                  ]
+                }
+              },
+              {
+                "terms": {
+                  "id": []
+                }
+              }
             ]
           }
         }

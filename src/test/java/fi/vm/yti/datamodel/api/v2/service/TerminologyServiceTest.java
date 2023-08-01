@@ -3,6 +3,7 @@ package fi.vm.yti.datamodel.api.v2.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.yti.datamodel.api.v2.dto.TerminologyNodeDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
+import fi.vm.yti.datamodel.api.v2.repository.ConceptRepository;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.RDFS;
@@ -40,8 +41,9 @@ class TerminologyServiceTest {
     @MockBean
     @Qualifier("uriResolveClient")
     private WebClient client;
+
     @MockBean
-    private JenaService jenaService;
+    private ConceptRepository conceptRepository;
     private final ObjectMapper mapper = new ObjectMapper();
     @Captor
     private ArgumentCaptor<String> stringCaptor;
@@ -62,7 +64,7 @@ class TerminologyServiceTest {
 
         service.resolveTerminology(Set.of(GRAPH));
 
-        verify(jenaService).putTerminologyToConcepts(stringCaptor.capture(), modelCaptor.capture());
+        verify(conceptRepository).put(stringCaptor.capture(), modelCaptor.capture());
         var label = MapperUtils.localizedPropertyToMap(modelCaptor.getValue().getResource(GRAPH), RDFS.label);
 
         assertEquals(GRAPH, stringCaptor.getValue());
@@ -73,7 +75,7 @@ class TerminologyServiceTest {
     void testTerminologyNotFound() {
         mockWebClient(null);
         service.resolveTerminology(Set.of(GRAPH));
-        verifyNoInteractions(jenaService);
+        verifyNoInteractions(conceptRepository);
     }
 
     @Test
@@ -83,10 +85,10 @@ class TerminologyServiceTest {
         var terminologyData = Arrays.asList(mapper.readValue(stream, TerminologyNodeDTO[].class));
         mockWebClient(terminologyData);
 
-        when(jenaService.getTerminology(GRAPH)).thenReturn(ModelFactory.createDefaultModel());
+        when(conceptRepository.fetch(GRAPH)).thenReturn(ModelFactory.createDefaultModel());
 
         service.resolveConcept(CONCEPT_URI);
-        verify(jenaService).putTerminologyToConcepts(stringCaptor.capture(), modelCaptor.capture());
+        verify(conceptRepository).put(stringCaptor.capture(), modelCaptor.capture());
 
         var model = modelCaptor.getValue();
         var conceptResource = model.getResource(CONCEPT_URI);

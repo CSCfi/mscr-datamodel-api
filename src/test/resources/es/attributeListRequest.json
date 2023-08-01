@@ -1,0 +1,60 @@
+{
+  "from": 1,
+  "size": 100,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "bool": {
+            "should": [
+              {
+                "terms": {
+                  "isDefinedBy": [
+                    "http://uri.suomi.fi/datamodel/ns/test"
+                  ]
+                }
+              },
+              {
+                "terms": {
+                  "id": [
+                    "http://uri.suomi.fi/datamodel/ns/ext/some-property"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "terms": {
+            "resourceType": [
+              "ATTRIBUTE"
+            ]
+          }
+        }
+      ],
+      "should": [
+        {
+          "bool": {
+            "must_not": [
+              {
+                "term": {
+                  "status": {
+                    "value": "INCOMPLETE"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "label.fi.keyword": {
+        "order": "asc",
+        "unmapped_type": "keyword"
+      }
+    }
+  ]
+}

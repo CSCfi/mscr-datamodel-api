@@ -1,0 +1,20 @@
+@prefix dcterms:    <http://purl.org/dc/terms/> .
+@prefix iow:        <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix visuprof:   <http://uri.suomi.fi/datamodel/positions/visuprof/> .
+
+visuprof:person
+        dcterms:identifier      "person" ;
+        iow:posX                "1.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        iow:posY                "2.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        iow:referenceTarget     "corner-1" .
+
+visuprof:address
+        dcterms:identifier      "address" ;
+        iow:posX                "10.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        iow:posY                "20.0"^^<http://www.w3.org/2001/XMLSchema#double> .
+
+visuprof:corner-1
+        dcterms:identifier      "corner-1" ;
+        iow:posX                "6.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        iow:posY                "7.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        iow:referenceTarget     "address" .

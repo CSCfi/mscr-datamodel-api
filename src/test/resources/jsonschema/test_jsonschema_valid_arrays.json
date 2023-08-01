@@ -1,0 +1,51 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "description" : "arrays",
+  "type" : "object",
+  "properties" : {
+    "firstName" : {
+      "type" : "string"
+    },
+    "lastNames" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "addresses" : {
+      "type" : "array",
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "street" : {
+            "type" : "string"
+          },
+          "numbers" : {
+            "type" : "array",
+            "items" : {
+              "type" : "number"
+            },
+            "minItems" : 2
+          },
+          "city" : {
+            "type" : "object",
+            "properties" : {
+              "population" : {
+                "type" : "integer"
+              },
+              "area_codes" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "integer"
+                },
+                "maxItems" : 10,
+                "minItems" : 1
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties" : false
+}

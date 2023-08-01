@@ -4,29 +4,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
 
-public class VisualizationClassDTO {
-    private String identifier;
-    private Map<String, String> label = Map.of();
+public class VisualizationClassDTO extends VisualizationItemDTO {
+
     private Set<String> parentClasses = new HashSet<>();
     private PositionDTO position = new PositionDTO(0.0, 0.0);
     private List<VisualizationAttributeDTO> attributes = new ArrayList<>();
     private List<VisualizationAssociationDTO> associations = new ArrayList<>();
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public Map<String, String> getLabel() {
-        return label;
-    }
-
-    public void setLabel(Map<String, String> label) {
-        this.label = label;
-    }
 
     public PositionDTO getPosition() {
         return position;
@@ -63,6 +46,14 @@ public class VisualizationClassDTO {
 
     public void setParentClasses(Set<String> parentClasses) {
         this.parentClasses = parentClasses;
+    }
+
+    public void addAttribute(VisualizationAttributeDTO dto) {
+        this.attributes.add(dto);
+    }
+
+    public void addAssociation(VisualizationAssociationDTO dto) {
+        this.associations.add(dto);
     }
 
 }

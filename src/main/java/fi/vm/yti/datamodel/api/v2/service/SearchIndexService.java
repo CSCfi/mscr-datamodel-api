@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.service;
 
 import fi.vm.yti.datamodel.api.index.OpenSearchConnector;
 import fi.vm.yti.datamodel.api.v2.dto.ModelType;
+import fi.vm.yti.datamodel.api.v2.dto.ResourceType;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.OpenSearchException;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
@@ -11,19 +12,30 @@ import fi.vm.yti.datamodel.api.v2.opensearch.dto.ModelSearchRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ResourceSearchRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.SearchResponseDTO;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.*;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.*;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexModel;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResource;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.CountQueryFactory;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.CrosswalkQueryFactory;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.ModelQueryFactory;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.QueryFactoryUtils;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.ResourceQueryFactory;
-import fi.vm.yti.security.Role;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.security.YtiUser;
+import org.apache.jena.arq.querybuilder.ExprFactory;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.jetbrains.annotations.NotNull;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.stereotype.Service;
+import org.topbraid.shacl.vocabulary.SH;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,21 +46,25 @@ public class SearchIndexService {
 
     private final OpenSearchClient client;
     private final GroupManagementService groupManagementService;
-    private final JenaService jenaService;
+    private final TerminologyService terminologyService;
+    private final CoreRepository coreRepository;
 
     public SearchIndexService(OpenSearchConnector openSearchConnector,
-                              GroupManagementService groupManagementService, JenaService jenaService) {
+                              GroupManagementService groupManagementService,
+                              TerminologyService terminologyService,
+                              CoreRepository coreRepository) {
         this.client = openSearchConnector.getClient();
         this.groupManagementService = groupManagementService;
-        this.jenaService = jenaService;
+        this.terminologyService = terminologyService;
+        this.coreRepository = coreRepository;
     }
 
     /**
      * List counts of data model grouped by different search results
      * @return response containing counts for data models
      */
-    public CountSearchResponse getCounts() {
-        var query = CountQueryFactory.createModelQuery();
+    public CountSearchResponse getCounts(CountRequest searchRequest) {
+        var query = CountQueryFactory.createModelQuery(searchRequest);
         try {
             var response = client.search(query, IndexModel.class);
             return CountQueryFactory.parseResponse(response);
@@ -83,7 +99,7 @@ public class SearchIndexService {
 
     public SearchResponseDTO<IndexResource> searchInternalResources(ResourceSearchRequest request, YtiUser user) throws IOException {
         Set<String> allowedDatamodels = new HashSet<>();
-        if(!user.isSuperuser()){
+        if(!user.isSuperuser()) {
                 var organizations = getOrganizationsForUser(user);
                 var modelRequest = new ModelSearchRequest();
                 modelRequest.setPageSize(QueryFactoryUtils.INTERNAL_SEARCH_PAGE_SIZE);
@@ -94,6 +110,38 @@ public class SearchIndexService {
                 allowedDatamodels = response.hits().hits().stream()
                         .filter(hit -> hit.source() != null)
                         .map(hit -> hit.source().getId()).collect(Collectors.toSet());
+        }
+
+        // Add resources from other models to the search request. Used in attribute / association lists
+        if (request.getLimitToDataModel() != null
+                && !request.isFromAddedNamespaces()
+                && request.getResourceTypes() != null
+                && !request.getResourceTypes().contains(ResourceType.CLASS)) {
+            ExprFactory exprFactory = new ExprFactory();
+            var graph = request.getLimitToDataModel();
+
+            Resource resourceType = null;
+            if (request.getResourceTypes().contains(ResourceType.ATTRIBUTE)) {
+                resourceType = OWL.DatatypeProperty;
+            } else if (request.getResourceTypes().contains(ResourceType.ASSOCIATION)) {
+                resourceType = OWL.ObjectProperty;
+            }
+            var propertyVar = "?property";
+            var select = new SelectBuilder()
+                    .addVar(propertyVar)
+                    .addWhere(new WhereBuilder()
+                            .addGraph(NodeFactory.createURI(graph), new WhereBuilder()
+                                    .addWhere("?subj", SH.property, propertyVar))
+                            .addFilter(exprFactory
+                                    .not(exprFactory.strstarts(exprFactory.str(propertyVar), graph))));
+
+            if (resourceType != null) {
+                select.addWhere(new WhereBuilder()
+                        .addWhere(propertyVar, "a", resourceType));
+            }
+            var externalResources = new HashSet<String>();
+            coreRepository.querySelect(select.build(), (var row) -> externalResources.add(row.get("property").toString()));
+            request.setAdditionalResources(externalResources);
         }
         return searchInternalResources(request, allowedDatamodels);
     }
@@ -107,7 +155,7 @@ public class SearchIndexService {
 
         searchModels(modelRequest, user).getResponseObjects()
                 .forEach(o -> dataModels.put(o.getId(), o));
-        var concepts = jenaService.getAllConcepts();
+        var concepts = terminologyService.getAllConcepts();
 
         var response = new SearchResponseDTO<IndexResourceInfo>();
         response.setTotalHitCount(dto.getTotalHitCount());
@@ -190,14 +238,14 @@ public class SearchIndexService {
     }
 
     private void getNamespacesFromModel(String modelUri, List<String> namespaces){
-        var model = jenaService.getDataModel(modelUri);
+        var model = coreRepository.fetch(modelUri);
         var resource = model.getResource(modelUri);
         namespaces.addAll(MapperUtils.arrayPropertyToList(resource, OWL.imports));
         namespaces.addAll(MapperUtils.arrayPropertyToList(resource, DCTerms.requires));
     }
 
     private Set<UUID> getOrganizationsForUser(YtiUser user){
-        final Map<UUID, Set<Role>> rolesInOrganizations = user.getRolesInOrganizations();
+        final var rolesInOrganizations = user.getRolesInOrganizations();
 
         var orgIds = new HashSet<>(rolesInOrganizations.keySet());
 

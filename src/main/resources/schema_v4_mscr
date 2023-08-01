@@ -40,11 +40,6 @@
             "type": "string"
         },
         "default": {},
-        "multipleOf": {
-            "type": "number",
-            "minimum": 0,
-            "exclusiveMinimum": true
-        },
         "maximum": {
             "type": "number"
         },
@@ -65,13 +60,6 @@
             "type": "string",
             "format": "regex"
         },
-        "additionalItems": {
-            "anyOf": [
-                { "type": "boolean" },
-                { "$ref": "#" }
-            ],
-            "default": {}
-        },
         "items": {
             "anyOf": [
                 { "$ref": "#" },
@@ -81,12 +69,6 @@
         },
         "maxItems": { "$ref": "#/definitions/positiveInteger" },
         "minItems": { "$ref": "#/definitions/positiveIntegerDefault0" },
-        "uniqueItems": {
-            "type": "boolean",
-            "default": false
-        },
-        "maxProperties": { "$ref": "#/definitions/positiveInteger" },
-        "minProperties": { "$ref": "#/definitions/positiveIntegerDefault0" },
         "required": { "$ref": "#/definitions/stringArray" },
         "additionalProperties": {
             "anyOf": [
@@ -105,20 +87,6 @@
             "additionalProperties": { "$ref": "#" },
             "default": {}
         },
-        "patternProperties": {
-            "type": "object",
-            "additionalProperties": { "$ref": "#" },
-            "default": {}
-        },
-        "dependencies": {
-            "type": "object",
-            "additionalProperties": {
-                "anyOf": [
-                    { "$ref": "#" },
-                    { "$ref": "#/definitions/stringArray" }
-                ]
-            }
-        },
         "enum": {
             "type": "array",
             "minItems": 1,
@@ -135,15 +103,15 @@
                 }
             ]
         },
-        "format": { "type": "string" },
-        "allOf": { "$ref": "#/definitions/schemaArray" },
         "anyOf": { "$ref": "#/definitions/schemaArray" },
-        "oneOf": { "$ref": "#/definitions/schemaArray" },
-        "not": { "$ref": "#" }
+        "allOf": { "$ref": "#/definitions/schemaArray" },
+        "format": { "type": "string" },
+        "not": { "$ref": "#" } 
     },
     "dependencies": {
         "exclusiveMaximum": [ "maximum" ],
         "exclusiveMinimum": [ "minimum" ]
     },
-    "default": {}
+    "default": {},
+    "additionalProperties": false
 }

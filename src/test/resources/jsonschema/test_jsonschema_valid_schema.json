@@ -1,0 +1,59 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "type" : "object",
+  "properties" : {
+    "$schema" : {
+      "type" : "string"
+    },
+    "string_type" : {
+      "type": "string",
+      "description": "01_string_description"
+    },
+    "number_type" : {
+      "type": "number",
+      "minimum": 3,
+      "exclusiveMinimum": false
+    },
+    "integer_type" : {
+      "type": "integer",
+      "minimum": 2
+    },
+    "boolean_type" : {
+      "type": "boolean"
+    },
+    "null_type" : {
+      "type": "null"
+    },
+    "object_type" : {
+      "title": "OBJECT TYPE",
+      "type": "object",
+      "properties" : {
+        "string_property" : {
+          "title" : "string_prop",
+          "type" : "string"
+        }
+     },
+     "required": ["string_property"]
+   },
+    "array_string_type" : {
+      "type": "array",
+      "maxItems": 5,
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "object_arrays_type" : {
+      "type": "object",
+      "properties" : {
+        "array_property" : {
+          "title" : "array_prop",
+          "type" : "array",
+          "items": {
+            "type": "number"
+          }
+        }
+     }
+    }
+  },
+  "additionalProperties" : false
+}

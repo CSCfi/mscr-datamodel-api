@@ -13,6 +13,7 @@ public class ResourceSearchRequest extends BaseSearchRequest{
     private Set<ResourceType> resourceTypes;
     private ModelType limitToModelType;
     private String targetClass;
+    private Set<String> additionalResources;
 
     public String getLimitToDataModel() {
         return limitToDataModel;
@@ -60,5 +61,13 @@ public class ResourceSearchRequest extends BaseSearchRequest{
 
     public void setTargetClass(String targetClass) {
         this.targetClass = targetClass;
+    }
+
+    public Set<String> getAdditionalResources() {
+        return additionalResources;
+    }
+
+    public void setAdditionalResources(Set<String> additionalResources) {
+        this.additionalResources = additionalResources;
     }
 }

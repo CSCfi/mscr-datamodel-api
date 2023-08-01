@@ -6,8 +6,8 @@ import java.util.List;
 public class PropertyShapeInfoDTO extends ResourceInfoBaseDTO {
 
     private ResourceType type;
-    private String path;
-    private String classType;
+    private UriDTO path;
+    private UriDTO classType;
     private String dataType;
     private List<String> allowedValues = new ArrayList<>();
     private String defaultValue;
@@ -16,6 +16,11 @@ public class PropertyShapeInfoDTO extends ResourceInfoBaseDTO {
     private Integer minLength;
     private Integer maxCount;
     private Integer minCount;
+    private Integer minInclusive;
+    private Integer maxInclusive;
+    private Integer minExclusive;
+    private Integer maxExclusive;
+    private String codeList;
 
     public ResourceType getType() {
         return type;
@@ -25,19 +30,19 @@ public class PropertyShapeInfoDTO extends ResourceInfoBaseDTO {
         this.type = type;
     }
 
-    public String getPath() {
+    public UriDTO getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    public void setPath(UriDTO path) {
         this.path = path;
     }
 
-    public String getClassType() {
+    public UriDTO getClassType() {
         return classType;
     }
 
-    public void setClassType(String classType) {
+    public void setClassType(UriDTO classType) {
         this.classType = classType;
     }
 
@@ -103,5 +108,45 @@ public class PropertyShapeInfoDTO extends ResourceInfoBaseDTO {
 
     public void setMinCount(Integer minCount) {
         this.minCount = minCount;
+    }
+
+    public Integer getMinInclusive() {
+        return minInclusive;
+    }
+
+    public void setMinInclusive(Integer minInclusive) {
+        this.minInclusive = minInclusive;
+    }
+
+    public Integer getMaxInclusive() {
+        return maxInclusive;
+    }
+
+    public void setMaxInclusive(Integer maxInclusive) {
+        this.maxInclusive = maxInclusive;
+    }
+
+    public Integer getMinExclusive() {
+        return minExclusive;
+    }
+
+    public void setMinExclusive(Integer minExclusive) {
+        this.minExclusive = minExclusive;
+    }
+
+    public Integer getMaxExclusive() {
+        return maxExclusive;
+    }
+
+    public void setMaxExclusive(Integer maxExclusive) {
+        this.maxExclusive = maxExclusive;
+    }
+
+    public String getCodeList() {
+        return codeList;
+    }
+
+    public void setCodeList(String codeList) {
+        this.codeList = codeList;
     }
 }

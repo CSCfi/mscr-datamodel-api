@@ -1,0 +1,33 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "description" : "arrays",
+  "type" : "object",
+  "properties" : {
+    "minNumber" : {
+      "type" : "number",
+      "minimum" : 10
+    },
+    "maxNumber" : {
+      "type" : "number",
+      "maximum" : 100
+    },
+    "numberRange" : {
+      "type" : "number",
+      "minimum" : 10.2,
+      "maximum" : 100.1
+    },
+    "minNumberEx" : {
+      "type" : "number",
+      "exclusiveMinimum" : 10
+    },
+    "maxNumberEx" : {
+      "type" : "number",
+      "exclusiveMaximum" : 100
+    },
+    "numberRangeEx" : {
+      "type" : "number",
+      "exclusiveMinimum" : 10,
+      "exclusiveMaximum" : 100
+    }    
+  }
+}

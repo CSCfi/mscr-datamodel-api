@@ -1,10 +1,10 @@
 {
   "id": "http://json-schema.org/draft-04/schema#",
-  "$schema": "http://json-fsdfs.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "type" : "integer",
   "properties" : {
     "creators" : {
-      "type" : "string"
+      "type" : "not_type"
     },
     "titles" : {
       "title" : "Titles",
@@ -19,8 +19,7 @@
         "additionalProperties" : false,
         "required" : [ "title" ]
       },
-      "minItems" : 1,
-      "uniqueItems" : true
+      "minItems" : 1
     },
     "publication_date" : {
       "type" : "string",
@@ -30,8 +29,7 @@
       "type" : "array",
       "items" : {
         "type" : "string"
-      },
-      "uniqueItems" : true
+      }      
     },
     "language" : {
       "type" : "string"
@@ -51,8 +49,7 @@
         },
         "additionalProperties" : false,
         "required" : [ "description", "description_type" ]
-      },
-      "uniqueItems" : true
+      }
     },
     "contact_email" : {
       "type" : "string",
@@ -95,11 +92,5 @@
     }
   },
   "required" : [ "community", "titles", "open_access", "publication_state", "community_specific" ],
-  "additionalProperties" : false,
-  "b2share" : {
-    "presentation" : {
-      "major" : [ "community", "titles", "descriptions", "creators", "open_access", "embargo_date", "license", "disciplines", "keywords", "contact_email" ],
-      "minor" : [ "contributors", "resource_types", "alternate_identifiers", "version", "publisher", "language" ]
-    }
-  }
+  "additionalProperties" : false
 }

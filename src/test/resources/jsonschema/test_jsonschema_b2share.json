@@ -61,7 +61,7 @@
     "keywords" : {
       "title" : "Keywords",
       "description" : "A list of keywords or key phrases describing the resource.",
-      "type" : "array",
+      "type": "array",
       "items" : {
         "type" : "string"
       },

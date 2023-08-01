@@ -1,8 +1,10 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
-import fi.vm.yti.datamodel.api.v2.opensearch.dto.ResourceSearchRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.CountRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ModelSearchRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.ResourceSearchRequest;
 import fi.vm.yti.datamodel.api.v2.service.FrontendService;
+import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
 import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.datamodel.api.v2.validator.ExceptionHandlerAdvice;
 import fi.vm.yti.security.AuthenticatedUserProvider;
@@ -18,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(properties = {
@@ -40,7 +42,8 @@ class FrontendControllerTest {
     FrontendService frontendService;
     @MockBean
     AuthenticatedUserProvider userProvider;
-
+    @MockBean
+    NamespaceService namespaceService;
 
     @BeforeEach
     void init () {
@@ -57,12 +60,12 @@ class FrontendControllerTest {
         this.mvc.perform(get("/v2/frontend/counts")
                         .contentType("application/json"))
                 .andExpect(status().isOk());
-        verify(searchIndexService).getCounts();
+        verify(searchIndexService).getCounts(any(CountRequest.class));
     }
 
     @Test
     void searchInternalResourcesTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/searchInternalResources")
+        this.mvc.perform(get("/v2/frontend/search-internal-resources")
                             .contentType("application/json")
                         .content(EndpointUtils.convertObjectToJsonString(new ResourceSearchRequest())))
                         .andExpect(status().isOk());
@@ -72,7 +75,7 @@ class FrontendControllerTest {
 
     @Test
     void searchInternalResourcesInfoTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/searchInternalResourcesInfo")
+        this.mvc.perform(get("/v2/frontend/search-internal-resources-info")
                         .contentType("application/json")
                         .content(EndpointUtils.convertObjectToJsonString(new ResourceSearchRequest())))
                 .andExpect(status().isOk());
@@ -82,7 +85,7 @@ class FrontendControllerTest {
 
     @Test
     void searchModelsTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/searchModels")
+        this.mvc.perform(get("/v2/frontend/search-models")
                         .contentType("application/json")
                         .content(EndpointUtils.convertObjectToJsonString(new ModelSearchRequest())))
                 .andExpect(status().isOk());
@@ -91,12 +94,12 @@ class FrontendControllerTest {
 
     @Test
     void getServiceCategories() throws Exception {
-        this.mvc.perform(get("/v2/frontend/serviceCategories")
+        this.mvc.perform(get("/v2/frontend/service-categories")
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         verify(frontendService).getServiceCategories("fi");
 
-        this.mvc.perform(get("/v2/frontend/serviceCategories")
+        this.mvc.perform(get("/v2/frontend/service-categories")
                         .param("sortLang", "en")
                         .contentType("application/json"))
                 .andExpect(status().isOk());
@@ -121,6 +124,14 @@ class FrontendControllerTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         verify(frontendService).getOrganizations(anyString(), eq(true));
+    }
+
+    @Test
+    void getNamespacesTest() throws Exception {
+        this.mvc.perform(get("/v2/frontend/namespaces")
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+        verify(namespaceService).getResolvedNamespaces();
     }
 
 }

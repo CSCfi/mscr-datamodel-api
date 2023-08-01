@@ -1,7 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.validator;
 
 import fi.vm.yti.datamodel.api.v2.dto.ClassDTO;
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.repository.ImportsRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.jena.graph.NodeFactory;
@@ -11,7 +11,7 @@ public class ClassValidator extends BaseValidator implements
         ConstraintValidator<ValidClass, ClassDTO> {
 
     @Autowired
-    private JenaService jenaService;
+    private ImportsRepository importsRepository;
 
     boolean updateClass;
 
@@ -32,6 +32,7 @@ public class ClassValidator extends BaseValidator implements
         checkSubClassOf(context, classDTO);
         checkSubject(context, classDTO);
         checkPrefixOrIdentifier(context, classDTO.getIdentifier(), "identifier", ValidationConstants.RESOURCE_IDENTIFIER_MAX_LENGTH, updateClass);
+        checkReservedIdentifier(context, classDTO);
 
         return !isConstraintViolationAdded();
     }
@@ -42,8 +43,8 @@ public class ClassValidator extends BaseValidator implements
             equivalentClass.forEach(eqClass -> {
                 var asUri = NodeFactory.createURI(eqClass);
                 //if namespace is resolvable make sure class can be found in resolved namespace
-                if(jenaService.doesResolvedNamespaceExist(asUri.getNameSpace())
-                        && jenaService.doesResourceExistInImportedNamespace(asUri.getNameSpace(), asUri.getURI())){
+                if(importsRepository.graphExists(asUri.getNameSpace())
+                        && !importsRepository.resourceExistsInGraph(asUri.getNameSpace(), asUri.getURI())){
                     addConstraintViolation(context, "class-not-found-in-resolved-namespace", "eqClass");
                 }
             });
@@ -56,8 +57,8 @@ public class ClassValidator extends BaseValidator implements
             subClassOf.forEach(subClass -> {
                 var asUri = NodeFactory.createURI(subClass);
                 //if namespace is resolvable make sure class can be found in resolved namespace
-                if(jenaService.doesResolvedNamespaceExist(asUri.getNameSpace())
-                        && jenaService.doesResourceExistInImportedNamespace(asUri.getNameSpace(), asUri.getURI())){
+                if(importsRepository.graphExists(asUri.getNameSpace())
+                        && !importsRepository.resourceExistsInGraph(asUri.getNameSpace(), asUri.getURI())){
                     addConstraintViolation(context, "class-not-found-in-resolved-namespace", "subClassOf");
                 }
             });

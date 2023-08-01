@@ -1,8 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import fi.vm.yti.datamodel.api.mapper.MapperTestUtils;
-import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
-import fi.vm.yti.datamodel.api.v2.mapper.ModelMapper;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,31 +12,27 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @Import({
         FrontendService.class,
-        ModelMapper.class,
-        ModelConstants.class
 })
 class FrontendServiceTest {
 
     @MockBean
-    private JenaService jenaService;
+    private CoreRepository coreRepository;
 
     @Autowired
     FrontendService service;
-    @Autowired
-    ModelConstants modelConstants;
 
     @Test
     void testOrganizations() {
         var model = MapperTestUtils.getModelFromFile("/organizations.ttl");
         String sortLanguage = "en";
 
-        when(jenaService.getOrganizations()).thenReturn(model);
+        when(coreRepository.getOrganizations()).thenReturn(model);
 
         var organizations = service.getOrganizations(sortLanguage, false);
         var orgNames = organizations.stream()
@@ -53,7 +48,7 @@ class FrontendServiceTest {
         var model = MapperTestUtils.getModelFromFile("/organizations.ttl");
         String sortLanguage = "en";
 
-        when(jenaService.getOrganizations()).thenReturn(model);
+        when(coreRepository.getOrganizations()).thenReturn(model);
 
         var organizations = service.getOrganizations(sortLanguage, true);
 
@@ -66,7 +61,7 @@ class FrontendServiceTest {
         var model = MapperTestUtils.getModelFromFile("/service-categories.ttl");
         String sortLanguage = "en";
 
-        when(jenaService.getServiceCategories()).thenReturn(model);
+        when(coreRepository.getServiceCategories()).thenReturn(model);
 
         var serviceCategories = service.getServiceCategories(sortLanguage);
         var names = serviceCategories.stream()

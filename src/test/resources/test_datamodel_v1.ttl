@@ -58,7 +58,7 @@ testaa:test-property  a     owl:DatatypeProperty ;
         owl:versionInfo     "DRAFT" .
 
 <http://uri.suomi.fi/datamodel/ns/testaa>
-        a                               owl:Ontology , dcap:DCAP ;
+        a                               owl:Ontology , iow:ApplicationProfile ;
         rdfs:comment                    "Testaa desc"@fi ;
         rdfs:label                      "Testaa"@fi ;
         dcterms:contributor             <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;

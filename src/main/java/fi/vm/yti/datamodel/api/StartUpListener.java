@@ -2,8 +2,8 @@ package fi.vm.yti.datamodel.api;
 
 import fi.vm.yti.datamodel.api.index.OpenSearchConnector;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
 import fi.vm.yti.migration.MigrationConfig;
 import fi.vm.yti.migration.MigrationInitializer;
@@ -24,21 +24,21 @@ public class StartUpListener {
     private final GroupManagementService groupManagementService;
     private final OpenSearchConnector openSearchConnector;
     private final OpenSearchIndexer openSearchIndexer;
-    private final JenaService jenaService;
+    private final CoreRepository coreRepository;
     private final NamespaceService namespaceService;
 
     @Autowired
     StartUpListener(GroupManagementService groupManagementService,
                     OpenSearchConnector openSearchConnector,
                     OpenSearchIndexer openSearchIndexer,
-                    JenaService jenaService,
                     NamespaceService namespaceService,
-                    MigrationInitializer migrationInitializer) {
+                    MigrationInitializer migrationInitializer,
+                    CoreRepository coreRepository) {
         this.groupManagementService = groupManagementService;
         this.openSearchConnector = openSearchConnector;
         this.openSearchIndexer = openSearchIndexer;
-        this.jenaService = jenaService;
         this.namespaceService = namespaceService;
+        this.coreRepository = coreRepository;
     }
 
     @PostConstruct
@@ -58,7 +58,7 @@ public class StartUpListener {
     }
 
     private void initServiceCategories() {
-        jenaService.initServiceCategories();
+        coreRepository.initServiceCategories();
     }
 
     private void initDefaultNamespaces() {

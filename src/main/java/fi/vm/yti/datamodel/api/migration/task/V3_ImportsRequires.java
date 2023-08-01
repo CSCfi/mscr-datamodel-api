@@ -1,6 +1,6 @@
 package fi.vm.yti.datamodel.api.migration.task;
 
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.migration.MigrationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +11,10 @@ public class V3_ImportsRequires implements MigrationTask {
 
     private final Logger logger = LoggerFactory.getLogger(V3_ImportsRequires.class);
 
-    private final JenaService jenaService;
+    private final CoreRepository coreRepository;
 
-    public V3_ImportsRequires(JenaService jenaService) {
-        this.jenaService = jenaService;
+    public V3_ImportsRequires(CoreRepository coreRepository) {
+        this.coreRepository = coreRepository;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class V3_ImportsRequires implements MigrationTask {
                   }
                 }
                 """;
-        jenaService.sendUpdateStringQuery(terminologyQuery);
+        coreRepository.queryUpdate(terminologyQuery);
 
         var codelistQuery = """
                 PREFIX iow:  <http://uri.suomi.fi/datamodel/ns/iow/>
@@ -59,7 +59,7 @@ public class V3_ImportsRequires implements MigrationTask {
                   }
                 }
                 """;
-        jenaService.sendUpdateStringQuery(codelistQuery);
+        coreRepository.queryUpdate(codelistQuery);
 
         //This one is adding core library to profile
         var profileCoreLibraryQuery = """
@@ -86,8 +86,7 @@ public class V3_ImportsRequires implements MigrationTask {
                   }
                 }
                 """;
-        jenaService.sendUpdateStringQuery(profileCoreLibraryQuery);
-
+        coreRepository.queryUpdate(profileCoreLibraryQuery);
 
         var profileToProfile = """
                 PREFIX dcap: <http://purl.org/ws-mmi-dc/terms/>
@@ -114,7 +113,7 @@ public class V3_ImportsRequires implements MigrationTask {
                 }
                 """;
 
-        jenaService.sendUpdateStringQuery(profileToProfile);
+        coreRepository.queryUpdate(profileToProfile);
 
     }
 }

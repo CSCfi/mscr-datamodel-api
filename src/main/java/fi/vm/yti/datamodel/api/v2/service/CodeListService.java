@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.service;
 
 import fi.vm.yti.datamodel.api.v2.dto.CodeListDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.CodeListMapper;
+import fi.vm.yti.datamodel.api.v2.repository.SchemesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +20,8 @@ public class CodeListService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CodeListService.class);
 
+    private final SchemesRepository schemesRepository;
+
     /**
      * Control which environment is used for resolving terminology uris.
      * Possible values: awsdev, awstest and awslocal. Resolve from prod if empty
@@ -26,12 +29,11 @@ public class CodeListService {
     @Value("${env:}")
     private String awsEnv;
     private final WebClient client;
-    private final JenaService jenaService;
 
     public CodeListService(
-            @Qualifier("uriResolveClient") WebClient webClient,
-            JenaService jenaService) {
-        this.jenaService = jenaService;
+            SchemesRepository schemesRepository,
+            @Qualifier("uriResolveClient") WebClient webClient) {
+        this.schemesRepository = schemesRepository;
         this.client = webClient;
     }
 
@@ -55,7 +57,7 @@ public class CodeListService {
 
                 if (result != null) {
                     var model = CodeListMapper.mapToJenaModel(codeList, result);
-                    jenaService.putCodelistSchemeToSchemes(codeList, model);
+                    schemesRepository.put(codeList, model);
                 }
             } catch (Exception e) {
                 LOG.warn("Could not resolve codelist scheme {}, {}", uri, e.getMessage());

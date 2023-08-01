@@ -53,6 +53,9 @@ public class QueryFactoryUtils {
     }
 
     public static Query termQuery(String field, String value){
+        if(value == null || value.isBlank()){
+            return null;
+        }
         return TermQuery.of(q -> q
                         .field(field)
                         .value(FieldValue.of(value)))

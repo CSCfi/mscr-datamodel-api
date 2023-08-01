@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.opensearch.index;
 
 import com.google.common.collect.Iterables;
 import fi.vm.yti.datamodel.api.index.OpenSearchConnector;
+import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
@@ -9,6 +10,8 @@ import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ModelMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
+import fi.vm.yti.datamodel.api.v2.repository.ImportsRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.utils.DataModelUtils;
 import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
@@ -34,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static fi.vm.yti.security.AuthorizationException.check;
+
 
 @Service
 public class OpenSearchIndexer {
@@ -47,18 +52,27 @@ public class OpenSearchIndexer {
     private static final String GRAPH_VARIABLE = "?model";
     private final OpenSearchConnector openSearchConnector;
     private final JenaService jenaService;
+    private final CoreRepository coreRepository;
+    private final ImportsRepository importsRepository;
+    private final AuthorizationManager authorizationManager;    
     private final ModelMapper modelMapper;
     private final SchemaMapper schemaMapper;
     private final CrosswalkMapper crosswalkMapper;
     private final OpenSearchClient client;
 
     public OpenSearchIndexer(OpenSearchConnector openSearchConnector,
+				    		 CoreRepository coreRepository,
+				             ImportsRepository importsRepository,
+				             AuthorizationManager authorizationManager,
                              JenaService jenaService,
                              ModelMapper modelMapper,
                              SchemaMapper schemaMapper,
                              CrosswalkMapper crosswalkMapper,
                              OpenSearchClient client) {
         this.openSearchConnector = openSearchConnector;
+        this.coreRepository = coreRepository;
+        this.importsRepository = importsRepository;
+        this.authorizationManager = authorizationManager;        
         this.jenaService = jenaService;
         this.modelMapper = modelMapper;
         this.schemaMapper = schemaMapper;
@@ -86,7 +100,21 @@ public class OpenSearchIndexer {
         }
     }
 
-    public void reindex() {
+    public void reindex(String index){
+        check(authorizationManager.hasRightToDropDatabase());
+        if(index == null){
+            reindexAll();
+            return;
+        }
+        switch (index){
+            case OpenSearchIndexer.OPEN_SEARCH_INDEX_EXTERNAL -> initExternalResourceIndex();
+            case OpenSearchIndexer.OPEN_SEARCH_INDEX_MODEL -> initModelIndex();
+            case OpenSearchIndexer.OPEN_SEARCH_INDEX_RESOURCE -> initResourceIndex();
+            default -> throw new IllegalArgumentException("Given value not allowed");
+        }
+    }
+
+    public void reindexAll() {
         try {
             openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_MODEL);
             openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_RESOURCE);
@@ -229,7 +257,7 @@ public class OpenSearchIndexer {
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
                 .addOptional(GRAPH_VARIABLE, "dcterms:language/rdf:rest*/rdf:first", "?language")
                 .addOptional(GRAPH_VARIABLE, DCTerms.language, "?language");
-        var indexModels = jenaService.constructWithQuery(constructBuilder.build());
+        var indexModels = coreRepository.queryConstruct(constructBuilder.build());
         var list = new ArrayList<IndexModel>();
         indexModels.listSubjects().forEach(next -> {
             var newModel = ModelFactory.createDefaultModel()
@@ -289,7 +317,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.subject, "?subject");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, SH.targetClass, "?targetClass");
 
-        var indexClasses = jenaService.constructWithQuery(constructBuilder.build());
+        var indexClasses = coreRepository.queryConstruct(constructBuilder.build());
         var list = new ArrayList<IndexResource>();
         indexClasses.listSubjects().forEach(next -> {
             var newClass = ModelFactory.createDefaultModel()
@@ -344,7 +372,7 @@ public class OpenSearchIndexer {
                 .addOptional("?inverseOf", RDF.type, "?inverseType")
                 .addBind(new ExprFactory().coalesce("?primaryType", "?inverseType"), "?type")
                 .addConstruct("?s", RDF.type, "?type");
-        var result = jenaService.constructWithQueryImports(builder.build());
+        var result = importsRepository.queryConstruct(builder.build());
         var list = new ArrayList<IndexBase>();
         result.listSubjects().forEach(resource -> {
             var indexClass = ResourceMapper.mapExternalToIndexResource(result, resource);

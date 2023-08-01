@@ -1,10 +1,16 @@
 {
   "id": "http://json-schema.org/draft-04/schema#",
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-fsdfs.org/draft-04/schema#",
   "type" : "integer",
   "properties" : {
     "creators" : {
-      "type" : "not_type"
+      "type" : "string"
+    },
+    "numbers" : {
+      "type": "number"
+    },
+    "integers" : {
+      "type": "integer"
     },
     "titles" : {
       "title" : "Titles",

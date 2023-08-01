@@ -18,6 +18,9 @@ public class MSCR {
     public static final Resource CROSSWALK = ResourceFactory.createResource(URI + "Crosswalk");
     public static final Resource SCHEMA = ResourceFactory.createResource(URI + "Schema");
 
+    // use it when generating rdf
+    public static final Resource NULL = ResourceFactory.createResource(URI + "null");
+    
     public static final Property localName = ResourceFactory.createProperty(URI, "localName");
     public static final Property sourceSchema = ResourceFactory.createProperty(URI, "sourceSchema");
     public static final Property targetSchema = ResourceFactory.createProperty(URI, "targetSchema");
