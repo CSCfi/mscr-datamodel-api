@@ -1,0 +1,32 @@
+{
+    "description" : "schema validating people and vehicles",
+    "type" : "object",
+    "oneOf" : [
+       {
+        "type" : "object",
+        "properties" : {
+            "firstName" : {
+                "type" : "string"
+            },
+            "lastName" : {
+                "type" : "string"
+            },
+            "sport" : {
+                "type" : "string"
+            }
+          }
+      }, 
+      {
+        "type" : "object",
+        "properties" : {
+            "vehicle" : {
+                "type" : "string"
+            },
+            "price" : {
+                "type" : "integer"
+            }
+        },
+        "additionalProperties":false
+     }
+]
+}

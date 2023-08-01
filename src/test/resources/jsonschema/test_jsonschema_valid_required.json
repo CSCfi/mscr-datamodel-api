@@ -1,0 +1,36 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "description" : "simple schema with one object.",
+  "type" : "object",
+  "properties" : {
+    "firstName" : {
+      "type" : "string"
+    },
+    "lastName" : {
+      "type" : "string",
+      "required": true
+    },
+    "address" : {
+      "type" : "object",
+      "title" : "Address of the person",
+      "properties" : {
+        "street" : {
+          "type" : "string",
+          "required": true
+        },
+        "house_number" : {
+          "type" : "string"
+        },
+        "city" : {
+          "type" : "object",
+          "properties" : {
+            "population" : {
+              "type" : "integer",
+              "required": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "description" : "enums",
+  "type" : "object",
+  "properties" : {
+    "empty" : {
+      "type" : "string",
+      "enum" : [ ]
+    },
+    "string" : {
+      "type" : "string",
+      "enum" : [ "one", "two" ]
+    },
+    "integer" : {
+      "type" : "integer",
+      "enum" : [ 1, 2, 3 ]
+    },
+    "arrayString" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "enum" : [ "one", "two", "three" ]
+      }
+    }
+  }
+}
