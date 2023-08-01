@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
@@ -96,8 +93,13 @@ public class Schema {
 		this.storageService = storageService;
 		this.userProvider = userProvider;
 	}
-	
-	private SchemaInfoDTO createSchemaMetadata(SchemaDTO schemaDTO) {
+
+	@Operation(summary = "Create schema")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO createSchema(@RequestBody SchemaDTO schemaDTO) {
+		logger.info("Create Schema {}", schemaDTO);
 		check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));		
 		final String PID = PIDService.mint(PIDType.HANDLE);
 
@@ -108,10 +110,15 @@ public class Schema {
         openSearchIndexer.createSchemaToIndex(indexModel);
 
         return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID));
-
+		
 	}
-	
-	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file) {
+    
+	@Operation(summary = "Upload and associate a schema description file to an existing schema")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
+			@RequestParam("file") MultipartFile file) throws Exception {
 		Model metadataModel = jenaService.getSchema(pid);
 		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel);
 		check(authorizationManager.hasRightToModel(pid, metadataModel));
@@ -143,47 +150,6 @@ public class Schema {
 			throw new RuntimeException("Error occured while ingesting file based schema description", ex);
 		}
 		return mapper.mapToSchemaDTO(pid, metadataModel);
-	}
-
-	@Operation(summary = "Create schema metadata")
-	@ApiResponse(responseCode = "200", description = "")
-	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@RequestBody SchemaDTO schemaDTO) {
-		logger.info("Create Schema {}", schemaDTO);
-		return createSchemaMetadata(schemaDTO);
-				
-	}
-    
-	@Operation(summary = "Upload and associate a schema description file to an existing schema")
-	@ApiResponse(responseCode = "200", description = "")
-	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
-			@RequestParam("file") MultipartFile file) throws Exception {
-		return addFileToSchema(pid, contentType, file);
-	}
-	
-	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
-	@ApiResponse(responseCode = "200", description = "")
-	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
-			@RequestParam("file") MultipartFile file) {
-		
-		SchemaDTO schemaDTO = null;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			schemaDTO = mapper.readValue(metadataString, SchemaDTO.class);
-
-		}catch(Exception ex) {
-			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());
-			
-		}
-		logger.info("Create Schema {}", schemaDTO);
-		SchemaInfoDTO dto = createSchemaMetadata(schemaDTO);
-		return addFileToSchema(dto.getPID(), file.getContentType(), file);
-		
 	}
   
     @Operation(summary = "Modify schema")
