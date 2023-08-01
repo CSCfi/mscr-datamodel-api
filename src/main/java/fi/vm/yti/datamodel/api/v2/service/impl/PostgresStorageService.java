@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -140,4 +142,15 @@ public class PostgresStorageService implements StorageService {
 			}
 		});
 	}
+	
+	@Override
+	public void removeFile(long fileID) throws DataAccessException {
+		jdbcTemplate.update(con -> {
+			PreparedStatement ps = con.prepareStatement("delete from mscr_files where id = ?");
+			ps.setLong(1, fileID);
+			return ps;
+		});
+	}
+	
+	
 }
