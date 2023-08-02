@@ -1,16 +1,14 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
-import java.util.Set;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SchemaDTO extends DataModelDTO {
 
 	private SchemaFormat format;
-	private String aggregationKey;
-	private Set<FileMetadata> fileMetadata = Set.of();
-
-  public SchemaFormat getFormat() {
+	private String namespace;
+	private String versionLabel;
+	
+	public SchemaFormat getFormat() {
 		return format;
 	}
 
@@ -18,20 +16,20 @@ public class SchemaDTO extends DataModelDTO {
 		this.format = type;
 	}
 
-	public Set<FileMetadata> getFileMetadata() {
-		return fileMetadata;
+	public String getNamespace() {
+		return namespace;
 	}
 
-	public void setFileMetadata(Set<FileMetadata> fileMetadata) {
-		this.fileMetadata = fileMetadata;
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 
-	public String getAggregationKey() {
-		return aggregationKey;
+	public String getVersionLabel() {
+		return versionLabel;
 	}
 
-	public void setAggregationKey(String aggregationKey) {
-		this.aggregationKey = aggregationKey;
+	public void setVersionLabel(String versionLabel) {
+		this.versionLabel = versionLabel;
 	}
 
 	@Override
