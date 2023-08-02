@@ -1,10 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,7 +9,7 @@ import java.util.Set;
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
@@ -34,17 +31,17 @@ public class SchemaService {
 			Map.entry("number", XSD.xfloat), Map.entry("integer", XSD.integer), Map.entry("boolean", XSD.xboolean),
 			Map.entry("null", MSCR.NULL));
 
-	private final Map<String, String> JSONSchemaToSHACLMap = Map.ofEntries(
-			Map.entry("description", SH.description.getURI()), Map.entry("default", SH.defaultValue.getURI()),
-			Map.entry("title", SH.name.getURI()), Map.entry("additionalProperties", SH.closed.getURI()),
-			Map.entry("enum", SH.in.getURI()),
-//			Map.entry("format", SHACL.format.getURI()), -- no SHACL type - look into it
-			Map.entry("maximum", SH.maxInclusive.getURI()), Map.entry("minimum", SH.minInclusive.getURI()),
-			Map.entry("exclusiveMaximum", SH.maxExclusive.getURI()),
-			Map.entry("exclusiveMinimum", SH.minExclusive.getURI()), Map.entry("maxItems", SH.maxCount.getURI()),
-			Map.entry("minItems", SH.minCount.getURI()), Map.entry("maxLength", SH.maxLength.getURI()),
-			Map.entry("minLength", SH.minLength.getURI()), Map.entry("not", SH.not.getURI()),
-			Map.entry("pattern", SH.pattern.getURI()) 
+	private final Map<String, Property> JSONSchemaToSHACLMap = Map.ofEntries(
+			Map.entry("description", SH.description), Map.entry("default", SH.defaultValue),
+			Map.entry("title", SH.name), Map.entry("additionalProperties", SH.closed),
+			Map.entry("enum", SH.in),
+//			Map.entry("format", SHACL.format, -- no SHACL type - look into it
+			Map.entry("maximum", SH.maxInclusive), Map.entry("minimum", SH.minInclusive),
+			Map.entry("exclusiveMaximum", SH.maxExclusive),
+			Map.entry("exclusiveMinimum", SH.minExclusive), Map.entry("maxItems", SH.maxCount),
+			Map.entry("minItems", SH.minCount), Map.entry("maxLength", SH.maxLength),
+			Map.entry("minLength", SH.minLength), Map.entry("not", SH.not),
+			Map.entry("pattern", SH.pattern )
 
 	);
 
@@ -59,10 +56,10 @@ public class SchemaService {
 			// the second condition ensures that an object's children properties are not added to that object
 			if (propertyNode != null & node.has(key)) {
 				if (JSONSchemaNumericalProperties.contains(key)) {
-					propertyResource.addProperty(model.getProperty(JSONSchemaToSHACLMap.get(key)),
+					propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
 							model.createTypedLiteral(propertyNode.numberValue()));
 				} else if (JSONSchemaBooleanProperties.contains(key)) {
-					propertyResource.addProperty(model.getProperty(JSONSchemaToSHACLMap.get(key)),
+					propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
 							model.createTypedLiteral(propertyNode.asBoolean()));
 				} 
 				else if(key == "enum") {
@@ -70,20 +67,19 @@ public class SchemaService {
 						Bag bag = model.createBag();
 						
 						for(int i = 0; i < propertyNode.size(); i++){
-							if (node.get("type").asText() == "boolean")
+							if (node.get("type").asText().equals("boolean"))
 								bag.add(model.createTypedLiteral(propertyNode.get(i).asBoolean())); 
-							else if (node.get("type").asText() == "integer")
+							else if (node.get("type").asText().equals("integer"))
 								bag.add(model.createTypedLiteral(propertyNode.get(i).numberValue()));
 							else 
 								bag.add(model.createLiteral(propertyNode.get(i).asText()));
 						}	
 						
-						propertyResource.addProperty(model.getProperty(SH.in.getURI()),
-							bag);
+						propertyResource.addProperty(SH.in,	bag);
 					} 
 				}
 				else {
-					propertyResource.addProperty(model.getProperty(JSONSchemaToSHACLMap.get(key)),
+					propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
 							propertyNode.asText());
 				}
 			}
@@ -91,9 +87,9 @@ public class SchemaService {
 	}
 
 	private void handleRequiredProperty(JsonNode node, Model model, Resource propertyResource, boolean isRequired) {
-		propertyResource.addProperty(model.getProperty(SH.maxCount.getURI()), model.createTypedLiteral(1));
+		propertyResource.addProperty(SH.maxCount, model.createTypedLiteral(1));
 		if (isRequired) {
-			propertyResource.addProperty(model.getProperty(SH.minCount.getURI()), model.createTypedLiteral(1));
+			propertyResource.addProperty(SH.minCount, model.createTypedLiteral(1));
 		}
 	}
 
@@ -109,10 +105,10 @@ public class SchemaService {
 	private Resource addDatatypeProperty(String propID, JsonNode node, Model model, String schemaPID, String type) {
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
 		
-		propertyResource.addProperty(RDF.type, model.getResource(SH.PropertyShape.getURI()));
+		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.DatatypeProperty);
-		propertyResource.addProperty(model.getProperty(SH.datatype.getURI()), XSDTypesMap.get(type));
-		propertyResource.addProperty(model.getProperty(SH.path.getURI()), propID);
+		propertyResource.addProperty(SH.datatype, XSDTypesMap.get(type));
+		propertyResource.addProperty(SH.path, propID);
 
 		checkAndAddPropertyFeature(node, model, propertyResource);
 
@@ -133,12 +129,12 @@ public class SchemaService {
 	private Resource addObjectProperty(String propID, JsonNode node, Model model, String schemaPID,
 			String targetShape) {
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
-		propertyResource.addProperty(RDF.type, model.getResource(SH.PropertyShape.getURI()));
+		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.ObjectProperty);
 
 		checkAndAddPropertyFeature(node, model, propertyResource);
-		propertyResource.addProperty(model.getProperty(SH.path.getURI()), propID);
-		propertyResource.addProperty(model.getProperty(SH.node.getURI()), model.createResource(targetShape));
+		propertyResource.addProperty(SH.path, propID);
+		propertyResource.addProperty(SH.node, model.createResource(targetShape));
 
 		return propertyResource;
 	}
@@ -147,19 +143,34 @@ public class SchemaService {
 			Resource nodeShapeResource, boolean isRequired, boolean isArrayItem) {
 		Resource propertyResource = addDatatypeProperty(propID + "/" + entry.getKey(), entry.getValue(), model,
 				schemaPID, entry.getValue().get("type").asText());
-		nodeShapeResource.addProperty(model.getProperty(SH.property.getURI()), propertyResource);
+		nodeShapeResource.addProperty(SH.property, propertyResource);
 		if (!isArrayItem) {
 			handleRequiredProperty(entry.getValue(), model, propertyResource, isRequired);
 		} 
 		if (entry.getValue().get("type").asText().equals("string") & entry.getValue().has("pattern")) {
-			propertyResource.addProperty(model.getProperty(SH.pattern.getURI()), entry.getValue().get("pattern").asText());
+			propertyResource.addProperty(SH.pattern, entry.getValue().get("pattern").asText());
 		}
 	}
 	
 	private String capitaliseNodeIdentifier(String propID) {
-		List<String> propIDSplit = new LinkedList<String>(Arrays.asList(propID.split("/")));
-		String partToCapitalise = propIDSplit.get(propIDSplit.size() - 1);
-		return ((String.join("/", propIDSplit)) + "/" + partToCapitalise.substring(0, 1).toUpperCase() + partToCapitalise.substring(1));
+		int lastSlash = propID.lastIndexOf('/');
+		String stringAfterSlash = propID.substring(lastSlash + 1);
+		char firstChar = Character.toUpperCase(stringAfterSlash.charAt(0));
+		return propID + "/" + firstChar + stringAfterSlash.substring(1);
+	}
+	
+	
+	private boolean isArray(Entry <String, JsonNode> entry) {
+		return entry.getValue().get("type").asText().equals("array");
+	}
+	
+	private boolean isObject(Entry <String, JsonNode> entry) {
+		return entry.getValue().get("type").asText().equals("object");
+	}
+	
+	private boolean hasObjectItems(Entry <String, JsonNode> entry) {
+		return (entry.getValue().get("items").has("type") 
+			 && entry.getValue().get("items").get("type").asText().equals("object"));
 	}
 	
 	/**
@@ -177,14 +188,14 @@ public class SchemaService {
 		String nameProperty = propID.substring(propID.lastIndexOf("/") + 1);
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
 		
-		nodeShapeResource.addProperty(RDF.type, model.getResource(SH.NodeShape.getURI()));
+		nodeShapeResource.addProperty(RDF.type, (SH.NodeShape));
 		nodeShapeResource.addProperty(MSCR.localName, nameProperty);
-		nodeShapeResource.addProperty(model.getProperty(SH.name.getURI()), nameProperty);
+		nodeShapeResource.addProperty(SH.name, nameProperty);
 		
-		if (node.has("description"))
-			nodeShapeResource.addProperty(DCTerms.description, node.get("description").asText());
 		if (node == null || node.get("properties") == null) 
 			return;
+		if (node.has("description"))
+			nodeShapeResource.addProperty(DCTerms.description, node.get("description").asText());
 		if (node.has("additionalProperties"))
 			nodeShapeResource.addProperty(SH.closed, model.createTypedLiteral(!node.get("additionalProperties").asBoolean()));
 		/*
@@ -194,39 +205,33 @@ public class SchemaService {
 
 		Iterator<Entry<String, JsonNode>> propertiesIterator = node.get("properties").fields();
 		while (propertiesIterator.hasNext()) {
-			Entry<String, JsonNode> entry = propertiesIterator.next();
-			
+			Entry<String, JsonNode> entry = propertiesIterator.next();			
 			if (entry.getKey().startsWith("_") || entry.getKey().startsWith("$"))
 				continue;
-			if (entry.getValue().get("type") == null)
-				throw new RuntimeException("One of the entries is missing 'type' property");
+			if (entry.getValue().get("type") == null) 
+				throw new RuntimeException(entry.getKey() + " is missing 'type' property");
 
-			if (entry.getValue().get("type").asText().equals("object")) {
+			if (isObject(entry)) {
 				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
 						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey());
-				nodeShapeResource.addProperty(model.getProperty(SH.property.getURI()), propertyShape);
+				nodeShapeResource.addProperty(SH.property, propertyShape);
 				
 				handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), schemaPID, model);
-
-			} else if (entry.getValue().get("type").asText().equals("array")
-					&& entry.getValue().get("items").has("type")
-					&& entry.getValue().get("items").get("type").asText().equals("object")) {
+			}
+			else if (isArray(entry)) {
 				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
 						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey());
+				nodeShapeResource.addProperty(SH.property, propertyShape);
 				
-				nodeShapeResource.addProperty(model.getProperty(SH.property.getURI()), propertyShape);
-				handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue().get("items"), schemaPID, model);
-
-			} else if (entry.getValue().get("type").asText().equals("array")) {
-				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
-						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey());
-				nodeShapeResource.addProperty(model.getProperty(SH.property.getURI()), propertyShape);
-
-				Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
-
-				handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
-				
-			} else {
+				if (hasObjectItems(entry)) {
+					handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue().get("items"), schemaPID, model);
+				}
+				else {
+					Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
+					handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
+				}
+			}
+			else {
 				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));
 				handleDatatypeProperty(propIDCapitalised, entry, model, schemaPID, nodeShapeResource, isRequired, false);
 			}

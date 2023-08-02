@@ -1,0 +1,24 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "description" : "arrays",
+  "type" : "object",
+  "properties" : {
+    "minString" : {
+      "type" : "string",
+      "minLength" : 10
+    },
+    "maxString" : {
+      "type" : "string",
+      "maxLength" : 100
+    },
+    "stringLengthRange" : {
+      "type" : "string",
+      "minLength" : 10,
+      "maxLength" : 100
+    },
+    "stringPattern": { 
+    	"type": "string",
+    	"pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
+    }
+  }
+}

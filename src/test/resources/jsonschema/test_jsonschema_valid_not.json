@@ -1,0 +1,21 @@
+{
+  "$schema" : "http://json-schema.org/draft-04/schema#",
+  "description" : "not",
+  "type" : "object",
+  "properties" : {
+    "notenum": { 
+    	"not": { 
+    		"type": "string",
+    		"enum": ["notthis", "orthis"]
+    	}
+    },
+    "notstring": { 
+    	"not": { 
+    		"type": "string"
+    	}
+    },
+    "not_allowed_property": {     	
+    	"not": {}
+    }
+  }
+}

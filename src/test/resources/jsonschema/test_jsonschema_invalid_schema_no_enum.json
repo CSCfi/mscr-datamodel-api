@@ -1,10 +1,16 @@
 {
   "id": "http://json-schema.org/draft-04/schema#",
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-fsdfs.org/draft-04/schema#",
   "type" : "integer",
   "properties" : {
     "creators" : {
       "type" : "string"
+    },
+    "numbers" : {
+      "type": "number"
+    },
+    "integers" : {
+      "type": "integer"
     },
     "titles" : {
       "title" : "Titles",
@@ -26,6 +32,9 @@
       "type" : "string",
       "format" : "date"
     },
+    "null_type" : {
+      "type" : "null"
+    },
     "disciplines" : {
       "type" : "array",
       "items" : {
@@ -43,10 +52,6 @@
         "properties" : {
           "description" : {
             "type" : "string"
-          },
-          "description_type" : {
-            "title" : "Type",
-            "enum" : [ "Abstract", "Methods", "SeriesInformation", "TableOfContents", "TechnicalInfo", "Other" ]
           }
         },
         "additionalProperties" : false,
@@ -79,12 +84,6 @@
       },
       "additionalProperties" : false,
       "required" : [ "license" ]
-    },
-    "publication_state" : {
-      "title" : "Publication State",
-      "description" : "State of the publication workflow.",
-      "type" : "string",
-      "enum" : [ "draft", "submitted", "published" ]
     },
     "_pid" : {
       "title" : "Persistent Identifiers",

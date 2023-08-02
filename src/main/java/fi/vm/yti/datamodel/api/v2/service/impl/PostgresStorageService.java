@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -59,15 +61,16 @@ public class PostgresStorageService implements StorageService {
 	}
 
 	@Override
-	public StoredFile retrieveSchemaFile(String schemaPID, long fileID) {
+	public StoredFile retrieveFile(String pid, long fileID, MSCRType type) {
 		return jdbcTemplate.query(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id from mscr_files where id = ? and type = ?");
-				ps.setLong(1, fileID);
-				ps.setString(2, MSCRType.SCHEMA.name());
+						.prepareStatement("select content_type, data from mscr_files where pid = ? and id = ? and type = ?");
+				ps.setString(1, pid);
+				ps.setLong(2, fileID);
+				ps.setString(3, type.name());
 				return ps;
 			}
 		}, new ResultSetExtractor<StoredFile>() {
@@ -77,51 +80,30 @@ public class PostgresStorageService implements StorageService {
 				rs.next();
 				String contentType = rs.getString(1);
 				byte[] data = rs.getBytes(2);
-				long fileID = rs.getLong(3);
-				return new StoredFile(contentType, data, fileID, MSCRType.SCHEMA);
+				return new StoredFile(contentType, data, fileID, type);
 			}
 		});
 	}
 
 	@Override
-	public List<StoredFile> retrieveAllSchemaFiles(String schemaPID) {
-		return jdbcTemplate.query(new PreparedStatementCreator() {
-
-			@Override
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id, type from mscr_files where pid = ? and type = ?");
-				ps.setString(1, schemaPID);
-				ps.setString(2, MSCRType.SCHEMA.name());
-				return ps;
-			}
-		}, new ResultSetExtractor<List<StoredFile>>() {
-
-			@Override
-			public List<StoredFile> extractData(ResultSet rs) throws SQLException, DataAccessException {
-				List<StoredFile> files = new ArrayList<StoredFile>();
-				while (rs.next()) {
-					String contentType = rs.getString(1);
-					byte[] data = rs.getBytes(2);
-					long fileID = rs.getLong(3);
-					MSCRType type = MSCRType.valueOf(rs.getString(4));
-					files.add(new StoredFile(contentType, data, fileID, type));
-				}
-				return files;
-			}
-		});
+	public List<StoredFile> retrieveAllSchemaFiles(String pid) {
+		return retrieveAllFiles(pid, MSCRType.SCHEMA);
 	}
-
+	
 	@Override
 	public List<StoredFile> retrieveAllCrosswalkFiles(String pid) {
+		return retrieveAllFiles(pid, MSCRType.CROSSWALK);
+	}
+
+	private List<StoredFile> retrieveAllFiles(String pid, MSCRType type) {
 		return jdbcTemplate.query(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id, type from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, data, id from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
-				ps.setString(2, MSCRType.CROSSWALK.name());
+				ps.setString(2, type.name());
 				return ps;
 			}
 		}, new ResultSetExtractor<List<StoredFile>>() {
@@ -133,11 +115,57 @@ public class PostgresStorageService implements StorageService {
 					String contentType = rs.getString(1);
 					byte[] data = rs.getBytes(2);
 					long fileID = rs.getLong(3);
-					MSCRType type = MSCRType.valueOf(rs.getString(4));
 					files.add(new StoredFile(contentType, data, fileID, type));
 				}
 				return files;
 			}
 		});
 	}
+
+	@Override
+	public List<StoredFileMetadata> retrieveAllSchemaFilesMetadata(String pid) {
+		return retrieveAllFilesMetadata(pid, MSCRType.SCHEMA);
+	}
+	
+	@Override
+	public List<StoredFileMetadata> retrieveAllCrosswalkFilesMetadata(String pid) {
+		return retrieveAllFilesMetadata(pid, MSCRType.CROSSWALK);
+	}
+
+	private List<StoredFileMetadata> retrieveAllFilesMetadata(String pid, MSCRType type) {
+		return jdbcTemplate.query(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con
+						.prepareStatement("select content_type, length(data) as size, id from mscr_files where pid = ? and type = ?");
+				ps.setString(1, pid);
+				ps.setString(2, type.name());
+				return ps;
+			}
+		}, new ResultSetExtractor<List<StoredFileMetadata>>() {
+
+			@Override
+			public List<StoredFileMetadata> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				List<StoredFileMetadata> files = new ArrayList<StoredFileMetadata>();
+				while (rs.next()) {
+					String contentType = rs.getString(1);
+					int size = rs.getInt(2);
+					long fileID = rs.getLong(3);
+					files.add(new StoredFileMetadata(contentType, size, fileID, type));
+				}
+				return files;
+			}
+		});
+	}
+	
+	@Override
+	public void removeFile(long fileID) throws DataAccessException {
+		jdbcTemplate.update(con -> {
+			PreparedStatement ps = con.prepareStatement("delete from mscr_files where id = ?");
+			ps.setLong(1, fileID);
+			return ps;
+		});
+	}
+		
 }

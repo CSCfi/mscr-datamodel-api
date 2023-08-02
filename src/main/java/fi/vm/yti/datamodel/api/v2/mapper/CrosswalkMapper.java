@@ -38,7 +38,7 @@ import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
-import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
+import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFileMetadata;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.security.YtiUser;
 
@@ -140,10 +140,10 @@ public class CrosswalkMapper {
 		
 		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
 		
-		List<StoredFile> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFiles(PID);
+		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.data().length, file.fileID()));
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
 		});
 		dto.setFileMetadata(fileMetadatas);
 

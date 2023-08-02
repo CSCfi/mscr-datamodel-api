@@ -18,13 +18,17 @@ import com.networknt.schema.ValidationMessage;
 public class JSONValidationService {
 
 	private static Map<String, String> schemaURIandPathMap = Map.of("http://json-schema.org/draft-04/schema#",
-			"/schema_v4");
+			"/schema_v4_mscr");
 
 	public static ValidationRecord validateJSONSchema(byte[] inputSchemaFile) throws Exception, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 
 		JsonNode inputSchemaNode = mapper.readTree(inputSchemaFile);
 
+		
+		if(!inputSchemaNode.has("$schema")) {
+			throw new Exception("Missing $schema property. Cannot validate schema.");
+		}
 		String inputSchemaVersion = inputSchemaNode.get("$schema").asText();
 
 		if (schemaURIandPathMap.containsKey(inputSchemaVersion)) {
@@ -36,7 +40,7 @@ public class JSONValidationService {
 
 			JsonSchema schema = schemaFactory.getSchema(metaSchemaNode);
 			Set<ValidationMessage> validationResult = schema.validate(inputSchemaNode);
-
+			
 			if (validationResult.isEmpty()) {
 				return new ValidationRecord(true, Arrays.asList());
 			} else {

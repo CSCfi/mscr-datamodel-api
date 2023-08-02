@@ -11,3 +11,5 @@
 out
 build
 bin
+.metadata
+**/.DS_Store

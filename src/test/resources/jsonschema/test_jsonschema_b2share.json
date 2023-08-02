@@ -61,7 +61,7 @@
     "keywords" : {
       "title" : "Keywords",
       "description" : "A list of keywords or key phrases describing the resource.",
-      "type" : "array",
+      "type": "array",
       "items" : {
         "type" : "string"
       },
@@ -80,7 +80,6 @@
           },
           "contributor_type" : {
             "title" : "Type",
-            "type": "string",
             "enum" : [ "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "HostingInstitution", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RegistrationAgency", "RegistrationAuthority", "RelatedPerson", "Researcher", "ResearchGroup", "RightsHolder", "Sponsor", "Supervisor", "WorkPackageLeader", "Other" ]
           }
         },
@@ -107,7 +106,6 @@
           },
           "resource_type_general" : {
             "title" : "Category",
-            "type": "string",
             "enum" : [ "Audiovisual", "Collection", "Dataset", "Event", "Image", "InteractiveResource", "Model", "PhysicalObject", "Service", "Software", "Sound", "Text", "Workflow", "Other" ]
           }
         },
@@ -149,7 +147,6 @@
           },
           "description_type" : {
             "title" : "Type",
-            "type": "string",
             "enum" : [ "Abstract", "Methods", "SeriesInformation", "TableOfContents", "TechnicalInfo", "Other" ]
           }
         },
@@ -213,7 +210,6 @@
     },
     "_pid" : {
       "title" : "Persistent Identifiers",
-      "type": "string",
       "description" : "Array of persistent identifiers pointing to this record."
     },
     "_deposit" : {
@@ -227,5 +223,11 @@
     }
   },
   "required" : [ "community", "titles", "open_access", "publication_state", "community_specific" ],
-  "additionalProperties" : false
+  "additionalProperties" : false,
+  "b2share" : {
+    "presentation" : {
+      "major" : [ "community", "titles", "descriptions", "creators", "open_access", "embargo_date", "license", "disciplines", "keywords", "contact_email" ],
+      "minor" : [ "contributors", "resource_types", "alternate_identifiers", "version", "publisher", "language" ]
+    }
+  }
 }
