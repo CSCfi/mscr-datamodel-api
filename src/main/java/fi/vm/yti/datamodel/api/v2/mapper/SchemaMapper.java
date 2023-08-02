@@ -36,15 +36,12 @@ import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
-import fi.vm.yti.datamodel.api.v2.service.StorageService;
-import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFileMetadata;
-import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
-import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
+import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFileMetadata;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
 import fi.vm.yti.security.YtiUser;
@@ -55,12 +52,15 @@ public class SchemaMapper {
 	private final Logger log = LoggerFactory.getLogger(SchemaMapper.class);
 	private final StorageService storageService;
 	private final CoreRepository coreRepository;
+	private final JenaService jenaService;
 
 	public SchemaMapper(
 			CoreRepository coreRepository,
-			PostgresStorageService storageService) {
+			PostgresStorageService storageService,
+			JenaService jenaService) {
 		this.coreRepository = coreRepository;
 		this.storageService = storageService;
+		this.jenaService = jenaService;
 	}
 	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO) {
 		return mapToJenaModel(PID, schemaDTO, null, null);
