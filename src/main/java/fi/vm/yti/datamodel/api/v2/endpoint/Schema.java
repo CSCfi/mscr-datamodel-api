@@ -113,6 +113,8 @@ public class Schema {
 
 		try {
 			byte[] fileInBytes = file.getBytes();
+			Model schemaModel = null;
+			
 			if (schemaDTO.getFormat() == SchemaFormat.JSONSCHEMA) {
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(fileInBytes);
 
@@ -120,19 +122,23 @@ public class Schema {
 				List<String> validationMessages = validationRecord.validationOutput();
 
 				if (isValidJSONSchema) {
-					Model schemaModel = schemaService.transformJSONSchemaToInternal(pid, fileInBytes);
-					schemaModel.add(metadataModel);
-					jenaService.updateSchema(pid, schemaModel);
-					storageService.storeSchemaFile(pid, contentType, file.getBytes());
+					schemaModel = schemaService.transformJSONSchemaToInternal(pid, fileInBytes);
 				} else {
 					String exceptionOutput = String.join("\n", validationMessages);
 					throw new Exception(exceptionOutput);
 				}
 
+			}else if (schemaDTO.getFormat() == SchemaFormat.CSV) {
+				schemaModel = schemaService.transformCSVSchemaToInternal(pid, fileInBytes, ";");
+				
 			} else {
 				throw new RuntimeException(String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));
 			}
+			schemaModel.add(metadataModel);
+			jenaService.updateSchema(pid, schemaModel);
+			storageService.storeSchemaFile(pid, contentType, file.getBytes());
+			
 
 		} catch (Exception ex) {
 			throw new RuntimeException("Error occured while ingesting file based schema description", ex);
