@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.CSVMapper;
 
 
 @Service
@@ -265,5 +266,10 @@ public class SchemaService {
 		handleObject("root", root, schemaPID, model);
 		return model;
 
+	}
+	
+	public Model transformCSVSchemaToInternal(String schemaPID, byte[] data, String delimiter) throws Exception, IOException {
+		CSVMapper mapper = new CSVMapper();		
+		return mapper.mapToModel(schemaPID, data, delimiter);
 	}
 }

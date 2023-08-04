@@ -113,6 +113,8 @@ public class Schema {
 
 		try {
 			byte[] fileInBytes = file.getBytes();
+			Model schemaModel = null;
+			
 			if (schemaDTO.getFormat() == SchemaFormat.JSONSCHEMA) {
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(fileInBytes);
 
@@ -120,19 +122,23 @@ public class Schema {
 				List<String> validationMessages = validationRecord.validationOutput();
 
 				if (isValidJSONSchema) {
-					Model schemaModel = schemaService.transformJSONSchemaToInternal(pid, fileInBytes);
-					schemaModel.add(metadataModel);
-					jenaService.updateSchema(pid, schemaModel);
-					storageService.storeSchemaFile(pid, contentType, file.getBytes());
+					schemaModel = schemaService.transformJSONSchemaToInternal(pid, fileInBytes);
 				} else {
 					String exceptionOutput = String.join("\n", validationMessages);
 					throw new Exception(exceptionOutput);
 				}
 
+			}else if (schemaDTO.getFormat() == SchemaFormat.CSV) {
+				schemaModel = schemaService.transformCSVSchemaToInternal(pid, fileInBytes, ";");
+				
 			} else {
 				throw new RuntimeException(String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));
 			}
+			schemaModel.add(metadataModel);
+			jenaService.updateSchema(pid, schemaModel);
+			storageService.storeSchemaFile(pid, contentType, file.getBytes());
+			
 
 		} catch (Exception ex) {
 			throw new RuntimeException("Error occured while ingesting file based schema description", ex);
@@ -249,7 +255,7 @@ public class Schema {
 			ObjectMapper mapper = new ObjectMapper();
 			schemaDTO = mapper.readValue(metadataString, SchemaDTO.class);
 		}catch(Exception ex) {
-			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());			
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse metadata string." + ex.getMessage());			
 		}
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		return addFileToSchema(dto.getPID(), file.getContentType(), file);						
