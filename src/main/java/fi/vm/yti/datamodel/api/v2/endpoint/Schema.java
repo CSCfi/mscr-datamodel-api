@@ -255,7 +255,7 @@ public class Schema {
 			ObjectMapper mapper = new ObjectMapper();
 			schemaDTO = mapper.readValue(metadataString, SchemaDTO.class);
 		}catch(Exception ex) {
-			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());			
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse metadata string." + ex.getMessage());			
 		}
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		return addFileToSchema(dto.getPID(), file.getContentType(), file);						
