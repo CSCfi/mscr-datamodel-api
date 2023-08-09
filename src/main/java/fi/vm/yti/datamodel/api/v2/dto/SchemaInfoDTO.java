@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper.SchemaRevision;
-import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper.SchemaVariant;
 
 public class SchemaInfoDTO extends DataModelInfoDTO {
   
@@ -19,14 +17,14 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 	private String aggregationKey;
 	private List<String> hasRevisions;
 
-	private List<SchemaRevision> revisions;
-	private List<SchemaVariant> variants;
-	private Map<String, List<SchemaVariant>> variants2;
+	private List<Revision> revisions;
+	private List<Variant> variants;
+	private Map<String, List<Variant>> variants2;
 	
-	public Map<String, List<SchemaVariant>> getVariants2() {
+	public Map<String, List<Variant>> getVariants2() {
 		return variants2;
 	}
-	public void setVariants2(Map<String, List<SchemaVariant>> variants2) {
+	public void setVariants2(Map<String, List<Variant>> variants2) {
 		this.variants2 = variants2;
 	}
 
@@ -88,19 +86,19 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 		this.fileMetadata = fileMetadata;
 	} 
 	
-	public List<SchemaRevision> getRevisions() {
+	public List<Revision> getRevisions() {
 		return revisions;
 	}
 
-	public void setRevisions(List<SchemaRevision> revisions) {
+	public void setRevisions(List<Revision> revisions) {
 		this.revisions = revisions;
 	}
 
-	public List<SchemaVariant> getVariants() {
+	public List<Variant> getVariants() {
 		return variants;
 	}
 
-	public void setVariants(List<SchemaVariant> variants) {
+	public void setVariants(List<Variant> variants) {
 		this.variants = variants;
 	}
 	public List<String> getHasRevisions() {

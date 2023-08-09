@@ -1,5 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
+import java.util.Map;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -8,6 +10,11 @@ public class MSCR {
 
     private MSCR(){
         //property class
+    }
+    
+    public enum SOURCE_TYPE {
+    	REFERENCED,
+    	HOSTED
     }
 
     public static final String URI ="http://uri.suomi.fi/datamodel/ns/mscr#";
@@ -31,7 +38,12 @@ public class MSCR {
     public static final Property revisions = ResourceFactory.createProperty(URI, "revisions");
     public static final Property variants = ResourceFactory.createProperty(URI, "variants");
     public static final Property hasRevision = ResourceFactory.createProperty(URI, "hasRevision");
+    public static final Property numberOfRevisions = ResourceFactory.createProperty(URI, "numberOfRevisions");
  
     
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
+    
+
+    public record Organization(String id,  Map<String, String> label) {}
+
 }

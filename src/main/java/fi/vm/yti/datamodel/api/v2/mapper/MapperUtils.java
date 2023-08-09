@@ -1,10 +1,15 @@
 package fi.vm.yti.datamodel.api.v2.mapper;
 
 import fi.vm.yti.datamodel.api.v2.dto.*;
+import fi.vm.yti.datamodel.api.v2.dto.MSCR.Organization;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
+import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
 import fi.vm.yti.security.YtiUser;
+
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -13,6 +18,8 @@ import org.apache.jena.shared.JenaException;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.SKOS;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -38,6 +45,10 @@ public class MapperUtils {
         }
     }
 
+    public static String getURN(UUID id) {
+    	return "urn:uuid:" + id.toString();
+    }
+    
     public static String getModelIdFromNamespace(String namespace){
         return namespace.substring(namespace.lastIndexOf("/") + 1);
     }
@@ -373,4 +384,65 @@ public class MapperUtils {
                 .map(s -> uriToURIDTO(s, model))
                 .collect(Collectors.toSet());
     }
+    
+	public static List<Organization> mapToListOrganizations(List<UUID> organizations, Model organizationModel) {
+		return organizations.stream().map(org -> {
+			var urnId = MapperUtils.getURN(org);
+			var orgRes = organizationModel.getResource(urnId);
+			var labels = localizedPropertyToMap(orgRes, SKOS.prefLabel);
+			return new Organization(org.toString(), labels);
+		}).collect(Collectors.toList());
+		
+	}
+	
+    public static Query getSchemaVariantsQuery(String pid, String namespace) throws Exception {
+    	var b = new ConstructBuilder();
+    	var r = "?resource";
+    	var pidResource = ResourceFactory.createResource(pid);
+    	SparqlUtils.addConstructProperty(r, b, RDFS.label, "?label");
+    	SparqlUtils.addConstructProperty(r, b, DCTerms.created, "?created");
+    	SparqlUtils.addConstructProperty(r, b, MSCR.versionLabel, "?versionLabel");
+    	SparqlUtils.addConstructProperty(r, b, MSCR.aggregationKey, "?aggregationKey2");
+    	
+    	b.addWhere(pidResource, MSCR.namespace, "?ns");
+    	b.addWhere(pidResource, MSCR.aggregationKey, "?aggregationKey");
+    	b.addWhere(r, MSCR.namespace, "?ns");
+    	
+    	b.addFilter("?aggregationKey != ?aggregationKey2");
+    	
+    	Query q = b.build();
+    	
+    	return q;
+    } 
+    
+    public static Query getRevisionsQuery(String aggregationKey) {
+    	var b = new ConstructBuilder();
+    	var r = "?resource";
+    	
+   
+    	SparqlUtils.addConstructProperty(r, b, RDFS.label, "?label");
+    	SparqlUtils.addConstructProperty(r, b, DCTerms.created, "?created");
+    	SparqlUtils.addConstructProperty(r, b, MSCR.versionLabel, "?versionLabel");    	
+    	b.addWhere(r, MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
+    	Query q =  b.build();
+		
+    	return q;
+  			
+    }   
+    
+    public static Revision mapToRevision(Resource rev) {
+    	var pid = rev.getURI();
+    	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
+    	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel); 
+    	var created = ((XSDDateTime)rev.getProperty(DCTerms.created).getLiteral().getValue()).asCalendar().getTime();    	
+    	return new Revision(pid, created, label, versionLabel);
+    }
+    
+    public static Variant mapToVariant(Resource rev) {
+    	var pid = rev.getURI();
+    	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
+    	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel);
+    	var aggregationKey = MapperUtils.propertyToString(rev, MSCR.aggregationKey);
+    	return new Variant(pid, label, versionLabel, aggregationKey);
+    }      
 }

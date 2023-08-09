@@ -17,7 +17,9 @@ import fi.vm.yti.datamodel.api.v2.utils.DataModelUtils;
 import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -46,6 +48,7 @@ public class OpenSearchIndexer {
     public static final String OPEN_SEARCH_INDEX_MODEL = "models_v2";
     public static final String OPEN_SEARCH_INDEX_RESOURCE = "resources_v2";
     public static final String OPEN_SEARCH_INDEX_CROSSWALK = "crosswalks_v2";
+    public static final String OPEN_SEARCH_INDEX_SCHEMA = "schemas_v2";
     public static final String OPEN_SEARCH_INDEX_EXTERNAL = "external_v2";
 
     private final Logger logger = LoggerFactory.getLogger(OpenSearchIndexer.class);
@@ -85,9 +88,11 @@ public class OpenSearchIndexer {
             openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_MODEL);
             openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_RESOURCE);
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_CROSSWALK);
+			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_SCHEMA);
             logger.info("v2 Indexes cleaned");
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_MODEL, getModelMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_RESOURCE, getResourceMappings());
+            openSearchConnector.createIndex(OPEN_SEARCH_INDEX_SCHEMA, getSchemaMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_CROSSWALK, getCrosswalkMappings());
             initModelIndex();
             initResourceIndex();
@@ -110,6 +115,8 @@ public class OpenSearchIndexer {
             case OpenSearchIndexer.OPEN_SEARCH_INDEX_EXTERNAL -> initExternalResourceIndex();
             case OpenSearchIndexer.OPEN_SEARCH_INDEX_MODEL -> initModelIndex();
             case OpenSearchIndexer.OPEN_SEARCH_INDEX_RESOURCE -> initResourceIndex();
+            case OpenSearchIndexer.OPEN_SEARCH_INDEX_SCHEMA -> initSchemaIndex();
+            case OpenSearchIndexer.OPEN_SEARCH_INDEX_CROSSWALK -> initCrosswalkIndex();
             default -> throw new IllegalArgumentException("Given value not allowed");
         }
     }
@@ -119,11 +126,13 @@ public class OpenSearchIndexer {
             openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_MODEL);
             openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_RESOURCE);
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_CROSSWALK);
+			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_SCHEMA);
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_EXTERNAL);
             logger.info("v2 Indexes cleaned");
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_MODEL, getModelMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_RESOURCE, getResourceMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_CROSSWALK, getCrosswalkMappings());
+            openSearchConnector.createIndex(OPEN_SEARCH_INDEX_SCHEMA, getSchemaMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_EXTERNAL, getExternalResourceMappings());
             initModelIndex();
             initResourceIndex();
@@ -143,6 +152,13 @@ public class OpenSearchIndexer {
                 .properties(getCrosswalkProperties())
                 .build();
 	}
+    
+	private TypeMapping getSchemaMappings() {
+        return new TypeMapping.Builder()
+                .dynamicTemplates(getModelDynamicTemplates())
+                .properties(getSchemaProperties())
+                .build();
+    }    
 
 	private TypeMapping getModelMappings() {
         return new TypeMapping.Builder()
@@ -178,7 +194,7 @@ public class OpenSearchIndexer {
     
     public void createSchemaToIndex(IndexSchema model) { 
         logger.info("Indexing: {}", model.getId());
-        openSearchConnector.putToIndex(OPEN_SEARCH_INDEX_MODEL, model.getId(), model);
+        openSearchConnector.putToIndex(OPEN_SEARCH_INDEX_SCHEMA, model.getId(), model);
     }    
 
     public void createCrosswalkToIndex(IndexCrosswalk model) {
@@ -195,7 +211,7 @@ public class OpenSearchIndexer {
     }
     
     public void updateSchemaToIndex(IndexSchema model) {
-        openSearchConnector.updateToIndex(OPEN_SEARCH_INDEX_MODEL, model.getId(), model);
+        openSearchConnector.updateToIndex(OPEN_SEARCH_INDEX_SCHEMA, model.getId(), model);
     }
     
     public void deleteModelFromIndex(String graph) {
@@ -268,6 +284,7 @@ public class OpenSearchIndexer {
         bulkInsert(OPEN_SEARCH_INDEX_MODEL, list);
     }
 
+
     public void initSchemaIndex() {
         var constructBuilder = new ConstructBuilder()
                 .addPrefixes(ModelConstants.PREFIXES);
@@ -281,20 +298,38 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.isPartOf, "?isPartOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.format, "?format");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.versionLabel, "?versionLabel");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.aggregationKey, "?aggregationKey");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.PROV_wasRevisionOf, "?revisionOf");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.hasRevision, "?hasRevision");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.numberOfRevisions, "?numberOfRevisions");
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
                 .addOptional(GRAPH_VARIABLE, "dcterms:language/rdf:rest*/rdf:first", "?language")
-                .addOptional(GRAPH_VARIABLE, DCTerms.language, "?language");
+                .addOptional(GRAPH_VARIABLE, DCTerms.language, "?language");                
+        try {
+			constructBuilder.addSubQuery(
+					new SelectBuilder()
+						.addVar("count(?aggregationKey)", "?numberOfRevisions")
+						.addWhere("?some", "<http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>", "?aggregationKey")
+						.addGroupBy("?aggregationKey")
+					
+					);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        
         var indexModels = jenaService.constructWithQuerySchemas(constructBuilder.build());
         var list = new ArrayList<IndexSchema>();
         indexModels.listSubjects().forEach(next -> {
             var newModel = ModelFactory.createDefaultModel()
                     .add(next.listProperties());
-            var indexModel = schemaMapper.mapToIndexModel(next.getURI(), newModel);
+            var indexModel = schemaMapper.mapToIndexModel(next.getURI(), newModel, indexModels);
             list.add(indexModel);
         });
-        bulkInsert(OPEN_SEARCH_INDEX_MODEL, list);
+        bulkInsert(OPEN_SEARCH_INDEX_SCHEMA, list);
     }
     
     public void initResourceIndex() {
@@ -343,6 +378,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceSchema, "?sourceSchema");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.targetSchema, "?targetSchema");
+        
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
@@ -476,6 +512,29 @@ public class OpenSearchIndexer {
                 "targetClass", getKeywordProperty());
     }
     
+    private Map<String, org.opensearch.client.opensearch._types.mapping.Property> getSchemaProperties() {
+        return Map.ofEntries(
+        		Map.entry("id", getKeywordProperty()),
+        		Map.entry("status", getKeywordProperty()),
+        		Map.entry("type", getKeywordProperty()),
+        		Map.entry("prefix", getKeywordProperty()),
+        		Map.entry("contributor", getKeywordProperty()),
+        		Map.entry("language", getKeywordProperty()),
+        		Map.entry("isPartOf", getKeywordProperty()),
+        		Map.entry("created", getDateProperty()),
+        		Map.entry("contentModified", getDateProperty()),
+        		Map.entry("format", getKeywordProperty()),
+        		Map.entry("versionLabel", getKeywordProperty()),
+        		Map.entry("aggregationKey", getKeywordProperty()),
+        		Map.entry("revisionOf", getKeywordProperty()),
+        		Map.entry("hasRevisions", getKeywordProperty()),
+        		Map.entry("numberOfRevisions", getIntProperty()),
+        		Map.entry("revisions", getNotIndexedJSONProperty())
+        		
+        		);
+        		
+    }    
+    
     private Map<String, org.opensearch.client.opensearch._types.mapping.Property> getCrosswalkProperties() {
         return Map.ofEntries(        		        		
         		Map.entry("id", getKeywordProperty()),
@@ -487,6 +546,13 @@ public class OpenSearchIndexer {
 				Map.entry("isPartOf", getKeywordProperty()),                
 				Map.entry("created", getDateProperty()),
 				Map.entry("contentModified", getDateProperty()),
+        		Map.entry("format", getKeywordProperty()),
+        		Map.entry("versionLabel", getKeywordProperty()),
+        		Map.entry("aggregationKey", getKeywordProperty()),
+        		Map.entry("revisionOf", getKeywordProperty()),
+        		Map.entry("hasRevisions", getKeywordProperty()),
+        		Map.entry("numberOfRevisions", getIntProperty()),
+        		Map.entry("revisions", getNotIndexedJSONProperty()),				
 				Map.entry("sourceSchema", getKeywordProperty()),
 				Map.entry("targetSchema", getKeywordProperty())
         );              
@@ -530,4 +596,15 @@ public class OpenSearchIndexer {
         return new org.opensearch.client.opensearch._types.mapping.Property.Builder()
                 .date(new DateProperty.Builder().build()).build();
     }
+    
+    private static org.opensearch.client.opensearch._types.mapping.Property getNotIndexedJSONProperty() {
+        return new org.opensearch.client.opensearch._types.mapping.Property.Builder().
+        		object(new ObjectProperty.Builder().enabled(false).build()).build();                
+    }
+    
+    private static org.opensearch.client.opensearch._types.mapping.Property getIntProperty() {
+        return new org.opensearch.client.opensearch._types.mapping.Property.Builder()
+        		.integer(new IntegerNumberProperty.Builder().build()).build();
+    }
+    
 }

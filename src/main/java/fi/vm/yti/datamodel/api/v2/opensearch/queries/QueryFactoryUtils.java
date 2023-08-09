@@ -3,6 +3,8 @@ package fi.vm.yti.datamodel.api.v2.opensearch.queries;
 
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.aggregations.Aggregation;
+import org.opensearch.client.opensearch._types.aggregations.TermsAggregation;
 import org.opensearch.client.opensearch._types.query_dsl.*;
 
 import java.util.Collection;
@@ -68,6 +70,12 @@ public class QueryFactoryUtils {
                 .fields("label.*")
                 .fuzziness("2")
                 )._toQuery();
+    }
+    
+    public static Aggregation termAggregation(String field, int size) {
+    	return new Aggregation.Builder().terms(
+    			new TermsAggregation.Builder().field(field).size(size).build()
+    	).build();    	
     }
 
 }
