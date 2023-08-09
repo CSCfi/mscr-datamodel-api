@@ -19,6 +19,7 @@ import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.CountQueryFactory;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.CrosswalkQueryFactory;
+import fi.vm.yti.datamodel.api.v2.opensearch.queries.MSCRQueryFactory;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.ModelQueryFactory;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.QueryFactoryUtils;
 import fi.vm.yti.datamodel.api.v2.opensearch.queries.ResourceQueryFactory;
@@ -33,9 +34,12 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.jetbrains.annotations.NotNull;
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.*;
@@ -306,4 +310,14 @@ public class SearchIndexService {
 	            throw new OpenSearchException(e.getMessage(), OpenSearchIndexer.OPEN_SEARCH_INDEX_MODEL);
 	        }
 	}
+	
+	public SearchResponse<ObjectNode> mscrSearch(MSCRSearchRequest request) {
+        try {
+            var build = MSCRQueryFactory.createMSCRQuery(request);            
+            SearchResponse<ObjectNode> searchResponse = client.search(build, ObjectNode.class);            
+            return searchResponse;
+        } catch (IOException e) {
+            throw new OpenSearchException(e.getMessage(), OpenSearchIndexer.OPEN_SEARCH_INDEX_CROSSWALK + " and " + OpenSearchIndexer.OPEN_SEARCH_INDEX_SCHEMA);
+        }
+	}	
 }

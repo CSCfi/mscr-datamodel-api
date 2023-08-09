@@ -30,4 +30,13 @@ public class OpenSearchUtil {
             LOG.debug(out.toString());
         }
     }
+    
+    public static String serializePayload(JsonpSerializable object) {
+        var out = new ByteArrayOutputStream();
+        var generator = MAPPER.jsonProvider().createGenerator(out);
+        MAPPER.serialize(object, generator);
+        generator.close();
+        return out.toString();
+    	
+    }
 }

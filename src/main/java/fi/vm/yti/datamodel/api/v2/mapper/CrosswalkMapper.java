@@ -32,7 +32,8 @@ import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
-import fi.vm.yti.datamodel.api.v2.dto.ModelType;
+
+import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
@@ -48,14 +49,17 @@ public class CrosswalkMapper {
 	private final StorageService storageService;
 	private final CoreRepository coreRepository;
     private final String defaultNamespace;
+    private final JenaService jenaService;
     
 	public CrosswalkMapper(
 			CoreRepository coreRepository,
 			PostgresStorageService storageService,
-			@Value("${defaultNamespace}") String defaultNamespace) {
+			@Value("${defaultNamespace}") String defaultNamespace,
+			JenaService jenaService) {
 		this.coreRepository = coreRepository;
 		this.storageService = storageService;
 		this.defaultNamespace = defaultNamespace;
+		this.jenaService = jenaService;
 	}
 	
 	
@@ -200,8 +204,12 @@ public class CrosswalkMapper {
 		
 
 	}	
+	public IndexCrosswalk mapToIndexModel(String pid, Model model) {
+		return mapToIndexModel(pid, model, null);
+		
+	}
 	
-    public IndexCrosswalk mapToIndexModel(String pid, Model model){
+    public IndexCrosswalk mapToIndexModel(String pid, Model model, Model revisionsModel) {
     	var resource = model.getResource(pid);
         var indexModel = new IndexCrosswalk();
         indexModel.setId(pid);
@@ -214,7 +222,7 @@ public class CrosswalkMapper {
         }
         indexModel.setType(MSCRType.CROSSWALK);
 
-        indexModel.setPrefix(pid);
+        indexModel.setPrefix(pid); 
         indexModel.setLabel(MapperUtils.localizedPropertyToMap(resource, RDFS.label));
         indexModel.setComment(MapperUtils.localizedPropertyToMap(resource, RDFS.comment));
         var contributors = new ArrayList<UUID>();
@@ -223,12 +231,17 @@ public class CrosswalkMapper {
             contributors.add(MapperUtils.getUUID(value));
         });
         indexModel.setContributor(contributors);
+		indexModel.setOrganizations(MapperUtils.mapToListOrganizations(contributors, coreRepository.getOrganizations()));
+
+		
         var isPartOf = MapperUtils.arrayPropertyToList(resource, DCTerms.isPartOf);
         var serviceCategories = coreRepository.getServiceCategories();
         var groups = isPartOf.stream().map(serviceCat -> MapperUtils.propertyToString(serviceCategories.getResource(serviceCat), SKOS.notation)).collect(Collectors.toList());
         indexModel.setIsPartOf(groups);
         indexModel.setLanguage(MapperUtils.arrayPropertyToList(resource, DCTerms.language));
 
+        indexModel.setFormat(MapperUtils.propertyToString(resource, MSCR.format));
+        
         if(resource.hasProperty(MSCR.sourceSchema)) {
         	indexModel.setSourceSchema(resource.getPropertyResourceValue(MSCR.sourceSchema).getURI());
         }

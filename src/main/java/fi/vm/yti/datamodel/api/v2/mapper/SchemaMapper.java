@@ -16,7 +16,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -32,11 +31,12 @@ import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
-import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
+import fi.vm.yti.datamodel.api.v2.dto.Variant;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
@@ -229,29 +229,30 @@ public class SchemaMapper {
 		
 		if(includeVersionData) {
 			// query for revisions and variants here		
-			List<SchemaRevision> revs = new ArrayList<SchemaRevision>();
- 			var revisionsModel = jenaService.constructWithQuerySchemas(getSchemaRevisionsQuery(schemaInfoDTO.getAggregationKey()));			
+			List<Revision> revs = new ArrayList<Revision>();
+ 			var revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(schemaInfoDTO.getAggregationKey()));			
 			revisionsModel.listSubjects().forEach(res -> {
-				revs.add(mapToSchemaRevision(res));				
+				revs.add(MapperUtils.mapToRevision(res));				
 			});
-			List<SchemaRevision> orderedRevs = revs.stream()
-					.sorted((SchemaRevision r1, SchemaRevision r2) -> r1.created.compareTo(r2.created))
+			
+			List<Revision> orderedRevs = revs.stream()
+					.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
 					.collect(Collectors.toList());
 			schemaInfoDTO.setRevisions(orderedRevs);
 			
-			List<SchemaVariant> variants = new ArrayList<SchemaVariant>();
+			List<Variant> variants = new ArrayList<Variant>();
 			try {
-	 			var variantsModel = jenaService.constructWithQuerySchemas(getSchemaVariantsQuery(PID, schemaInfoDTO.getNamespace()));			
+	 			var variantsModel = jenaService.constructWithQuerySchemas(MapperUtils.getSchemaVariantsQuery(PID, schemaInfoDTO.getNamespace()));			
 	 			variantsModel.listSubjects().forEach(res -> {
-					variants.add(mapToSchemaVariant(res));				
+					variants.add(MapperUtils.mapToVariant(res));				
 				});
 				
 			}catch(Exception ex) {
 				log.error("Querying schema variants failed.", ex);
 			}
-			Map<String, List<SchemaVariant>> v2 = variants.stream()
+			Map<String, List<Variant>> v2 = variants.stream()
 					.collect(
-							Collectors.groupingBy(SchemaVariant::aggregationKey));
+							Collectors.groupingBy(Variant::getAggregationKey));
 			schemaInfoDTO.setVariants(variants);
 			schemaInfoDTO.setVariants2(v2);
 
@@ -280,13 +281,16 @@ public class SchemaMapper {
         });
     }
 
+    public IndexSchema mapToIndexModel(String pid, Model model){
+    	return mapToIndexModel(pid, model, null);
+    }
     /**
      * Map a DataModel to a DataModelDocument
      * @param prefix Prefix of model
      * @param model Model
      * @return Index model
      */
-    public IndexSchema mapToIndexModel(String pid, Model model){
+    public IndexSchema mapToIndexModel(String pid, Model model, Model revisionsModel){
         var resource = model.getResource(pid);
         var indexModel = new IndexSchema();
         indexModel.setId(pid);
@@ -297,12 +301,7 @@ public class SchemaMapper {
         if(contentModified != null) {
             indexModel.setContentModified(contentModified.getString());
         }
-        var types = resource.listProperties(RDF.type).mapWith(Statement::getResource).toList();
-        if(types.contains(MSCR.SCHEMA)){
-            indexModel.setType(MSCRType.SCHEMA);
-        }else{
-            throw new MappingError("RDF:type not supported for schema model");
-        }
+        indexModel.setType(MSCRType.SCHEMA);
         indexModel.setPrefix(pid);
         indexModel.setLabel(MapperUtils.localizedPropertyToMap(resource, RDFS.label));
         indexModel.setComment(MapperUtils.localizedPropertyToMap(resource, RDFS.comment));
@@ -312,50 +311,40 @@ public class SchemaMapper {
             contributors.add(MapperUtils.getUUID(value));
         });
         indexModel.setContributor(contributors);
+		indexModel.setOrganizations(MapperUtils.mapToListOrganizations(contributors, coreRepository.getOrganizations()));
+        
+        
+        
         var isPartOf = MapperUtils.arrayPropertyToList(resource, DCTerms.isPartOf);
         var serviceCategories = coreRepository.getServiceCategories();
         var groups = isPartOf.stream().map(serviceCat -> MapperUtils.propertyToString(serviceCategories.getResource(serviceCat), SKOS.notation)).collect(Collectors.toList());
         indexModel.setIsPartOf(groups);
         indexModel.setLanguage(MapperUtils.arrayPropertyToList(resource, DCTerms.language));
 
+        indexModel.setFormat(MapperUtils.propertyToString(resource, MSCR.format));
+        indexModel.setAggregationKey(MapperUtils.propertyToString(resource, MSCR.aggregationKey));
+        indexModel.setRevisionOf(MapperUtils.propertyToString(resource, MSCR.PROV_wasRevisionOf));
+        indexModel.setHasRevision(MapperUtils.propertyToString(resource, MSCR.hasRevision));
+        indexModel.setNumberOfRevisions(MapperUtils.getLiteral(resource, MSCR.numberOfRevisions, Integer.class));
+        
+        List<Revision> revs = new ArrayList<Revision>();
+        if(revisionsModel == null) {
+        	revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(indexModel.getAggregationKey()));
+        }
+        Resource aggregationResource = resource.getPropertyResourceValue(MSCR.aggregationKey);
+        if(aggregationResource != null) {
+            revisionsModel.listSubjectsWithProperty(MSCR.aggregationKey, aggregationResource) .forEach(res -> {
+    			revs.add(MapperUtils.mapToRevision(res));				
+    		});
+    		List<Revision> orderedRevs = revs.stream()
+    				.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
+    				.collect(Collectors.toList());
+    		indexModel.setRevisions(orderedRevs); 
+        	
+        }
+        
         return indexModel;
-    }
-    
-    private Query getSchemaRevisionsQuery(String aggregationKey) {
-    	var b = new ConstructBuilder();
-    	var r = "?resource";
-    	
-   
-    	SparqlUtils.addConstructProperty(r, b, RDFS.label, "?label");
-    	SparqlUtils.addConstructProperty(r, b, DCTerms.created, "?created");
-    	SparqlUtils.addConstructProperty(r, b, MSCR.versionLabel, "?versionLabel");    	
-    	b.addWhere(r, MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
-    	Query q =  b.build();
-		
-    	return q;
-  			
-    }
-    
-    private Query  getSchemaVariantsQuery(String pid, String namespace) throws Exception {
-    	var b = new ConstructBuilder();
-    	var r = "?resource";
-    	var pidResource = ResourceFactory.createResource(pid);
-    	SparqlUtils.addConstructProperty(r, b, RDFS.label, "?label");
-    	SparqlUtils.addConstructProperty(r, b, DCTerms.created, "?created");
-    	SparqlUtils.addConstructProperty(r, b, MSCR.versionLabel, "?versionLabel");
-    	SparqlUtils.addConstructProperty(r, b, MSCR.aggregationKey, "?aggregationKey2");
-    	
-    	b.addWhere(pidResource, MSCR.namespace, "?ns");
-    	b.addWhere(pidResource, MSCR.aggregationKey, "?aggregationKey");
-    	b.addWhere(r, MSCR.namespace, "?ns");
-    	
-    	b.addFilter("?aggregationKey != ?aggregationKey2");
-    	
-    	Query q = b.build();
-    	
-    	return q;
-    }    
-    
+    }     
 	
 	public Query getAggregationKeyFromPrevQuery(String prevVersionPID) {
 		
@@ -365,26 +354,8 @@ public class SchemaMapper {
         builder.addWhere(prevVersion, MSCR.aggregationKey, "?aggregationKey");
         return builder.build();
 	}    
-    
-    private SchemaRevision mapToSchemaRevision(Resource rev) {
-    	var pid = rev.getURI();
-    	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
-    	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel); 
-    	var created = ((XSDDateTime)rev.getProperty(DCTerms.created).getLiteral().getValue()).asCalendar().getTime();    	
-    	return new SchemaRevision(pid, created, label, versionLabel);
-    }
-    
-    private SchemaVariant mapToSchemaVariant(Resource rev) {
-    	var pid = rev.getURI();
-    	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
-    	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel);
-    	var aggregationKey = MapperUtils.propertyToString(rev, MSCR.aggregationKey);
-    	return new SchemaVariant(pid, label, versionLabel, aggregationKey);
-    }    
-    
-    public record SchemaRevision(String pid, java.util.Date created, Map<String, String> label, String versionLabel) {} 
-    public record SchemaVariant(String pid, Map<String, String> label, String versionLabel, String aggregationKey) {}
-    
+      
+        
 	public SchemaDTO mapToSchemaDTO(SchemaInfoDTO source) {		
 		SchemaDTO s = new SchemaDTO();
 		s.setStatus(source.getStatus());
@@ -394,13 +365,11 @@ public class SchemaMapper {
 		s.setNamespace(source.getNamespace());
 		s.setOrganizations(source.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
 		s.setVersionLabel(source.getVersionLabel());
-		s.setFormat(source.getFormat());
-		
+		s.setFormat(source.getFormat());		
 		return s;
-		
-		
-		
 	} 
+	
+
 
 
 }

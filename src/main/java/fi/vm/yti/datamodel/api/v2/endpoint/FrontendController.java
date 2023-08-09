@@ -3,6 +3,7 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
+import fi.vm.yti.datamodel.api.v2.opensearch.OpenSearchUtil;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.*;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResource;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
@@ -16,14 +17,19 @@ import fi.vm.yti.security.AuthenticatedUserProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.opensearch.client.opensearch.core.SearchResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -128,4 +134,15 @@ public class FrontendController {
     public Set<String> getResolvedNamespaces() {
         return namespaceService.getResolvedNamespaces();
     }
+    
+
+    @Operation(summary = "MSCR Search")
+    @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks")
+    @GetMapping(value = "/mscrSearch", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> mscrSearch(MSCRSearchRequest request) {
+    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request);
+    	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);
+    	
+    	
+    }    
 }
