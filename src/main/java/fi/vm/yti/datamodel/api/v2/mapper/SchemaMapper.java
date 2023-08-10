@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
@@ -31,6 +32,7 @@ import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
@@ -62,11 +64,11 @@ public class SchemaMapper {
 		this.storageService = storageService;
 		this.jenaService = jenaService;
 	}
-	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO) {
-		return mapToJenaModel(PID, schemaDTO, null, null);
+	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO, YtiUser user) {
+		return mapToJenaModel(PID, schemaDTO, null, null, user);
 	}
 
-	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey) {
+	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey, YtiUser user) {
 		log.info("Mapping SchemaDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -75,9 +77,7 @@ public class SchemaMapper {
 		Resource type = MSCR.SCHEMA;
 		var creationDate = new XSDDateTime(Calendar.getInstance());
 		var modelResource = model.createResource(modelUri).addProperty(RDF.type, type)
-				.addProperty(OWL.versionInfo, schemaDTO.getStatus().name()).addProperty(DCTerms.identifier, PID)
-				.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(creationDate))
-				.addProperty(DCTerms.created, ResourceFactory.createTypedLiteral(creationDate));
+				.addProperty(OWL.versionInfo, schemaDTO.getStatus().name()).addProperty(DCTerms.identifier, PID);
 
 		schemaDTO.getLanguages().forEach(lang -> modelResource.addProperty(DCTerms.language, lang));
 
@@ -92,7 +92,7 @@ public class SchemaMapper {
 				RDFS.comment, model);
 
 		addOrgsToModel(schemaDTO, modelResource);
-
+		MapperUtils.addCreationMetadata(modelResource, user);
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
 
@@ -175,11 +175,11 @@ public class SchemaMapper {
 		return model;
 	}
 
-	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model) {
-		return mapToSchemaDTO(PID, model, false);
+	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper) {
+		return mapToSchemaDTO(PID, model, false, userMapper);
 	}
 	
-	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData) {
+	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper) {
 
 		var schemaInfoDTO = new SchemaInfoDTO();
 		schemaInfoDTO.setPID(PID);
@@ -201,10 +201,7 @@ public class SchemaMapper {
 		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
 		schemaInfoDTO.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 
-		var created = modelResource.getProperty(DCTerms.created).getLiteral().getString();
-		var modified = modelResource.getProperty(DCTerms.modified).getLiteral().getString();
-		schemaInfoDTO.setCreated(created);
-		schemaInfoDTO.setModified(modified);
+        MapperUtils.mapCreationInfo(schemaInfoDTO, modelResource, userMapper);
 
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
@@ -325,7 +322,6 @@ public class SchemaMapper {
         indexModel.setAggregationKey(MapperUtils.propertyToString(resource, MSCR.aggregationKey));
         indexModel.setRevisionOf(MapperUtils.propertyToString(resource, MSCR.PROV_wasRevisionOf));
         indexModel.setHasRevision(MapperUtils.propertyToString(resource, MSCR.hasRevision));
-        indexModel.setNumberOfRevisions(MapperUtils.getLiteral(resource, MSCR.numberOfRevisions, Integer.class));
         
         List<Revision> revs = new ArrayList<Revision>();
         if(revisionsModel == null) {
@@ -340,8 +336,10 @@ public class SchemaMapper {
     				.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
     				.collect(Collectors.toList());
     		indexModel.setRevisions(orderedRevs); 
-        	
+    		indexModel.setNumberOfRevisions(orderedRevs.size());	
         }
+        
+
         
         return indexModel;
     }     

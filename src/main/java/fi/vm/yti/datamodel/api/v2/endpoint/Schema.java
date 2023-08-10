@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
+import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.JSONValidationService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
@@ -52,6 +54,7 @@ import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.service.ValidationRecord;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
+import fi.vm.yti.datamodel.api.v2.validator.ValidSchema;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,7 +64,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("v2")
 @Tag(name = "Schema")
-//@Validated
+@Validated
 public class Schema {
 	
 	public enum CreateActions {
@@ -85,6 +88,9 @@ public class Schema {
 	private final StorageService storageService;	
 	
 	private final AuthenticatedUserProvider userProvider;
+	
+    private final GroupManagementService groupManagementService;
+
 
 	public Schema(JenaService jenaService,
             AuthorizationManager authorizationManager,
@@ -93,7 +99,8 @@ public class Schema {
             SchemaService schemaService,
             PIDService PIDService,
             PostgresStorageService storageService,
-            AuthenticatedUserProvider userProvider) {
+            AuthenticatedUserProvider userProvider,
+            GroupManagementService groupManagementService) {
 		
 		this.jenaService = jenaService;
 		this.openSearchIndexer = openSearchIndexer;
@@ -103,13 +110,17 @@ public class Schema {
 		this.PIDService = PIDService;
 		this.storageService = storageService;
 		this.userProvider = userProvider;
+		this.groupManagementService = groupManagementService;
 	}
 	
 	
 	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file) {
 		Model metadataModel = jenaService.getSchema(pid);
-		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel);
-		check(authorizationManager.hasRightToModel(pid, metadataModel));
+        var hasRightsToModel = authorizationManager.hasRightToModel(pid, metadataModel);
+		check(hasRightsToModel);
+        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
 
 		try {
 			byte[] fileInBytes = file.getBytes();
@@ -143,7 +154,7 @@ public class Schema {
 		} catch (Exception ex) {
 			throw new RuntimeException("Error occured while ingesting file based schema description", ex);
 		}
-		return mapper.mapToSchemaDTO(pid, metadataModel);
+		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
 	}
 	
 	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, boolean isRevision) {
@@ -175,9 +186,12 @@ public class Schema {
         if(model == null){
             throw new ResourceNotFoundException(pid);
         }
+        var hasRightsToModel = authorizationManager.hasRightToModel(pid, model);
+        
+        check(hasRightsToModel);
+        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 
-        check(authorizationManager.hasRightToModel(pid, model));
-        return mapper.mapToSchemaDTO(pid, model, includeVersionInfo);
+        return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, userMapper);
 	}
 
 	
@@ -198,7 +212,7 @@ public class Schema {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {
+	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {
 		validateActionParams(schemaDTO, action, target); 
 		String aggregationKey = null;
 		if(action != null) {			
@@ -214,10 +228,10 @@ public class Schema {
 			}
 		}
 		logger.info("Create Schema {}", schemaDTO);
-		check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));		
+		check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));	
 		final String PID = PIDService.mint(PIDType.HANDLE);
 
-		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey);
+		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey, userProvider.getUser());
 		jenaService.putToSchema(PID, jenaModel);
 		
 		// handle possible versioning data
@@ -231,7 +245,9 @@ public class Schema {
 		}
 		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
         openSearchIndexer.createSchemaToIndex(indexModel);
-        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID));
+        var userMapper = groupManagementService.mapUser();
+
+        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
 				
 	}
     
@@ -265,7 +281,7 @@ public class Schema {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
     @PostMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public void updateModel(@RequestBody SchemaDTO schemaDTO,
+    public void updateModel(@ValidSchema @RequestBody SchemaDTO schemaDTO,
                             @PathVariable String pid) {
         logger.info("Updating schema {}", schemaDTO);
 
@@ -292,7 +308,10 @@ public class Schema {
     @GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
     public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){    	
     	var jenaModel = jenaService.getSchema(pid);
-    	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo));
+		var hasRightsToModel = authorizationManager.hasRightToModel(pid, jenaModel);
+        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+    	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper);
     }
     
 
