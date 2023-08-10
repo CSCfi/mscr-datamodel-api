@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,11 +33,13 @@ import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
+import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
+import fi.vm.yti.datamodel.api.v2.validator.ValidCrosswalk;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,6 +49,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("v2")
 @Tag(name="Crosswalk")
+@Validated
 public class Crosswalk {
 	private static final Logger logger = LoggerFactory.getLogger(Crosswalk.class);
 
@@ -56,14 +60,16 @@ public class Crosswalk {
     private final JenaService jenaService;
 	private final CrosswalkMapper mapper;
 	private final AuthenticatedUserProvider userProvider;
-	
+    private final GroupManagementService groupManagementService;
+
 	public Crosswalk(AuthorizationManager authorizationManager,
             OpenSearchIndexer openSearchIndexer,
             PIDService PIDService,
             PostgresStorageService storageService,
             JenaService jenaService,
             CrosswalkMapper mapper,
-            AuthenticatedUserProvider userProvider) {
+            AuthenticatedUserProvider userProvider,
+            GroupManagementService groupManagementService) {
 		this.openSearchIndexer = openSearchIndexer;
 		this.authorizationManager = authorizationManager;
 		this.PIDService = PIDService;
@@ -71,26 +77,31 @@ public class Crosswalk {
 		this.jenaService = jenaService;
 		this.mapper = mapper;
 		this.userProvider = userProvider;
+		this.groupManagementService = groupManagementService;
 	}
 	
 	private CrosswalkInfoDTO createCrosswalkMetadata(CrosswalkDTO dto) {
 		check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));		
 		final String PID = PIDService.mint(PIDType.HANDLE);
 
-		Model jenaModel = mapper.mapToJenaModel(PID, dto);
+		Model jenaModel = mapper.mapToJenaModel(PID, dto, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
 		
 		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
         openSearchIndexer.createCrosswalkToIndex(indexModel);
 
+        var userMapper = groupManagementService.mapUser();
 		
-		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID));
+		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), userMapper);
 	}
 	
 	private CrosswalkInfoDTO addFileToCrosswalk(String pid, String contentType, MultipartFile file) {
 		Model metadataModel = jenaService.getCrosswalk(pid);
-		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel);
-		check(authorizationManager.hasRightToModel(pid, metadataModel));
+		var hasRightsToModel = authorizationManager.hasRightToModel(pid, metadataModel);
+		check(hasRightsToModel);
+        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel, userMapper);
 		
 		try {
 			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT).contains(dto.getFormat())) {
@@ -104,14 +115,14 @@ public class Crosswalk {
 		} catch (Exception ex) {
 			throw new RuntimeException("Error occured while ingesting file based crosswalk description", ex);
 		}
-		return mapper.mapToCrosswalkDTO(pid, metadataModel);
+		return mapper.mapToCrosswalkDTO(pid, metadataModel, userMapper);
 	}
 	
 	@Operation(summary = "Create crosswalk")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public CrosswalkInfoDTO createCrosswalk(@RequestBody CrosswalkDTO dto) {
+	public CrosswalkInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody CrosswalkDTO dto) {
 		logger.info("Create Crosswalk {}", dto);
 		return createCrosswalkMetadata(dto);
 	}
@@ -153,7 +164,7 @@ public class Crosswalk {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
     @PostMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public void updateModel(@RequestBody CrosswalkDTO dto,
+    public void updateModel(@ValidCrosswalk @RequestBody CrosswalkDTO dto,
                             @PathVariable String pid) {
         logger.info("Updating crosswalk {}", dto);
 
@@ -178,7 +189,10 @@ public class Crosswalk {
     @GetMapping(value = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE)
     public CrosswalkInfoDTO getCrosswalkMetadata(@PathVariable String pid){
     	var jenaModel = jenaService.getCrosswalk(pid);
-    	return mapper.mapToCrosswalkDTO(pid, jenaModel);
+		var hasRightsToModel = authorizationManager.hasRightToModel(pid, jenaModel);
+        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+    	return mapper.mapToCrosswalkDTO(pid, jenaModel, userMapper);
     }
     
     @Operation(summary = "Get original file version of the crosswalk (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")

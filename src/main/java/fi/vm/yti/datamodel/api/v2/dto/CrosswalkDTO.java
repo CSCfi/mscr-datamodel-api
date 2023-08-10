@@ -1,17 +1,14 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
-import java.util.Set;
-
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrosswalkDTO extends DataModelDTO {
 
 	private CrosswalkFormat format;
-	private String aggregationKey;
-	private Set<FileMetadata> fileMetadata = Set.of();
 	private String sourceSchema;
 	private String targetSchema;
+	private String versionLabel;
+	
 	
 	public String getSourceSchema() {
 		return sourceSchema;
@@ -35,22 +32,14 @@ public class CrosswalkDTO extends DataModelDTO {
 		this.format = type;
 	}
 	
-    public String getAggregationKey() {
-		return aggregationKey;
+	public String getVersionLabel() {
+		return versionLabel;
 	}
 
-	public void setAggregationKey(String aggregationKey) {
-		this.aggregationKey = aggregationKey;
-	}
-	
-	public Set<FileMetadata> getFileMetadata() {
-		return fileMetadata;
+	public void setVersionLabel(String versionLabel) {
+		this.versionLabel = versionLabel;
 	}
 
-	public void setFileMetadata(Set<FileMetadata> fileMetadata) {
-		this.fileMetadata = fileMetadata;
-	}
-	
 
 	@Override
     public String toString() {

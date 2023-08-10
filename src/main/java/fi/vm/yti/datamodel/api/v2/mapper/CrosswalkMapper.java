@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.jena.datatypes.xsd.XSDDateTime;
@@ -18,6 +19,7 @@ import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +34,7 @@ import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
-
-import fi.vm.yti.datamodel.api.v2.dto.Revision;
+import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
@@ -63,7 +64,7 @@ public class CrosswalkMapper {
 	}
 	
 	
-	public Model mapToJenaModel(String PID, CrosswalkDTO dto) {
+	public Model mapToJenaModel(String PID, CrosswalkDTO dto, @NotNull YtiUser user) {
 		log.info("Mapping CrosswalkDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -72,9 +73,7 @@ public class CrosswalkMapper {
 		Resource type = MSCR.CROSSWALK;
 		var creationDate = new XSDDateTime(Calendar.getInstance());
 		var modelResource = model.createResource(modelUri).addProperty(RDF.type, type)
-				.addProperty(OWL.versionInfo, dto.getStatus().name()).addProperty(DCTerms.identifier, PID)
-				.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(creationDate))
-				.addProperty(DCTerms.created, ResourceFactory.createTypedLiteral(creationDate));
+				.addProperty(OWL.versionInfo, dto.getStatus().name()).addProperty(DCTerms.identifier, PID);
 
 		dto.getLanguages().forEach(lang -> modelResource.addProperty(DCTerms.language, lang));
 
@@ -89,6 +88,7 @@ public class CrosswalkMapper {
 				RDFS.comment, model);
 
 		addOrgsToModel(dto, modelResource);
+		MapperUtils.addCreationMetadata(modelResource, user);
 
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
@@ -115,7 +115,7 @@ public class CrosswalkMapper {
         });
     }
 
-	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model) {
+	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper) {
 		var dto = new CrosswalkInfoDTO();
 		dto.setPID(PID);
 
@@ -136,10 +136,7 @@ public class CrosswalkMapper {
 		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
 		dto.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 
-		var created = modelResource.getProperty(DCTerms.created).getLiteral().getString();
-		var modified = modelResource.getProperty(DCTerms.modified).getLiteral().getString();
-		dto.setCreated(created);
-		dto.setModified(modified);
+        MapperUtils.mapCreationInfo(dto, modelResource, userMapper);
 
 		
 		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
@@ -200,6 +197,10 @@ public class CrosswalkMapper {
         modelResource.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(updateDate));
         modelResource.removeAll(Iow.modifier);
         modelResource.addProperty(Iow.modifier, user.getId().toString());
+        
+        modelResource.removeAll(MSCR.format);
+		modelResource.addProperty(MSCR.format, dto.getFormat().toString());
+        
         return model;
 		
 
