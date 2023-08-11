@@ -88,7 +88,9 @@ dependencies {
     implementation "fi.vm.yti:yti-spring-security:0.4.0"
     implementation "fi.vm.yti:yti-spring-migration:0.2.0"
 
+    implementation "org.springframework.cloud:spring-cloud-starter"
     implementation "org.springframework.cloud:spring-cloud-starter-config"
+    implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
     implementation "ch.qos.logback:logback-core"
     implementation "net.logstash.logback:logstash-logback-encoder:7.2"
