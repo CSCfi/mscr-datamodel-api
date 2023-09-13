@@ -7,6 +7,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import fi.vm.yti.datamodel.api.index.OpenSearchUtils;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
@@ -19,7 +20,7 @@ public class MSCRQueryFactoryTest {
 	void createMSCRQueryOperatorTest() throws Exception {
 		var r = new MSCRSearchRequest();
 		
-		r.setStatus(Set.of(Status.DRAFT, Status.VALID));
+		r.setState(Set.of(MSCRState.DRAFT, MSCRState.PUBLISHED));
 		r.setType(Set.of(MSCRType.CROSSWALK));
 		
 		r.setIncludeFacets(true);
