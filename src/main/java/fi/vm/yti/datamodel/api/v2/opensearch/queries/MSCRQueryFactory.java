@@ -4,6 +4,7 @@ import static fi.vm.yti.datamodel.api.v2.opensearch.OpenSearchUtil.logPayload;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.opensearch.client.opensearch._types.SortOptions;
@@ -16,8 +17,9 @@ import org.opensearch.client.opensearch._types.query_dsl.QueryBuilders;
 import org.opensearch.client.opensearch.core.SearchRequest;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
-import fi.vm.yti.datamodel.api.v2.dto.Status;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 
@@ -42,10 +44,10 @@ public class MSCRQueryFactory {
             must.add(typeQuery);            
         }
 
-        var status = request.getStatus();
-        if(status != null && !status.isEmpty()){
-            var statusQuery = QueryFactoryUtils.termsQuery("status", status.stream().map(Status::name).toList());
-            must.add(statusQuery);              
+        var state = request.getState();
+        if(state != null && !state.isEmpty()){
+            var stateQuery = QueryFactoryUtils.termsQuery("state", state.stream().map(MSCRState::name).toList());
+            must.add(stateQuery);              
         }
         
         var organizations = request.getOrganizations();
@@ -95,6 +97,8 @@ public class MSCRQueryFactory {
         // only return the latest version
         // --> hasRevision is empty --> no hasRevision field 
         finalQuery.mustNot(new ExistsQuery.Builder().field("hasRevision").build()._toQuery());
+        // only return public documents 
+        finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name().toLowerCase()))); // Why does this only works in lowercase?
         
         var sortLang = request.getSortLang() != null ? request.getSortLang() : QueryFactoryUtils.DEFAULT_SORT_LANG;
         var sort = SortOptionsBuilders.field()
@@ -114,7 +118,7 @@ public class MSCRQueryFactory {
         if(request.isIncludeFacets()) {
         	// always add all aggregations
         	sr.aggregations("type", QueryFactoryUtils.termAggregation("type", 2));
-        	sr.aggregations("status", QueryFactoryUtils.termAggregation("status", 6));
+        	sr.aggregations("state", QueryFactoryUtils.termAggregation("state", 6));
         	sr.aggregations("format", QueryFactoryUtils.termAggregation("format", 10));
         	sr.aggregations("organization", QueryFactoryUtils.termAggregation("organization.keyword", 1000));
         	sr.aggregations("isReferenced", QueryFactoryUtils.termAggregation("isReferenced.keyword", 2));        	

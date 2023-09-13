@@ -2,7 +2,6 @@ package fi.vm.yti.datamodel.api.v2.validator;
 
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -30,6 +29,9 @@ public class CrosswalkValidator extends BaseValidator implements
         checkLabels(context, dto);
         checkDescription(context, dto);
         checkOrganizations(context, dto);
+        
+        checkState(context, dto.getState());
+        checkVisibility(context, dto.getVisibility(), dto.getState());
         
         return !isConstraintViolationAdded();
     }

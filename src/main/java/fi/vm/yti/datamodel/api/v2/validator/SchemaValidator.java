@@ -2,7 +2,6 @@ package fi.vm.yti.datamodel.api.v2.validator;
 
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -32,7 +31,9 @@ public class SchemaValidator extends BaseValidator implements
         checkOrganizations(context, dto);
         
         checkNamespace(context, dto);
-
+        checkState(context, dto.getState());
+        checkVisibility(context, dto.getVisibility(), dto.getState());
+        
         return !isConstraintViolationAdded();
     }
     

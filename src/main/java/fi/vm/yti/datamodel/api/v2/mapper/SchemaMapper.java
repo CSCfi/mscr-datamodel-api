@@ -30,7 +30,9 @@ import fi.vm.yti.datamodel.api.v2.dto.DCAP;
 import fi.vm.yti.datamodel.api.v2.dto.FileMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
@@ -113,6 +115,8 @@ public class SchemaMapper {
 		else {
 			modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(PID));
 		}
+		modelResource.addProperty(MSCR.state, ResourceFactory.createStringLiteral(schemaDTO.getState().name()));
+		modelResource.addProperty(MSCR.visibility, ResourceFactory.createStringLiteral(schemaDTO.getVisibility().name()));
 		
 
 		return model;
@@ -134,6 +138,16 @@ public class SchemaMapper {
         if (status != null) {
             MapperUtils.updateStringProperty(modelResource, OWL.versionInfo, status.name());
         }
+        var state = dto.getState();
+        if (state != null) {
+        	MapperUtils.updateStringProperty(modelResource, MSCR.state, state.name());
+        }
+        	
+        var visibility = dto.getVisibility();
+        if (visibility != null) {
+        	MapperUtils.updateStringProperty(modelResource, MSCR.visibility, visibility.name());
+        }
+        
 
         MapperUtils.updateLocalizedProperty(langs, dto.getLabel(), modelResource, RDFS.label, model);
         MapperUtils.updateLocalizedProperty(langs, dto.getDescription(), modelResource, RDFS.comment, model);
@@ -252,9 +266,12 @@ public class SchemaMapper {
 							Collectors.groupingBy(Variant::getAggregationKey));
 			schemaInfoDTO.setVariants(variants);
 			schemaInfoDTO.setVariants2(v2);
-
 		
 		}
+		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
+		schemaInfoDTO.setState(state);
+		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
+		schemaInfoDTO.setVisibility(visibility);
 
 		return schemaInfoDTO;
 	}
@@ -338,8 +355,8 @@ public class SchemaMapper {
     		indexModel.setRevisions(orderedRevs); 
     		indexModel.setNumberOfRevisions(orderedRevs.size());	
         }
-        
-
+        indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
+        indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
         
         return indexModel;
     }     
@@ -357,6 +374,8 @@ public class SchemaMapper {
 	public SchemaDTO mapToSchemaDTO(SchemaInfoDTO source) {		
 		SchemaDTO s = new SchemaDTO();
 		s.setStatus(source.getStatus());
+		s.setState(source.getState());
+		s.setVisibility(source.getVisibility());
 		s.setLabel(source.getLabel());
 		s.setDescription(source.getDescription());
 		s.setLanguages(source.getLanguages());

@@ -7,13 +7,17 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR.Organization;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
 
 public class IndexSchema extends IndexBase {
 
     private String contentModified;
 	private MSCRType type;
+	private MSCRState state;
+	private MSCRVisibility visibility;
     private String prefix;
     private Map<String, String> comment;
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
@@ -29,7 +33,25 @@ public class IndexSchema extends IndexBase {
     private int numberOfRevisions;
     private List<Revision> revisions;
 
-    public String getContentModified() {
+    
+    
+    public MSCRVisibility getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(MSCRVisibility visibility) {
+		this.visibility = visibility;
+	}
+
+	public MSCRState getState() {
+		return state;
+	}
+
+	public void setState(MSCRState state) {
+		this.state = state;
+	}
+
+	public String getContentModified() {
         return contentModified;
     }
 

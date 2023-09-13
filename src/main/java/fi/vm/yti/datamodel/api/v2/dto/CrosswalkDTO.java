@@ -4,12 +4,27 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrosswalkDTO extends DataModelDTO {
 
+	private MSCRState state = MSCRState.DRAFT;
+	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
+
 	private CrosswalkFormat format;
 	private String sourceSchema;
 	private String targetSchema;
 	private String versionLabel;
 	
+	public MSCRState getState() {
+		return state;
+	}
+	public void setState(MSCRState state) {
+		this.state = state;
+	}
 	
+	public MSCRVisibility getVisibility() {
+		return visibility;
+	}
+	public void setVisibility(MSCRVisibility visibility) {
+		this.visibility = visibility;
+	}
 	public String getSourceSchema() {
 		return sourceSchema;
 	}

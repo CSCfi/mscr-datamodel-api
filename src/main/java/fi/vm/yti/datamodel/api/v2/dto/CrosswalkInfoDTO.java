@@ -7,12 +7,30 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrosswalkInfoDTO extends DataModelInfoDTO {
 	
-	
+	private MSCRState state = MSCRState.DRAFT;
+	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
+
 	private CrosswalkFormat format;
 	private String aggregationKey;
 	private Set<FileMetadata> fileMetadata = Set.of();	
 	private String sourceSchema;
 	private String targetSchema;
+	
+	
+	public MSCRState getState() {
+		return state;
+	}
+
+	public void setState(MSCRState state) {
+		this.state = state;
+	}
+	
+	public MSCRVisibility getVisibility() {
+		return visibility;
+	}
+	public void setVisibility(MSCRVisibility visibility) {
+		this.visibility = visibility;
+	}
 	
 	public String getSourceSchema() {
 		return sourceSchema;

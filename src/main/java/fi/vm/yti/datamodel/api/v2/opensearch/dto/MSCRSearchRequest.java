@@ -4,11 +4,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 
 public class MSCRSearchRequest extends BaseSearchRequest {
 
 	private Set<MSCRType> type;
+	private Set<MSCRState> state;
 	private Set<UUID> organizations;
 	private Set<String> format;
 	private MSCR.SOURCE_TYPE sourceType;
@@ -18,6 +20,13 @@ public class MSCRSearchRequest extends BaseSearchRequest {
 	private boolean includeFacets = false;
 	private String prefDisplayLang;
 	
+	
+	public Set<MSCRState> getState() {
+		return state;
+	}
+	public void setState(Set<MSCRState> state) {
+		this.state = state;
+	}
 	public Set<MSCRType> getType() {
 		return type;
 	}
