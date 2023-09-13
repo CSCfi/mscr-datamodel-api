@@ -8,7 +8,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
 public class SchemaInfoDTO extends DataModelInfoDTO {
-  
+ 
+	private MSCRState state = MSCRState.DRAFT;
+	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
+
 	private SchemaFormat format;
 	private String namespace;
 	private String versionLabel;
@@ -20,6 +23,21 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 	private List<Revision> revisions;
 	private List<Variant> variants;
 	private Map<String, List<Variant>> variants2;
+	
+	public MSCRVisibility getVisibility() {
+		return visibility;
+	}
+	public void setVisibility(MSCRVisibility visibility) {
+		this.visibility = visibility;
+	}
+	
+	public MSCRState getState() {
+		return state;
+	}
+
+	public void setState(MSCRState state) {
+		this.state = state;
+	}
 	
 	public Map<String, List<Variant>> getVariants2() {
 		return variants2;

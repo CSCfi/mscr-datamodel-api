@@ -1,6 +1,8 @@
 package fi.vm.yti.datamodel.api.v2.validator;
 
 import fi.vm.yti.datamodel.api.v2.dto.BaseDTO;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -112,4 +114,28 @@ public abstract class BaseValidator implements Annotation{
             addConstraintViolation(context, ValidationConstants.MSG_OVER_CHARACTER_LIMIT
                     + ValidationConstants.TEXT_FIELD_MAX_LENGTH, property);
         }
-    }}
+    }
+
+    public void checkState(ConstraintValidatorContext context, MSCRState state){
+        //Status has to be defined when creating
+        if(state == null){
+            addConstraintViolation(context, ValidationConstants.MSG_VALUE_MISSING, "state");
+        }
+        if(state != MSCRState.DRAFT && state  != MSCRState.PUBLISHED && state != MSCRState.DEPRECATED) {
+        	addConstraintViolation(context, "Invalid initial state value", "state");
+        }
+    }
+
+    public void checkVisibility(ConstraintValidatorContext context, MSCRVisibility visibility, MSCRState state){
+        //Status has to be defined when creating
+        if(visibility == null){
+            addConstraintViolation(context, ValidationConstants.MSG_VALUE_MISSING, "visibility");
+        }
+        if((state == MSCRState.PUBLISHED || state == MSCRState.DEPRECATED) && visibility != MSCRVisibility.PUBLIC) {
+        	addConstraintViolation(context, "Visibility of content in state " + state + " must be public", "visibility");
+        }
+
+    }
+}
+
+

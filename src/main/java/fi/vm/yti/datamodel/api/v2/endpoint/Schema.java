@@ -32,10 +32,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
@@ -90,8 +90,7 @@ public class Schema {
 	private final AuthenticatedUserProvider userProvider;
 	
     private final GroupManagementService groupManagementService;
-
-
+    
 	public Schema(JenaService jenaService,
             AuthorizationManager authorizationManager,
             OpenSearchIndexer openSearchIndexer,
@@ -110,18 +109,20 @@ public class Schema {
 		this.PIDService = PIDService;
 		this.storageService = storageService;
 		this.userProvider = userProvider;
-		this.groupManagementService = groupManagementService;
+		this.groupManagementService = groupManagementService;		
 	}
 	
 	
 	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file) {
-		Model metadataModel = jenaService.getSchema(pid);
+		Model metadataModel = jenaService.getSchema(pid);		
         var hasRightsToModel = authorizationManager.hasRightToModel(pid, metadataModel);
 		check(hasRightsToModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 
 		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
-
+		if(schemaDTO.getState() != MSCRState.DRAFT) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
+		}
 		try {
 			byte[] fileInBytes = file.getBytes();
 			Model schemaModel = null;
@@ -143,7 +144,7 @@ public class Schema {
 				schemaModel = schemaService.transformCSVSchemaToInternal(pid, fileInBytes, ";");
 				
 			} else {
-				throw new RuntimeException(String.format("Unsupported schema description format: %s not supported",
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));
 			}
 			schemaModel.add(metadataModel);
@@ -152,7 +153,7 @@ public class Schema {
 			
 
 		} catch (Exception ex) {
-			throw new RuntimeException("Error occured while ingesting file based schema description", ex);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description", ex);
 		}
 		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
 	}
@@ -164,7 +165,8 @@ public class Schema {
 		SchemaDTO s = new SchemaDTO();
 		// in case of revision the following data cannot be overridden
 		// - organization
-		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : Status.DRAFT);		
+		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : Status.DRAFT);
+		s.setState(inputSchema.getState() != null ? inputSchema.getState() : MSCRState.DRAFT);
 		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
 		s.setDescription(!inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
 		s.setLanguages(!inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
@@ -264,15 +266,8 @@ public class Schema {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
+	public SchemaInfoDTO createSchemaFull(@ValidSchema @RequestParam("metadata") SchemaDTO schemaDTO,
 			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {		
-		SchemaDTO schemaDTO = null;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			schemaDTO = mapper.readValue(metadataString, SchemaDTO.class);
-		}catch(Exception ex) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse metadata string." + ex.getMessage());			
-		}
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		return addFileToSchema(dto.getPID(), file.getContentType(), file);						
 	}

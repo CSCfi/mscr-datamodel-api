@@ -32,7 +32,9 @@ import fi.vm.yti.datamodel.api.v2.dto.DCAP;
 import fi.vm.yti.datamodel.api.v2.dto.FileMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
@@ -101,6 +103,9 @@ public class CrosswalkMapper {
 		modelResource.addProperty(MSCR.sourceSchema, ResourceFactory.createResource(dto.getSourceSchema()));
 		modelResource.addProperty(MSCR.targetSchema, ResourceFactory.createResource(dto.getTargetSchema()));
 
+		modelResource.addProperty(MSCR.state, ResourceFactory.createStringLiteral(dto.getState().name()));
+		modelResource.addProperty(MSCR.visibility, ResourceFactory.createStringLiteral(dto.getVisibility().name()));
+
 		return model;
 	}
 	
@@ -140,6 +145,12 @@ public class CrosswalkMapper {
 
 		
 		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		
+		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
+		dto.setState(state);
+
+		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
+		dto.setVisibility(visibility);
 		
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
@@ -201,6 +212,15 @@ public class CrosswalkMapper {
         modelResource.removeAll(MSCR.format);
 		modelResource.addProperty(MSCR.format, dto.getFormat().toString());
         
+        var state = dto.getState();
+        if (state != null) {
+            MapperUtils.updateStringProperty(modelResource, MSCR.state, state.name());
+        }
+        var visibility = dto.getVisibility();
+        if (visibility != null) {
+            MapperUtils.updateStringProperty(modelResource, MSCR.visibility, visibility.name());
+        }
+
         return model;
 		
 
@@ -249,6 +269,8 @@ public class CrosswalkMapper {
         if(resource.hasProperty(MSCR.targetSchema)) {
         	indexModel.setTargetSchema(resource.getPropertyResourceValue(MSCR.targetSchema).getURI());
         }
+        indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
+        indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
         
         return indexModel;
     }	

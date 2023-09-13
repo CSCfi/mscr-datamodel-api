@@ -299,6 +299,8 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.format, "?format");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.versionLabel, "?versionLabel");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.aggregationKey, "?aggregationKey");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.PROV_wasRevisionOf, "?revisionOf");
@@ -378,7 +380,9 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceSchema, "?sourceSchema");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.targetSchema, "?targetSchema");
-        
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
+
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
@@ -516,6 +520,7 @@ public class OpenSearchIndexer {
         return Map.ofEntries(
         		Map.entry("id", getKeywordProperty()),
         		Map.entry("status", getKeywordProperty()),
+        		Map.entry("state", getKeywordProperty()),
         		Map.entry("type", getKeywordProperty()),
         		Map.entry("prefix", getKeywordProperty()),
         		Map.entry("contributor", getKeywordProperty()),
@@ -539,6 +544,7 @@ public class OpenSearchIndexer {
         return Map.ofEntries(        		        		
         		Map.entry("id", getKeywordProperty()),
         		Map.entry("status", getKeywordProperty()),
+        		Map.entry("state", getKeywordProperty()),
 				Map.entry("type", getKeywordProperty()),
 				Map.entry("prefix", getKeywordProperty()),
 				Map.entry("contributor", getKeywordProperty()),

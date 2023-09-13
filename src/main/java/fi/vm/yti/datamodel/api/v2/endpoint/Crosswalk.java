@@ -142,18 +142,8 @@ public class Crosswalk {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public CrosswalkInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
+	public CrosswalkInfoDTO createSchemaFull(@ValidCrosswalk @RequestParam("metadata") CrosswalkDTO dto,
 			@RequestParam("file") MultipartFile file) {
-		
-		CrosswalkDTO dto = null;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			dto = mapper.readValue(metadataString, CrosswalkDTO.class);
-
-		}catch(Exception ex) {
-			ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not parse metadata string." + ex.getMessage());
-			
-		}
 		logger.info("Create Crosswalk {}", dto);
 		CrosswalkInfoDTO infoDto = createCrosswalkMetadata(dto);
 		return addFileToCrosswalk(infoDto.getPID(), file.getContentType(), file);
@@ -182,7 +172,7 @@ public class Crosswalk {
 
         var indexModel = mapper.mapToIndexModel(pid, jenaModel);
         openSearchIndexer.updateCrosswalkToIndex(indexModel);
-    }	
+    }        
 	
     @Operation(summary = "Get a crosswalk metadata")
     @ApiResponse(responseCode = "200", description = "")
