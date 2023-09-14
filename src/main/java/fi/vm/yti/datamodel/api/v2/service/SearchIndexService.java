@@ -310,10 +310,12 @@ public class SearchIndexService {
 	            throw new OpenSearchException(e.getMessage(), OpenSearchIndexer.OPEN_SEARCH_INDEX_MODEL);
 	        }
 	}
-	
-	public SearchResponse<ObjectNode> mscrSearch(MSCRSearchRequest request) {
+	public SearchResponse<ObjectNode> mscrSearch(MSCRSearchRequest request, boolean includeOnlyPublic) {
+		return mscrSearch(request, includeOnlyPublic, null);
+	}
+	public SearchResponse<ObjectNode> mscrSearch(MSCRSearchRequest request, boolean includeOnlyPublic, Set<String> owners) {
         try {
-            var build = MSCRQueryFactory.createMSCRQuery(request);            
+            var build = MSCRQueryFactory.createMSCRQuery(request, includeOnlyPublic, owners);            
             SearchResponse<ObjectNode> searchResponse = client.search(build, ObjectNode.class);            
             return searchResponse;
         } catch (IOException e) {

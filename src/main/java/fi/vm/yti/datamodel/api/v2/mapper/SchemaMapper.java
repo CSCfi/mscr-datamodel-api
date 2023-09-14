@@ -95,6 +95,7 @@ public class SchemaMapper {
 
 		addOrgsToModel(schemaDTO, modelResource);
 		MapperUtils.addCreationMetadata(modelResource, user);
+		
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
 
@@ -117,8 +118,15 @@ public class SchemaMapper {
 		}
 		modelResource.addProperty(MSCR.state, ResourceFactory.createStringLiteral(schemaDTO.getState().name()));
 		modelResource.addProperty(MSCR.visibility, ResourceFactory.createStringLiteral(schemaDTO.getVisibility().name()));
-		
-
+		var orgs = schemaDTO.getOrganizations();
+		if(orgs != null && !orgs.isEmpty()) {
+			orgs.forEach(org -> {
+                modelResource.addProperty(MSCR.owner, org.toString());
+	        });
+		}
+		else {
+			modelResource.addProperty(MSCR.owner, user.getId().toString());
+		}
 		return model;
 	}
 	
@@ -185,6 +193,17 @@ public class SchemaMapper {
 		
         modelResource.removeAll(MSCR.versionLabel);
 		modelResource.addProperty(MSCR.versionLabel, dto.getVersionLabel());
+		
+		modelResource.removeAll(MSCR.owner);
+		var orgs = dto.getOrganizations();
+		if(orgs != null && !orgs.isEmpty()) {
+			orgs.forEach(org -> {
+                modelResource.addProperty(MSCR.owner, org.toString());
+	        });
+		}
+		else {
+			modelResource.addProperty(MSCR.owner, user.getId().toString());
+		}
 		
 		return model;
 	}
@@ -272,6 +291,9 @@ public class SchemaMapper {
 		schemaInfoDTO.setState(state);
 		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
 		schemaInfoDTO.setVisibility(visibility);
+		
+		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
+		
 
 		return schemaInfoDTO;
 	}
@@ -325,6 +347,7 @@ public class SchemaMapper {
             contributors.add(MapperUtils.getUUID(value));
         });
         indexModel.setContributor(contributors);
+        indexModel.setOwner(MapperUtils.arrayPropertyToList(resource, MSCR.owner));
 		indexModel.setOrganizations(MapperUtils.mapToListOrganizations(contributors, coreRepository.getOrganizations()));
         
         

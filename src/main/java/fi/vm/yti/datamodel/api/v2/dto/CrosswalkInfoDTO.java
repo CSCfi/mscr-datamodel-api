@@ -15,8 +15,16 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO {
 	private Set<FileMetadata> fileMetadata = Set.of();	
 	private String sourceSchema;
 	private String targetSchema;
-	
-	
+	private Set<String> owner;
+
+	public Set<String> getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Set<String> owner) {
+		this.owner = owner;
+	}
+
 	public MSCRState getState() {
 		return state;
 	}

@@ -306,6 +306,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.PROV_wasRevisionOf, "?revisionOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.hasRevision, "?hasRevision");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.numberOfRevisions, "?numberOfRevisions");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.owner, "?owner");
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
@@ -382,7 +383,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.targetSchema, "?targetSchema");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
-
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.owner, "?owner");
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
