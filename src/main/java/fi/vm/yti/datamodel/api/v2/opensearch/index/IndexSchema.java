@@ -32,7 +32,7 @@ public class IndexSchema extends IndexBase {
     private String hasRevision;
     private int numberOfRevisions;
     private List<Revision> revisions;
-
+    private List<String> owner;
     
     
     public MSCRVisibility getVisibility() {
@@ -162,6 +162,13 @@ public class IndexSchema extends IndexBase {
 	public void setRevisions(List<Revision> revisions) {
 		this.revisions = revisions;
 	}
-	
+
+	public List<String> getOwner() {
+		return owner;
+	}
+	public void setOwner(List<String> owner) {
+		this.owner = owner;
+	}
+
 	
 }

@@ -140,9 +140,18 @@ public class FrontendController {
     @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks")
     @GetMapping(value = "/mscrSearch", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> mscrSearch(MSCRSearchRequest request) {
-    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request);
+    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, true);
     	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);
     	
     	
-    }    
+    } 
+    
+    @Operation(summary = "Search user content")
+    @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks that are owned directly by the user")
+    @GetMapping(value = "/mscrSearchPersonalContent", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> searchPersonalContent(MSCRSearchRequest request) {
+    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, false, Set.of(userProvider.getUser().getId().toString()));
+    	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);	    	
+    } 
+    
 }

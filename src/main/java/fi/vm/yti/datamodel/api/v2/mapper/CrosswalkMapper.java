@@ -106,6 +106,16 @@ public class CrosswalkMapper {
 		modelResource.addProperty(MSCR.state, ResourceFactory.createStringLiteral(dto.getState().name()));
 		modelResource.addProperty(MSCR.visibility, ResourceFactory.createStringLiteral(dto.getVisibility().name()));
 
+		var orgs = dto.getOrganizations();
+		if(orgs != null && !orgs.isEmpty()) {
+			orgs.forEach(org -> {
+                modelResource.addProperty(MSCR.owner, org.toString());
+	        });
+		}
+		else {
+			modelResource.addProperty(MSCR.owner, user.getId().toString());
+		}
+		
 		return model;
 	}
 	
@@ -158,6 +168,7 @@ public class CrosswalkMapper {
 			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
 		});
 		dto.setFileMetadata(fileMetadatas);
+		dto.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
 
 		
 		return dto;
@@ -220,6 +231,16 @@ public class CrosswalkMapper {
         if (visibility != null) {
             MapperUtils.updateStringProperty(modelResource, MSCR.visibility, visibility.name());
         }
+		modelResource.removeAll(MSCR.owner);
+		var orgs = dto.getOrganizations();
+		if(orgs != null && !orgs.isEmpty()) {
+			orgs.forEach(org -> {
+                modelResource.addProperty(MSCR.owner, org.toString());
+	        });
+		}
+		else {
+			modelResource.addProperty(MSCR.owner, user.getId().toString());
+		}        
 
         return model;
 		
@@ -252,6 +273,7 @@ public class CrosswalkMapper {
             contributors.add(MapperUtils.getUUID(value));
         });
         indexModel.setContributor(contributors);
+        indexModel.setOwner(MapperUtils.arrayPropertyToList(resource, MSCR.owner));
 		indexModel.setOrganizations(MapperUtils.mapToListOrganizations(contributors, coreRepository.getOrganizations()));
 
 		

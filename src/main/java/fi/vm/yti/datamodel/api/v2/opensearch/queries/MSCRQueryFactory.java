@@ -27,7 +27,7 @@ public class MSCRQueryFactory {
 	
 	private static List<String> indices = List.of(OpenSearchIndexer.OPEN_SEARCH_INDEX_CROSSWALK, OpenSearchIndexer.OPEN_SEARCH_INDEX_SCHEMA);
 	
-	public static SearchRequest createMSCRQuery(MSCRSearchRequest request) {
+	public static SearchRequest createMSCRQuery(MSCRSearchRequest request, boolean includeOnlyPublic, Set<String> owners) {
 
 		var must = new ArrayList<Query>();
 		var mustNot = new ArrayList<Query>();
@@ -97,8 +97,13 @@ public class MSCRQueryFactory {
         // only return the latest version
         // --> hasRevision is empty --> no hasRevision field 
         finalQuery.mustNot(new ExistsQuery.Builder().field("hasRevision").build()._toQuery());
-        // only return public documents 
-        finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name().toLowerCase()))); // Why does this only works in lowercase?
+        if(includeOnlyPublic) {        
+        	finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name().toLowerCase()))); // Why does this only works in lowercase?
+        }
+        if(owners != null && !owners.isEmpty()) {
+        	finalQuery.must(QueryFactoryUtils.termsQuery("owner.keyword", owners.stream().toList()));        	
+        	
+        }
         
         var sortLang = request.getSortLang() != null ? request.getSortLang() : QueryFactoryUtils.DEFAULT_SORT_LANG;
         var sort = SortOptionsBuilders.field()

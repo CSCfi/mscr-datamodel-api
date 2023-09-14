@@ -41,6 +41,7 @@ public class MSCR {
     public static final Property numberOfRevisions = ResourceFactory.createProperty(URI, "numberOfRevisions");
     public static final Property state = ResourceFactory.createProperty(URI, "state");
     public static final Property visibility = ResourceFactory.createProperty(URI, "visibility");
+    public static final Property owner = ResourceFactory.createProperty(URI, "owner");
     
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
     

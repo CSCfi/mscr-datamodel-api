@@ -23,6 +23,15 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 	private List<Revision> revisions;
 	private List<Variant> variants;
 	private Map<String, List<Variant>> variants2;
+	private Set<String> owner;
+
+	public Set<String> getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Set<String> owner) {
+		this.owner = owner;
+	}
 	
 	public MSCRVisibility getVisibility() {
 		return visibility;
