@@ -14,6 +14,7 @@ import fi.vm.yti.datamodel.api.v2.service.FrontendService;
 import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
 import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.security.AuthenticatedUserProvider;
+import fi.vm.yti.security.YtiUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -154,4 +157,16 @@ public class FrontendController {
     	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);	    	
     } 
     
+    @Operation(summary = "Search user's org content")
+    @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks that are part of some organization of the user")
+    @GetMapping(value = "/mscrSearchOrgContent", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> searchOrgContent(MSCRSearchRequest request, @RequestParam String ownerOrg) {
+    	YtiUser user = userProvider.getUser();
+    	if(!user.isInOrganization(UUID.fromString(ownerOrg))) {
+    		throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not part of  the given organization.");
+    	}
+    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, false, Set.of(ownerOrg));
+    	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);	    	
+    } 
+        
 }
