@@ -1,6 +1,5 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
-import static org.assertj.core.api.Assertions.assertThatIterator;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,9 +17,7 @@ import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.shacl.vocabulary.SHACL;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +26,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.topbraid.shacl.vocabulary.SH;
 
-import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
@@ -245,6 +241,20 @@ public class SchemaServiceTest {
 			integerList.add(i2.next().asLiteral().getInt());
 		}
 		assertArrayEquals(new Integer[] {1,2,3}, integerList.toArray());
+	}
+	
+	@Test
+	void testDefaultName() throws Exception {
+		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_simple1.json");
+		assertNotNull(data);
+		
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
+		
+		assertEquals("lastName", model.getProperty(schemaPID + "#root/Root/lastName").getLocalName());
+		model.write(System.out, "TURTLE");
+
+		
 	}
 	
 	/* 

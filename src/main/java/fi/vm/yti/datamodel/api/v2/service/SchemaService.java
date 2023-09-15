@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -51,7 +52,7 @@ public class SchemaService {
 	
 	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties");
 
-	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource) {
+	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID) {
 		for (String key : JSONSchemaToSHACLMap.keySet()) {
 			JsonNode propertyNode = node.findValue(key);
 			// the second condition ensures that an object's children properties are not added to that object
@@ -85,6 +86,15 @@ public class SchemaService {
 				}
 			}
 		}
+		checkAndDefaultName(propertyResource, propID);
+	}
+
+	private void checkAndDefaultName(Resource propertyResource, String propID) {
+		if(!propertyResource.hasProperty(SH.name)) {
+			String defaultName = propID.substring(propID.lastIndexOf("/")+1);
+			propertyResource.addLiteral(SH.name, ResourceFactory.createPlainLiteral(defaultName));
+		}
+		
 	}
 
 	private void handleRequiredProperty(JsonNode node, Model model, Resource propertyResource, boolean isRequired) {
@@ -111,7 +121,7 @@ public class SchemaService {
 		propertyResource.addProperty(SH.datatype, XSDTypesMap.get(type));
 		propertyResource.addProperty(SH.path, propID);
 
-		checkAndAddPropertyFeature(node, model, propertyResource);
+		checkAndAddPropertyFeature(node, model, propertyResource, propID);
 
 		return propertyResource;
 	}
@@ -133,7 +143,7 @@ public class SchemaService {
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.ObjectProperty);
 
-		checkAndAddPropertyFeature(node, model, propertyResource);
+		checkAndAddPropertyFeature(node, model, propertyResource, propID);
 		propertyResource.addProperty(SH.path, propID);
 		propertyResource.addProperty(SH.node, model.createResource(targetShape));
 
