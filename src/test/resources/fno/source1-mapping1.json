@@ -1,0 +1,45 @@
+[ 
+{
+  "source" : [ {
+    "id" : "$.id",
+    "label" : "id"
+  } ],
+  "target" : [ {
+    "id" : "$.device",
+    "label" : "device"
+  } ],
+  "processing" : {
+    "id" : "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc"
+  }
+}, 
+{
+  "source" : [ {
+    "id" : "$.temperature",
+    "label" : "temperature"
+  } ],
+  "target" : [ {
+    "id" : "$.temperature",
+    "label" : "temperature"
+  } ],
+  "processing" : {
+    "id" : "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc"
+  }
+},
+{
+  "source" : [ {
+    "id" : "$.id",
+    "label" : "id"
+  },{
+    "id" : "$.temperature",
+    "label" : "temperature"
+  }
+   ],
+  "target" : [ {
+    "id" : "$.temperature_and_id",
+    "label" : "temperature_and_id"
+  } ],
+  "processing" : {
+    "id" : "http://uri.suomi.fi/datamodel/ns/mscr#concatenateObjectFunc"
+  }
+}  
+]

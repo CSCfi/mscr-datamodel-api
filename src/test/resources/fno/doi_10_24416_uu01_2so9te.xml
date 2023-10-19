@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resource xmlns="http://datacite.org/schema/kernel-4" xmlns:yoda="https://yoda.uu.nl/schemas/default-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+  <identifier identifierType="DOI">10.24416/UU01-2SO9TE</identifier>
+  <titles>
+    <title xml:lang="en">Reading about us and them:  Moral and but not minimal group effects on language-induced emotion</title>
+    <title titleType="Subtitle" xml:lang="sv">subtitle</title>
+    <title titleType="AlternativeTitle" xml:lang="fi">alt title</title>
+    <title titleType="TranslatedTitle" xml:lang="fr">alt title translated</title>
+
+  </titles>
+  <descriptions>
+    <description descriptionType="Abstract">This folder contains all information regarding the experimental set-up, data, analysis, and publication of the experiment of Refining the Multiple‐Drivers Model: Minimal groups vs. Morality. More detailed information can be found in the readme.txt and in the paper "Reading about us and them: Moral and but not minimal group effects on language-induced emotion" by Björn 't Hart, Marijn Struiksma, Anton van Boxtel, &amp; Jos J.A. van Berkum* </description>
+    <description descriptionType="Abstract" xml:lang="fi">Kuvaus</description>
+  </descriptions>
+  <publisher>Utrecht University</publisher>
+  <publicationYear>2021</publicationYear>
+  <subjects>
+    <subject subjectScheme="OECD FOS 2007">Humanities - Languages and literature (6.2)</subject>
+    <subject>test</subject>
+    <subject subjectScheme="test2">test2</subject>
+    <subject schemeURI="http://test">test4</subject>
+    <subject valueURI="http://tes/test5">test5</subject>
+  </subjects>
+  <creators>
+    <creator>
+      <creatorName>Struiksma, Marijn</creatorName>
+      <familyName>Struiksma</familyName>            
+      <nameIdentifier nameIdentifierScheme="ORCID">0000-0002-1166-1424</nameIdentifier>
+      <affiliation>Utrecht University</affiliation>
+    </creator>
+    <creator>
+      <creatorName xml:lang="en">'t Hart, Björn</creatorName>
+      <givenName>Björn</givenName>       
+      <nameIdentifier nameIdentifierScheme="ORCID">0000-0002-2384-9504</nameIdentifier>
+      <affiliation>Utrecht University2</affiliation>
+    </creator>
+    <creator>
+      <creatorName>van Berkum, Jos</creatorName>
+      <givenName>van Berkum</givenName>
+      <familyName>Jos</familyName>
+      <nameIdentifier nameIdentifierScheme="ORCID">0000-0003-1673-4845</nameIdentifier>
+      <affiliation>Utrecht University</affiliation>
+    </creator>
+  </creators>
+  <contributors>
+
+    <contributor contributorType="HostingInstitution">
+        <contributorName nameType="Organizational">The Triangle Project - Cape Town</contributorName>
+        <affiliation>The Triangle Project - Cape Town</affiliation>
+        <affiliation>The Triangle Project - Cape Town2</affiliation>
+    </contributor>
+    <contributor contributorType="Other">
+      <contributorName>van Boxtel, Anton2</contributorName>
+      <givenName>test given</givenName>
+      <nameIdentifier nameIdentifierScheme="ORCID">0000-0001-5186-0703</nameIdentifier>
+      <affiliation>Tilburg University2</affiliation>
+    </contributor>
+    <contributor contributorType="HostingInstitution">
+        <contributorName nameType="Organizational">The Triangle Project - Cape Town2</contributorName>
+        <affiliation>The Triangle Project - Cape Town</affiliation>
+    </contributor>
+
+  </contributors>
+  <dates>
+    <date dateType="Created">2021-03-15T15:55:42+0100</date>      
+    <date dateType="Updated">2022-03-15T15:55:42+0100</date>
+    <date dateType="Collected" dateInformation="Testing date information">2016-06-01/2016-06-30</date>
+  </dates>
+  <version>1</version>
+  <rightsList>
+    <rights rightsURI="https://creativecommons.org/licenses/by-sa/4.0/legalcode">Creative Commons Attribution-ShareAlike 4.0 International Public License</rights>
+    <rights rightsURI="info:eu-repo/semantics/openAccess">Open Access</rights>
+  </rightsList>
+  <language>en</language>
+  <resourceType resourceTypeGeneral="Dataset">Research Data</resourceType>
+  <relatedIdentifiers>
+    <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf">10.24416/UU01-YM9VPP</relatedIdentifier>
+  </relatedIdentifiers>
+  <fundingReferences>
+    <fundingReference>
+      <funderIdentifier funderIdentifierType="Other">test</funderIdentifier>
+      <funderName>NWO</funderName>
+      <awardNumber>277-89-001</awardNumber>
+    </fundingReference>
+  </fundingReferences>
+</resource>

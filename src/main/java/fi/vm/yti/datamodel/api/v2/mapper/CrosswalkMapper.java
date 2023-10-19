@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -35,6 +36,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
+import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
@@ -295,6 +297,8 @@ public class CrosswalkMapper {
         indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
         
         return indexModel;
-    }	
+    }
+
+	
 
 }

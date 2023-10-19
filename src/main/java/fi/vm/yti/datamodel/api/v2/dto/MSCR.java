@@ -8,7 +8,9 @@ import org.apache.jena.rdf.model.ResourceFactory;
 
 public class MSCR {
 
-    private MSCR(){
+
+
+	private MSCR(){
         //property class
     }
     
@@ -24,6 +26,9 @@ public class MSCR {
     public static final Property versions = ResourceFactory.createProperty(URI, "versions");
     public static final Resource CROSSWALK = ResourceFactory.createResource(URI + "Crosswalk");
     public static final Resource SCHEMA = ResourceFactory.createResource(URI + "Schema");
+
+    public static final Resource MAPPINGSET = ResourceFactory.createResource(URI + "MappingSet");
+    public static final Resource MAPPING = ResourceFactory.createResource(URI + "Mapping");
 
     // use it when generating rdf
     public static final Resource NULL = ResourceFactory.createResource(URI + "null");
@@ -45,6 +50,24 @@ public class MSCR {
     
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
     
+    public static final Property source = ResourceFactory.createProperty(URI, "source");
+    public static final Property sourceLabel = ResourceFactory.createProperty(URI, "sourceLabel");
+    public static final Property sourceType = ResourceFactory.createProperty(URI, "sourceType");
+    public static final Property sourceDescription = ResourceFactory.createProperty(URI, "sourceDescription");
+
+    public static final Property predicate = ResourceFactory.createProperty(URI, "predicate");
+
+    public static final Property target = ResourceFactory.createProperty(URI, "target");
+    public static final Property targetLabel = ResourceFactory.createProperty(URI, "targetLabel");
+    public static final Property targetType = ResourceFactory.createProperty(URI, "targetType");
+    public static final Property targetDescription = ResourceFactory.createProperty(URI, "targetDescription");
+
+    public static final Property processing = ResourceFactory.createProperty(URI, "processing");
+    public static final Property processingParams = ResourceFactory.createProperty(URI, "processingParams");
+    public static final Property sourcePreprocessing = ResourceFactory.createProperty(URI, "sourcePreprocessing");
+    public static final Property sourcePreprocessingParams = ResourceFactory.createProperty(URI, "sourcePreprocessingParams");
+    public static final Property targetPreprocessing = ResourceFactory.createProperty(URI, "targettPreprocessing");
+    public static final Property targetPreprocessingParams = ResourceFactory.createProperty(URI, "targettPreprocessingParams");
 
     public record Organization(String id,  Map<String, String> label) {}
 

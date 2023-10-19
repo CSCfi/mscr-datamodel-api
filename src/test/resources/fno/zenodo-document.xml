@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd">
+  <identifier identifierType="DOI">10.5281/zenodo.3236194</identifier>
+  <creators>
+    <creator>
+      <creatorName>Storviken, Silje</creatorName>
+      <givenName>Silje</givenName>
+      <familyName>Storviken</familyName>
+      <affiliation>NSD</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Hagen, Sunniva</creatorName>
+      <givenName>Sunniva</givenName>
+      <familyName>Hagen</familyName>
+      <affiliation>NSD</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Bockaj, Brigita</creatorName>
+      <givenName>Brigita</givenName>
+      <familyName>Bockaj</familyName>
+      <affiliation>ADP</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Bolko, Irena</creatorName>
+      <givenName>Irena</givenName>
+      <familyName>Bolko</familyName>
+      <affiliation>ADP</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Vipavc Brvar, Irena</creatorName>
+      <givenName>Irena</givenName>
+      <familyName>Vipavc Brvar</familyName>
+      <affiliation>ADP</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Fink Kjeldgaard, Anne Sofie</creatorName>
+      <givenName>Anne Sofie</givenName>
+      <familyName>Fink Kjeldgaard</familyName>
+      <affiliation>DDA</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Guldfeldt, Madsen, Christina</creatorName>
+      <affiliation>DDA</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Ala-Lahti, Henri</creatorName>
+      <givenName>Henri</givenName>
+      <familyName>Ala-Lahti</familyName>
+      <affiliation>FSD</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Haanpää, Eliisa</creatorName>
+      <givenName>Eliisa</givenName>
+      <familyName>Haanpää</familyName>
+      <affiliation>FSD</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Kleemola, Mari</creatorName>
+      <givenName>Mari</givenName>
+      <familyName>Kleemola</familyName>
+      <affiliation>FSD</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Moilanen, Katja</creatorName>
+      <givenName>Katja</givenName>
+      <familyName>Moilanen</familyName>
+      <affiliation>FSD</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Borschewski, Kerrin</creatorName>
+      <givenName>Kerrin</givenName>
+      <familyName>Borschewski</familyName>
+      <affiliation>GESIS</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Zenk-Möltgen, Wolfgang</creatorName>
+      <givenName>Wolfgang</givenName>
+      <familyName>Zenk-Möltgen</familyName>
+      <affiliation>GESIS</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Alfredsson, Iris</creatorName>
+      <givenName>Iris</givenName>
+      <familyName>Alfredsson</familyName>
+      <affiliation>SND</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Lundgren, Malin</creatorName>
+      <givenName>Malin</givenName>
+      <familyName>Lundgren</familyName>
+      <affiliation>SND</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Svensson, Sara</creatorName>
+      <givenName>Sara</givenName>
+      <familyName>Svensson</familyName>
+      <affiliation>SND</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Etheridge, Anne</creatorName>
+      <givenName>Anne</givenName>
+      <familyName>Etheridge</familyName>
+      <affiliation>UKDS</affiliation>
+    </creator>
+    <creator>
+      <creatorName>Bolton, Sharon</creatorName>
+      <givenName>Sharon</givenName>
+      <familyName>Bolton</familyName>
+      <affiliation>UKDS</affiliation>
+    </creator>
+  </creators>
+  <titles>
+    <title>User Guide for the CESSDA Metadata Model</title>
+  </titles>
+  <publisher>Zenodo</publisher>
+  <publicationYear>2019</publicationYear>
+  <subjects>
+    <subject>User Guide</subject>
+    <subject>CESSDA</subject>
+    <subject>Metadata</subject>
+    <subject>Model</subject>
+  </subjects>
+  <dates>
+    <date dateType="Issued">2019-05-31</date>
+  </dates>
+  <resourceType resourceTypeGeneral="Text">Project deliverable</resourceType>
+  <alternateIdentifiers>
+    <alternateIdentifier alternateIdentifierType="url">https://zenodo.org/record/3236194</alternateIdentifier>
+  </alternateIdentifiers>
+  <relatedIdentifiers>
+    <relatedIdentifier relatedIdentifierType="DOI" relationType="IsVersionOf">10.5281/zenodo.3236193</relatedIdentifier>
+    <relatedIdentifier relatedIdentifierType="URL" relationType="IsPartOf">https://zenodo.org/communities/cessda</relatedIdentifier>
+  </relatedIdentifiers>
+  <version>0</version>
+  <rightsList>
+    <rights rightsURI="http://creativecommons.org/licenses/by/4.0/legalcode">Creative Commons Attribution 4.0 International</rights>
+    <rights rightsURI="info:eu-repo/semantics/openAccess">Open Access</rights>
+  </rightsList>
+  <language>en</language>
+  <descriptions>
+    <description descriptionType="Abstract">&lt;p&gt;This document includes guidelines for the usage of and best practice for the CESSDA Metadata Model (https://doi.org/10.5281/zenodo.3236171). The guidelines address all relevant aspects of the elements in the CESSDA Metadata Model, and serve to provide recommendations and guidance for usage. Please note that this document is the first public version of the User Guide for the CESSDA Metadata Model and thus considered as a final draft, meaning that comments and requests for revision by the CESSDA community are welcome. Please send your requests to the CESSDA Metadata Office via metadata-office@cessda.eu.&lt;/p&gt;</description>
+  </descriptions>
+</resource>
+

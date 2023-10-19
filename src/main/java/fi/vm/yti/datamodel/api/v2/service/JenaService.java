@@ -150,5 +150,21 @@ public class JenaService {
                 throw new JenaQueryException();
             }
         }
+	}
+
+
+
+	public Model getMappingSet(String graph) {
+		var mappingSetGraph = graph + "#mappingSet";
+        try {
+            return crosswalkRead.fetch(mappingSetGraph);
+        } catch (HttpException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.warn("Mapping set for Crosswalk not found with URI {}", mappingSetGraph);
+                throw new ResourceNotFoundException(graph);
+            } else {
+                throw new JenaQueryException();
+            }
+        }
 	}	
 }

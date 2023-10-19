@@ -1,0 +1,31 @@
+[ {
+  "source" : [ {
+    "id" : "$.id",
+    "label" : "id"
+  } ],
+  "target" : [ {
+    "id" : "$.device",
+    "label" : "device"
+  } ],
+  "processing" : {
+    "id" : "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc",
+    "params" : null
+  }
+}, 
+   { 
+        "source": [ { "id": "$.temperature", "label": "temperature", "processing": { "id": "http://uri.suomi.fi/datamodel/ns/mscr#stringToDoubleFunc"}}],        
+        "target": [ { "id": "$.temperature_fahrenheit", "label": "temperature_fahrenheit"}],
+        "processing": {
+            "id": "http://uri.suomi.fi/datamodel/ns/mscr#celsiusToFahrenheitFunc",
+            "params" : null
+        }                
+    },
+   { 
+        "source": [ { "id": "$.temperature", "label": "temperature"}],        
+        "target": [ { "id": "$.temperature_celsius", "label": "temperature_celsius",  "processing": { "id": "http://uri.suomi.fi/datamodel/ns/mscr#stringToDoubleFunc"}}],
+        "processing": {
+            "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc",
+            "params": null
+        }                
+    }
+ ]

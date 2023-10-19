@@ -1,0 +1,304 @@
+[ 
+{
+  "id": "id1",
+  "source" : [ {
+    "id" : "$.resource.titles.title[?(!@.-titleType)]",
+    "label" : "title"
+  } ],
+  "target" : [ {
+    "id" : "$.resource.title",
+    "label" : "title",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text"}
+    }
+  } ]
+},
+{
+ 
+  "source" : [ {
+    "id" : "$.resource.titles.title[?(!@.-titleType)]",
+    "label" : "title",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text"}
+    }
+  },
+  {
+    "id" : "$.resource.titles.title[?(!@.-titleType=='Subtitle')]",
+    "label" : "subtitle",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text"}
+    }
+  } ],
+  "target" : [ {
+    "id" : "$.resource.title2",
+    "label" : "title"
+    
+  } ],
+  "processing": {
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringWithSubstitutorFunc",
+        "params": { 
+            "pattern": "${title} - ${subtitle}"
+        }
+    }
+},
+{
+  "id": "id2",
+  "source" : [ {
+    "id" : "$.resource.descriptions[*].#text",
+    "label" : "description"
+  } ],
+  "target" : [ {
+    "id" : "$.resource.descriptions",
+    "label" : "descriptions"
+  } ],
+  "processing":{
+  "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc" 
+  }
+},
+{
+"id": "id3",
+  "source" : [ {
+    "id" : "$.resource.identifier[?(@.-identifierType=='DOI')].#text",
+    "label" : "doi"
+  } ],
+  "target" : [ {
+    "id" : "$.resource.doi",
+    "label" : "doi"
+  } ],
+  "processing":{
+  "id": "http://uri.suomi.fi/datamodel/ns/mscr#prefixStringFunc",
+  "params": { 
+    "prefix": "https://doi.org/"
+  } 
+  }
+},
+{
+"id": "id4",
+  "source" : [ {
+    "id" : "$.resource.subjects[*].#text",
+    "label" : "keywords"
+  } ],
+  "target" : [ {
+    "id" : "$.resource.keywords[*]",
+    "label" : "keywords"
+  } ],
+  "processing":{
+  "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc"  
+  }
+},
+{
+"id": "id4",
+  "source" : [ {
+    "id" : "$.resource.subjects[*].#text",
+    "label" : "keywords"
+  } ],
+  "target" : [ {
+    "id" : "$.resource.discipline",
+    "label" : "discipline"
+  } ],
+  "processing":{
+  "id": "http://uri.suomi.fi/datamodel/ns/mscr#similarityBasedValueMappingFunc",
+  "params": { 
+    "threshold": 0.9,
+    "targetVocabulary": "pid:voc1"
+  }  
+  }
+},
+{
+  "source" : [ {
+    "id" : "$.resource.relatedIdentifiers.relatedIdentifier[*].#text",
+    "label" : "relatedIdentifier"
+  } ],
+  "target" : [ {
+    "id" : "$.resource.relatedIdentifier",
+    "label" : "relatedIdentifier"
+  } ],
+  "processing":{
+  "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc"  
+  }
+},
+{
+  "source" : [ {
+    "id" : "$.resource.creators.creator",
+    "label" : "creators",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#dataciteCreatorToB2FindFunc"
+    }
+  } 
+   ],
+  "target" : [ {
+    "id" : "$.resource.creators",
+    "label" : "creators"
+  } ]
+},
+{
+  "source" : [ {
+    "id" : "$.resource.alternateIdentifiers.alternateIdentifier",
+    "label" : "alternateIdentifiers"
+  },
+
+  {
+    "id" : "$.resource.relatedIdentifiers.relatedIdentifier",
+    "label" : "relatedIdentifiers"
+  }
+   ],
+  "target" : [ {
+    "id" : "$.resource.pid",
+    "label" : "pid",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text", "flattenArray": "false"}
+    }
+  } ],
+  "processing":{
+  "id": "http://uri.suomi.fi/datamodel/ns/mscr#concatListsFunc",
+  "params": { 
+    "key1": "alternateIdentifiers",
+    "key2": "relatedIdentifiers"
+  }  
+  }
+},
+{
+  "source" : [ {
+    "id" : "$.resource.publicationYear",
+    "label" : "year",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text"}
+    }
+  }],
+  "target" : [ {
+    "id" : "$.resource.publication_year",
+    "label" : "publication_year"
+    
+  } ],
+  "processing": {
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickFirstFunc"
+    }
+},
+{
+"id": "id5",
+  "source" : [ {
+    "id" : "$.resource.contributors.contributor[?(@.-contributorType=='ContactPerson')]",
+    "label" : "contactPerson",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#configurableObjectToParamsFunc",
+        "params": { 
+            "contributorName": "name",
+            "affiliation": "affiliation"
+        }
+    }
+  }],
+  "target" : [ {
+    "id" : "$.resource.contributors",
+    "label" : "contributors",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#simpleReplaceStringFunc",
+        "params": { 
+            "old": "@",
+            "new": "[at]"
+        }
+    }
+    
+  } ],
+  "processing": {
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringWithSubstitutorFunc",
+        "params": { 
+            "pattern": "${name} (${affiliation})"
+        }
+    }
+},
+{
+  "source" : [ {
+    "id" : "$.resource.resourceType.-resourceTypeGeneral",
+    "label" : "resourceType"
+  }],
+  "target" : [ {
+    "id" : "$.resource.resource_type",
+    "label" : "resource_type"
+    
+  } ]
+},
+{
+"id": "id6",
+  "source" : [ {
+    "id" : "$.resource.fundingReferences.fundingReference[*].funderName",
+    "label" : "funder_name"
+  },
+  {
+    "id" : "$.resource.fundingReferences.fundingReference.funderName",
+    "label" : "funder_name"
+  }],
+  "target" : [ {
+    "id" : "$.resource.funding[*].funder_name",
+    "label" : "funding"
+    
+  } ]
+},
+{
+"id": "id6",
+  "source" : [ {
+    "id" : "$.resource.fundingReferences.fundingReference[*].funderIdentifier",
+    "label" : "funderIdentifier"
+  },
+  {
+    "id" : "$.resource.fundingReferences.fundingReference.funderIdentifier",
+    "label" : "funderIdentifier"
+  }],
+  "target" : [ {
+    "id" : "$.resource.funding[*].funder_identifier",
+    "label" : "funding",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text"}
+    }
+    
+  } ]
+},
+{
+"id": "id6",
+  "source" : [ {
+    "id" : "$.resource.fundingReferences.fundingReference[*].funderIdentifier.-funderIdentifierType",
+    "label" : "funderIdentifierType"
+  },
+  {
+    "id" : "$.resource.fundingReferences.fundingReference.funderIdentifier.-funderIdentifierType",
+    "label" : "funderIdentifierType"
+  }],
+  "target" : [ {
+    "id" : "$.resource.funding[*].funder_identifier_type",
+    "label" : "funder_identifier_type",
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+        "params": { "needle": "#text"}
+    }
+  } ]
+},
+{
+"id": "id6",
+  "source" : [ {
+    "id" : "$.resource.fundingReferences.fundingReference[*].awardNumber.-awardURI",
+    "label" : "awardURI"
+  }],
+  "target" : [ {
+    "id" : "$.resource.funding[*].award_uri",
+    "label" : "award_uri"
+  } ]
+},
+{
+  "source" : [ 
+  {
+    "id" : "$.resource.fundingReferences.fundingReference.awardNumber.-awardURI",
+    "label" : "awardURI"
+  }],
+  "target" : [ {
+    "id" : "$.resource.funding[*].award_uri",
+    "label" : "award_uri"
+  } ]
+}
+
+
+]

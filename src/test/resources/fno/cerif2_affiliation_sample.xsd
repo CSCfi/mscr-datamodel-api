@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="researcher">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="persistent_identifier">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="identifier" type="xs:string" />
+							<xs:element name="identifier_type" type="xs:string" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="member_of">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="affilition_type">
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="lang" use="required" />
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="job_title">
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="lang" use="required" />
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="job_title_code" type="xs:string" />
+							<xs:element name="local_identifieri" type="xs:string" />
+							<xs:element name="starting_year" type="xs:string" />
+							<xs:element name="starting_month" />
+							<xs:element name="starting_day" />
+							<xs:element name="ending_year" type="xs:string" />
+							<xs:element name="ending_month" type="xs:string" />
+							<xs:element name="ending_day" type="xs:string" />
+							<xs:element name="researcher_affilication">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="name" type="xs:string" />
+										<xs:element name="subunitcode" type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

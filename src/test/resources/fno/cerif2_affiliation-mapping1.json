@@ -1,0 +1,84 @@
+[ 
+{
+    "id": "mapping2", 
+    "source": [
+    { 
+        "id": "$.researcher.member_of[*].affiliation_type.#text",
+        "label": "affiliation_type"
+    }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#vocabularyMapperFunc",
+        "params": { 
+            "source": "voc1",
+            "target": "voc2"
+        }    
+    },    
+    "target": [ 
+    {    
+        "id": "$.person.activities.{output.node_name}[*]",
+        "label": "{output.node_name}"
+    }         
+    ]
+},
+{ 
+    "id": "start-date-mapping",
+    "depends_on": [ "mapping2"],
+    "source": [ 
+    { 
+        "id": "$.researcher.member_of[*].starting_year",
+        "label": "starting_year"
+    }   
+    ],
+    "target": [ 
+    { 
+        "id": "$.{dependencies.mapping2[*].output.id}.start_date",
+        "label": "start_date"
+    }
+    
+    ]
+},
+{
+    "id": "mapping3", 
+    "source": [
+    { 
+        "id": "$.researcher.member_of[*].affiliation_type.#text",
+        "label": "affiliation_type"
+    }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#vocabularyMapperFunc",
+        "params": { 
+            "source": "voc1",
+            "target": "voc2"
+        }    
+    },    
+    "target": [ 
+    {    
+        "id": "$.person.activities2.activity[*].type",
+        "label": "type"
+    }         
+    ]
+},
+{ 
+    "id": "start-date-mapping3",
+    
+    "source": [ 
+    { 
+        "id": "$.researcher.member_of[*].starting_year",
+        "label": "starting_year"
+    }   
+    ],
+    "target": [ 
+    { 
+        "id": "$.person.activities2.activity[*].start_date",
+        "label": "start_date"
+    }
+    
+    ]
+}
+
+
+
+
+]

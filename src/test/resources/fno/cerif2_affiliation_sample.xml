@@ -1,0 +1,55 @@
+<researcher>
+    <persistent_identifier>
+        <identifier>0000-1111-2222-3333</identifier>
+        <identifier_type>Orcid</identifier_type>
+    </persistent_identifier>
+    <member_of>
+        <affiliation_type lang="fi">employee</affiliation_type>
+        <job_title lang="fi">Vanhempi yliopiston lehtori</job_title>
+        <job_title_code>01400</job_title_code>
+        <local_identifieri>wwewqe-qwrerer-frfrfr</local_identifieri>
+        <starting_year>2011</starting_year>
+        <starting_month></starting_month>
+        <starting_day></starting_day>
+        <ending_year>2016</ending_year>
+        <ending_month>12</ending_month>
+        <ending_day>31</ending_day>
+        <researcher_affilication>
+            <name>Johtamisen laitos</name>
+            <subunitcode>E704</subunitcode>
+        </researcher_affilication>
+    </member_of>
+    <member_of>
+        <affiliation_type lang="fi">employee</affiliation_type>
+        <job_title lang="fi">Vanhempi yliopiston lehtori</job_title>
+        <job_title_code>01400</job_title_code>
+        <local_identifieri>wwewqe-qwrerer-frfrfr</local_identifieri>
+        <starting_year>2013</starting_year>
+        <starting_month></starting_month>
+        <starting_day></starting_day>
+        <ending_year>2016</ending_year>
+        <ending_month>12</ending_month>
+        <ending_day>31</ending_day>
+        <researcher_affilication>
+            <name>Johtamisen laitos</name>
+            <subunitcode>E704</subunitcode>
+        </researcher_affilication>
+    </member_of>    
+    <member_of>
+        <affiliation_type lang="fi">employee2</affiliation_type>
+        <job_title lang="fi">Vanhempi yliopiston lehtori</job_title>
+        <job_title_code>01400</job_title_code>
+        <local_identifieri>wwewqe-qwrerer-frfrfr</local_identifieri>
+        <starting_year>2012</starting_year>
+        <starting_month></starting_month>
+        <starting_day></starting_day>
+        <ending_year>2016</ending_year>
+        <ending_month>12</ending_month>
+        <ending_day>31</ending_day>
+        <researcher_affilication>
+            <name>Johtamisen laitos</name>
+            <subunitcode>E704</subunitcode>
+        </researcher_affilication>
+    </member_of>  
+     
+</researcher>

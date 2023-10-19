@@ -1,0 +1,491 @@
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#> .
+@prefix fnom:    <https://w3id.org/function/vocabulary/mapping#> .
+@prefix mscr: <http://uri.suomi.fi/datamodel/ns/mscr#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+mscr:simpleMappingProblem
+    a fno:Problem ;
+    dct:description "Handles problem of simple one to one mappings with various primitive data types" .
+
+mscr:simpleValueTranformationProblem
+    a fno:Problem ;
+    dct:description "Handles problem of simple one to one mappings with value transformations" .
+
+mscr:complexMappingTranformationProblem
+    a fno:Problem ;
+    dct:description "Handles problem of complex mappings" .
+    
+   
+
+mscr:stringToStringFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to copy string value as it is with one to one mapping";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:stringOutput) .
+
+mscr:stringToIntFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse integer from string input";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:intOutput) .
+
+mscr:stringToDoubleFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse double from string input";
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:doubleOutput) .
+
+mscr:celsiusToFahrenheitFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "Function to transform celsius (double) to fahrenheit (double)";
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:doubleOutput) .
+
+mscr:anyToStringFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "testing" ;
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:stringOutput) .
+
+mscr:simpleCoordinateToComplexFunc
+    a   fno:Function ;
+    fno:solves mscr:complexMappingTranformationProblem ;
+    fno:name "testing" ;
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:stringOutput) .
+    
+mscr:customCoordinateToStringFunc
+    a   fno:Function ;
+    fno:solves mscr:complexMappingTranformationProblem ;
+    fno:name "testing" ;
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:objectOutput) .
+       
+    
+mscr:configurableObjectToStringFunc
+    a   fno:Function ;
+    fno:solves mscr:complexMappingTranformationProblem ;
+    fno:name "testing" ;
+    fno:expects ( mscr:nodeInputParam mscr:extraParamsMap  );
+    fno:returns ( mscr:stringOutput) .
+
+mscr:configurableStringToObjectFunc
+    a   fno:Function ;
+    fno:solves mscr:complexMappingTranformationProblem ;
+    fno:name "testing" ;
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap  );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:vocabularyMapperFunc
+    a   fno:Function ;
+    fno:solves mscr:complexMappingTranformationProblem ;
+    fno:name "vocabularyMapperFunc" ;
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap  );
+    fno:returns ( mscr:objectOutput) .
+
+
+
+mscr:copyMapFunc
+    a   fno:Function ;
+    fno:solves mscr:complexMappingTranformationProblem ;
+    fno:name "testing" ;
+    fno:expects ( mscr:objectInputParam);
+    fno:returns ( mscr:objectOutput) .
+
+mscr:formatStringFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse integer from string input";
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:formatStringWithSubstitutorFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "formatStringWithSubstitutor";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+
+
+mscr:concatenateObjectFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function ";
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:objectOutput) .
+
+
+mscr:pickFirstFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function ";
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:objectOutput) .
+   
+       
+mscr:pickPropertyFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function ";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap);
+    fno:returns ( mscr:objectOutput ) .
+     
+mscr:formatUrlFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse integer from string input";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:stringOutput) .
+
+
+mscr:prefixStringFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse integer from string input";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:stringOutput) .
+
+mscr:similarityBasedValueMappingFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse integer from string input";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap);
+    fno:returns ( mscr:objectOutput) .
+
+mscr:concatListsFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "concatListsFunc";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap);
+    fno:returns ( mscr:objectOutput) .
+
+
+mscr:formatDateFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:stringOutput) .
+
+mscr:pickPropertyWithJSONPathFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:dataciteCreatorToB2FindFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:simpleReplaceStringFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:configurableObjectToParamsFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:mapVocabulariesFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:stringToXmlObjectFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:pickPropertiesToObjectFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+
+mscr:propertiesToArrayFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
+
+mscr:stringInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+mscr:doubleInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:inputDouble ;
+    fno:type xsd:double ;
+    fno:required "true"^^xsd:boolean .
+
+mscr:objectInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:inputObject ;
+    fno:type xsd:anySimpleType ;
+    fno:required "true"^^xsd:boolean .
+   
+mscr:nodeInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:nodeObject ;
+    fno:type xsd:anySimpleType ;
+    fno:required "true"^^xsd:boolean .
+    
+mscr:extraParamsMap
+    a fno:Parameter ;
+    fno:name "params map" ;
+    fno:predicate mscr:paramsMap ;
+    fno:type xsd:anySimpleType ;
+    fno:required "false"^^xsd:boolean .     
+        
+mscr:stringOutput
+    a fno:Output ;
+    fno:name "string output" ;
+    fno:predicate mscr:outputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+mscr:intOutput
+    a fno:Output ;
+    fno:name "int output" ;
+    fno:predicate mscr:outputInt ;
+    fno:type xsd:integer ;
+    fno:required "true"^^xsd:boolean .
+    
+mscr:doubleOutput
+    a fno:Output ;
+    fno:name "double output" ;
+    fno:predicate mscr:outputDouble ;
+    fno:type xsd:double ;
+    fno:required "true"^^xsd:boolean .    
+
+mscr:objectOutput
+    a fno:Output ;
+    fno:name "object output" ;
+    fno:predicate mscr:outputObject ;
+    fno:type xsd:anySimpleType ;
+    fno:required "true"^^xsd:boolean . 
+    
+
+mscr:stringToStringMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToString" ] .
+
+mscr:stringToIntMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToIntFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToInt" ] .
+
+mscr:stringToDoubleMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToDoubleFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToDouble" ] .
+
+
+mscr:celsiusToFahrenheitMapping
+    a fno:Mapping ;
+    fno:function mscr:celsiusToFahrenheitFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "celsiusToFahrenheit" ] .
+     
+mscr:anyToStringMapping
+    a fno:Mapping ;
+    fno:function mscr:anyToStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "anyToString" ] .
+          
+mscr:simpleCoordinateToComplexMapping
+    a fno:Mapping ;
+    fno:function mscr:simpleCoordinateToComplexFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "simpleCoordinateToComplex" ] .
+   
+          
+mscr:customCoordinateToStringMapping
+    a fno:Mapping ;
+    fno:function mscr:customCoordinateToStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "customCoordinateToString" ] .
+   
+mscr:configurableObjectToStringMapping
+    a fno:Mapping ;
+    fno:function mscr:configurableObjectToStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "configurableObjectToString" ] .
+
+mscr:configurableStringToObjectMapping
+    a fno:Mapping ;
+    fno:function mscr:configurableStringToObjectFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "configurableStringToObject" ] .
+ 
+mscr:formatUrlMapping
+    a fno:Mapping ;
+    fno:function mscr:formatUrlFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "formatUrl" ] .
+ 
+mscr:formatStringMapping
+    a fno:Mapping ;
+    fno:function mscr:formatStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "formatString" ] .
+ 
+mscr:concatenateObjectMapping
+    a fno:Mapping ;
+    fno:function mscr:concatenateObjectFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concatenateObject" ] .
+ 
+mscr:pickPropertyMapping
+    a fno:Mapping ;
+    fno:function mscr:pickPropertyFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "pickProperty" ] .
+    
+mscr:prefixStringMapping
+    a fno:Mapping ;
+    fno:function mscr:prefixStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "prefixString" ] .
+    
+     
+mscr:similarityBasedValueMappingMapping
+    a fno:Mapping ;
+    fno:function mscr:similarityBasedValueMappingFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "similarityBasedValueMapping" ] .
+
+mscr:formatDateMapping
+    a fno:Mapping ;
+    fno:function mscr:formatDateFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "formatDate" ] .
+    
+
+mscr:vocabularyMapperMapping
+    a fno:Mapping ;
+    fno:function mscr:vocabularyMapperFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "vocabularyMapper" ] .
+
+mscr:concatListsMapping
+    a fno:Mapping ;
+    fno:function mscr:concatListsFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concatLists" ] .
+      
+mscr:pickPropertyWithJSONPathMapping
+    a fno:Mapping ;
+    fno:function mscr:pickPropertyWithJSONPathFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "pickPropertyWithJSONPath" ] .
+      
+         
+mscr:dataciteCreatorToB2FindMapping
+    a fno:Mapping ;
+    fno:function mscr:dataciteCreatorToB2FindFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "dataciteCreatorToB2Find" ] .
+   
+                
+    
+          
+     
+mscr:formatStringWithSubstitutorMapping
+    a fno:Mapping ;
+    fno:function mscr:formatStringWithSubstitutorFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "formatStringWithSubstitutor" ] .
+   
+mscr:pickFirstMapping
+    a fno:Mapping ;
+    fno:function mscr:pickFirstFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "pickFirst" ] .
+
+mscr:simpleReplaceStringMapping
+    a fno:Mapping ;
+    fno:function mscr:simpleReplaceStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "simpleReplaceString" ] .
+   
+mscr:configurableObjectToParamsMapping
+    a fno:Mapping ;
+    fno:function mscr:configurableObjectToParamsFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "configurableObjectToParams" ] .
+   
+mscr:mapVocabulariesMapping
+    a fno:Mapping ;
+    fno:function mscr:mapVocabulariesFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "mapVocabularies" ] .
+            
+mscr:stringToXmlObjectMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToXmlObjectFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToXmlObject" ] .
+            
+mscr:pickPropertiesToObjectMapping
+    a fno:Mapping ;
+    fno:function mscr:pickPropertiesToObjectFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "pickPropertiesToObject" ] .
+                   
+mscr:propertiesToArrayMapping
+    a fno:Mapping ;
+    fno:function mscr:propertiesToArrayFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "propertiesToArray" ] .
+                
+   
+   
+mscr:copyMapMapping
+    a fno:Mapping ;
+    fno:function mscr:copyMapFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "copyMap" ] .
+   
+                
+    
+    
+     
+mscr:simpleMappingFunctions
+    a fnoi:JavaClass ;
+    fnoi:class-name "fi.vm.yti.datamodel.api.v2.transformation.functions.SimpleMappingFunctions" .
