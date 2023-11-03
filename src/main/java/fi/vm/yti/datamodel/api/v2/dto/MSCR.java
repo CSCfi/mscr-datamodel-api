@@ -49,25 +49,27 @@ public class MSCR {
     public static final Property owner = ResourceFactory.createProperty(URI, "owner");
     
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
+
+    public static final Property id = ResourceFactory.createProperty(URI, "id");
+    public static final Property label = ResourceFactory.createProperty(URI, "label");
+    public static final Property type = ResourceFactory.createProperty(URI, "type");
+    public static final Property description = ResourceFactory.createProperty(URI, "description");
+    public static final Property path = ResourceFactory.createProperty(URI, "path");
+    public static final Property operator = ResourceFactory.createProperty(URI, "operator");
+    public static final Property key = ResourceFactory.createProperty(URI, "key");
+    public static final Property value = ResourceFactory.createProperty(URI, "value");
+    public static final Property filter = ResourceFactory.createProperty(URI, "filter");
+    public static final Property mappings = ResourceFactory.createProperty(URI, "mappings");
+
     
     public static final Property source = ResourceFactory.createProperty(URI, "source");
-    public static final Property sourceLabel = ResourceFactory.createProperty(URI, "sourceLabel");
-    public static final Property sourceType = ResourceFactory.createProperty(URI, "sourceType");
-    public static final Property sourceDescription = ResourceFactory.createProperty(URI, "sourceDescription");
-
     public static final Property predicate = ResourceFactory.createProperty(URI, "predicate");
-
     public static final Property target = ResourceFactory.createProperty(URI, "target");
-    public static final Property targetLabel = ResourceFactory.createProperty(URI, "targetLabel");
-    public static final Property targetType = ResourceFactory.createProperty(URI, "targetType");
-    public static final Property targetDescription = ResourceFactory.createProperty(URI, "targetDescription");
 
     public static final Property processing = ResourceFactory.createProperty(URI, "processing");
+    public static final Property oneOf = ResourceFactory.createProperty(URI, "oneOf");
     public static final Property processingParams = ResourceFactory.createProperty(URI, "processingParams");
-    public static final Property sourcePreprocessing = ResourceFactory.createProperty(URI, "sourcePreprocessing");
-    public static final Property sourcePreprocessingParams = ResourceFactory.createProperty(URI, "sourcePreprocessingParams");
-    public static final Property targetPreprocessing = ResourceFactory.createProperty(URI, "targettPreprocessing");
-    public static final Property targetPreprocessingParams = ResourceFactory.createProperty(URI, "targettPreprocessingParams");
+
 
     public record Organization(String id,  Map<String, String> label) {}
 

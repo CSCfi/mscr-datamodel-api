@@ -1,0 +1,42 @@
+[
+  {
+    "source": [
+      {
+        "id": "$.codeBook",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": "http://www.clarin.eu/cmd/1 https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1595321762428/xsd"
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.-xsi:schemaLocation",
+        "label": "xsi-namespace"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.codeBook",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": "1.2"
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.-CMDVersion",
+        "label": "version"
+      }
+    ]
+  }
+]

@@ -1,9 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.validator;
 
-import fi.vm.yti.datamodel.api.v2.dto.ResourceType;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,14 +16,11 @@ import java.lang.annotation.Target;
 })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MappingValidator.class)
-public @interface ValidResource {
+public @interface ValidMapping {
 
     String message() default "Invalid data";
 
     Class<?>[] groups() default {};
-
-    boolean updateProperty() default false;
-
-    ResourceType resourceType();
+    boolean updateSchema() default false;
     Class<? extends Payload>[] payload() default {};
 }

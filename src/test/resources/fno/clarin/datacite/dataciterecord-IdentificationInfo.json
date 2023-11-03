@@ -1,0 +1,36 @@
+[
+  {
+    "source": [
+      {
+        "id": "$.resource.identifier.-identifierType",
+        "label": "identifier"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataCiteRecord.IdentificationInfo.identifier.-type",
+        "label": "identifier"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.identifier.#text",
+        "label": "identifier"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataCiteRecord.IdentificationInfo.identifier.#text",
+        "label": "identifier"
+      }
+    ],
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#prefixStringFunc",
+      "params": {
+        "prefix": "https://doi.org/"
+      }
+    }    
+  }
+]

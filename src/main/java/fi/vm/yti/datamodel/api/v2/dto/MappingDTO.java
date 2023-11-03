@@ -1,11 +1,12 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
 import java.util.List;
-import java.util.Map;
 
 public class MappingDTO {
 
 	
+	private String PID;
+	private String isPartOf;
 	private String id;
 	private List<String> depends_on;
 	private List<NodeInfo> source;
@@ -15,12 +16,29 @@ public class MappingDTO {
 	private MappingFilterDTO filter;
 	private List<NodeInfo> target;
 	private String targetType;
-	private String targetDescription;
-	
+	private String targetDescription;	
 	private ProcessingInfo processing; 
+	
+	private List<OneOfDTO> oneOf;
 
 	public MappingDTO() {
 		
+	}
+	
+	public String getIsPartOf() {
+		return isPartOf;
+	}
+
+	public void setIsPartOf(String isPartOf) {
+		this.isPartOf = isPartOf;
+	}
+
+	public String getPID() {
+		return PID;
+	}
+
+	public void setPID(String pID) {
+		PID = pID;
 	}
 
 	public String getId() {
@@ -126,6 +144,20 @@ public class MappingDTO {
 	public void setFilter( MappingFilterDTO filter) {
 		this.filter = filter;
 	}
+
+	public List<OneOfDTO> getOneOf() {
+		return oneOf;
+	}
+
+	public void setOneOf(List<OneOfDTO> oneOf) {
+		this.oneOf = oneOf;
+	}
+
+
+
+
+
+
 
 
 

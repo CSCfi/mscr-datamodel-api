@@ -1,0 +1,163 @@
+[
+  {
+    "oneOf": [
+    { 
+"mappings": 
+      [ 
+      {
+        "source": [
+          {
+            "id": "$.codeBook.stdyDscr.citation.titlStmt.IDNo",
+            "label": "root"
+          }
+        ],
+        "filter": {
+          "path": "#text",
+          "operator": "contains",
+          "value": "doi.org",
+          "distinctValues": true
+        },
+        "target": [
+          {
+            "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceType",
+            "label": "header",
+            "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+              "params": {
+                "value": "LandingPage"
+              }
+            }
+          },        
+          {
+            "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceRef",
+            "label": "header",
+            "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+              "params": {
+                "needle": "#text"
+              }
+            }
+          }
+        ]
+      }
+      ]
+      }
+      ,
+    { 
+"mappings":             
+      [ 
+      {
+        "source": [
+          {
+            "id": "$.codeBook.stdyDscr.citation.holdings",
+            "label": "root",
+            "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+              "params": {
+                "needle": "-URI"
+              }
+            }
+          }
+        ],
+        "target": [
+          {
+            "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceType",
+            "label": "type",
+            "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+              "params": {
+                "value": "LandingPage"
+              }
+            }
+          },        
+          {
+            "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceRef",
+            "label": "header"
+          }
+        ]
+      }
+      ]},
+    { 
+"mappings":       
+      [ 
+      {
+        "source": [
+          {
+            "id": "$.codeBook.stdyDscr.dataAccs.setAvail.accsPlac",
+            "label": "root",
+            "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+              "params": {
+                "needle": "-URI"
+              }
+            }
+          }
+        ],
+        "target": [
+          {
+            "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceType",
+            "label": "header",
+            "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+              "params": {
+                "value": "LandingPage"
+              }
+            }
+          },       
+          {
+            "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceRef",
+            "label": "header"
+          }
+        ]
+      }
+      ]
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.codeBook.fileDscr",
+        "label": "root"        
+      }
+    ],
+    "filter": { 
+        "path": "-URI",
+        "operator": "!=",
+        "value": "null"
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceType",
+        "label": "header",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+          "params": {
+            "value": "Resource"
+          }
+        }
+      },    
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].cmd:ResourceRef",
+        "label": "header",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-URI"
+          }
+        }        
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy[*].-id",
+        "label": "header",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-ID"
+          }
+        }        
+      }      
+
+    ]
+  }     
+]

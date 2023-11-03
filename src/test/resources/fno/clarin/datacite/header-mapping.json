@@ -1,0 +1,22 @@
+[
+  {
+    "source": [
+      {
+        "id": "$.resource",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": "clarin.eu:cr1:p_1610707853541"
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Header.cmd:MdProfile.#text",
+        "label": "header"
+      }
+    ]
+  }
+]

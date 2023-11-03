@@ -102,6 +102,7 @@ public class JenaService {
     public void updateSchema(String graphName, Model model) {
     	schemaWrite.delete(graphName);
     	schemaWrite.put(graphName, model);
+    	
     }
 
 	public Model getSchema(String graph) {
@@ -138,6 +139,10 @@ public class JenaService {
 		
 	}	  
 	
+	public void deleteFromCrosswalk(String graph) {
+		crosswalkWrite.delete(graph);
+	}
+	
 	public Model getCrosswalk(String graph) {
         logger.debug("Getting crosswalk {}", graph);
         try {
@@ -167,4 +172,5 @@ public class JenaService {
             }
         }
 	}	
+	
 }

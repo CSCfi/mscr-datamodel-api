@@ -14,7 +14,7 @@
     },
     "target": [
       {
-        "id": "$.CMD.Resources.ResourceProxyList.ResourceProxy.ResourceRef",
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy.cmd:ResourceRef",
         "label": "identifier",
         "processing": {
           "id": "http://uri.suomi.fi/datamodel/ns/mscr#prefixStringFunc",

@@ -1,0 +1,82 @@
+[ 
+{
+    "source": [
+      {
+        "id": "$.resource.creators.creator",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "creatorName.-nameType",
+      "operator": "!=",
+      "value": "Organizational"      
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataciteRecord.Creator[*].identifier",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "nameIdentifier.#text"
+          }
+        }
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataciteRecord.Creator[*].label",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "creatorName"
+          }
+        }
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.name",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "creatorName"
+          }
+        }
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.name['-xml:lang']",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "creatorName['-xml:lang']"
+          }
+        }
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.affiliation",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "affiliation"
+          }
+        }
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo",
+        "label": "altName",
+         "processing": {
+              "id": "http://uri.suomi.fi/datamodel/ns/mscr#propertiesToArrayFunc",
+              "params": {
+                "props": [
+                  "givenName",
+                  "familyName"
+                ],
+                "targetProp": "alternativeName",
+                "sourcePropTarget": "-type"        
+              }
+            }        
+      }
+    ]
+  }  
+]

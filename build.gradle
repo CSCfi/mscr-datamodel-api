@@ -128,6 +128,11 @@ dependencies {
    // https://mvnrepository.com/artifact/com.opencsv/opencsv
     implementation 'com.opencsv:opencsv:5.8'
     
+    implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.1'
+    implementation group: 'org.xmlunit', name: 'xmlunit-assertj', version: '2.9.1'
+
+    implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.1'
+    
 
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
     compileOnly "org.jetbrains:annotations:23.0.0"
@@ -142,6 +147,11 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     //exclude group: 'com.jayway.jsonpath', module: 'json-path', version: '2.7.0'
+    
+// https://mvnrepository.com/artifact/com.github.victools/jsonschema-generator
+    compileOnly group: 'com.github.victools', name: 'jsonschema-generator', version: '4.32.0'    
+    compileOnly group: 'com.fasterxml.jackson.module', name: 'jackson-module-jsonSchema', version: '2.15.3'
+    
 }
 
 sonarqube {

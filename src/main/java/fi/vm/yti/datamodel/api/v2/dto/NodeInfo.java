@@ -4,26 +4,14 @@ public class NodeInfo {
 	private String id;
 	private String label;	
 	private ProcessingInfo processing;
-	private String value;
 	
 	public NodeInfo() {}
 
-	public NodeInfo(String id, String label, ProcessingInfo processing, String value) {
+	public NodeInfo(String id, String label, ProcessingInfo processing) {
 		super();
 		this.id = id;
 		this.label = label;
 		this.processing = processing;
-		this.value = value;
-	}
-	
-	
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
 	}
 
 	public String getId() {

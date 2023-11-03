@@ -302,10 +302,11 @@ public class SimpleMappingFunctions {
 					}
 					
 					a.add(newValue);
-					
+					((Map<String, Object>)value).put(targetProp, newValue);
 				}
 			}	
-			((Map<String, Object>)value).put(targetProp, a);
+			//((Map<String, Object>)value).put(targetProp, a);
+			
 		}
 		return value;						
 	}
@@ -579,6 +580,17 @@ public class SimpleMappingFunctions {
 	
 	public static Object vocabularyMapper(Object input, Map<String, Object> params) {
 		return input;
+	}
+	
+	public static Object staticContent(Object input, Map<String, Object> params) {
+		return params.get("value");
+		
+	}
+	
+	/* CLARIN */
+	public static String clarinToFullDate(Object node) {
+		return "2010-05-01";
+		
 	}
 }
 

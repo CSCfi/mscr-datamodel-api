@@ -1,0 +1,526 @@
+<?xml version='1.0' encoding='utf-8'?>
+<codeBook xmlns="ddi:codebook:2_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd" version="2.5" xml:lang="en-GB">
+  <docDscr>
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">Local and regional developmental cores</titl>
+        <parTitl xml:lang="sl-SI">Lokalna in regionalna razvojna jedra</parTitl>
+        <IDNo agency="ADP">RAZJED10</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty affiliation="Inštitut za razvojne in strateške analize = The institute for developmental and strategic analysis">Adam, Frane</AuthEnty>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Kristan, Primož</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Vojvodić, Ana</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Rončević, Borut</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Kalčić, Špela </p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Podmenik, Dane</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Šinkovec, Urša</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Besednjak, Tamara</p>
+        </othId>
+      </rspStmt>
+      <prodStmt>
+        <producer abbr="ADP" affiliation="Univerza v Ljubljani = University of Ljubljana" xml:lang="en-GB">Arhiv družboslovnih podatkov = Social Science Data Archives</producer>
+        <copyright>ADP, 2010</copyright>
+        <prodDate date="2010-05" xml:lang="en-GB">May 2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana, Slovenia</prodPlac>
+        <software version="10.0" ID="Oxygen" xml:lang="en-GB">Oxygen</software>
+        <fundAg abbr="ARRS" xml:lang="en-GB">Agencija za raziskovalno dejavnost Republike Slovenije = Slovenian Research Agency</fundAg>
+        <grantNo agency="ARRS">1000-09-160510 (IRC)</grantNo>
+      </prodStmt>
+      <distStmt>
+        <distrbtr abbr="ADP" affiliation="Univerza v Ljubljani = University of Ljubljana" xml:lang="en-GB" URI="http://www.adp.fdv.uni-lj.si/">Arhiv družboslovnih podatkov = Social Science Data Archives</distrbtr>
+        <distDate date="2010-05" xml:lang="en-GB">May 2010</distDate>
+      </distStmt>
+      <verStmt>
+        <version type="version" xml:lang="en-GB">ADP XML Codebook file</version>
+        <verResp>Sanja Lužar, ADP</verResp>
+        <notes ID="Authorized" xml:lang="en-GB" type="Avtorizacija">Frane Adam, IRSA and Sanja Lužar, ADP prepared survey description. Study Description is authorized.</notes>
+      </verStmt>
+      <biblCit>Adam, F. (2010). Local and regional developmental cores [Codebook file]. Ljubljana: Univerza v Ljubljani = University of Ljubljana, Arhiv družboslovnih podatkov = Social Science Data Archives. ADP - IDNo: RAZJED10. https://doi.org/10.17898/ADP_RAZJED10_V1</biblCit>
+      <holdings URI="http://www.adp.fdv.uni-lj.si/opisi/">ADP DDI</holdings>
+    </citation>
+    <docStatus xml:lang="en-GB">4 - Full Study description and XML DDI Codebook Data description with full questions text.</docStatus>
+  </docDscr>
+  <stdyDscr>
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">Local and regional developmental cores</titl>
+        <parTitl xml:lang="sl-SI">Lokalna in regionalna razvojna jedra</parTitl>
+        <IDNo agency="ADP">RAZJED10</IDNo>
+        <IDNo agency="dara">https://doi.org/10.17898/ADP_RAZJED10_V1</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty affiliation="The institute for developmental and strategic analysis">Adam, Frane</AuthEnty>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Kristan, Primož</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Vojvodić, Ana</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Rončević, Borut</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Kalčić, Špela </p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Podmenik, Dane</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Šinkovec, Urša</p>
+        </othId>
+        <othId role="conceptualization collaborator" affiliation="">
+          <p>Besednjak, Tamara</p>
+        </othId>
+      </rspStmt>
+      <prodStmt>
+        <producer abbr="IRSA" xml:lang="en-GB">Inštitut za razvojne in strateške analize = The institute for developmental and strategic analysis</producer>
+        <producer abbr="FUDŠ" xml:lang="en-GB">Fakulteta za uporabne družbene študije v Novi Gorici = School of Advanced Social Studies in Nova Gorica</producer>
+        <prodDate date="2010-01" xml:lang="en-GB">January 2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana, Slovenia</prodPlac>
+        <prodPlac xml:lang="en-GB">Nova Gorica, Slovenia</prodPlac>
+        <fundAg abbr="ARRS" xml:lang="en-GB">Agencija za raziskovalno dejavnost Republike Slovenije = Slovenian Research Agency</fundAg>
+        <fundAg abbr="SVLR" xml:lang="en-GB">Služba Vlade RS za lokalno samoupravo in regionalno politiko = Government Office for Local Self-Government and Regional Policy</fundAg>
+        <grantNo agency="ARRS">L5-0654</grantNo>
+      </prodStmt>
+      <distStmt>
+        <distrbtr abbr="ADP" affiliation="Univerza v Ljubljani = University of Ljubljana" URI="http://www.adp.fdv.uni-lj.si/">Arhiv družboslovnih podatkov = Social Science Data Archives</distrbtr>
+        <depositr abbr="IRSA">Inštitut za razvojne in strateške analize = The institute for developmental and strategic analysis</depositr>
+        <depDate date="2010-04-20" xml:lang="en-GB">2010-04-20</depDate>
+        <distDate date="2010-05" xml:lang="en-GB">May 2010</distDate>
+      </distStmt>
+      <biblCit format="MRDF">Adam, F. (2010). Local and regional developmental cores [Data file]. Ljubljana: Univerza v Ljubljani = University of Ljubljana, Arhiv družboslovnih podatkov = Social Science Data Archives. ADP - IDNo: RAZJED10. https://doi.org/10.17898/ADP_RAZJED10_V1</biblCit>
+      <!-- <holdings URI="http://test.fi"/> -->
+    </citation>
+    <stdyInfo>
+      <subject>
+        <keyword xml:lang="en-GB" vocab="ADP">regional development</keyword>
+        <keyword xml:lang="en-GB" vocab="ADP">innovative cores</keyword>
+        <keyword xml:lang="en-GB" vocab="ADP">support institutions</keyword>
+        <keyword xml:lang="en-GB" vocab="ADP">application of economic knowledge</keyword>
+        <keyword xml:lang="en-GB" vocab="ADP">civil society</keyword>
+        <keyword xml:lang="en-GB" vocab="ADP">non-governmental organizations</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_7d7f66dd-f5bb-440e-b1d1-71c9b4c5087c" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">DEVELOPMENT</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_b43e57e4-e01d-432e-b41b-ecaebbad3f6f" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">DEVELOPMENT PROGRAMMES</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_d0fcf34d-8b9c-4bf5-871e-449b7517b47e" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">REGIONAL DEVELOPMENT</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_b819e7d6-dd13-4b49-9cd8-c42fa305c0ac" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">INFORMATION TRANSFER</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_9fb403c6-56f1-4e04-a26b-48016854d0fa" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">COMMUNITY DEVELOPMENT</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_2c7545d0-e32a-48cc-a3d0-47fb45bb11a9" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">INNOVATION</keyword>
+        <keyword xml:lang="en-GB" ID="ELSST_ad557ea9-39e5-4dca-9b15-02ed45473b16" vocab="ELSST" vocabURI="https://elsst.ukdataservice.ac.uk">SOCIAL CAPITAL</keyword>
+        <topcClas xml:lang="en-GB" ID="Other" vocab="CESSDA Topic Classification" vocabURI="urn:ddi:int.cessda.cv:TopicClassification:3.0">OTHER</topcClas>
+        <topcClas xml:lang="en-GB" ID="S195" vocab="CERIF" vocabURI="http://sicris.izum.si/">Development cooperation</topcClas>
+        <topcClas xml:lang="en-GB" vocab="ADP Druga poglavja" vocabURI="http://www.adp.fdv.uni-lj.si">ORGANISATIONAL CULTURE OF ENTERPRISES AND INSTITUTIONS</topcClas>
+        <topcClas xml:lang="en-GB" vocab="ADP Druga poglavja" vocabURI="http://www.adp.fdv.uni-lj.si">INNOVATIVE ENVIRONMENT</topcClas>
+        <topcClas xml:lang="en-GB" vocab="ADP Druga poglavja" vocabURI="http://www.adp.fdv.uni-lj.si">COMMUNICATION PROCESSES WITHIN ENTERPRISES AND INSTITUTIONS</topcClas>
+        <topcClas xml:lang="en-GB" vocab="ADP Druga poglavja" vocabURI="http://www.adp.fdv.uni-lj.si">COMMUNICATION TO OTHER RELEVANT ACTORS</topcClas>
+        <topcClas xml:lang="en-GB" vocab="ADP Druga poglavja" vocabURI="http://www.adp.fdv.uni-lj.si">LOCAL AND REGIONAL LEVEL</topcClas>
+      </subject>
+      <abstract xml:lang="en-GB">The survey is focused on developmental potentials, innovative actors and support institutions (incubators and 
+        technological parks), their formation, mutual interaction and communication in particular from the perspective of knowledge transfer and on the 
+        role of civil society and NGOs in this framework. The hypothesis is that density of these organizations (NGOs) 
+        is important for formation and diffusion of social capital. NGOs can be directly or in-directly included in local developmental projects.</abstract>
+      <sumDscr>
+        <timePrd event="start" date="2008-11" xml:lang="en-GB">November 2008</timePrd>
+        <timePrd date="2009-11" event="end" xml:lang="en-GB">November 2009</timePrd>
+        <collDate event="single" date="2008-11" xml:lang="en-GB">November 2008</collDate>
+        <collDate event="start" date="2009-01" xml:lang="en-GB">January 2009</collDate>
+        <collDate date="2009-03" event="end" xml:lang="en-GB">March 2009</collDate>
+        <collDate event="single" date="2009-11" xml:lang="en-GB">November 2009</collDate>
+        <nation xml:lang="en-GB" abbr="SI">Slovenia</nation>
+        <geogCover xml:lang="en-GB">Central Slovenia</geogCover>
+        <geogCover xml:lang="en-GB">Goriška region</geogCover>
+        <geogCover xml:lang="en-GB">Coastal-Carsic region</geogCover>
+        <geogCover xml:lang="en-GB">Southeastern region</geogCover>
+        <geogUnit xml:lang="en-GB">Region<concept vocab="ADP-GeogUnit">Region</concept></geogUnit>
+        <anlyUnit xml:lang="en-GB">Organization<concept vocab="DDI Analysis Unit" vocabURI="urn:ddi-cv:AnalysisUnit:1.0">Organization</concept></anlyUnit>
+        <anlyUnit xml:lang="en-GB">High-technological enterprises (small and medium-sized), support institutions (incubators, technological parks, developemental agencies, ...</anlyUnit>
+        <universe clusion="I" xml:lang="en-GB">Entrepreneurs and representatives of support institutions.</universe>
+        <universe clusion="E" xml:lang="en-GB">Transcripts of semi-structured interviews and focus groups.</universe>
+        <dataKind xml:lang="en-GB">Text<concept vocab="DDI General Data Format" vocabURI="urn:ddi-cv:GeneralDataFormat:2.0">Text</concept></dataKind>
+        
+      </sumDscr>
+    </stdyInfo>
+    <method>
+      <dataColl>
+        <timeMeth xml:lang="en-GB">Cross-section<concept vocab="DDI Time Method" vocabURI="urn:ddi-cv:TimeMethod:1.2">CrossSection</concept></timeMeth>
+        <dataCollector abbr="IRSA" affiliation="Univerza v Ljubljani = University of Ljubljana" xml:lang="en-GB">Inštitut za razvojne in strateške analize = The institute for developmental and strategic analysis</dataCollector>
+        <dataCollector abbr="FUDŠ" affiliation="Univerza v Ljubljani = University of Ljubljana" xml:lang="en-GB">Fakulteta za uporabne družbene študije v Novi Gorici = School of Advanced Social Studies in Nova Gorica</dataCollector>
+        <frequenc ID="OneTime" xml:lang="en-GB">One-time data collection</frequenc>
+        <sampProc xml:lang="en-GB">Non-probability: Respondent-assisted<concept vocab="DDI Sampling Procedure" vocabURI="urn:ddi-cv:SamplingProcedure:1.1">Nonprobability.RespondentAssisted</concept></sampProc>
+        <collMode xml:lang="en-GB">Face-to-face interview<concept vocab="DDI Mode of Collection" vocabURI="urn:ddi-cv:ModeOfCollection:3.0">Interview.FaceToFace</concept></collMode>
+        <collMode xml:lang="en-GB">Focus group<concept vocab="DDI Mode of Collection" vocabURI="urn:ddi-cv:ModeOfCollection:3.0">FocusGroup</concept></collMode>
+        <resInstru xml:lang="en-GB">Semi-structured questionnaire<concept vocab="DDI Type of Instrument" vocabURI="urn:ddi-cv:TypeOfInstrument:1.1">Questionnaire.Semistructured</concept></resInstru>
+        <cleanOps ID="DataCleaned" xml:lang="en-GB">Data was cleaned.</cleanOps>
+      </dataColl>
+      <anlyInfo/>
+      <stdyClas ID="oc8" xml:lang="en-GB" type="ADP">8 - theoretically or practically important studies, studies that fill the research gap or have many implications for a wide range of practical problems, long term scholarly value</stdyClas>
+    </method>
+    <dataAccs>
+      <setAvail>
+        <accsPlac URI="http://www.adp.fdv.uni-lj.si/podatki/" xml:lang="en-GB">Arhiv družboslovnih podatkov = Social Science Data Archives</accsPlac>
+        <fileQnty>10</fileQnty>
+      </setAvail>
+      <useStmt>
+        <restrctn xml:lang="en-GB" ID="res">The users should use the materials only for the purposes specified in Ordering form, to act at all times so as to preserve the confidentiality of individuals and institutions recorded in the materials.</restrctn>
+        <contact affiliation="ADP" email="arhiv.podatkov@fdv.uni-lj.si" xml:lang="en-GB" URI="http://www.adp.fdv.uni-lj.si/">Arhiv družboslovnih podatkov = Social Science Data Archives</contact>
+        <citReq xml:lang="en-GB">The users should acknowledge in any publication both the original depositors and the Archive.</citReq>
+        <deposReq xml:lang="en-GB">Users are requested to deposit with the Archive two copies of any published work or report based wholly or in part on such materials and to notify the Archive of any errors discovered in the materials.</deposReq>
+        <conditions xml:lang="en-GB">In case of ambiguity the users of the data set are advised to contact principal investigators or Archive.</conditions>
+      </useStmt>
+    </dataAccs>
+    <othrStdyMat>
+      <relMat ID="RAZJED10O12">
+        <citation>
+          <titlStmt>
+            <titl xml:lang="en-GB">RAZJED10 - Lokalna in regionalna razvojna jedra (poročilo)</titl>
+            <IDNo agency="ADP">RAZJED10O12</IDNo>
+          </titlStmt>
+          <rspStmt>
+            <AuthEnty>Adam, Frane</AuthEnty>
+          </rspStmt>
+          <prodStmt>
+            <producer abbr="IRSA" xml:lang="en-GB">Inštitut za razvojne in strateške analize = The
+              institute for developmental and strategic analysis</producer>
+            <prodDate xml:lang="en-GB">2010</prodDate>
+            <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+            <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+          </prodStmt>
+          <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-porocilo.pdf">Arhiv družboslovnih podatkov =
+            Social Science Data Archives</holdings>
+        </citation></relMat>
+      <!--&rP;-->
+    </othrStdyMat>
+  </stdyDscr>
+  <fileDscr ID="F2" xml:lang="sl-SI" URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-go-i.pdf" access="res">
+    <fileTxt>
+      <fileName xml:lang="sl-SI" ID="RAZJED10P6">Goriška regija - transkripti (intervjuji, fokusna skupina) [Data file]</fileName>
+      <fileCitation>
+        <titlStmt>
+          <titl xml:lang="sl-SI">Goriška regija - transkripti (intervjuji, fokusna skupina) [Data file]</titl>
+        </titlStmt>
+        <rspStmt>
+          <AuthEnty affiliation="IRSA">Adam, Frane</AuthEnty>
+        </rspStmt>
+      </fileCitation>
+      <dimensns>
+        <caseQnty>9</caseQnty>
+        <varQnty>/</varQnty>
+      </dimensns>
+      <fileType xml:lang="sl-SI">*.pdf - GRAPHIC</fileType>
+      <filePlac>ADP</filePlac>
+      <verStmt>
+        <version date="2010-05-12" xml:lang="sl-SI">May 2010</version>
+        <verResp>Arhiv družboslovnih podatkov = Social Science Data Archives</verResp>
+        <notes xml:lang="en-GB"/>
+      </verStmt>
+    </fileTxt>
+  </fileDscr>
+  <fileDscr ID="F3" xml:lang="sl-SI" URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-jv-i.pdf" access="res">
+    <fileTxt>
+      <fileName xml:lang="sl-SI" ID="RAZJED10P7">Jugovzhodna regija - transkripti (intervjuji, fokusna skupina) [Data file]</fileName>
+      <fileCitation>
+        <titlStmt>
+          <titl xml:lang="sl-SI">Jugovzhodna regija - transkripti (intervjuji, fokusna skupina) [Data file]</titl>
+        </titlStmt>
+        <rspStmt>
+          <AuthEnty affiliation="IRSA">Adam, Frane</AuthEnty>
+        </rspStmt>
+      </fileCitation>
+      <dimensns>
+        <caseQnty>3</caseQnty>
+        <varQnty>/</varQnty>
+      </dimensns>
+      <fileType xml:lang="sl-SI">*.pdf - GRAPHIC</fileType>
+      <filePlac>ADP</filePlac>
+      <verStmt>
+        <version date="2010-05-12" xml:lang="sl-SI">May 2010</version>
+        <verResp>Arhiv družboslovnih podatkov = Social Science Data Archives</verResp>
+        <notes xml:lang="en-GB"/>
+      </verStmt>
+    </fileTxt>
+  </fileDscr>
+  <fileDscr ID="F4" xml:lang="sl-SI" URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-ok-i.pdf" access="res">
+    <fileTxt>
+      <fileName xml:lang="sl-SI" ID="RAZJED10P8">Obalno-kraška regija - transkripti (intervjuji, fokusna skupina) [Data file]</fileName>
+      <fileCitation>
+        <titlStmt>
+          <titl xml:lang="sl-SI">Obalno-kraška regija - transkripti (intervjuji, fokusna skupina) [Data file]</titl>
+        </titlStmt>
+        <rspStmt>
+          <AuthEnty affiliation="IRSA">Adam, Frane</AuthEnty>
+        </rspStmt>
+      </fileCitation>
+      <dimensns>
+        <caseQnty>7</caseQnty>
+        <varQnty>/</varQnty>
+      </dimensns>
+      <fileType xml:lang="sl-SI">*.pdf - GRAPHIC</fileType>
+      <filePlac>ADP</filePlac>
+      <verStmt>
+        <version date="2010-05-12" xml:lang="sl-SI">May 2010</version>
+        <verResp>Arhiv družboslovnih podatkov = Social Science Data Archives</verResp>
+        <notes xml:lang="en-GB"/>
+      </verStmt>
+    </fileTxt>
+  </fileDscr>
+  <fileDscr ID="F5" xml:lang="sl-SI" URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-os-i.pdf" access="res">
+    <fileTxt>
+      <fileName xml:lang="sl-SI" ID="RAZJED10P9">Osrednjeslovenska regija - transkript (fokusna skupina) [Data file]</fileName>
+      <fileCitation>
+        <titlStmt>
+          <titl xml:lang="sl-SI">Osrednjeslovenska regija - transkript (fokusna skupina) [Data file]</titl>
+        </titlStmt>
+        <rspStmt>
+          <AuthEnty affiliation="IRSA">Adam, Frane</AuthEnty>
+        </rspStmt>
+      </fileCitation>
+      <dimensns>
+        <caseQnty>7</caseQnty>
+        <varQnty>/</varQnty>
+      </dimensns>
+      <fileType xml:lang="sl-SI">*.pdf - GRAPHIC</fileType>
+      <filePlac>ADP</filePlac>
+      <verStmt>
+        <version date="2010-05-12" xml:lang="sl-SI">May 2010</version>
+        <verResp>Arhiv družboslovnih podatkov = Social Science Data Archives</verResp>
+        <notes xml:lang="en-GB"/>
+      </verStmt>
+    </fileTxt>
+  </fileDscr>
+  <fileDscr ID="F1" xml:lang="sl-SI" URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-po-i.pdf" access="res">
+    <fileTxt>
+      <fileName xml:lang="sl-SI" ID="RAZJED10P10">Pomurje - transkript (fokusna skupina) [Data file]</fileName>
+      <fileCitation>
+        <titlStmt>
+          <titl xml:lang="sl-SI">Pomurje - transkript (fokusna skupina) [Data file]</titl>
+        </titlStmt>
+        <rspStmt>
+          <AuthEnty affiliation="IRSA">Adam, Frane</AuthEnty>
+        </rspStmt>
+      </fileCitation>
+      <dimensns>
+        <caseQnty>1</caseQnty>
+        <varQnty>/</varQnty>
+      </dimensns>
+      <fileType xml:lang="sl-SI">*.pdf - GRAPHIC</fileType>
+      <filePlac>ADP</filePlac>
+      <verStmt>
+        <version date="2010-05-12" xml:lang="sl-SI">May 2010</version>
+        <verResp>Arhiv družboslovnih podatkov = Social Science Data Archives</verResp>
+        <notes xml:lang="en-GB"/>
+      </verStmt>
+    </fileTxt>
+  </fileDscr>
+  <!-- &dD; -->
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-vp.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10VP1">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Lokalna in regionalna razvojna jedra (vprašalnik) [Questionnaire]</titl>
+        <IDNo agency="ADP">RAZJED10VP1</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-vp.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-go-i.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10P6">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Goriška regija - transkripti (intervjuji, fokusna skupina) [datoteka podatkov]</titl>
+        <IDNo agency="ADP">RAZJED10P6</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-go-i.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-jv-i.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10P7">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Jugovzhodna regija - transkripti (intervjuji, fokusna skupina) [datoteka podatkov]</titl>
+        <IDNo agency="ADP">RAZJED10P7</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-jv-i.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-ok-i.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10P8">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Obalno-kraška regija - transkripti (intervjuji, fokusna skupina) [datoteka podatkov]</titl>
+        <IDNo agency="ADP">RAZJED10P8</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-ok-i.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-os-i.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10P9">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Osrednjeslovenska regija - transkripti (intervjuji, fokusna skupina) [datoteka podatkov]</titl>
+        <IDNo agency="ADP">RAZJED10P9</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-os-i.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-po-i.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10P10">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Pomurje - transkript (fokusna skupina) [datoteka podatkov]</titl>
+        <IDNo agency="ADP">RAZJED10P10</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-po-i.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-go-p.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10O7">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Goriška regija - povzetki (intervjuji, fokusna skupina) [Other material]</titl>
+        <IDNo agency="ADP">RAZJED10O7</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/adp/podatki/razjed10/razjed10-go-p.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-jv-p.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10O8">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Jugovzhodna regija - povzetki (intervjuji, fokusna skupina) [Other material]</titl>
+        <IDNo agency="ADP">RAZJED10O8</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-jv-p.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-ok-p.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10O9">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Obalno-kraška regija - povzetki (intervjuji, fokusna skupina) [Other material]</titl>
+        <IDNo agency="ADP">RAZJED10O9</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-ok-p.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-os-p.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10O10">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Osrednjeslovenska regija - povzetki (intervjuji, fokusna skupina) [Other material]</titl>
+        <IDNo agency="ADP">RAZJED10O10</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-os-p.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+  <otherMat URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-po-p.pdf" level="study" type="*.pdf - GRAPHIC" ID="RAZJED10O11">
+    <citation>
+      <titlStmt>
+        <titl xml:lang="en-GB">RAZJED10 - Pomurje - povzetek (fokusna skupina) [Other material]</titl>
+        <IDNo agency="ADP">RAZJED10O11</IDNo>
+      </titlStmt>
+      <rspStmt>
+        <AuthEnty>Adam, Frane</AuthEnty>
+      </rspStmt>
+      <prodStmt>
+        <producer xml:lang="en-GB">IRSA</producer>
+        <prodDate xml:lang="en-GB">2010</prodDate>
+        <prodPlac xml:lang="en-GB">Ljubljana</prodPlac>
+        <software xml:lang="en-GB">*.pdf - GRAPHIC</software>
+      </prodStmt>
+      <holdings URI="https://www.adp.fdv.uni-lj.si/media/podatki/razjed10/razjed10-po-p.pdf">Arhiv družboslovnih podatkov = Social Science Data Archives</holdings>
+    </citation>
+  </otherMat>
+</codeBook>

@@ -422,10 +422,33 @@ mscr:dataciteCreatorToB2FindMapping
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "dataciteCreatorToB2Find" ] .
    
+mscr:staticContentFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam mscr:extraParamsMap );
+    fno:returns ( mscr:objectOutput) .
                 
-    
+mscr:clarinToFullDateFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to...";
+    fno:expects ( mscr:objectInputParam );
+    fno:returns ( mscr:objectOutput) .
+                
+mscr:clarinToFullDateMapping
+    a fno:Mapping ;
+    fno:function mscr:clarinToFullDateFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "clarinToFullDate" ] .
+           
           
-     
+mscr:staticContentMapping
+    a fno:Mapping ;
+    fno:function mscr:staticContentFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "staticContent" ] .
+       
 mscr:formatStringWithSubstitutorMapping
     a fno:Mapping ;
     fno:function mscr:formatStringWithSubstitutorFunc ;

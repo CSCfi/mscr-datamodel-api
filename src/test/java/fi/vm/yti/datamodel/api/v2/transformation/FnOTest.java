@@ -10,7 +10,7 @@ import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.idlab.knows.functions.agent.Arguments;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class FnOTester {
+public class FnOTest {
 
 	private Agent agent;
 	

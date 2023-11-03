@@ -89,7 +89,9 @@ public class FnoTransformerTest {
 		List<MappingDTO> mappings = mapper.readValue(mapping, new TypeReference<List<MappingDTO>>(){});
 		
 		String output = service.transform(IOUtils.toString(input), "json", mappings, "json");		
-		System.out.println(output);			
+		System.out.println(output);	
+		assertEquals("{\"device\":\"1\",\"temperature1\":\"20\",\"timestamp_and_id\":\"1|1696330740\"}",
+			output);
 	}
 	
 	
@@ -196,16 +198,6 @@ public class FnoTransformerTest {
 		System.out.println(output);			
 	}
 
-	@Test
-	public void testResearchfiToCERIF() throws Exception {
-		InputStream input = getClass().getClassLoader().getResourceAsStream("fno/cerif2_affiliation_sample.xml");
-		InputStream mapping = getClass().getClassLoader().getResourceAsStream("fno/cerif2_affiliation-mapping1.json");
-		ObjectMapper mapper = new ObjectMapper();
-		List<MappingDTO> mappings = mapper.readValue(mapping, new TypeReference<List<MappingDTO>>(){});
-		
-		String output = service.transform(IOUtils.toString(input), "xml", mappings, "xml");		
-		System.out.println(output);		
-	}
 	
 	@Test
 	public void testCollection() throws Exception {
@@ -233,19 +225,6 @@ public class FnoTransformerTest {
 				+ "</root>", output);
 	}
 	
-	@Test
-	public void testDataciteToCDMI() throws Exception {
-		InputStream input = getClass().getClassLoader().getResourceAsStream("fno/zenodo-document.xml");
-		InputStream mapping = getClass().getClassLoader().getResourceAsStream("fno/datacite-cdmi-mapping.json");
-		ObjectMapper mapper = new ObjectMapper();
-		List<MappingDTO> mappings = mapper.readValue(mapping, new TypeReference<List<MappingDTO>>(){});
-		
-		Map<String, String> namespaces = Map.of(
-				"", "http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1610707853541"				
-				,
-				"xml", "http://www.w3.org/XML/1998/namespace ");		
-		
-		String output = service.transform(IOUtils.toString(input), "xml", mappings, "xml", namespaces, "CMD");		
-		System.out.println(output);
-	}
+
+	
 }

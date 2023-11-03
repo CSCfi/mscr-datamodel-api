@@ -40,10 +40,7 @@
     "label" : "timestamp_and_id"
   } ],
   "processing" : {
-    "id" : "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
-    "params" : { 
-        "needle": "timestamp"
-    }
+    "id" : "http://uri.suomi.fi/datamodel/ns/mscr#concatenateObjectFunc"
   }
 }  
 ]

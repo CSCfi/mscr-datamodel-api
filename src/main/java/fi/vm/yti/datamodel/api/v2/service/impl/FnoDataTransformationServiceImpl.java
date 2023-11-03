@@ -5,10 +5,12 @@ import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ import be.ugent.idlab.knows.functions.agent.functionModelProvider.fno.exception.
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingFilterDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
+import fi.vm.yti.datamodel.api.v2.dto.OneOfDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 import fi.vm.yti.datamodel.api.v2.service.DataTransformationService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
@@ -420,6 +423,35 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
             return false;
         }
     }	
+	private boolean isFilteredResult(Object result, MappingFilterDTO filter) {
+		if(result != null && filter != null) {
+			if(filter.getOperator().equals("=")) {
+				return result.equals(filter.getValue());
+			}
+			else if(filter.getOperator().equals("!=")) {
+				return !result.equals(filter.getValue());
+			}	
+			else if(filter.getOperator().equals("in")) {
+				return ((List<Object>)filter.getValue()).indexOf(result) >=0;
+			}	
+			else if(filter.getOperator().equals("startsWith")) {
+				return result.toString().startsWith(filter.getValue().toString());
+			}	
+			else if(filter.getOperator().equals("isURI")) {
+				return isWellFormedUriString(result.toString());
+			}			
+			else if(filter.getOperator().equals("contains")) {
+				return result.toString().indexOf(filter.getValue().toString()) >= 0;
+			}						
+			else if(filter.getOperator().equals("!contains")) {
+				return !(result.toString().indexOf(filter.getValue().toString()) >= 0);
+			}			
+			else {
+				throw new RuntimeException("Unknown operator "+ filter.getOperator());
+			}			
+		}
+		return true;		
+	}	
 	private boolean isIncluded(Object value, MappingDTO mapping) {
 		if(value != null && mapping.getFilter() != null) {
 			MappingFilterDTO filter = mapping.getFilter();
@@ -444,6 +476,12 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 			}	
 			else if(filter.getOperator().equals("isURI")) {
 				return isWellFormedUriString(result.toString());
+			}			
+			else if(filter.getOperator().equals("contains")) {
+				return result.toString().indexOf(filter.getValue().toString()) >= 0;
+			}						
+			else if(filter.getOperator().equals("!contains")) {
+				return !(result.toString().indexOf(filter.getValue().toString()) >= 0);
 			}			
 			else {
 				throw new RuntimeException("Unknown operator "+ filter.getOperator());
@@ -505,55 +543,127 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 			
 		}		
 	}
+	
+	private boolean handleMapping(Map<String, Object> c, MappingDTO mapping, Set<String> addedCollections, DocumentContext doc) {
+		int initialC = c.keySet().size();
+		Map<String, Object> values = null;
+		// get the value using source path 
+		List<NodeInfo> sources = mapping.getSource();
+		for(NodeInfo source : sources ) {
+			String sourcePath = source.getId();
+			if(sourcePath.indexOf("[*") > 0) {
+				addedCollections.add(sourcePath.substring(0, sourcePath.indexOf("]") ));
+			}
+			/*
+			else {
+				for(NodeInfo target: mapping.getTarget()) {
+					String targetPath = target.getId();
+					if(targetPath.indexOf("[*") > 0) {
+						addedCollections.add(sourcePath);		
+					}
+					
+				}					
+			}
+			*/
+		}
+		values = collectDataForSingleMapping(sources, doc);
+		// this is done in order to make most of the functions simpler
+		Object values2 = removeParamKeyForSingleOutput(values);
+		System.out.print("original value");
+		System.out.println(values2);
+
+		// processing step takes as an input either single object or and array, depending on the sources 
+		System.out.print("after processing");
+		System.out.println(values2);
+		
+		if(values2 instanceof JSONArray) {
+			JSONArray values2Array = (JSONArray)values2;
+			int valueIndex = 0;
+			for(Object value : values2Array) {
+				// check if value should be filtered of not
+				//System.out.println(value);
+				if(isIncluded(value, mapping)) {
+					if(mapping.getProcessing() != null && value != null) {				
+						value = doProcessing(mapping.getProcessing(), value);	
+					}						
+					addTargetNodes(c, mapping, value, valueIndex, addedCollections);
+					valueIndex++;
+				}
+				else {
+					if(!mapping.getFilter().isDistinctValues()) {
+						valueIndex++;	
+					}
+					
+				}
+				
+			}
+		}
+		else {
+			if(isIncluded(values2, mapping)) {
+				if(mapping.getProcessing() != null && values2 != null) {				
+					values2 = doProcessing(mapping.getProcessing(), values2);	
+				}
+				
+				addTargetNodes(c, mapping, values2, 0, addedCollections);
+			}
+		}
+		return c.keySet().size() > initialC;
+	}
  	
 	private Map<String, Object> generateColumnsMap2(List<MappingDTO> mappings, DocumentContext doc,
 			String rootElement, Map<String, String> namespaces) {
 		Map<String, Object> c = new LinkedHashMap<String, Object>();
-		
+		Set<String> addedCollections = new HashSet<String>();
 		for(MappingDTO mapping : mappings) {
-			Map<String, Object> values = null;
-			// get the value using source path 
-			List<NodeInfo> sources = mapping.getSource();			
-			values = collectDataForSingleMapping(sources, doc);
-			// this is done in order to make most of the functions simpler
-			Object values2 = removeParamKeyForSingleOutput(values);
-			System.out.print("original value");
-			System.out.println(values2);
-
-			// processing step takes as an input either single object or and array, depending on the sources 
-			System.out.print("after processing");
-			System.out.println(values2);
-			
-			if(values2 instanceof JSONArray) {
-				JSONArray values2Array = (JSONArray)values2;
-				int valueIndex = 0;
-				for(Object value : values2Array) {
-					// check if value should be filtered of not
-					//System.out.println(value);
-					if(isIncluded(value, mapping)) {
-						if(mapping.getProcessing() != null && value != null) {				
-							value = doProcessing(mapping.getProcessing(), value);	
-						}						
-						addTargetNodes(c, mapping, value, valueIndex);
-						valueIndex++;
-					}
-					else {
-						if(!mapping.getFilter().isDistinctValues()) {
-							valueIndex++;	
+			if(mapping.getOneOf() != null) {
+				boolean pickMe = false;
+				
+				for(OneOfDTO oneOf : mapping.getOneOf()) {
+					boolean isFiltered = true;
+					if(oneOf.getFilter() != null) {
+						Object r = doc.read(oneOf.getFilter().getPath());
+						if(r != null) {
+							if(r instanceof JSONArray) {
+								// if none match set isFilter to false
+								boolean matchFound = false;
+								for(Object _obj : (JSONArray)r) {
+									if(isFilteredResult(_obj, oneOf.getFilter())) {
+										matchFound = true;
+									}
+								}
+								if(!matchFound) {
+									isFiltered = false;									
+								}
+							}
+							else {
+								if(!isFilteredResult(r, oneOf.getFilter())) {
+									isFiltered = false;
+								}
+							}
 						}
-						
 					}
+					List<MappingDTO> _mappings = oneOf.getMappings();
 					
+					
+					boolean hasResults2 = false;
+					if(isFiltered) {
+						for(int i = 0; i < _mappings.size(); i++) {						
+							hasResults2 = handleMapping(c, _mappings.get(i), addedCollections, doc);
+							if(hasResults2) {
+								pickMe = true;
+							}
+						}
+					}
+					if(pickMe) {
+						break;
+					}					
 				}
+
+				
+
 			}
 			else {
-				if(isIncluded(values2, mapping)) {
-					if(mapping.getProcessing() != null && values2 != null) {				
-						values2 = doProcessing(mapping.getProcessing(), values2);	
-					}
-					
-					addTargetNodes(c, mapping, values2, 0);
-				}
+				handleMapping(c, mapping, addedCollections, doc);
 			}
 			
 		}
@@ -562,8 +672,28 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 		return sortColumnMapKeys(c);
 
 	}
-	private void addTargetNodes(Map<String, Object> c, MappingDTO mapping, Object value, int valueIndex) {
+	
+	private int getPrevIndex(Map<String, Object> c, String path, int index) {
+		String targetPrefix = path.substring(0, path.indexOf("[*") + 1);
+		int oldIndexNumber = -1;
+		if(targetPrefix != null ) {
+			for(String cKey : c.keySet()) {
+				if(cKey.indexOf(targetPrefix) == 0) {
+					String oldIndex = cKey.substring(cKey.indexOf("[")+1, cKey.indexOf("]"));
+					oldIndexNumber = Integer.parseInt(oldIndex);
+					
+					
+				}
+			}		
+			
+		}		
+		return oldIndexNumber;
+	}
+	
+	private void addTargetNodes(Map<String, Object> c, MappingDTO mapping, Object value, int valueIndex, Set<String> addedCollections) {
 		List<NodeInfo> targets = mapping.getTarget();
+		int prevIndex = 0;
+		boolean prevFound = false;
 		for(int i = 0; i < targets.size(); i++) {
 			Object newValue = value;
 			NodeInfo target = targets.get(i);
@@ -571,23 +701,57 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 			if(target.getProcessing() != null && value != null ) {
 				newValue = doProcessing(target.getProcessing(), value);
 			}
-			if(target.getValue() != null) {
-				newValue = target.getValue();
-			}
 			if(newValue != null) {
 				if(value.toString().equals("[\"##missing##\"]") || value.toString().equals("##missing##"))  {
 					continue;
 				}
 				
 				if(targetPath.contains("[*]")) {
-					
-					c.put(targetPath.replace("*", ""+valueIndex), newValue);
+					// check if collection path exists in the c and add index accordingly 
+					if(!prevFound) {
+						prevIndex = getPrevIndex(c, targetPath, valueIndex);	
+						// add one if the source collection key has not yet been added 
+						boolean addedIndex = false;
+						for(NodeInfo source : mapping.getSource()) {
+							String sourcePath = source.getId();
+							if(sourcePath.indexOf("]") > 0) {
+								if(addedCollections.contains(sourcePath.substring(0, sourcePath.indexOf(("]"))))) {
+									addedIndex = true;
+								}								
+							}
+							else {
+								/*
+								if(addedCollections.contains(sourcePath)) {
+									addedIndex = true;
+								}*/
+								//for(NodeInfo target: mapping.getTarget()) {
+								//	String targetPath = target.getId();
+									if(targetPath.indexOf("[*") > 0) {
+										addedCollections.add(sourcePath);		
+									}
+									
+								//}								
+								
+							}
+						}
+						if(!addedIndex) {
+							prevIndex = prevIndex + 1;
+						}
+						else {
+							
+							prevIndex = valueIndex;
+						}
+						prevFound = true;
+						
+					}
+					c.put(targetPath.replace("*", ""+ prevIndex), newValue);					
 				}
 				else {
 					c.put(targetPath, newValue);	
 				}			
 				
 			}
+			
 		}
 			
 		
