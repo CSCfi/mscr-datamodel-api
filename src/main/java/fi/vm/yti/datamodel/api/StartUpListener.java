@@ -49,6 +49,7 @@ public class StartUpListener {
         initOrganizations();
         initServiceCategories();
         initOpenSearchIndices();
+        initFunctions();
         groupManagementService.updateUsers();
     }
 
@@ -73,4 +74,8 @@ public class StartUpListener {
             logger.warn("OpenSearch initialization failed!", e);
         }
     }
+    
+    private void initFunctions() {
+        coreRepository.initFunctions();
+    }    
 }

@@ -1,10 +1,15 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
+import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
+import fi.vm.yti.datamodel.api.v2.mapper.FunctionMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ServiceCategoryMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
+
+import org.apache.jena.rdf.model.Model;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +51,10 @@ public class FrontendService {
         });
 
         return dtos;
+    }
+    
+    public List<FunctionDTO> getFunctions() {
+    	Model model = coreRepository.fetch(MSCR.FUNCTIONS_GRAPH);
+    	return FunctionMapper.mapFunctionsToDTO(model);
     }
 }
