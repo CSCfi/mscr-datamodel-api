@@ -2,6 +2,8 @@ package fi.vm.yti.datamodel.api.v2.repository;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
@@ -83,4 +85,10 @@ public class CoreRepository extends BaseRepository{
         modelCache.put("serviceCategories", serviceCategories);
         return serviceCategories;
     }
+
+	public void initFunctions() {
+        var model = RDFDataMgr.loadModel("fno/functions.ttl");
+        put(MSCR.FUNCTIONS_GRAPH, model);
+		
+	}
 }

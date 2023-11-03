@@ -1,5 +1,6 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
+import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
@@ -168,5 +169,13 @@ public class FrontendController {
     	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, false, Set.of(ownerOrg));
     	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);	    	
     } 
+    
+    @Operation(summary = "Get functions")
+    @ApiResponse(responseCode = "200", description = "")    
+    @GetMapping(value="/functions", produces = APPLICATION_JSON_VALUE)
+    public List<FunctionDTO> getFunctions() {    	
+    	return frontendService.getFunctions();
+    }
+    
         
 }

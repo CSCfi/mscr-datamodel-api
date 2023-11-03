@@ -3,12 +3,15 @@ package fi.vm.yti.datamodel.api.v2.dto;
 import java.util.Map;
 
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 
 public class MSCR {
 
 
+
+	
 
 	private MSCR(){
         //property class
@@ -18,8 +21,11 @@ public class MSCR {
     	REFERENCED,
     	HOSTED
     }
+    
+    public static final String FUNCTIONS_GRAPH = "urn:mscr:functions";
 
     public static final String URI ="http://uri.suomi.fi/datamodel/ns/mscr#";
+    public static final String FnO ="https://w3id.org/function/ontology#";
 
     public static final Property format = ResourceFactory.createProperty(URI, "format");
     public static final Property latestVersion = ResourceFactory.createProperty(URI, "latestVersion");
@@ -29,6 +35,16 @@ public class MSCR {
 
     public static final Resource MAPPINGSET = ResourceFactory.createResource(URI + "MappingSet");
     public static final Resource MAPPING = ResourceFactory.createResource(URI + "Mapping");
+    public static final Resource FnO_FUNCTION = ResourceFactory.createResource(FnO + "Function");
+    public static final Resource FnO_OUTPUT = ResourceFactory.createResource(FnO + "Output");
+    public static final Resource FnO_PARAMETER = ResourceFactory.createResource(FnO + "Parameter");
+    public static final Property FnO_name = ResourceFactory.createProperty(FnO + "name");
+    public static final Property FnO_type = ResourceFactory.createProperty(FnO + "type");
+    public static final Property FnO_required = ResourceFactory.createProperty(FnO + "required");
+    public static final Property FnO_expects = ResourceFactory.createProperty(FnO + "expects");
+    public static final Property FnO_returns = ResourceFactory.createProperty(FnO + "returns");
+    
+
 
     // use it when generating rdf
     public static final Resource NULL = ResourceFactory.createResource(URI + "null");
