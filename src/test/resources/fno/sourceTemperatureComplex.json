@@ -1,0 +1,37 @@
+{ 
+    "temperature": { 
+        "value": 23,
+        "unit": "C"
+    },
+    "coordinate":  
+        {
+            "lat": "23.23232",
+            "long": "34.3232"
+        },
+    "coordinates": [ 
+        {
+            "lat": "23.23232",
+            "long": "34.3232"
+        },
+        {
+            "lat": "23.23232",
+            "long": "34.3232"
+        }        
+    ],    
+    "persons": [
+        { 
+            "name": "Test, Test",
+            "org": { 
+                "name": "Org1",
+                "address": "address"
+            }
+        },
+        { 
+            "name": "Test2, Test2",
+            "org": { 
+                "name": "Org2",
+                "address": "address2"
+            }
+        }             
+     ]
+}

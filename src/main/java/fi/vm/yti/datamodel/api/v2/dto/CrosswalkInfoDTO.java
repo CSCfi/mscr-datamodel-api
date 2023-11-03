@@ -1,6 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -16,6 +17,15 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO {
 	private String sourceSchema;
 	private String targetSchema;
 	private Set<String> owner;
+	private List<MappingDTO> mappings;
+
+	public List<MappingDTO> getMappings() {
+		return mappings;
+	}
+
+	public void setMappings(List<MappingDTO> mappings) {
+		this.mappings = mappings;
+	}
 
 	public Set<String> getOwner() {
 		return owner;

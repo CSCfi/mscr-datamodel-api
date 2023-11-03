@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cmd:CMD xmlns="http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1610707853541"
+         xmlns:cmd="http://www.clarin.eu/cmd/1"
+         xmlns:cmdp="http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1610707853541"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:datacite_cmd="http://www.clarin.eu/cmd/conversion/ddi/cmd"
+         CMDVersion="1.2"
+         xsi:schemaLocation="http://www.clarin.eu/cmd/1 https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1610707853541/xsd">
+   <cmd:Header>
+      <cmd:MdProfile>clarin.eu:cr1:p_1610707853541</cmd:MdProfile>
+   </cmd:Header>
+   <cmd:Resources>
+      <cmd:ResourceProxyList>
+         <cmd:ResourceProxy id="d1e3">
+            <cmd:ResourceType>Resource</cmd:ResourceType>
+            <cmd:ResourceRef>https://doi.org/10.24416/UU01-2SO9TE</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+      </cmd:ResourceProxyList>
+      <cmd:JournalFileProxyList/>
+      <cmd:ResourceRelationList/>
+   </cmd:Resources>
+   <cmd:IsPartOfList/>
+   <cmd:Components>
+      <DataCiteRecord>
+         <IdentificationInfo>
+            <identifier type="DOI">https://doi.org/10.24416/UU01-2SO9TE</identifier>
+         </IdentificationInfo>
+         <TitleInfo>
+            <title xml:lang="en">Reading about us and them:  Moral and but not minimal group effects on language-induced emotion</title>
+         </TitleInfo>
+         <Description>
+            <description>This folder contains all information regarding the experimental set-up, data, analysis, and publication of the experiment of Refining the Multiple‐Drivers Model: Minimal groups vs. Morality. More detailed information can be found in the readme.txt and in the paper "Reading about us and them: Moral and but not minimal group effects on language-induced emotion" by Björn 't Hart, Marijn Struiksma, Anton van Boxtel, &amp; Jos J.A. van Berkum* </description>
+         </Description>
+         <ResourceType>
+            <identifier>http://purl.org/dc/dcmitype/Dataset</identifier>
+            <label>Dataset</label>
+            <label>Research Data</label>
+         </ResourceType>
+         <VersionInfo>
+            <versionIdentifier>1</versionIdentifier>
+         </VersionInfo>
+         <Language>
+            <name>en</name>
+            <code>en</code>
+         </Language>
+         <Subject>
+            <label>Humanities - Languages and literature (6.2)</label>
+            <scheme>OECD FOS 2007</scheme>
+         </Subject>
+         <Creator>
+            <identifier>0000-0002-1166-1424</identifier>
+            <label>Struiksma, Marijn</label>
+            <AgentInfo>
+               <PersonInfo>
+                  <name>Struiksma, Marijn</name>
+                  <affiliation>Utrecht University</affiliation>
+               </PersonInfo>
+            </AgentInfo>
+         </Creator>
+         <Creator>
+            <identifier>0000-0002-2384-9504</identifier>
+            <label>'t Hart, Björn</label>
+            <AgentInfo>
+               <PersonInfo>
+                  <name>'t Hart, Björn</name>
+                  <affiliation>Utrecht University</affiliation>
+               </PersonInfo>
+            </AgentInfo>
+         </Creator>
+         <Creator>
+            <identifier>0000-0003-1673-4845</identifier>
+            <label>van Berkum, Jos</label>
+            <AgentInfo>
+               <PersonInfo>
+                  <name>van Berkum, Jos</name>
+                  <affiliation>Utrecht University</affiliation>
+               </PersonInfo>
+            </AgentInfo>
+         </Creator>
+         <Contributor>
+            <identifier>0000-0001-5186-0703</identifier>
+            <label>van Boxtel, Anton</label>
+            <role>Researcher</role>
+            <AgentInfo>
+               <PersonInfo>
+                  <name>van Boxtel, Anton</name>
+                  <affiliation>Tilburg University</affiliation>
+               </PersonInfo>
+            </AgentInfo>
+         </Contributor>
+         <ProvenanceInfo>
+            <Collection>
+               <ActivityInfo>
+                  <When>
+                     <start>2016-06-01</start>
+                     <end>2016-06-30</end>
+                  </When>
+               </ActivityInfo>
+            </Collection>
+            <Publication>
+               <ActivityInfo>
+                  <When>
+                     <year>2021</year>
+                  </When>
+               </ActivityInfo>
+            </Publication>
+            <Activity>
+               <label>Updated</label>
+               <ActivityInfo>
+                  <When>
+                     <date>2021-03-15</date>
+                  </When>
+               </ActivityInfo>
+            </Activity>
+         </ProvenanceInfo>
+         <AccessInfo>
+            <Licence>
+               <identifier>https://creativecommons.org/licenses/by-sa/4.0/legalcode</identifier>
+               <label>Creative Commons Attribution-ShareAlike 4.0 International Public License</label>
+            </Licence>
+            <Licence>
+               <identifier>info:eu-repo/semantics/openAccess</identifier>
+               <label>Open Access</label>
+            </Licence>
+         </AccessInfo>
+         <FundingInfo>
+            <Funding>
+               <grantNumber>277-89-001</grantNumber>
+               <FundingAgency>
+                  <label>NWO</label>
+               </FundingAgency>
+            </Funding>
+         </FundingInfo>
+      </DataCiteRecord>
+   </cmd:Components>
+</cmd:CMD>

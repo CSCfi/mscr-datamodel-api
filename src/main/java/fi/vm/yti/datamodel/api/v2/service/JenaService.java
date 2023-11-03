@@ -102,6 +102,7 @@ public class JenaService {
     public void updateSchema(String graphName, Model model) {
     	schemaWrite.delete(graphName);
     	schemaWrite.put(graphName, model);
+    	
     }
 
 	public Model getSchema(String graph) {
@@ -138,6 +139,10 @@ public class JenaService {
 		
 	}	  
 	
+	public void deleteFromCrosswalk(String graph) {
+		crosswalkWrite.delete(graph);
+	}
+	
 	public Model getCrosswalk(String graph) {
         logger.debug("Getting crosswalk {}", graph);
         try {
@@ -150,5 +155,22 @@ public class JenaService {
                 throw new JenaQueryException();
             }
         }
+	}
+
+
+
+	public Model getMappingSet(String graph) {
+		var mappingSetGraph = graph + "#mappingSet";
+        try {
+            return crosswalkRead.fetch(mappingSetGraph);
+        } catch (HttpException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.warn("Mapping set for Crosswalk not found with URI {}", mappingSetGraph);
+                throw new ResourceNotFoundException(graph);
+            } else {
+                throw new JenaQueryException();
+            }
+        }
 	}	
+	
 }

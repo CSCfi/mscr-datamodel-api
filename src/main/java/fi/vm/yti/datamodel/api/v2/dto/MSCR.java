@@ -8,7 +8,9 @@ import org.apache.jena.rdf.model.ResourceFactory;
 
 public class MSCR {
 
-    private MSCR(){
+
+
+	private MSCR(){
         //property class
     }
     
@@ -24,6 +26,9 @@ public class MSCR {
     public static final Property versions = ResourceFactory.createProperty(URI, "versions");
     public static final Resource CROSSWALK = ResourceFactory.createResource(URI + "Crosswalk");
     public static final Resource SCHEMA = ResourceFactory.createResource(URI + "Schema");
+
+    public static final Resource MAPPINGSET = ResourceFactory.createResource(URI + "MappingSet");
+    public static final Resource MAPPING = ResourceFactory.createResource(URI + "Mapping");
 
     // use it when generating rdf
     public static final Resource NULL = ResourceFactory.createResource(URI + "null");
@@ -44,7 +49,27 @@ public class MSCR {
     public static final Property owner = ResourceFactory.createProperty(URI, "owner");
     
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
+
+    public static final Property id = ResourceFactory.createProperty(URI, "id");
+    public static final Property label = ResourceFactory.createProperty(URI, "label");
+    public static final Property type = ResourceFactory.createProperty(URI, "type");
+    public static final Property description = ResourceFactory.createProperty(URI, "description");
+    public static final Property path = ResourceFactory.createProperty(URI, "path");
+    public static final Property operator = ResourceFactory.createProperty(URI, "operator");
+    public static final Property key = ResourceFactory.createProperty(URI, "key");
+    public static final Property value = ResourceFactory.createProperty(URI, "value");
+    public static final Property filter = ResourceFactory.createProperty(URI, "filter");
+    public static final Property mappings = ResourceFactory.createProperty(URI, "mappings");
+
     
+    public static final Property source = ResourceFactory.createProperty(URI, "source");
+    public static final Property predicate = ResourceFactory.createProperty(URI, "predicate");
+    public static final Property target = ResourceFactory.createProperty(URI, "target");
+
+    public static final Property processing = ResourceFactory.createProperty(URI, "processing");
+    public static final Property oneOf = ResourceFactory.createProperty(URI, "oneOf");
+    public static final Property processingParams = ResourceFactory.createProperty(URI, "processingParams");
+
 
     public record Organization(String id,  Map<String, String> label) {}
 

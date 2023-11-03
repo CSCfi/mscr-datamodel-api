@@ -1,0 +1,12 @@
+[ 
+{
+  "source" : [ {
+    "id" : "$.persons[*].name",
+    "label" : "name"
+  } ],
+  "target" : [ {
+    "id" : "$.persons[*].fullName",
+    "label" : "fullName"
+  } ]
+}
+]

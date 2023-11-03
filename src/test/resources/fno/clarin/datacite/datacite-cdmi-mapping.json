@@ -1,0 +1,842 @@
+[
+  {
+    "id": "id-1",
+    "source": [
+      {
+        "id": "$.resource.identifier",
+        "label": "identifier"
+      }
+    ],
+    "filter": {
+      "path": "-identifierType",
+      "operator": "=",
+      "value": "DOI"
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy.cmd:ResourceRef",
+        "label": "identifier",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#prefixStringFunc",
+          "params": {
+            "prefix": "https://doi.org/"
+          }
+        }
+      }
+    ],
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+      "params": {
+        "needle": "#text"
+      }
+    }
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.identifier.-identifierType",
+        "label": "identifier"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.IdentificationInfo.identifier.-type",
+        "label": "identifier"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.identifier.#text",
+        "label": "identifier"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.IdentificationInfo.identifier.#text",
+        "label": "identifier"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.titles.title",
+        "label": "title"
+      }
+    ],
+    "filter": {
+      "path": "-titleType",
+      "operator": "=",
+      "value": "null"
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.TitleInfo.title[*].#text",
+        "label": "title",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.TitleInfo.title[*].-xml:lang",
+        "label": "lang",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-xml:lang"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "title-1",
+    "source": [
+      {
+        "id": "$.resource.titles.title",
+        "label": "subtitle"
+      }
+    ],
+    "filter": {
+      "path": "-titleType",
+      "operator": "=",
+      "value": "Subtitle",
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.TitleInfo.subtitle[*].#text",
+        "label": "subtitle",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.TitleInfo.subtitle[*].-xml:lang",
+        "label": "lang",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-xml:lang"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "title-1",
+    "source": [
+      {
+        "id": "$.resource.titles.title",
+        "label": "subtitle"
+      }
+    ],
+    "filter": {
+      "path": "-titleType",
+      "operator": "in",
+      "value": [
+        "AlternativeTitle",
+        "TranslatedTitle",
+        "Other"
+      ],
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.TitleInfo.alternativeTitle[*].#text",
+        "label": "subtitle",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.TitleInfo.alternativeTitle[*]['-xml:lang']",
+        "label": "lang",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-xml:lang"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.descriptions.description[*].#text",
+        "label": "subtitle"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Description.description[*].#text",
+        "label": "subtitle"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.descriptions.description[*].-xml:lang",
+        "label": "subtitle"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Description.description[*].-xml:lang",
+        "label": "subtitle"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.resourceType.-resourceTypeGeneral",
+        "label": "resourceType"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.ResourceType.identifier",
+        "label": "title",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "uri"
+          }
+        }
+      }
+    ],
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#mapVocabulariesFunc",
+      "params": {
+        "sourceVocabulary": "typesvoc",
+        "targetVocabulary": "voc2"
+      }
+    }
+  },
+  {
+    "id": "resourceType-1",
+    "source": [
+      {
+        "id": "$.resource.resourceType[*].#text",
+        "label": "resourceType"
+      },
+      {
+        "id": "$.resource.resourceType[*].-resourceTypeGeneral",
+        "label": "resourceType"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.ResourceType.label[*].#text",
+        "label": "title"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.version",
+        "label": "resourceType"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.VersionInfo.versionIdentifier",
+        "label": "title"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.language",
+        "label": "lang"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Language.name",
+        "label": "name",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "label"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Language.code",
+        "label": "code",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "uri"
+          }
+        }
+      }
+    ],
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#mapVocabulariesFunc",
+      "params": {
+        "sourceVocabulary": "langvoc",
+        "targetVocabulary": "voc2"
+      }
+    }
+  },
+  {
+    "id": "s-1",
+    "source": [
+      {
+        "id": "$.resource.subjects.subject",
+        "label": "subject",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#stringToXmlObjectFunc",
+          "params": {
+            "property": "#text"
+          }
+        }
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Subject[*].label",
+        "label": "subject",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Subject[*].scheme",
+        "label": "subject",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-subjectScheme"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Subject[*].schemeURI",
+        "label": "subject",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-schemeURI"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Subject[*].valueURI",
+        "label": "subject",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-valueURI"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.creators.creator",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "creatorName.-nameType",
+      "operator": "!=",
+      "value": "Organizational"
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].identifier",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "nameIdentifier.#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].label",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "creatorName"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.name",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "creatorName"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.name['-xml:lang']",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "creatorName['-xml:lang']"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.creators.creator",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "creatorName.-nameType",
+      "operator": "!=",
+      "value": "Organizational"
+    },
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#propertiesToArrayFunc",
+      "params": {
+        "props": [
+          "givenName",
+          "familyName"
+        ],
+        "targetProp": "alternativeName",
+        "sourcePropTarget": "-type"
+      }
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.alternativeName",
+        "label": "altName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "alternativeName"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.creators.creator",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "creatorName.-nameType",
+      "operator": "!=",
+      "value": "Organizational"
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].AgentInfo.PersonInfo.affiliation",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "affiliation"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.creators.creator",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "creatorName.-nameType",
+      "operator": "=",
+      "value": "Organizational"
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Creator[*].AgentInfo.OrganizationInfo.name",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "contributorName.#text"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.contributors.contributor",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "contributorName.-nameType",
+      "operator": "!=",
+      "value": "Organizational",
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Contributor[*].identifier",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "nameIdentifier.#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Contributor[*].label",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "contributorName"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.name",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "contributorName"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.name['-xml:lang']",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "contributorName['-xml:lang']"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.contributors.contributor",
+        "label": "creator"
+      }
+    ],
+    "filter": {
+      "path": "contributorName.-nameType",
+      "operator": "!=",
+      "value": "Organizational",
+      "distinctValues": true
+    },
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#propertiesToArrayFunc",
+      "params": {
+        "props": [
+          "givenName",
+          "familyName"
+        ],
+        "targetProp": "alternativeName",
+        "sourcePropTarget": "-type"
+      }
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.alternativeName",
+        "label": "altName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "alternativeName"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.dates.date",
+        "label": "date"
+      }
+    ],
+    "filter": {
+      "path": "-dateType",
+      "operator": "=",
+      "value": "Created",
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Creation.ActivityInfo.When",
+        "label": "when",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Creation.ActivityInfo.note",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-dateInformation"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.dates.date",
+        "label": "date"
+      }
+    ],
+    "filter": {
+      "path": "-dateType",
+      "operator": "=",
+      "value": "Collected",
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Collection.ActivityInfo.When",
+        "label": "when",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Collection.ActivityInfo.note",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-dateInformation"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.publicationYear",
+        "label": "date"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Publication.ActivityInfo.When.year",
+        "label": "when"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.dates.date",
+        "label": "date"
+      }
+    ],
+    "filter": {
+      "path": "-dateType",
+      "operator": "in",
+      "value": [
+        "Updated",
+        "Accepted",
+        "Copyrighted"
+      ],
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Activity.label",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-dateType"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Activity.ActivityInfo.When.date",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.ProvenanceInfo.Collection.ActivityInfo.note",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-dateInformation"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.rightsList.rights",
+        "label": "rights"
+      }
+    ],
+    "filter": {
+      "path": "-rightsURI",
+      "operator": "isURI",
+      "distinctValues": true
+    },
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.AccessInfo.Licence[*].identifier",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-rightsURI"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.AccessInfo.Licence[*].identifier",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "-rightsIdentifier"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.AccessInfo.Licence[*].label",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "#text"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.fundingReferences.fundingReference",
+        "label": "funding"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.FundingInfo.Funding[*].grantNumber",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "awardNumber"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.FundingInfo.Funding[*].label",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "awardTitle"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.FundingInfo.Funding[*].FundingAgency.label",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+          "params": {
+            "needle": "funderName"
+          }
+        }
+      },
+      {
+        "id": "$.CMD.Components.DataciteRecord.FundingInfo.Funding[*].FundingAgency.identifier",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringWithSubstitutorFunc",
+          "params": {
+            "pattern": "${funderIdentifier.#text}:${-funderIdentifierType}"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource.fundingReferences.fundingReference[*].funderIdentifier",
+        "label": "funding"
+      }
+    ],
+    "target": [
+      {
+        "id": "$.CMD.Components.DataciteRecord.FundingInfo.Funding[*].FundingAgency.identifier",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringWithSubstitutorFunc",
+          "params": {
+            "pattern": "${-funderIdentifierType}:${#text}"
+          }
+        }
+      }
+    ]
+  }
+]

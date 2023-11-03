@@ -3,6 +3,7 @@ buildscript {
         mavenCentral()
         google()
         jcenter()
+       
     }
     dependencies {
         classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.24.16')
@@ -63,6 +64,8 @@ repositories {
             }
         }
     }
+    maven { url 'https://jitpack.io' }
+
 }
 
 sourceCompatibility = 17
@@ -111,16 +114,44 @@ dependencies {
     
     implementation "org.flywaydb:flyway-core"
     implementation "org.postgresql:postgresql"
+    
+    implementation "com.github.fnoio:function-agent-java:v1.1.0"
+    implementation files("lib/json-path-custom-2.8.0.jar")
+    // https://mvnrepository.com/artifact/net.minidev/json-smart
+    implementation 'net.minidev:json-smart:2.5.0'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-csv
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: '2.15.2'
+    // https://mvnrepository.com/artifact/com.github.javadev/underscore
+    implementation 'com.github.javadev:underscore:1.93'
+    // https://mvnrepository.com/artifact/info.debatty/java-string-similarity
+    implementation 'info.debatty:java-string-similarity:2.0.0'
+   // https://mvnrepository.com/artifact/com.opencsv/opencsv
+    implementation 'com.opencsv:opencsv:5.8'
+    
+    implementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.9.1'
+    implementation group: 'org.xmlunit', name: 'xmlunit-assertj', version: '2.9.1'
+
+    implementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.9.1'
+    
 
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
     compileOnly "org.jetbrains:annotations:23.0.0"
 
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "com.jayway.jsonpath:json-path-assert:2.7.0"
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    {
+        exclude group: 'com.jayway.jsonpath', module: 'json-path'
+    }
+    //testImplementation "com.jayway.jsonpath:json-path-assert:2.7.0"    
     testImplementation "org.mockito:mockito-core:4.8.0"
     testImplementation "net.bytebuddy:byte-buddy:1.12.22"
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+    //exclude group: 'com.jayway.jsonpath', module: 'json-path', version: '2.7.0'
+    
+// https://mvnrepository.com/artifact/com.github.victools/jsonschema-generator
+    compileOnly group: 'com.github.victools', name: 'jsonschema-generator', version: '4.32.0'    
+    compileOnly group: 'com.fasterxml.jackson.module', name: 'jackson-module-jsonSchema', version: '2.15.3'
+    
 }
 
 sonarqube {
@@ -140,6 +171,7 @@ jacocoTestReport {
 test {
     useJUnitPlatform()
 }
+
 
 dependencyCheck {
     format = 'ALL'

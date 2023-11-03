@@ -1,0 +1,54 @@
+[ 
+    {
+      "source": [
+        {
+          "id": "$.codeBook.stdyDscr.stdyInfo.sumDscr.dataKind[*].concept",
+          "label": "concept"        
+        }
+      ],
+      "target": [
+        {
+          "id": "$.cmd:CMD.cmd:Components.DDICodebook.ResourceType[*].identifier.#text",
+          "label": "",
+          "processing": {
+            "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringWithSubstitutorFunc",
+            "params": {
+              "pattern": "${-vocabURI}:${#text}"
+            }
+          }        
+          
+        }                  
+      ]
+    },
+
+  {
+    "source": [
+      {
+        "id": "$.codeBook.stdyDscr.stdyInfo.sumDscr.dataKind[*].#text",
+        "label": ""        
+      }
+    ],
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.ResourceType[*].label.#text",
+        "label": ""
+      }                 
+    ]
+  } ,
+  {
+    "source": [
+      {
+        "id": "$.codeBook.stdyDscr.stdyInfo.sumDscr.dataKind[*].-xml:lang",
+        "label": ""        
+      }
+    ],
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.ResourceType[*].label.-xml:lang",
+        "label": ""
+      }                 
+    ]
+  }     
+
+
+]

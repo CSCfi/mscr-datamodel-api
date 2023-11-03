@@ -1,0 +1,28 @@
+<root>
+    <id1>id1</id1>
+    <fundingReferences>
+        <fundingReference>
+            <name>test1</name>
+            <addresses>
+                <address>
+                    <street>street3</street>
+                </address>
+            </addresses> 
+        </fundingReference>
+        <fundingReference>
+            <name>test2</name>
+            <alternativeName>alt2</alternativeName>
+            <addresses>
+                <address>
+                    <street>street</street>
+                </address>
+                <address>
+                    <street>street2</street>
+                </address>
+            </addresses>        
+        </fundingReference>
+    
+    </fundingReferences>
+    <id2>id2</id2>
+
+</root>

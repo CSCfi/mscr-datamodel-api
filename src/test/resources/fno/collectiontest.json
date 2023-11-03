@@ -1,0 +1,57 @@
+[ 
+{
+  "id": "$.root.id1",
+  "source" : [ {
+    "id" : "$.root.id1",
+    "label" : "id1"
+  } ],
+  "target" : [ {
+    "id" : "$.id1",
+    "label" : "id1"
+  } ]
+},
+{
+  "id": "id1",
+  "source" : [ {
+    "id" : "$.root.fundingReferences.fundingReference[*].name",
+    "label" : "name"
+  } ],
+  "target" : [ {
+    "id" : "$.fundingReferences[*].name",
+    "label" : "name"
+  } ]
+},
+{
+  "id": "id1",
+  "source" : [ {
+    "id" : "$.root.fundingReferences.fundingReference[*].alternativeName",
+    "label" : "alternativeName"
+  } ],
+  "target" : [ {
+    "id" : "$.fundingReferences[*].alt",
+    "label" : "alt"
+  } ]
+},
+{
+  "id": "id1",
+  "source" : [ {
+    "id" : "$.root.fundingReferences.fundingReference[*].addresses.address[*].street",
+    "label" : "address"
+  } ],
+  "target" : [ {
+    "id" : "$.fundingReferences[*].address",
+    "label" : "address"
+  } ]
+},
+{
+  "id": "id2",
+  "source" : [ {
+    "id" : "$.root.id2",
+    "label" : "id1"
+  } ],
+  "target" : [ {
+    "id" : "$.id2",
+    "label" : "id2"
+  } ]
+}
+]

@@ -1,0 +1,48 @@
+[
+  {
+    "source": [
+      {
+        "id": "$.codeBook.stdyDscr.citation.rspStmt.othId",
+        "label": "contributor"
+      },
+      {
+        "id": "$.codeBook.stdyDscr.citation.rspStmt.distrbtr",
+        "label": "contributor"
+      }      
+    ],
+    "target": [
+
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.Contributor[*].label.#text",
+        "label": "agentName"     ,
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "p"
+          }
+        }
+      },
+      {
+        "id": ".cmd:CMD.cmd:Components.DDICodebook.Contributor[*].label.-xml:lang",
+        "label": "agentName",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-xml:lang"
+          }
+        }
+      },   
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.Contributor[*].role",
+        "label": "agentName"     ,
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-role"
+          }
+        }
+      }
+      ]
+  }
+
+]

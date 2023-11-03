@@ -1,0 +1,66 @@
+[ 
+  {
+    "source": [
+      {
+        "id": "$.codeBook.docDscr.citation.titlStmt.titl",
+        "label": "title"        
+      }
+    ],
+
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.TitleInfo.title[*].#text",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "#text"
+          }
+        }        
+        
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.TitleInfo.title[*].-xml:lang",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-xml:lang"
+          }
+        }
+      }          
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.codeBook.stdyDscr.citation.titlStmt.parTitl",
+        "label": "title"        
+      }
+    ],
+
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.TitleInfo.title[*].#text",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "#text"
+          }
+        }        
+        
+      },
+      {
+        "id": "$.cmd:CMD.cmd:Components.DDICodebook.TitleInfo.title[*].-xml:lang",
+        "label": "",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": {
+            "path": "-xml:lang"
+          }
+        }
+      }          
+    ]
+  }  
+]

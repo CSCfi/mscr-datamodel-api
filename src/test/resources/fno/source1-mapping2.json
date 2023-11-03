@@ -1,0 +1,24 @@
+[ 
+   { 
+        "source": [ { "id": "$.temperature", "label": "temperature"}],        
+        "target": [ { "id": "$.temperature_celcius", "label": "temperature_celcius"}],
+        "processing": {
+            "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatStringFunc",
+            "params": null 
+        }                
+    },
+   { 
+        "source": [ { "id": "$.timestamp", "label": "timestamp"}],
+        "target": [ { "id": "$.timestamp", "label": "timestamp"}],
+        "processing": { 
+            "id": "http://uri.suomi.fi/datamodel/ns/mscr#formatDateFunc",
+            "params":{ 
+            "inputFormat": "timemillis",
+            "outputFormat": "javaDate",
+            "outputFormatDetails": "yyyy-MM-dd"
+            }
+        }              
+        
+           
+    }       
+]

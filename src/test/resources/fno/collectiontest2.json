@@ -1,0 +1,147 @@
+[ 
+{  
+  "source" : [ 
+
+  {
+    "id" : "$.resource.contributors.contributor",    
+    "label" : "creator"
+  }
+  ],
+  "filter": { 
+    "path": "contributorName.-nameType",
+    "operator": "!=",
+    "value": "Organizational"
+  },
+  "target" : [ 
+{
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].identifier",
+    "label" : "agentName",
+        "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": { 
+            "path": "nameIdentifier.#text"
+          }  
+      }
+  }, 
+  {
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].label",
+    "label" : "agentName",
+        "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": { 
+            "path": "contributorName"
+          }  
+      }
+  },
+  {
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.name",
+    "label" : "agentName",
+        "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": { 
+            "path": "contributorName"
+          }  
+      }
+  },
+ {
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.name['-xml:lang']",
+    "label" : "agentName",
+        "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": { 
+            "path": "contributorName['-xml:lang']"
+          }  
+      }
+  }     
+    
+  
+  ]
+}
+,
+{
+
+  "source" : [ 
+    {
+    "id" : "$.resource.contributors.contributor",    
+    "label" : "creator"
+  }
+  ],
+  "filter": { 
+    "path": "contributorName.-nameType",
+    "operator": "!=",
+    "value": "Organizational"
+  },
+  "processing": { 
+    "id": "http://uri.suomi.fi/datamodel/ns/mscr#propertiesToArrayFunc",
+    "params": { 
+        "props": [ "givenName", "familyName"],
+        "targetProp": "alternativeName",
+        "sourcePropTarget": "-type"
+    }
+  
+  },
+  "target" : [ 
+  {
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.alternativeName",
+    "label" : "altName",
+    "processing": { 
+    "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+      "params": { 
+        "needle": "alternativeName"
+      }  
+  }
+  }
+  ]  
+},
+{
+
+  "source" : [ 
+    {
+    "id" : "$.resource.contributors.contributor",    
+    "label" : "creator"
+  }
+  ],
+  "filter": { 
+    "path": "contributorName.-nameType",
+    "operator": "!=",
+    "value": "Organizational"
+  },
+  "target" : [ 
+{
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.PersonInfo.affiliation",
+    "label" : "agentName",
+        "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": { 
+            "path": "affiliation"
+          }  
+      }
+  }  
+  ]  
+},
+{
+  "source" : [ {
+    "id" : "$.resource.contributors.contributor",    
+    "label" : "creator"
+  }],
+  "filter": { 
+    "path": "contributorName.-nameType",
+    "operator": "=",
+    "value": "Organizational"
+  },
+  "target" : [   
+ {
+    "id" : "$.CMD.Components.DataciteRecord.Contributor[*].AgentInfo.OrganizationInfo.name",
+    "label" : "agentName",
+        "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyWithJSONPathFunc",
+          "params": { 
+            "path": "contributorName.#text"
+          }  
+      }
+  }
+  ]
+}
+
+
+]

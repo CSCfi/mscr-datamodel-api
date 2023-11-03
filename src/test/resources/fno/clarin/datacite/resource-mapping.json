@@ -1,0 +1,115 @@
+[
+  {
+    "source": [
+      {
+        "id": "$.resource",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": "Resource"
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy.cmd:ResourceType",
+        "label": "header"
+      }
+    ]
+  },
+  {
+    "id": "id-1",
+    "source": [
+      {
+        "id": "$.resource.identifier",
+        "label": "identifier"
+      }
+    ],
+    "filter": {
+      "path": "-identifierType",
+      "operator": "=",
+      "value": "DOI"
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy.cmd:ResourceRef",
+        "label": "identifier",
+        "processing": {
+          "id": "http://uri.suomi.fi/datamodel/ns/mscr#prefixStringFunc",
+          "params": {
+            "prefix": "https://doi.org/"
+          }
+        }
+      }
+    ],
+    "processing": {
+      "id": "http://uri.suomi.fi/datamodel/ns/mscr#pickPropertyFunc",
+      "params": {
+        "needle": "#text"
+      }
+    }
+  },
+
+  {
+    "source": [
+      {
+        "id": "$.resource",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": "d1e3"
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceProxyList.cmd:ResourceProxy.-id",
+        "label": "header"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": {}
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:JournalFileProxyList",
+        "label": "header"
+      }
+    ]
+  },
+  {
+    "source": [
+      {
+        "id": "$.resource",
+        "label": "root"
+      }
+    ],
+    "processing": { 
+        "id": "http://uri.suomi.fi/datamodel/ns/mscr#staticContentFunc",
+        "params": { 
+            "value": {}
+        }
+    },
+    "target": [
+      {
+        "id": "$.cmd:CMD.cmd:Resources.cmd:ResourceRelationList",
+        "label": "header"
+      }
+    ]
+  }       
+]
