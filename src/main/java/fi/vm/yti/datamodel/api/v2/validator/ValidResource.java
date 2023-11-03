@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
         ElementType.TYPE_USE
 })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MappingValidator.class)
+@Constraint(validatedBy = ResourceValidator.class)
 public @interface ValidResource {
 
     String message() default "Invalid data";
