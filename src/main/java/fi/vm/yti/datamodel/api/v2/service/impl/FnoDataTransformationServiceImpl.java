@@ -48,15 +48,10 @@ import net.minidev.json.JSONObject;
 @Service
 public class FnoDataTransformationServiceImpl implements DataTransformationService {
 
-    private final JenaService jenaService;
 	//private final CrosswalkMapper mapper;
 	private Agent agent;
 	
-	public FnoDataTransformationServiceImpl(
-			JenaService jenaService) {
-		this.jenaService = jenaService;
-		
-		
+	public FnoDataTransformationServiceImpl() {
 		try {
 			this.agent = AgentFactory.createFromFnO("src/main/resources/fno/functions.ttl");
 		} catch (FnOException e) {
@@ -111,8 +106,8 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 					
 					String subPath = path.substring(pindex, path.indexOf("[*]"));
 					String restPath = "$." + path.substring(path.indexOf("[*]") + 4);
-					System.out.println(subPath);
-					System.out.println(restPath);
+					//System.out.println(subPath);
+					//System.out.println(restPath);
 					Object subObject = doc.read(subPath);
 					
 					if(subObject instanceof JSONArray) {
@@ -123,8 +118,8 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 							if(restPath.indexOf("*") > 0) {
 								String subPath2 = restPath.substring(0, restPath.indexOf("[*]"));
 								String restPath2 = "$." + restPath.substring(restPath.indexOf("[*]") + 4);
-								System.out.println(subPath2);
-								System.out.println(restPath2);
+								//System.out.println(subPath2);
+								//System.out.println(restPath2);
 								Object subObject2 = "##missing##";
 								try {
 									subObject2 = doc2.read(subPath2);
@@ -387,7 +382,7 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 			throw new IllegalArgumentException("Unexpected value: " + sourceFormat);
 		}
 		
-		System.out.println(jsonStr);
+		//System.out.println(jsonStr);
 		DocumentContext source = JsonPath.parse(jsonStr);		
 		Map<String, Object> columnsMap = generateColumnsMap2(mappings, source, rootElement, namespaces);
 		String output = generateTargetDocument(mappings, columnsMap, targetFormat);
@@ -569,12 +564,12 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 		values = collectDataForSingleMapping(sources, doc);
 		// this is done in order to make most of the functions simpler
 		Object values2 = removeParamKeyForSingleOutput(values);
-		System.out.print("original value");
-		System.out.println(values2);
+		//System.out.print("original value");
+		//System.out.println(values2);
 
 		// processing step takes as an input either single object or and array, depending on the sources 
-		System.out.print("after processing");
-		System.out.println(values2);
+		//System.out.print("after processing");
+		//System.out.println(values2);
 		
 		if(values2 instanceof JSONArray) {
 			JSONArray values2Array = (JSONArray)values2;

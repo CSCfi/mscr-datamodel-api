@@ -152,6 +152,9 @@ dependencies {
     compileOnly group: 'com.github.victools', name: 'jsonschema-generator', version: '4.32.0'    
     compileOnly group: 'com.fasterxml.jackson.module', name: 'jackson-module-jsonSchema', version: '2.15.3'
     
+    implementation('io.github.zenwave360:json-schema-ref-parser-jvm:0.8.2') {
+        exclude group: 'com.jayway.jsonpath'
+    }
 }
 
 sonarqube {
@@ -170,6 +173,7 @@ jacocoTestReport {
 }
 test {
     useJUnitPlatform()
+    forkEvery 20
 }
 
 

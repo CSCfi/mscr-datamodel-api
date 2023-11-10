@@ -1,0 +1,120 @@
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix pid1e20ca4266ce4233a3eeb8f61f6e5571: <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                "string"@en ;
+        rdfs:label                  "string2"@en ;
+        dcterms:contributor         <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;
+        dcterms:created             "2023-11-09T06:57:27.766Z"^^xsd:dateTime ;
+        dcterms:identifier          "urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2023-11-09T06:57:27.766Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571> ;
+        dcap:preferredXMLNamespacePrefix
+                "urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571" ;
+        <http://rdfs.org/ns/void#rootResource>
+                <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root> ;
+        iow:contentModified         "2023-11-09T06:57:27.761Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "JSONSCHEMA" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "7d3a3c00-5a6b-489b-a3ed-63bb58c26a63" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PRIVATE" ;
+        owl:versionInfo             "DRAFT" .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/house_number>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:DatatypeProperty ;
+        sh:datatype   xsd:string ;
+        sh:maxCount   1 ;
+        sh:name       "house_number" ;
+        sh:path       <mscr:root/Root/address/Address/house_number> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:ObjectProperty ;
+        sh:name       "Address of the person" ;
+        sh:node       <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address> ;
+        sh:path       <mscr:root/Root/address> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address>
+        a            sh:NodeShape ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "address" ;
+        sh:name      "address" ;
+        sh:property  <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/house_number> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/street> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City/population>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:DatatypeProperty ;
+        sh:datatype   xsd:integer ;
+        sh:maxCount   1 ;
+        sh:name       "population" ;
+        sh:path       <mscr:root/Root/address/Address/city/City/population> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root>
+        a                    sh:NodeShape ;
+        dcterms:description  "simple schema with one object." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        sh:closed            true ;
+        sh:name              "root" ;
+        sh:property          <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/lastName> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/firstName> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/lastName>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:DatatypeProperty ;
+        sh:datatype   xsd:string ;
+        sh:maxCount   1 ;
+        sh:name       "lastName" ;
+        sh:path       <mscr:root/Root/lastName> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/firstName>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:DatatypeProperty ;
+        sh:datatype   xsd:string ;
+        sh:maxCount   1 ;
+        sh:name       "firstName" ;
+        sh:path       <mscr:root/Root/firstName> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:ObjectProperty ;
+        sh:name       "city" ;
+        sh:node       <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City> ;
+        sh:path       <mscr:root/Root/address/Address/city> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/street>
+        a             sh:PropertyShape ;
+        dcterms:type  owl:DatatypeProperty ;
+        sh:datatype   xsd:string ;
+        sh:maxCount   1 ;
+        sh:name       "street" ;
+        sh:path       <mscr:root/Root/address/Address/street> .
+
+<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City>
+        a            sh:NodeShape ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "city" ;
+        sh:name      "city" ;
+        sh:property  <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City/population> .

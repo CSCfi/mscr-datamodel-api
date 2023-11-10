@@ -1,9 +1,12 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
+import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.CountRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ModelSearchRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ResourceSearchRequest;
 import fi.vm.yti.datamodel.api.v2.service.FrontendService;
+import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.JsonSchemaWriter;
 import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
 import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.datamodel.api.v2.validator.ExceptionHandlerAdvice;
@@ -45,6 +48,13 @@ class FrontendControllerTest {
     @MockBean
     NamespaceService namespaceService;
 
+    @MockBean
+    JenaService jenaService;
+    @MockBean
+    SchemaMapper schemaMapper;
+    @MockBean
+    JsonSchemaWriter schemaWriter;
+    
     @BeforeEach
     void init () {
         this.mvc = MockMvcBuilders

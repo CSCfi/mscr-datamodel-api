@@ -1,0 +1,149 @@
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix pidf8244294695041e19aac38cae669b8d8: <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                "string"@en ;
+        rdfs:label                  "string2"@en ;
+        dcterms:contributor         <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;
+        dcterms:created             "2023-11-09T13:53:06.577Z"^^xsd:dateTime ;
+        dcterms:identifier          "urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2023-11-09T13:53:06.577Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8> ;
+        dcap:preferredXMLNamespacePrefix
+                "urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8" ;
+        <http://rdfs.org/ns/void#rootResource>
+                <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root> ;
+        iow:contentModified         "2023-11-09T13:53:06.531Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "JSONSCHEMA" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "7d3a3c00-5a6b-489b-a3ed-63bb58c26a63" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PRIVATE" ;
+        owl:versionInfo             "DRAFT" .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/kokonimi>
+        a               sh:PropertyShape ;
+        dcterms:type    owl:ObjectProperty , owl:DatatypeProperty ;
+        sh:datatype     xsd:string ;
+        sh:description  "henkilön täydellinen nimi" ;
+        sh:minCount     1 ;
+        sh:name         "Nimi" ;
+        sh:node         <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/kokonimi/Kokonimi> ;
+        sh:path         <mscr:root/Root/kokonimi> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus/Yksilointitunnus/pysyvatunniste>
+        a               sh:PropertyShape ;
+        dcterms:type    owl:DatatypeProperty ;
+        sh:datatype     xsd:string ;
+        sh:description  "Kohteen yksilöivä ainutkertainen merkkijono, jonka avulla kohteeseen voidaan yksiselitteisesti viitata. \n\n- Tutkijalla tai aktiviteetin tekijällä ORCID.\n- Julkaisukanavalla ISSN tai ISBN.\n- Organisaatiolla esim. Y-tunnus tai ISNI.\n- Avainsanalla URI.\nTapahtumilla ei toistaiseksi ole käytössä vakiintunieta tunnisteita." ;
+        sh:maxCount     1 ;
+        sh:name         "Pysyvä tunniste" ;
+        sh:path         <mscr:root/Root/yksilointitunnus/Yksilointitunnus/pysyvatunniste> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root>
+        a                    sh:NodeShape ;
+        dcterms:description  "Henkilön sopimusperustainen suhde organisaatioon (esim. työsuhde, dosenttisopimus, vieraileva tutkija), joka sisältää tehtävänimikkeen sekä sen alkamisajankohdan. Loppumisajankohta ilmoitetaan, mikäli affiliaatio on päättynyt." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        sh:name              "root" ;
+        sh:property          <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/kokonimi> , <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/sukunimi> , <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus> , <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/affiliaation_tyyppi> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/sukunimi>
+        a               sh:PropertyShape ;
+        dcterms:type    owl:DatatypeProperty ;
+        sh:datatype     xsd:string ;
+        sh:description  "pääasiallisesti sukuun viittaava rekisteröidyn henkilönnimen osa" ;
+        sh:maxCount     1 ;
+        sh:name         "Sukunimi" ;
+        sh:path         <mscr:root/Root/sukunimi> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus>
+        a               sh:PropertyShape ;
+        dcterms:type    owl:ObjectProperty ;
+        sh:description  "Tutkimuksen piirissä toimivan henkilön yksilöivä tunniste, tyypillisimmin ORCID, esim julkaisun/teoksen yhteydessä ISNI" ;
+        sh:minCount     1 ;
+        sh:name         "Yksilöintitunnus" ;
+        sh:node         <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus/Yksilointitunnus> ;
+        sh:path         <mscr:root/Root/yksilointitunnus> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/affiliaation_tyyppi>
+        a               sh:PropertyShape ;
+        dcterms:type    owl:ObjectProperty , owl:DatatypeProperty ;
+        sh:datatype     rdf:langString ;
+        sh:description  "Henkilön suhde organisaatioon (esim. työsuhde, dosentuuri, vieraileva tutkija)." ;
+        sh:maxCount     3 ;
+        sh:name         "Affiliaation tyyppi" ;
+        sh:node         <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/affiliaation_tyyppi/Affiliaation_tyyppi> ;
+        sh:path         <mscr:root/Root/affiliaation_tyyppi> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus/Yksilointitunnus/pysyvantunnisteentyyppi>
+        a               sh:PropertyShape ;
+        dcterms:type    owl:DatatypeProperty ;
+        sh:datatype     xsd:string ;
+        sh:description  "Pysyvän tunnisteen tyyppi  Tutkimusaineistojen pysyvät tunnisteet -koodiston mukaisesti." ;
+        sh:in           [ a        rdf:Bag ;
+                          rdf:_1   "ADSbibcode" ;
+                          rdf:_10  "ISNI" ;
+                          rdf:_11  "ISSN" ;
+                          rdf:_12  "ISTC" ;
+                          rdf:_13  "JuFo-id" ;
+                          rdf:_14  "LSID" ;
+                          rdf:_15  "Orcid" ;
+                          rdf:_16  "PIC" ;
+                          rdf:_17  "PMID" ;
+                          rdf:_18  "PURL" ;
+                          rdf:_19  "QID" ;
+                          rdf:_2   "ARK" ;
+                          rdf:_20  "RAID" ;
+                          rdf:_21  "ROR" ;
+                          rdf:_22  "SF-edu-ID" ;
+                          rdf:_23  "ScopusAuthorID" ;
+                          rdf:_24  "UPC" ;
+                          rdf:_25  "URI" ;
+                          rdf:_26  "URL" ;
+                          rdf:_27  "URN" ;
+                          rdf:_28  "VAT-number" ;
+                          rdf:_29  "Virta-id" ;
+                          rdf:_3   "BusinessID" ;
+                          rdf:_30  "arXiv" ;
+                          rdf:_31  "eISBN" ;
+                          rdf:_32  "eISSN" ;
+                          rdf:_4   "Crossref_funders" ;
+                          rdf:_5   "DOI" ;
+                          rdf:_6   "EAN13" ;
+                          rdf:_7   "GRID" ;
+                          rdf:_8   "Handle" ;
+                          rdf:_9   "ISBN"
+                        ] ;
+        sh:maxCount     1 ;
+        sh:name         "Pysyvän tunnisteen tyyppi" ;
+        sh:path         <mscr:root/Root/yksilointitunnus/Yksilointitunnus/pysyvantunnisteentyyppi> .
+
+<urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus/Yksilointitunnus>
+        a                    sh:NodeShape ;
+        dcterms:description  "Tutkijan, aktiviteetin, aktiviteetin tekijän, tapahtuman, organisaation tai julkaisukanavan tunniste" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "yksilointitunnus" ;
+        sh:name              "yksilointitunnus" ;
+        sh:property          <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus/Yksilointitunnus/pysyvatunniste> , <urn:IAMNOTAPID:f8244294-6950-41e1-9aac-38cae669b8d8#root/Root/yksilointitunnus/Yksilointitunnus/pysyvantunnisteentyyppi> .

@@ -20,11 +20,8 @@ public class JSONValidationService {
 	private static Map<String, String> schemaURIandPathMap = Map.of("http://json-schema.org/draft-04/schema#",
 			"/schema_v4_mscr");
 
-	public static ValidationRecord validateJSONSchema(byte[] inputSchemaFile) throws Exception, IOException {
+	public static ValidationRecord validateJSONSchema(JsonNode inputSchemaNode) throws Exception, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-
-		JsonNode inputSchemaNode = mapper.readTree(inputSchemaFile);
-
 		
 		if(!inputSchemaNode.has("$schema")) {
 			throw new Exception("Missing $schema property. Cannot validate schema.");

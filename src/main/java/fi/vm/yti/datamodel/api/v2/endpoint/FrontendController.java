@@ -1,9 +1,12 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkEditorSchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
+import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.OpenSearchUtil;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.*;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResource;
@@ -12,6 +15,8 @@ import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexModel;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
 import fi.vm.yti.datamodel.api.v2.service.FrontendService;
+import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.JsonSchemaWriter;
 import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
 import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.security.AuthenticatedUserProvider;
@@ -19,6 +24,8 @@ import fi.vm.yti.security.YtiUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.apache.jena.rdf.model.Model;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +34,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
@@ -52,16 +61,27 @@ public class FrontendController {
     private final FrontendService frontendService;
     private final AuthenticatedUserProvider userProvider;
     private final NamespaceService namespaceService;
+    
+    private final JenaService jenaService;
+    private final SchemaMapper schemaMapper;
+    private final JsonSchemaWriter schemaWriter;
 
     @Autowired
     public FrontendController(SearchIndexService searchIndexService,
                               FrontendService frontendService,
                               AuthenticatedUserProvider userProvider,
-                              NamespaceService namespaceService) {
+                              NamespaceService namespaceService,
+                              JenaService jenaService,
+                              SchemaMapper schemaMapper,
+                      		  JsonSchemaWriter schemaWriter) {
         this.searchIndexService = searchIndexService;
         this.frontendService = frontendService;
         this.userProvider = userProvider;
         this.namespaceService = namespaceService;
+        
+        this.jenaService = jenaService;
+        this.schemaMapper = schemaMapper;
+        this.schemaWriter = schemaWriter;        
     }
 
     @Operation(summary = "Get counts", description = "List counts of data model grouped by different search results")
@@ -177,5 +197,19 @@ public class FrontendController {
     	return frontendService.getFunctions();
     }
     
+    
+    @Operation(summary = "Get schema information for the crosswalk UI")
+    @ApiResponse(responseCode = "200", description = "")    
+    @GetMapping(value="/schema/{pid}", produces = APPLICATION_JSON_VALUE)
+    public CrosswalkEditorSchemaDTO getSchema(@PathVariable String pid) {   
+		Model model = jenaService.getSchema(pid);
+		SchemaInfoDTO metadata = schemaMapper.mapToSchemaDTO(pid, model);
+		String contentString = schemaWriter.newModelSchema(pid, model, "en");		
+    	try {
+			return frontendService.getSchema(contentString, metadata);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+    }    
         
 }

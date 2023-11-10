@@ -212,6 +212,33 @@ public class SchemaMapper {
 		return mapToSchemaDTO(PID, model, false, userMapper);
 	}
 	
+	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model) {
+		var schemaInfoDTO = new SchemaInfoDTO();
+		schemaInfoDTO.setPID(PID);
+
+		var modelResource = model.getResource(PID);		
+		// Label
+		schemaInfoDTO.setLabel(MapperUtils.localizedPropertyToMap(modelResource, RDFS.label));
+
+		// Description
+		schemaInfoDTO.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));		
+		schemaInfoDTO.setPID(PID);
+		schemaInfoDTO.setFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		
+		schemaInfoDTO.setNamespace(MapperUtils.propertyToString(modelResource, MSCR.namespace));
+		schemaInfoDTO.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
+		schemaInfoDTO.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
+		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
+		schemaInfoDTO.setState(state);
+		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
+		schemaInfoDTO.setVisibility(visibility);
+		
+		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));		
+
+		return schemaInfoDTO;
+	}
+
+	
 	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper) {
 
 		var schemaInfoDTO = new SchemaInfoDTO();

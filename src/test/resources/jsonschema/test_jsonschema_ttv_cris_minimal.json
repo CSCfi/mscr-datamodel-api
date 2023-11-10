@@ -1,0 +1,140 @@
+{
+    "description": "Tätä sovellusprofiilia käytetään tutkijan tietojen siirtotiedoston XML-skeeman luomiseen. XML-skeema toimii pohjana tiedonsiirrolle korkeakoulujen, tutkimuslaitosten sekä muiden tutkimusorganisaatioiden järjestelmistä tutkimustietovarantoon (tiedejatutkimus.fi). Koska yhteentoimivuusalustasta ei toistaiseksi voi liittää sovellusprofiiliin liitettyjä koodistoja, tämä tietomalli toimii ainoastaan pohjana ja koodistoihin liittyvät XML:t tulee rakentaa \"käsin\".\n\nTämä siirtoprofiili on hyväksytty \"Tutkijan Tiedot\" -työryhmässä 11.12.2020.",
+    "@id": "http://uri.suomi.fi/datamodel/ns/ttv_cris#",
+    "title": "Tutkijan tietojen siirtoformaatti",
+    "modified": "Wed, 11 Oct 2023 07:41:43 GMT",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "oneOf": [
+        {
+            "$ref": "#/definitions/Affiliaatio"
+        }        
+    ],
+    "definitions": {
+        "Affiliaatio": {
+            "title": "Affiliaatio",
+            "type": "object",
+            "@id": "http://uri.suomi.fi/datamodel/ns/tutkimus#Affiliaatio",
+            "description": "Henkilön sopimusperustainen suhde organisaatioon (esim. työsuhde, dosenttisopimus, vieraileva tutkija), joka sisältää tehtävänimikkeen sekä sen alkamisajankohdan. Loppumisajankohta ilmoitetaan, mikäli affiliaatio on päättynyt.",
+            "properties": {
+                "affiliaation_tyyppi": {
+                    "@id": "http://uri.suomi.fi/datamodel/ns/tutkimus#rooli",
+                    "title": "Affiliaation tyyppi",
+                    "description": "Henkilön suhde organisaatioon (esim. työsuhde, dosentuuri, vieraileva tutkija).",
+                    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+                    "maxItems": 3,
+                    "type": "array",
+                    "example": [
+                        "esim. työsuhde, dosentuuri, vieraileva tutkija"
+                    ],
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/definitions/langString"
+                    }
+                },
+                "kokonimi": { 
+                    "@id": "http://uri.suomi.fi/datamodel/ns/jhs#kokonimi",
+                    "title": "Nimi",
+                    "description": "henkilön täydellinen nimi",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string",
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sukunimi": {
+                    "@id": "http://uri.suomi.fi/datamodel/ns/jhs#sukunimi",
+                    "title": "Sukunimi",
+                    "description": "pääasiallisesti sukuun viittaava rekisteröidyn henkilönnimen osa",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string",
+                    "type": "string"
+                },  
+                  "yksilointitunnus": {
+                    "@id": "http://uri.suomi.fi/datamodel/ns/jhs#yksilointitunnus",
+                    "title": "Yksilöintitunnus",
+                    "description": "Tutkimuksen piirissä toimivan henkilön yksilöivä tunniste, tyypillisimmin ORCID, esim julkaisun/teoksen yhteydessä ISNI",
+                    "@type": "@id",
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/definitions/Tunniste"
+                    },
+                    "example": [
+                        "0000-0002-4382-7425"
+                    ]
+                }
+            }
+        },
+        "Tunniste": {
+            "title": "Tunniste",
+            "type": "object",
+            "@id": "http://uri.suomi.fi/datamodel/ns/tutkimus#Tunniste",
+            "description": "Tutkijan, aktiviteetin, aktiviteetin tekijän, tapahtuman, organisaation tai julkaisukanavan tunniste",
+            "properties": {
+                "pysyvatunniste": {
+                    "@id": "http://uri.suomi.fi/datamodel/ns/tutkimus#pysyvatunniste",
+                    "title": "Pysyvä tunniste",
+                    "description": "Kohteen yksilöivä ainutkertainen merkkijono, jonka avulla kohteeseen voidaan yksiselitteisesti viitata. \n\n- Tutkijalla tai aktiviteetin tekijällä ORCID.\n- Julkaisukanavalla ISSN tai ISBN.\n- Organisaatiolla esim. Y-tunnus tai ISNI.\n- Avainsanalla URI.\nTapahtumilla ei toistaiseksi ole käytössä vakiintunieta tunnisteita.",
+                    "@type": "http://www.w3.org/2001/XMLSchema#anyURI",
+                    "type": "string",
+                    "format": "uri"
+                },
+                "pysyvantunnisteentyyppi": {
+                    "@id": "http://uri.suomi.fi/datamodel/ns/tutkimus#pysyvantunnisteentyyppi",
+                    "title": "Pysyvän tunnisteen tyyppi",
+                    "description": "Pysyvän tunnisteen tyyppi  Tutkimusaineistojen pysyvät tunnisteet -koodiston mukaisesti.",
+                    "enum": [
+                        "ADSbibcode",
+                        "ARK",
+                        "BusinessID",
+                        "Crossref_funders",
+                        "DOI",
+                        "EAN13",
+                        "GRID",
+                        "Handle",
+                        "ISBN",
+                        "ISNI",
+                        "ISSN",
+                        "ISTC",
+                        "JuFo-id",
+                        "LSID",
+                        "Orcid",
+                        "PIC",
+                        "PMID",
+                        "PURL",
+                        "QID",
+                        "RAID",
+                        "ROR",
+                        "SF-edu-ID",
+                        "ScopusAuthorID",
+                        "UPC",
+                        "URI",
+                        "URL",
+                        "URN",
+                        "VAT-number",
+                        "Virta-id",
+                        "arXiv",
+                        "eISBN",
+                        "eISSN"
+                    ],
+                    "@type": "http://www.w3.org/2000/01/rdf-schema#Literal",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pysyvantunnisteentyyppi",
+                "pysyvatunniste"
+            ]
+        },        
+        "langString": {
+            "type": "object",
+            "title": "Multilingual string",
+            "description": "Object type for localized strings",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    }
+}
