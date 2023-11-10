@@ -62,6 +62,7 @@
         },
         "items": {
             "anyOf": [
+                { "type": { "type": "string"} },
                 { "$ref": "#" },
                 { "$ref": "#/definitions/schemaArray" }
             ],
@@ -105,8 +106,25 @@
         },
         "anyOf": { "$ref": "#/definitions/schemaArray" },
         "allOf": { "$ref": "#/definitions/schemaArray" },
+        "oneOf": { "$ref": "#/definitions/schemaArray" },
         "format": { "type": "string" },
-        "not": { "$ref": "#" } 
+        "not": { "$ref": "#" },
+        "@id": {
+            "type": "string"
+        },
+        "@type": {
+            "type": "string"
+        },
+        "example": {
+            "oneOf": [
+                { "type": "string"},
+                { "type": "array", "items": { "type": "string"}}
+                
+            ]
+        },
+        "modified": {
+            "type": "string"
+        }
     },
     "dependencies": {
         "exclusiveMaximum": [ "maximum" ],

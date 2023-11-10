@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
@@ -128,13 +129,14 @@ public class Schema {
 			Model schemaModel = null;
 			
 			if (schemaDTO.getFormat() == SchemaFormat.JSONSCHEMA) {
-				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(fileInBytes);
+				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
+				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
 
 				boolean isValidJSONSchema = validationRecord.isValid();
 				List<String> validationMessages = validationRecord.validationOutput();
 
 				if (isValidJSONSchema) {
-					schemaModel = schemaService.transformJSONSchemaToInternal(pid, fileInBytes);
+					schemaModel = schemaService.transformJSONSchemaToInternal(pid, jsonObj);
 				} else {
 					String exceptionOutput = String.join("\n", validationMessages);
 					throw new Exception(exceptionOutput);

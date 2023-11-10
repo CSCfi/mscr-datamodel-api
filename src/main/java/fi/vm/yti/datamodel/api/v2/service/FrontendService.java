@@ -1,28 +1,41 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
+import static fi.vm.yti.datamodel.api.v2.dto.ModelConstants.DEFAULT_LANGUAGE;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.jena.rdf.model.Model;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkEditorSchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.FunctionMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ServiceCategoryMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 
-import org.apache.jena.rdf.model.Model;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-import static fi.vm.yti.datamodel.api.v2.dto.ModelConstants.DEFAULT_LANGUAGE;
+import io.zenwave360.jsonrefparser.$RefParser;
+import io.zenwave360.jsonrefparser.$Refs;
 
 @Service
 public class FrontendService {
 
     private final CoreRepository coreRepository;
+
+    
+    
     public FrontendService(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
+        
     }
 
     public List<OrganizationDTO> getOrganizations(@NotNull String sortLanguage, boolean includeChildOrganizations) {
@@ -57,4 +70,23 @@ public class FrontendService {
     	Model model = coreRepository.fetch(MSCR.FUNCTIONS_GRAPH);
     	return FunctionMapper.mapFunctionsToDTO(model);
     }
+
+	public CrosswalkEditorSchemaDTO getSchema(String contentString, SchemaInfoDTO metadata) throws Exception {
+		ObjectMapper mapper = new ObjectMapper(); // turn into a bean
+		$RefParser parser = new $RefParser(contentString);
+			
+		$Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
+		Object resultMapOrList = refs.schema();
+		if(resultMapOrList instanceof Map) {
+			Map<String, Object> map = (Map<String, Object>)resultMapOrList;
+			map.remove("definitions");
+		}
+		
+		CrosswalkEditorSchemaDTO dto = new CrosswalkEditorSchemaDTO();
+		dto.setMetadata(metadata);
+		dto.setContent(mapper.valueToTree(resultMapOrList));
+		
+		
+		return dto;
+	}
 }

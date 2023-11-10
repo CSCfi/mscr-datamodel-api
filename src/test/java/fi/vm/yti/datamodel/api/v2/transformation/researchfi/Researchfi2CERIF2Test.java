@@ -38,6 +38,6 @@ public class Researchfi2CERIF2Test {
 		List<MappingDTO> mappings = mapper.readValue(mapping, new TypeReference<List<MappingDTO>>(){});
 		
 		String output = service.transform(IOUtils.toString(input), "xml", mappings, "xml");		
-		System.out.println(output);		
+		//System.out.println(output);		
 	}
 }

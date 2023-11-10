@@ -1,11 +1,16 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -15,8 +20,10 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.VOID;
 import org.apache.jena.vocabulary.XSD;
 import org.springframework.stereotype.Service;
+import org.topbraid.jenax.util.IOUtil;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,6 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.CSVMapper;
+import io.zenwave360.jsonrefparser.$RefParser;
+import io.zenwave360.jsonrefparser.$Refs;
 
 
 @Service
@@ -31,7 +40,7 @@ public class SchemaService {
 
 	private final Map<String, Resource> XSDTypesMap = Map.ofEntries(Map.entry("string", XSD.xstring),
 			Map.entry("number", XSD.xfloat), Map.entry("integer", XSD.integer), Map.entry("boolean", XSD.xboolean),
-			Map.entry("null", MSCR.NULL));
+			Map.entry("null", MSCR.NULL), Map.entry("object", XSD.anyURI));
 
 	private final Map<String, Property> JSONSchemaToSHACLMap = Map.ofEntries(
 			Map.entry("description", SH.description), Map.entry("default", SH.defaultValue),
@@ -118,8 +127,14 @@ public class SchemaService {
 		
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.DatatypeProperty);
-		propertyResource.addProperty(SH.datatype, XSDTypesMap.get(type));
-		propertyResource.addProperty(SH.path, propID);
+		if(node.has("@type") && node.get("@type").asText().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")) {
+			propertyResource.addProperty(SH.datatype, RDF.langString);	
+		}
+		else {
+			propertyResource.addProperty(SH.datatype, XSDTypesMap.get(type));	
+		}
+		
+		propertyResource.addProperty(SH.path, ResourceFactory.createResource("mscr:" + propID));
 
 		checkAndAddPropertyFeature(node, model, propertyResource, propID);
 
@@ -142,9 +157,8 @@ public class SchemaService {
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.ObjectProperty);
-
 		checkAndAddPropertyFeature(node, model, propertyResource, propID);
-		propertyResource.addProperty(SH.path, propID);
+		propertyResource.addProperty(SH.path, ResourceFactory.createResource("mscr:" + propID));
 		propertyResource.addProperty(SH.node, model.createResource(targetShape));
 
 		return propertyResource;
@@ -169,7 +183,13 @@ public class SchemaService {
 		char firstChar = Character.toUpperCase(stringAfterSlash.charAt(0));
 		return propID + "/" + firstChar + stringAfterSlash.substring(1);
 	}
-	
+
+	private boolean isLangString(Entry <String, JsonNode> entry) {
+		if(entry.getValue().has("@type")) {			
+			return entry.getValue().get("@type").asText().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString");
+		}
+		return false;
+	}
 	
 	private boolean isArray(Entry <String, JsonNode> entry) {
 		return entry.getValue().get("type").asText().equals("array");
@@ -219,28 +239,35 @@ public class SchemaService {
 			Entry<String, JsonNode> entry = propertiesIterator.next();			
 			if (entry.getKey().startsWith("_") || entry.getKey().startsWith("$"))
 				continue;
-			if (entry.getValue().get("type") == null) 
-				throw new RuntimeException(entry.getKey() + " is missing 'type' property");
-
+			if (entry.getValue().get("type") == null) {
+				throw new RuntimeException(entry.getKey() + " is missing 'type' property");				
+			}
 			if (isObject(entry)) {
 				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
-						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey());
+						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey() +"/" + StringUtils.capitalise(entry.getKey()));
 				nodeShapeResource.addProperty(SH.property, propertyShape);
-				
-				handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), schemaPID, model);
+				handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), schemaPID, model);	
 			}
 			else if (isArray(entry)) {
-				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
-						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey());
-				nodeShapeResource.addProperty(SH.property, propertyShape);
-				
-				if (hasObjectItems(entry)) {
-					handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue().get("items"), schemaPID, model);
-				}
+				if(isLangString(entry)) {
+					Entry<String, JsonNode> item = Map.entry(entry.getKey(), entry.getValue());
+					handleDatatypeProperty(propIDCapitalised, item, model, schemaPID, nodeShapeResource, false, true);
+				}					
 				else {
-					Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
-					handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
+					Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
+							schemaPID + "#" + propIDCapitalised + "/" + entry.getKey() +"/" + StringUtils.capitalise(entry.getKey()));
+					nodeShapeResource.addProperty(SH.property, propertyShape);
+					
+					if (hasObjectItems(entry)) {
+						handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue().get("items"), schemaPID, model);
+					}
+					else {
+						Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
+						handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
+					}
+					
 				}
+				
 			}
 			else {
 				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));
@@ -261,19 +288,25 @@ public class SchemaService {
 	 * @throws IOException If an I/O error occurs while reading the JSON schema
 	 *                     data.
 	 */
-	public Model transformJSONSchemaToInternal(String schemaPID, byte[] data) throws Exception, IOException {
+	public Model transformJSONSchemaToInternal(String schemaPID, JsonNode root) throws Exception, IOException {
 
 		Model model = ModelFactory.createDefaultModel();
-
-		// ObjectMapper is required to parse the JSON data
-		ObjectMapper mapper = new ObjectMapper();
-
-		JsonNode root = mapper.readTree(data);
+	
+		// ObjectMapper is required to parse the JSON data		
+		//ObjectMapper mapper = new ObjectMapper();		
+		//JsonNode root = mapper.readTree(mapper.writeValueAsBytes(jsonObj));
 		Resource modelResource = model.createResource(schemaPID);
 		modelResource.addProperty(DCTerms.language, "en");
 
+		// TODO: make this general
+		// Handling of oneOf in the root element with single value - research.fi case 
+		if(root.get("oneOf") != null && root.get("oneOf").size() == 1) {
+			root = root.get("oneOf").get(0);
+		}
 		// Adding the schema to a corresponding internal model
 		handleObject("root", root, schemaPID, model);
+		
+		modelResource.addProperty(VOID.rootResource, ResourceFactory.createResource(schemaPID+"#root/Root"));
 		return model;
 
 	}
@@ -281,5 +314,16 @@ public class SchemaService {
 	public Model transformCSVSchemaToInternal(String schemaPID, byte[] data, String delimiter) throws Exception, IOException {
 		CSVMapper mapper = new CSVMapper();		
 		return mapper.mapToModel(schemaPID, data, delimiter);
+	}
+	
+	public JsonNode parseSchema(String data) throws Exception {
+		// TODO: change this hacky way of utilizing the $RefParser		
+		$RefParser parser = new $RefParser(data);
+		$Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
+		Object resultMapOrList = refs.schema();
+		System.out.println(((Map)resultMapOrList).keySet().size());
+		
+		ObjectMapper mapper = new ObjectMapper(); 
+		return mapper.valueToTree(resultMapOrList);
 	}
 }

@@ -17,6 +17,7 @@ import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
@@ -26,10 +27,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.topbraid.shacl.vocabulary.SH;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
-
 @ExtendWith(SpringExtension.class)
 @Import({
 	SchemaService.class,
@@ -43,17 +45,16 @@ public class SchemaServiceTest {
 	private SchemaService service;
 	
 	
-	private byte[] getByteStreamFromPath(String schemaPath) throws Exception, IOException {
+	private JsonNode getJsonNodeFromPath(String schemaPath) throws Exception, IOException {
 		InputStream inputSchemaInputStream = getClass().getClassLoader().getResourceAsStream(schemaPath);
 		byte[] inputSchemaInByte = inputSchemaInputStream.readAllBytes();
 		inputSchemaInputStream.close();
-
-		return inputSchemaInByte;
+		return service.parseSchema(new String(inputSchemaInByte));		
 	}	
 	
 	@Test
 	void testSimple1Transformation() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_simple1.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_simple1.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -71,24 +72,29 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testSimpleNested() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_simple_nested.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_simple_nested.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		
 		Resource root = model.createResource(schemaPID + "#root/Root");
-		
+		model.write(System.out, "TTL");
 		assertTrue(model.contains(root, RDF.type, SH.NodeShape));		
 		assertEquals(3, model.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size());
 		assertEquals(7, model.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size());
 		
-		assertEquals(SH.NodeShape, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/address/Address"), RDF.type).getObject());
+		assertEquals(SH.NodeShape, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/address/Address"), RDF.type).getObject());		
+		Resource addressProperty = model.getResource(schemaPID+"#root/Root/address");
+		assertEquals(ResourceFactory.createResource(schemaPID + "#root/Root/address/Address"), addressProperty.getProperty(SH.node).getObject().asResource());
+		Resource cityProperty = model.getResource(schemaPID+"#root/Root/address/Address/city");
+		assertEquals(ResourceFactory.createResource(schemaPID + "#root/Root/address/Address/city/City"), cityProperty.getProperty(SH.node).getObject().asResource());
+
 	}
 	
 	@Test
 	void testClosed() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_simple_nested.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_simple_nested.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -101,7 +107,7 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testValidDatatypes() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_simple_datatypes.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_simple_datatypes.json");
 		assertNotNull(data);
 				
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -119,7 +125,7 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testValidRequired() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_required.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_required.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -131,12 +137,12 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testValidArrays() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_arrays.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_arrays.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
-//		model.write(System.out, "TURTLE");
+		model.write(System.out, "TURTLE");
 
 		assertEquals(XSD.xstring, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/firstName"), SH.datatype).getObject());
 		// lastName is functional property -> must have maxCount = 1
@@ -157,7 +163,7 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testNumberRestrictions() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_number_restrictions.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_number_restrictions.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -178,7 +184,7 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testStrings() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_strings.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_strings.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -195,7 +201,7 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testEnums() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_enums.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_enums.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -245,7 +251,7 @@ public class SchemaServiceTest {
 	
 	@Test
 	void testDefaultName() throws Exception {
-		byte[] data = getByteStreamFromPath("jsonschema/test_jsonschema_valid_simple1.json");
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_valid_simple1.json");
 		assertNotNull(data);
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
@@ -269,6 +275,17 @@ public class SchemaServiceTest {
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);		
 	}
 	*/
+	
+	@Test
+	void testTTV_CRIS() throws Exception {
+		JsonNode data = getJsonNodeFromPath("jsonschema/test_jsonschema_ttv_cris_minimal_custom.json");
+		
+		ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(data);
+		assertTrue(validationRecord.isValid());
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
+		model.write(System.out, "TTL");
+	}
 	
 }
 
