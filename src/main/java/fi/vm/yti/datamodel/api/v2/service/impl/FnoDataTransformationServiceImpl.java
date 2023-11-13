@@ -63,7 +63,7 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 			File tempFile = File.createTempFile("mscr", "fno");
 			FileUtils.copyInputStreamToFile(input, tempFile);
 			this.agent = AgentFactory.createFromFnO(tempFile.getAbsolutePath());
-      tempFile.delete()
+      			tempFile.delete();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
