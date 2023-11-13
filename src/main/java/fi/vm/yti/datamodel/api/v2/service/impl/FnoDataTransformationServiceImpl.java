@@ -55,7 +55,7 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 	public FnoDataTransformationServiceImpl(ApplicationContext context) {
 		try {
 			Resource resourceFile = context.getResource("classpath:fno/functions.ttl");
-			this.agent = AgentFactory.createFromFnO(resourceFile.getFile().getAbsolutePath());
+			this.agent = AgentFactory.createFromFnO(resourceFile.getURL().toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
