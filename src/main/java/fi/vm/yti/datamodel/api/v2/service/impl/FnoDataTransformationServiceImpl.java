@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,14 +35,12 @@ import com.opencsv.exceptions.CsvException;
 import be.ugent.idlab.knows.functions.agent.Agent;
 import be.ugent.idlab.knows.functions.agent.AgentFactory;
 import be.ugent.idlab.knows.functions.agent.Arguments;
-import be.ugent.idlab.knows.functions.agent.functionModelProvider.fno.exception.FnOException;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingFilterDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 import fi.vm.yti.datamodel.api.v2.dto.OneOfDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 import fi.vm.yti.datamodel.api.v2.service.DataTransformationService;
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -51,10 +51,12 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 	//private final CrosswalkMapper mapper;
 	private Agent agent;
 	
-	public FnoDataTransformationServiceImpl() {
+	
+	public FnoDataTransformationServiceImpl(ApplicationContext context) {
 		try {
-			this.agent = AgentFactory.createFromFnO("src/main/resources/fno/functions.ttl");
-		} catch (FnOException e) {
+			Resource resourceFile = context.getResource("classpath:fno/functions.ttl");
+			this.agent = AgentFactory.createFromFnO(resourceFile.getFile().getAbsolutePath());
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
