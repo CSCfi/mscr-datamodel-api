@@ -1,8 +1,11 @@
 package fi.vm.yti.datamodel.api.v2.service.impl;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+
+import org.apache.commons.io.FileUtils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -54,8 +59,11 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 	
 	public FnoDataTransformationServiceImpl(ApplicationContext context) {
 		try {
-			Resource resourceFile = context.getResource("classpath:fno/functions.ttl");
-			this.agent = AgentFactory.createFromFnO(resourceFile.getFile().getAbsolutePath());
+			InputStream input = this.getClass().getClassLoader().getResourceAsStream("fno/functions.ttl");
+			File tempFile = File.createTempFile("mscr", "fno");
+			FileUtils.copyInputStreamToFile(input, tempFile);
+			this.agent = AgentFactory.createFromFnO(tempFile.getAbsolutePath());
+      tempFile.delete()
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
