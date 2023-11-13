@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,7 @@ public class FnoDataTransformationServiceImpl implements DataTransformationServi
 			File tempFile = File.createTempFile("mscr", "fno");
 			FileUtils.copyInputStreamToFile(input, tempFile);
 			this.agent = AgentFactory.createFromFnO(tempFile.getAbsolutePath());
+      tempFile.delete()
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
