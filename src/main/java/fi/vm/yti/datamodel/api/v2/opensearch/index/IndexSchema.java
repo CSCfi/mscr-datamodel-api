@@ -11,6 +11,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
+import fi.vm.yti.datamodel.api.v2.dto.UserDTO;
 
 public class IndexSchema extends IndexBase {
 
@@ -33,7 +34,8 @@ public class IndexSchema extends IndexBase {
     private int numberOfRevisions;
     private List<Revision> revisions;
     private List<String> owner;
-    
+    private String versionLabel;
+    private String namespace;
     
     public MSCRVisibility getVisibility() {
 		return visibility;
@@ -170,5 +172,20 @@ public class IndexSchema extends IndexBase {
 		this.owner = owner;
 	}
 
+	public String getVersionLabel() {
+		return versionLabel;
+	}
+
+	public void setVersionLabel(String versionLabel) {
+		this.versionLabel = versionLabel;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 	
 }

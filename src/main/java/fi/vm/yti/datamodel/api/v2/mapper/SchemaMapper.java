@@ -407,7 +407,9 @@ public class SchemaMapper {
         }
         indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
         indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
-        
+        indexModel.setNamespace(MapperUtils.propertyToString(resource, MSCR.namespace));
+        indexModel.setVersionLabel(resource.getProperty(MSCR.versionLabel).getString());
+
         return indexModel;
     }     
 	
