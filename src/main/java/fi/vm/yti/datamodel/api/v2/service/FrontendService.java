@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.service;
 
 import static fi.vm.yti.datamodel.api.v2.dto.ModelConstants.DEFAULT_LANGUAGE;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkEditorSchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
+import fi.vm.yti.datamodel.api.v2.dto.OutputDTO;
+import fi.vm.yti.datamodel.api.v2.dto.ParameterDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.FunctionMapper;
@@ -88,5 +91,32 @@ public class FrontendService {
 		
 		
 		return dto;
+	}
+	
+	private FunctionDTO createSimpleFilterFunction(String name, String operator) {
+		return new FunctionDTO(
+				name, operator, "", 
+				List.of(
+						new ParameterDTO("input", "object", true) 
+						), 
+				List.of(
+						new OutputDTO("output", "object", true)
+						)
+				);
+		
+	}
+
+	public List<FunctionDTO> getFilters() {
+		List<FunctionDTO> list = new ArrayList<FunctionDTO>();
+		list.add(createSimpleFilterFunction("equals", "="));
+		list.add(createSimpleFilterFunction("not equals", "!="));
+		list.add(createSimpleFilterFunction("in", "in"));
+		list.add(createSimpleFilterFunction("startsWith", "startsWith"));
+		list.add(createSimpleFilterFunction("isURI", "isURI"));
+		list.add(createSimpleFilterFunction("contains", "contains"));
+		list.add(createSimpleFilterFunction("Does not contain", "!contains"));
+		
+		
+		return list;
 	}
 }
