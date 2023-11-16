@@ -197,6 +197,12 @@ public class FrontendController {
     	return frontendService.getFunctions();
     }
     
+    @Operation(summary = "Get filters that can be used as part of mappings")
+    @ApiResponse(responseCode = "200", description = "")    
+    @GetMapping(value="/filters", produces = APPLICATION_JSON_VALUE)
+    public List<FunctionDTO> getFilters() {    	
+    	return frontendService.getFilters();
+    }        
     
     @Operation(summary = "Get schema information for the crosswalk UI")
     @ApiResponse(responseCode = "200", description = "")    
