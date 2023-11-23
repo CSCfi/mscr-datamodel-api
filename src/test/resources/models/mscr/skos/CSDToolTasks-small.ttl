@@ -1,0 +1,96 @@
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tadirah: <http://vocabs.dariah.eu/tadirah/> .
+@prefix iso369-3: <http://id.loc.gov/vocabulary/iso639-3> .
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix pida0a4c59a4c574e44a633276557692372: <urn:IAMNOTAPID:a0a4c59a-4c57-4e44-a633-276557692372#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix csdtt: <http://vocabs.sshopencloud.eu/vocabularies/tooltasks/> .
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+
+
+ 
+  
+csdtt:0001  a            skos:Concept ;
+        skos:definition  "A tool's ability to expand an abbreviation to its full form."@en ;
+        skos:inScheme    csdtt: ;
+        skos:prefLabel   "abbreviation expansion"@en .
+        
+csdtt:0002 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "abbreviation expansion2"@en ;
+ skos:definition "A tool's ability to expand an abbreviation to its full form."@en ;
+ skos:broader csdtt:0001 .
+ 
+ csdtt:0003 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "abbreviation expansion2"@en ;
+ skos:definition "A tool's ability to expand an abbreviation to its full form."@en ;
+ skos:broader csdtt:0002 .
+ 
+ csdtt:0004 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "abbreviation expansion2"@en ;
+ skos:definition "A tool's ability to expand an abbreviation to its full form."@en ;
+ skos:broader csdtt:0003 .
+ 
+
+ 
+ csdtt:0007 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "abbreviation expansion2"@en ;
+ skos:definition "A tool's ability to expand an abbreviation to its full form."@en ;
+ skos:broader csdtt:0002 .
+          
+csdtt:  a                    skos:ConceptScheme ;
+        dc:contributor       "Jan Odijk, Daan Broeder, Eline Westerhout, Rogier Kraf, Erica Renkens" ;
+        dc:description       "Tool Tasks is a taxonomy for classifying tasks for services and tools such as we encounter these in the CLARIN domain"@en ;
+        dc:identifier        <http://hdl.handle.net/11459/CCR_C-2500_a16d939a-58e3-121d-aaa3-05237ec2d206> ;
+        dc:title             "CLARIN taxonomy for tools and services tasks"@en ;
+        dcterms:created      "2023-09-01"^^xsd:date ;
+        dcterms:description  "The task(s) carried out by the software or a typical task description of the software."@en ;
+        dcterms:language     iso369-3:eng , iso369-3:dut ;
+        dcterms:license      <https://creativecommons.org/publicdomain/zero/1.0> ;
+        dcterms:modified     "2023-11-01"^^xsd:date ;
+        owl:versionInfo      "1.2" ;
+        skos:hasTopConcept   csdtt:0002 ;
+        skos:prefLabel       "CLARIN Services Description Tool Task taxonomy"@en .
+
+<urn:IAMNOTAPID:a0a4c59a-4c57-4e44-a633-276557692372>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                "string"@en ;
+        rdfs:label                  "string2"@en ;
+        dcterms:contributor         <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;
+        dcterms:created             "2023-11-22T12:01:17.598Z"^^xsd:dateTime ;
+        dcterms:identifier          "urn:IAMNOTAPID:a0a4c59a-4c57-4e44-a633-276557692372" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2023-11-22T12:01:17.598Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <urn:IAMNOTAPID:a0a4c59a-4c57-4e44-a633-276557692372> ;
+        dcap:preferredXMLNamespacePrefix
+                "urn:IAMNOTAPID:a0a4c59a-4c57-4e44-a633-276557692372" ;
+        <http://rdfs.org/ns/void#rootResource>
+                csdtt: ;
+        iow:contentModified         "2023-11-22T12:01:17.598Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <urn:IAMNOTAPID:a0a4c59a-4c57-4e44-a633-276557692372> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "SKOSRDF" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "7d3a3c00-5a6b-489b-a3ed-63bb58c26a63" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PRIVATE" ;
+        owl:versionInfo             "DRAFT" .

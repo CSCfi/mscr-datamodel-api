@@ -1,0 +1,132 @@
+@prefix agrelon: <https://d-nb.info/standards/elementset/agrelon#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix isothes: <http://purl.org/iso25964/skos-thes#> .
+@prefix mts: <http://urn.fi/URN:NBN:fi:au:mts:> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdaa: <http://rdaregistry.info/Elements/a/> .
+@prefix rdaar: <http://rdaregistry.info/termList/AspectRatio/> .
+@prefix rdabf: <http://rdaregistry.info/termList/bookFormat/> .
+@prefix rdabm: <http://rdaregistry.info/termList/RDAbaseMaterial/> .
+@prefix rdabs: <http://rdaregistry.info/termList/broadcastStand/> .
+@prefix rdac: <http://rdaregistry.info/Elements/c/> .
+@prefix rdacarx: <http://rdaregistry.info/termList/RDACarrierEU/> .
+@prefix rdacc: <http://rdaregistry.info/termList/RDAColourContent/> .
+@prefix rdacct: <http://rdaregistry.info/termList/CollTitle/> .
+@prefix rdacdt: <http://rdaregistry.info/termList/RDACartoDT/> .
+@prefix rdaco: <http://rdaregistry.info/termList/RDAContentType/> .
+@prefix rdacpc: <http://rdaregistry.info/termList/configPlayback/> .
+@prefix rdact: <http://rdaregistry.info/termList/RDACarrierType/> .
+@prefix rdae: <http://rdaregistry.info/Elements/e/> .
+@prefix rdafmn: <http://rdaregistry.info/termList/MusNotation/> .
+@prefix rdafnm: <http://rdaregistry.info/termList/formatNoteMus/> .
+@prefix rdafnv: <http://rdaregistry.info/termList/noteMove/> .
+@prefix rdafr: <http://rdaregistry.info/termList/frequency/> .
+@prefix rdafs: <http://rdaregistry.info/termList/fontSize/> .
+@prefix rdaft: <http://rdaregistry.info/termList/fileType/> .
+@prefix rdaftn: <http://rdaregistry.info/termList/TacNotation/> .
+@prefix rdagd: <http://rdaregistry.info/termList/gender/> .
+@prefix rdagen: <http://rdaregistry.info/termList/RDAGeneration/> .
+@prefix rdagrp: <http://rdaregistry.info/termList/groovePitch/> .
+@prefix rdagw: <http://rdaregistry.info/termList/grooveWidth/> .
+@prefix rdai: <http://rdaregistry.info/Elements/i/> .
+@prefix rdaill: <http://rdaregistry.info/termList/IllusContent/> .
+@prefix rdalay: <http://rdaregistry.info/termList/layout/> .
+@prefix rdam: <http://rdaregistry.info/Elements/m/> .
+@prefix rdamat: <http://rdaregistry.info/termList/RDAMaterial/> .
+@prefix rdami: <http://rdaregistry.info/termList/ModeIssue/> .
+@prefix rdamt: <http://rdaregistry.info/termList/RDAMediaType/> .
+@prefix rdapf: <http://rdaregistry.info/termList/presFormat/> .
+@prefix rdapm: <http://rdaregistry.info/termList/RDAproductionMethod/> .
+@prefix rdapo: <http://rdaregistry.info/termList/RDAPolarity/> .
+@prefix rdare: <http://rdaregistry.info/termList/RDARegionalEncoding/> .
+@prefix rdarm: <http://rdaregistry.info/termList/recMedium/> .
+@prefix rdarr: <http://rdaregistry.info/termList/RDAReductionRatio/> .
+@prefix rdasca: <http://rdaregistry.info/termList/scale/> .
+@prefix rdasco: <http://rdaregistry.info/termList/soundCont/> .
+@prefix rdaspc: <http://rdaregistry.info/termList/specPlayback/> .
+@prefix rdatb: <http://rdaregistry.info/termList/RDATypeOfBinding/> .
+@prefix rdatc: <http://rdaregistry.info/termList/trackConfig/> .
+@prefix rdaterm: <http://rdaregistry.info/termList/RDATerms/> .
+@prefix rdatr: <http://rdaregistry.info/termList/typeRec/> .
+@prefix rdavf: <http://rdaregistry.info/termList/videoFormat/> .
+@prefix rdaw: <http://rdaregistry.info/Elements/w/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix soto: <http://www.yso.fi/onto/soto/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix yso: <http://www.yso.fi/onto/yso/> .
+
+mts:m611 a skos:Concept ;
+    dc:source "RDA-termi"@fi,
+        "RDA-term"@sv ;
+    dct:created "2016-01-08"^^xsd:date ;
+    dct:modified "2023-05-17"^^xsd:date ;
+    skos:example "Av-aineistossa: Teksti: suomi, ruotsi."@fi,
+        "Teksti suomeksi ja ruotsiksi."@fi,
+        "För AV-material: Text: finska, svenska."@sv,
+        "Text på finska och svenska."@sv ;
+    skos:inScheme mts: ;
+    skos:narrower mts:m1016 ;
+    skos:prefLabel "teksti"@fi,
+        "text"@sv .
+
+mts:m434 a skos:Concept ;
+    dc:source "RDA-termi"@fi,
+        "RDA-term"@sv ;
+    dct:created "2016-01-08"^^xsd:date ;
+    dct:modified "2023-05-17"^^xsd:date ;
+    skos:definition "Laajuuden yksikkö, kolmiulotteisia objekteja sisältävä kokonaisuus, jota on tarkoitettu käytettäväksi sovittujen sääntöjen mukaisesti leikeissä opetuksessa, huviksi tai terapiassa."@fi,
+        "Enhet, helhet bestående av tredimensionella föremål, avsedd att användas enligt överenskomna regler i lekar, undervisning, som förströelse eller som terapi."@sv ;
+    skos:exactMatch rdacarx:1014 ;
+    skos:example "MARC 21: 300## ‡a 1 peli (useita osia kotelossa) ‡c 13 x 18 x 4 cm + ‡e 2 taitelehteä (16 x 12 cm)"@fi,
+        "MARC 21: 300## ‡a 9 peliä (useita osia) + ‡e Opettajan info (23 sivua : kuvitettu)"@fi,
+        "MARC 21: 300## ‡a 1 spel (flera delar i fodral) ‡c 13 x 18 x 4 cm + ‡e 2 foldrar (16 x 12 cm)"@sv,
+        "MARC 21: 300## ‡a 9 spel (flera delar) + ‡e Lärarens info (23 sidor : illustrationer)"@sv ;
+    skos:inScheme mts: ;
+    skos:narrower mts:m1010 ;
+    skos:prefLabel "game"@en,
+        "peli"@fi,
+        "spel"@sv .
+
+        
+mts:m1010 a skos:Concept ;
+    dc:source "RDA-termi"@fi,
+        "RDA-term"@sv ;
+    dct:created "2016-01-08"^^xsd:date ;
+    dct:modified "2023-05-17"^^xsd:date ;
+    skos:broader mts:m434 ;
+    skos:inScheme mts: ;
+    skos:prefLabel "lautapeli"@fi,
+        "brädspel"@sv .
+        
+mts:m1016 a skos:Concept ;
+    dc:source "RDA-termi"@fi,
+        "RDA-term"@sv ;
+    dct:created "2016-01-08"^^xsd:date ;
+    dct:modified "2023-05-17"^^xsd:date ;
+    skos:broader mts:m611 ;
+    skos:example "Rinnakkaistekstit suomeksi ja englanniksi."@fi,
+        "Parallelltexter på finska och engelska."@sv ;
+    skos:inScheme mts: ;
+    skos:prefLabel "rinnakkaistekstit"@fi,
+        "parallelltexter"@sv .        
+
+mts: a owl:Ontology,
+        skos:ConceptScheme ;
+    dc:creator "Kansalliskirjasto"@fi,
+        "Nationalbiblioteket i Finland"@sv ;
+    dc:description """Metadata thesaurus contains terms and expressions required in describing materials. The thesaurus is also suitable for selecting headings displayed in user interfaces.
+The thesaurus has been organised according to entity-relationship structure of RDA text and LRM (IFLA Library Reference Model) conceptual model.
+The use of the terms in the thesaurus standardises the vocabulary of descriptive metadata and simultaneously harmonises description in order to promote productiveness. The aim of the thesaurus is also to make it easier to produce metadata by collecting vocabulary and expressions needed in description as well as to clarify concepts related to them.
+The thesaurus includes terms complying with the RDA description rules. 
+The thesaurus does not contain vocabulary describing the subject matter of the work, such as index terms."""@en ;        
+    dc:title "Metadata thesaurus"@en,
+        "Metatietosanasto"@fi,
+        "Metadataordlista"@sv ;
+    dct:language <http://lexvo.org/id/iso639-3/fin>,
+        <http://lexvo.org/id/iso639-3/swe> ;
+    dct:license <http://creativecommons.org/publicdomain/zero/1.0/> ;
+    dct:modified "2023-10-25T05:03:28+00:00"^^xsd:dateTime ;
+    foaf:homepage <https://www.kiwi.fi/display/Finto/Metatietosanasto> .

@@ -1,29 +1,27 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.VOID;
 import org.apache.jena.vocabulary.XSD;
 import org.springframework.stereotype.Service;
-import org.topbraid.jenax.util.IOUtil;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.CSVMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.SKOSMapper;
 import io.zenwave360.jsonrefparser.$RefParser;
 import io.zenwave360.jsonrefparser.$Refs;
 
@@ -313,7 +312,13 @@ public class SchemaService {
 	
 	public Model transformCSVSchemaToInternal(String schemaPID, byte[] data, String delimiter) throws Exception, IOException {
 		CSVMapper mapper = new CSVMapper();		
-		return mapper.mapToModel(schemaPID, data, delimiter);
+		Model model = mapper.mapToModel(schemaPID, data, delimiter);
+		Resource modelResource = model.createResource(schemaPID);
+		Resource rootResource = model.createResource(schemaPID + "#root/Root");
+		modelResource.addProperty(VOID.rootResource, rootResource);
+		
+		return model;
+		
 	}
 	
 	public JsonNode parseSchema(String data) throws Exception {
@@ -325,5 +330,30 @@ public class SchemaService {
 		
 		ObjectMapper mapper = new ObjectMapper(); 
 		return mapper.valueToTree(resultMapOrList);
+	}
+
+	public Model transformSKOSRDFToInternal(String pid, byte[] fileInBytes) throws Exception {		
+		SKOSMapper m = new SKOSMapper();
+		Model model = m.mapToModel(pid, fileInBytes);
+		return model;
+	}
+
+	public Model addSKOSVocabulary(String pid, byte[] fileInBytes) throws Exception {
+		Model m = ModelFactory.createDefaultModel();
+		ByteArrayInputStream input = new ByteArrayInputStream(fileInBytes);
+		m.read(input, null, "TTL");
+		input.close();
+
+		ResIterator schemes =  m.listSubjectsWithProperty(RDF.type, SKOS.ConceptScheme);
+		if(!schemes.hasNext()) {
+			throw new Exception("No ConceptScheme found.");
+		}
+		Resource scheme = schemes.next(); // just getting the first one
+		Resource schema = m.createResource(pid);
+		schema.addProperty(VOID.rootResource, scheme);
+		
+		
+		
+		return m;
 	}
 }

@@ -145,6 +145,11 @@ public class Schema {
 			}else if (schemaDTO.getFormat() == SchemaFormat.CSV) {
 				schemaModel = schemaService.transformCSVSchemaToInternal(pid, fileInBytes, ";");
 				
+			}else if(schemaDTO.getFormat() == SchemaFormat.SKOSRDF) {
+				// TODO: validate skos file
+				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);
+				
+				
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));
@@ -155,6 +160,7 @@ public class Schema {
 			
 
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description", ex);
 		}
 		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper);

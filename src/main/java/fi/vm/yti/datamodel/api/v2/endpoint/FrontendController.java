@@ -4,6 +4,7 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkEditorSchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
@@ -210,7 +211,19 @@ public class FrontendController {
     public CrosswalkEditorSchemaDTO getSchema(@PathVariable String pid) {   
 		Model model = jenaService.getSchema(pid);
 		SchemaInfoDTO metadata = schemaMapper.mapToSchemaDTO(pid, model);
-		String contentString = schemaWriter.newModelSchema(pid, model, "en");		
+		String contentString = null;
+		if(metadata.getFormat() == SchemaFormat.SKOSRDF) {
+			try {
+				contentString = schemaWriter.skosSchema(pid, model, "en");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
+			contentString = schemaWriter.newModelSchema(pid, model, "en");
+		}
+		
     	try {
 			return frontendService.getSchema(contentString, metadata);
 		} catch (Exception e) {

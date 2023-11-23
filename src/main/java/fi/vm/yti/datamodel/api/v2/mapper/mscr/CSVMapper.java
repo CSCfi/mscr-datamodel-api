@@ -7,7 +7,9 @@ import java.util.Scanner;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.VOID;
 import org.apache.jena.vocabulary.XSD;
 import org.topbraid.shacl.vocabulary.SH;
 
@@ -17,14 +19,15 @@ public class CSVMapper {
 	
 	
 	private Model addRootShape(String pid, Model model) {
-		Resource root = model.createResource(pid + "#Root");
+		Resource root = model.createResource(pid + "#root/Root");
 		root.addLiteral(SH.name, "root");
 		root.addProperty(RDF.type, SH.NodeShape);		
+				
 		return model;		
 	}
 	
 	private Model addProperties(String pid, Model model, String[] properties) {
-		String rootURI = pid + "#Root";
+		String rootURI = pid + "#root/Root";
 		Resource root = model.getResource(rootURI);
 		int c = 1;
 		for(String propertyName : properties) {

@@ -1,0 +1,910 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix iso369-3: <http://id.loc.gov/vocabulary/iso639-3> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix csdtt: <http://vocabs.sshopencloud.eu/vocabularies/tooltasks/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tadirah: <http://vocabs.dariah.eu/tadirah/> .
+
+csdtt:0002 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "abbreviation expansion"@en ;
+ skos:definition "A tool's ability to expand an abbreviation to its full form."@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0003 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "alignment"@en ;
+ skos:definition "The identification of the corresponding elements or sequences of elements (e.g., sentences, words) in a sequence of elements."@en ;
+ skos:broader csdtt:0122 .
+
+csdtt:0004 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "analysis"@en ;
+ skos:definition "analysis includes selecting, sorting, grouping and  filtering of data"@en ;
+ skos:narrower csdtt:0011, csdtt:0032, csdtt:0044 ;
+ skos:exactMatch tadirah:analyzing ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0005 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "analysis of concepts across time"@en ;
+ skos:definition "mining the historical development of concepts and the vocabulary with which they are expressed"@en ;
+ skos:broader csdtt:0081 .
+
+csdtt:0006 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "annotation"@en ;
+ skos:definition "enriching data with information"@en ;
+ skos:exactMatch tadirah:annotating ;
+ skos:topConceptOf csdtt: ;
+ skos:narrower csdtt:0045 ;
+ skos:broader tadirah:enriching .
+
+csdtt:0007 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "audio-visual processing"@en ;
+ skos:definition "processing  audio and video files"@en ;
+ skos:narrower csdtt:0106, csdtt:0107 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0008 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "authorship attribution"@en ;
+ skos:definition "determine whether the author of a  text is a given person"@en ;
+ skos:broader csdtt:0113 ;
+ skos:exactMatch tadirah:authorshipAttribution .
+
+csdtt:0009 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "browsing"@en ;
+ skos:definition "quick examination of the relevance of a number of objects which may or may not lead to a closer examination or acquisition/selection of (some of) these objects (source: Wikipedia)"@en ;
+ skos:broader csdtt:0017 .
+
+csdtt:0010 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "chunking"@en ;
+ skos:definition "assigning partial syntactic structures"@en ;
+ skos:broader csdtt:0085 .
+
+csdtt:0011 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "clustering"@en ;
+ skos:definition "grouping sets of objects in such a way that objects in the same group are more similar to each other than to those in other groups."@en ;
+ skos:broader csdtt:0004 ;
+ skos:closeMatch tadirah:clusterAnalysis .
+
+csdtt:0012 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "compound splitting"@en ;
+ skos:definition "splitting a word into a sequence of words"@en ;
+ skos:broader csdtt:0050 .
+
+
+csdtt:0013 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "constituency-based parsing"@en ;
+ skos:definition "Constituency-based parsing is a type of parsing in which a sentence is split up into constituents or phrases (such as VP or NP)."@en ;
+ skos:broader csdtt:0066 .
+
+csdtt:0014 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "cooccurence addition"@en ;
+ skos:definition "tool to find linguistic objects (words, sentences, etc) that co-occur with a given linguistic object"@en ;
+ skos:broader csdtt:0056 .
+
+csdtt:0015 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "co-reference assignment"@en ;
+ skos:definition "enriching a text with co-reference markings"@en ;
+ skos:broader csdtt:0028 .
+
+csdtt:0016 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "coreference resolution"@en ;
+ skos:definition "Coreference resolution is the task of finding all expressions that refer to the same entity in a text."@en ;
+ skos:broader csdtt:0028 .
+
+csdtt:0017 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "corpus browsing"@en ;
+ skos:definition "looking through the contents of a resource"@en ;
+ skos:broader csdtt:0019 ;
+ skos:broader tadirah:browsing .
+
+csdtt:0018 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "corpus clean-up"@en ;
+ skos:definition "Corpus clean-up is the processing of removing noise (for instance markup) or unwanted elements from a corpus."@en ;
+ skos:broader tadirah:dataCleansing ;
+ skos:broader csdtt:0020 .
+
+csdtt:0019 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "corpus exploration"@en ;
+ skos:definition "investigating the composition and contents of a corpus"@en ;
+ skos:narrower csdtt:0021 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0020 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "corpus processing"@en ;
+ skos:definition "processing a corpus"@en ;
+ skos:narrower csdtt:0033 ;
+ skos:narrower tadirah:concordancing ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0021 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "corpus searching"@en ;
+ skos:definition "searching in  a corpus via a query"@en ;
+ skos:broader csdtt:0077 , csdtt:0019 .
+#DGB skos:broader csdtt:0077 .
+
+csdtt:0022 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "corpus workbench"@en ;
+ skos:definition "A corpus workbench is a collection of tools for managing and processing corpora."@en ;
+ skos:broader csdtt:0020 .
+
+csdtt:0023 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "dependency parsing"@en ;
+ skos:definition "Dependency parsing is a type of parsing in which asymmetric, binary relations are assigned between lexical items. One part in such a relation is called the head, the other the dependent."@en ;
+ skos:broader csdtt:0066 .
+
+csdtt:0024 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "dialectometry"@en ;
+ skos:definition "Dialectometry is the (quantitative) study of the regional distribution of dialects."@en ;
+ skos:broader csdtt:0086 .
+
+csdtt:0025 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "dialogue management"@en ;
+ skos:definition "Dialogue management refers to the part of a dialogue system that is responsible for controlling the architecture and structure of the dialogue."@en ;
+ skos:broader csdtt:0028 .
+
+csdtt:0026 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "diarization"@en ;
+ skos:definition "In voice recognition, the process of partitioning an input audio stream into homogeneous segments according to the speaker identity, so as to identify different speakers' turns in a conversation"@en ;
+ rdfs:isDefinedBy <https://en.wiktionary.org/wiki/diarization> ;
+ skos:broader csdtt:0112 .
+
+csdtt:0027 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "dictionary searching"@en ;
+ skos:definition "text search in a dictionary (considerd as  a sequence of characters)"@en ;
+ skos:broader csdtt:0114 .
+
+csdtt:0028 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "discourse"@en ;
+ skos:definition "level of linguistics dealing with the relations between co-occurring utterances"@en ;
+ skos:broader csdtt:0044, csdtt:0045 .
+
+csdtt:0029 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "discourse analysis"@en ;
+ skos:definition "analysis in terms of discourse concepts"@en ;
+ skos:exactMatch <http://hdl.handle.net/11459/CCR_C-2627_5bd2c71a-8e43-a61d-0897-165b6068cb26> ;
+ skos:broader csdtt:0028 .
+
+csdtt:0030 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "editing"@en ;
+ skos:definition "the process of selecting and preparing written, photographic, visual, audible, or cinematic material used by a person or an entity to convey a message or information. The editing process can involve correction, condensation, organisation, and many other modifications performed with an intention of producing a correct, consistent, accurate and complete piece of work."@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Editing> ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0031 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "evaluation"@en ;
+ skos:definition "assessing the usefulness of a resource for a particular task"@en ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0032 a skos:Concept ;
+ skos:inScheme csdtt: ;
+skos:prefLabel "filtering"@en ;
+ skos:definition "selecting elements to exclude them"@en ;
+ skos:broader csdtt:0004 .
+
+csdtt:0033 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "format conversion"@en ;
+ skos:definition "changing data from one format to another"@en ;
+ skos:broader csdtt:0020 .
+
+csdtt:0034 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "geographical coordinate assignment"@en ;
+ skos:definition "assigning the coordinates of a geographic coordinate system  to an object"@en ;
+ rdfs:seeAlso: <https://en.wikipedia.org/wiki/Geographic_coordinate_system> ;
+ skos:broader csdtt:0121 .
+
+csdtt:0035 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "grammatical relation assignment"@en ;
+ skos:definition "connecting words or word groups and name the grammatical relation between them."@en ;
+ skos:broader csdtt:0066 .
+
+csdtt:0036 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "indexing"@en ;
+ skos:definition "assigning indexes, ie.e keys in an associateive array, to objects"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Associative_array> ;
+ skos:broader csdtt:0125 .
+
+csdtt:0037 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "keyword extraction"@en ;
+ skos:definition "extracting important words in a text that are useful to indicate the text's meaning."@en ;
+ skos:broader csdtt:0020 .
+
+csdtt:0038 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "knowledge representation"@en ;
+ skos:definition "creating a representation for  information about the world in a form that a computer system can use to reason and/or solve complex tasks"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Knowledge_representation_and_reasoning> ;
+ skos:broader csdtt:0123 .
+#DGB skos:topConceptOf csdtt: .
+
+csdtt:0039 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "language identification"@en ;
+ skos:definition "determining for a piece of  textual or speech content which language it is in"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Language_identification> ;
+ skos:exactMatch <http://hdl.handle.net/11459/CCR_C-3932_4238a16a-1838-107c-0345-e31ad6d0f6b0> ;
+ skos:broader csdtt:0113 .
+
+csdtt:0040 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "lemmatisation"@en ;
+ skos:definition "assigning a lemma to an inflected word form"@en ;
+ skos:broader csdtt:0050 .
+
+csdtt:0041 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "lexicon creation"@en ;
+ skos:definition "creation of a lexicon"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Lexicon> ;
+ skos:broader csdtt:0114 .
+
+csdtt:0042 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "lexicon lookup"@en ;
+ skos:definition "checking for the presence of a key in a lexicon and return the entry associated with the key"@en ;
+ skos:broader csdtt:0077 , csdtt:0114 .
+#DGB skos:broader csdtt:0077 .
+
+csdtt:0043 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "lexicon searching"@en ;
+ skos:definition "text search in a lexicon"@en ;
+ skos:broader csdtt:0114, csdtt:0077 .
+#DGB skos:broader csdtt:0077 .
+
+csdtt:0044 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "linguistic analysis"@en ;
+ skos:definition "analysis in terms of linguistic concepts"@en ;
+ skos:narrower csdtt:0028 , csdtt:0050 , csdtt:0052 , csdtt:0053 , csdtt:0056 , csdtt:0058 , csdtt:0064, csdtt:0070 , csdtt:0081 , csdtt:0086, csdtt:0095, csdtt:0096 ;
+ skos:broader csdtt:0004 .
+
+csdtt:0045 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "linguistic annotation"@en ;
+ skos:definition "annotation with linguistic properties"@en ;
+ skos:narrower csdtt:0028 , csdtt:0050 , csdtt:0052 , csdtt:0053 , csdtt:0056 , csdtt:0058 , csdtt:0064, csdtt:0070 , csdtt:0081 , csdtt:0086, csdtt:0095, csdtt:0096 ;
+ skos:broader csdtt:0006 .
+
+csdtt:0046 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "machine translation"@en ;
+ skos:definition "the automatic translation of text or speech from one natural language to another."@en ;
+ skos:broader csdtt:0053 .
+
+csdtt:0047 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "metadata creation"@en ;
+ skos:definition "the creation of metadata"@en ;
+ skos:relatedConcept csdtt:0048 ;
+ skos:closeMatch csdtt:0048 ;
+ skos:broader csdtt:0124 .
+
+csdtt:0048 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "metadating"@en ;
+ skos:definition "the creation of metadata"@en ;
+ skos:relatedConcept csdtt:0047 ;
+ skos:closeMatch csdtt:0047 ;
+ skos:broader csdtt:0124 .
+
+csdtt:0049 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "morphological analysis"@en ;
+ skos:definition "Morphological analysis is the process of analysing the internal structure of a word, i.e. recognizing the morphemes that together constitute a word."@en ;
+ skos:broader csdtt:0050 .
+
+csdtt:0050 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "morphology"@en ;
+ skos:definition "level of linguistics dealing with the internal structure of words"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0049 .
+
+csdtt:0051 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "morphosyntactic tagging"@en ;
+ skos:definition "assigning morpho-syntactic properties to occurrences of word forms in a text"@en ;
+ skos:broader csdtt:0052 .
+
+csdtt:0052 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "morphosyntax"@en ;
+ skos:definition "level of linguistics that deals with properties that play a role both in syntax and morphology"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0051 .
+
+csdtt:0053 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "multilingual"@en ;
+ skos:definition "involving multiple languages"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0046 .
+
+csdtt:0054 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "multiword expression identification"@en ;
+ skos:definition "locating the position of a multiword expression in a text"@en ;
+ skos:broader csdtt:0056 .
+
+csdtt:0055 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "multiword unit identification"@en ;
+ skos:definition "A tool's ability to recognize multi-word expressions or units (MWUs). An MWUs is an expression formed by two or more words that has properties that cannot be derived from its component words or the way they are combined by regular rules."@en ;
+ skos:broader csdtt:0056 .
+
+csdtt:0056 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "multiwords"@en ;
+ skos:definition "level of linguistics that deals with multiword expressions, i.e., combinations of words that have properties that cannot be derived from the properties of the individual word nor from the rules by which they have been combined"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower tadirah:collocationAnalysis ;
+ skos:narrower csdtt:0055, csdtt:0054 .
+
+csdtt:0057 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "named entity recognition"@en ;
+ skos:definition "Named-entity recognition is the process of recognizing and classifying names in a text, such as personal, location and organisation names."@en ;
+ skos:broader csdtt:0058 ;
+ skos:broader tadirah:annotating, tadirah:contentAnalysis ;
+ skos:closeMatch tadirah:namedEntityRecognition  
+.
+
+csdtt:0058 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "names"@en ;
+ skos:definition "words or combination of words that are used to refer to an entity"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0057 .
+
+csdtt:0059 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "natural language generation"@en ;
+ skos:definition "Natural language generation (NLG) is a software process that produces natural language output."@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Digital_image_processing> ;
+ skos:broader csdtt:0127 .
+
+csdtt:0060 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "natural language understanding"@en ;
+ skos:definition "Natural language understanding is a software process that deals with comprehension of natural language input"@en ;
+ skos:broader csdtt:0128 .
+
+csdtt:0061 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "number expansion"@en ;
+ skos:definition "Number expansion is the process of converting numbers in a text to their full written-out forms."@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0062 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "optical character recognition"@en ;
+ skos:definition "the electronic or mechanical conversion of images of typed, handwritten or printed text into machine-encoded tekst"@en ;
+ skos:broader csdtt:0111 .
+
+csdtt:0063 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "orthographic normalisation"@en ;
+ skos:definition "normalises written text by replacing misspellings, OCR-errors, etc."@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0064 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "orthography"@en ;
+ skos:definition "level of linguistics that deals with the writing system"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0061, csdtt:0063 .
+
+csdtt:0065 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "other"@en ;
+ skos:definition "tool task not covered by any other tool task"@en ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0066 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "parsing"@en ;
+ skos:definition "assigning a syntactic structure to a natural language utterance"@en ;
+ skos:narrower csdtt:0094, csdtt:0076, csdtt:0035, csdtt:0023, csdtt:0013, csdtt:0010, csdtt:0063 ;
+ skos:broader csdtt:0095 .
+
+csdtt:0067 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "part of speech generation"@en ;
+ skos:definition "creating part of speech codes for a word"@en ;
+ skos:broader csdtt:0052 .
+
+csdtt:0068 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "part of speech tagging"@en ;
+ skos:definition "Part-of-speech (POS) tagging is the process of assigning a syntactic word category (POS) label to each word in a text."@en ;
+ skos:broader csdtt:0052 ;
+ skos:broader tadirah:structuralAnalysis ;
+ skos:exactMatch tadirah:posTagging  
+.
+
+csdtt:0069 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "phonetic annotation"@en ;
+ skos:definition "Phonetic annotation is the process of adding information about speech sounds to a text in written form, usually using a phonetic alphabet such as IPA."@en ;
+ skos:broader csdtt:0070 .
+
+csdtt:0070 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "phonetics"@en ;
+ skos:definition "level of language analysis that deals with sounds"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0069 .
+
+csdtt:0071 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "processing"@en ;
+ skos:definition "applying an algorithm to input to yield an output"@en ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0072 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "profiling"@en ;
+ skos:definition "software to obtain characteristics of an object"@en ;
+ skos:broader csdtt:0113 .
+
+csdtt:0073 a skos:Concept ;
+ owl:deprecated true;
+ dct:isReplacedBy csdtt:0078 ;
+ skos:changeNote "querying is now an altLabel for searching" ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "querying"@en ;
+ skos:Label "querying"@en ;
+ skos:definition "defining a search request by means of a query"@en ;
+ skos:broader csdtt:0077 .
+
+
+csdtt:0074 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "question answering"@en ;
+ skos:definition "software to provide an answer to a question posed"@en ;
+ skos:relatedMatch <http://hdl.handle.net/11459/CCR_C-4428_10017d9a-0387-0a2b-1fbb-515a47bf1ed9> ;
+ skos:broader csdtt:0071 .
+
+csdtt:0075 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "readability analysis"@en ;
+ skos:definition "a variety of software programs to determine the readability of a written text"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Readability> ;
+ skos:broader csdtt:0113 .
+
+csdtt:0076 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "relation extraction"@en ;
+ skos:definition "Relation extraction is the process of detecting and classifying relationships within a text."@en ;
+ skos:broader csdtt:0066 .
+
+csdtt:0077 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "search"@en ;
+ skos:definition "trying to find an object"@en ;
+#DGB skos:broader csdtt:0019, csdtt:0114 ;
+ skos:topConceptOf csdtt: ;
+ skos:narrower csdtt:0042, csdtt:0043, csdtt:0021, csdtt:0073, csdtt:0078 .
+
+csdtt:0078 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "searching"@en ;
+ skos:altLabel "querying"@en ;
+ skos:definition "request for information through a query"@en ;
+ skos:broader csdtt:0077 ;
+ skos:closeMatch tadirah:searching 
+.
+
+csdtt:0079 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "semantic registry and mapping"@en ;
+ skos:definition "a process to add entries to a semantic registry and mapping these entries to labels (terms)"@en ;
+ skos:broader csdtt:0081 .
+
+csdtt:0080 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "semantic role labeling"@en ;
+ skos:definition "Semantic role labelling is the process of automatically finding the semantic roles (such as agent or patient) for each predicate in a sentence."@en ;
+ skos:broader csdtt:0081 .
+
+csdtt:0081 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "semantics"@en ;
+ skos:definition "level of linguistics that deals with meaning"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0110, csdtt:0080, csdtt:0079, csdtt:0005 .
+
+csdtt:0082 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "sentence selection"@en ;
+ skos:definition "selection of sentences from a text corpus"@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0083 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "sentence splitting"@en ;
+ skos:definition "turning a sequence of characters or words into a sequence of sentences"@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0084 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "sentiment analysis"@en ;
+ skos:definition "software to systematically identify, extract, quantify, and study affective states and subjective information"@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Sentiment_analysis> ;
+ skos:broader csdtt:0113 ;
+ skos:broader tadirah:contentAnalysis ;
+ skos:closeMatch tadirah:sentimentAnalysis
+.
+
+csdtt:0085 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "shallow parsing"@en ;
+ skos:definition "Shallow parsing is a form of sentence analysis in which constituents or phrases are recognised, but their internal structure is not further specified."@en ;
+ skos:broader csdtt:0095 .
+
+csdtt:0086 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "sociolinguistics"@en ;
+ skos:definition "level of linguistic analysis that deals with the relation between language (use) and society"@en ;
+ skos:broader csdtt:0044, csdtt:0045 ;
+ skos:narrower csdtt:0024 .
+
+csdtt:0087 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "speech recognition"@en ;
+ skos:definition "software to recognise spokern natural language and convert it to  text or actions"@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Speech_recognition> ;
+ skos:broader csdtt:0112 .
+
+csdtt:0088 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "speech segmentation"@en ;
+ skos:definition "software to identifythe boundaries between words, syllables, or phonemes in spoken natural languages"@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Speech_segmentation> ;
+ skos:broader csdtt:0112 .
+
+csdtt:0089 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "speech transcription"@en ;
+ skos:definition "software to convert spoken language into text"@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Transcription_(linguistics)> ;
+ skos:broader tadirah:capture ;
+ skos:broader csdtt:0112 .
+
+csdtt:0090 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "spell checking"@en ;
+ skos:definition "Spell checking is the process of recognizing words in a document that may not be spelled correctly."@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0091 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "stemming"@en ;
+ skos:definition "Stemming is the process of converting inflected words to their word stem, base or root form."@en ;
+ skos:broader csdtt:0050 .
+
+csdtt:0092 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "stylistic analysis"@en ;
+ skos:definition "software to determine stylistic properties of a natural language text"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Forensic_linguistics#Forensic_stylistics> ;
+ skos:broader csdtt:0113 .
+
+csdtt:0093 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "summarisation"@en ;
+ skos:definition "Summarisation is the process of reducing a text document to a summary that retains the most important points of the original document."@en ;
+ skos:broader csdtt:0100 .
+
+csdtt:0094 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "syntactic analysis"@en ;
+ skos:definition "analysis in terms of syntactic concepts"@en ;
+ skos:broader csdtt:0066 .
+
+csdtt:0095 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "syntax"@en ;
+ skos:definition "level of linguistics that deals with the combination of words and/or morphemes into larger units"@en ;
+ skos:narrower csdtt:0085, csdtt:0066 ;
+ skos:broader csdtt:0044, csdtt:0045 .
+
+csdtt:0096 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "terminology"@en ;
+ skos:definition "level of linguistics that deals with terms, i.e., words or word combinations and their meanings in a specific domain"@en ;
+ skos:narrower csdtt:0097 ;
+ skos:broader csdtt:0044, csdtt:0045 .
+
+csdtt:0097 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "terminology extraction"@en ;
+ skos:definition "Terminology extraction refers to the automatic extraction of relevant terms from a text. What is relevant depends on the specific task, for example relevant terms could be keywords or words that are difficult to comprehend."@en ;
+ skos:narrower csdtt:0062 ;
+ skos:broader csdtt:0096 .
+
+csdtt:0098 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "text conversion"@en ;
+ skos:definition "conversion of a text"@en ;
+ skos:broader csdtt:0100 .
+
+csdtt:0099 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "text mining"@en ;
+ skos:definition "Text mining refers to the process of deriving high-quality information from text. Typical text mining tasks include text categorization, concept/entity extraction, sentiment analysis and document summarization."@en ;
+ skos:broader csdtt:0100 .
+
+csdtt:0100 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "text processing"@en ;
+ skos:definition "processing of a text"@en ;
+ skos:narrower csdtt:0113, csdtt:0103, csdtt:0099, csdtt:0098, csdtt:0093 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0101 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "text to speech"@en ;
+ skos:definition "software to convert natural language tekst into speech"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Speech_synthesis> ;
+ skos:broader csdtt:0112 .
+
+csdtt:0102 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "tokenisation"@en ;
+ skos:definition "turning a sequence of characters (a text) into a sequence of occurrences of inflected word forms and interpunction symbols (often called 'tokens')"@en ;
+ skos:broader csdtt:0064 .
+
+csdtt:0103 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "topic model generation"@en ;
+ skos:definition "creation of a topic model from a text corpus"@en ;
+ skos:broader tadirah:contentAnalysis ;
+ skos:broader csdtt:0100 ;
+ skos:closeMatch tadirah:topicModeling
+.
+
+csdtt:0104 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "topic recognition"@en ;
+ skos:definition "software to discover one or more topics in a text"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Topic_model> ;
+ skos:broader csdtt:0113 .
+
+csdtt:0105 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "unknown"@en ;
+ skos:definition "unclear which tool task to assign"@en ;
+ skos:relatedMatch <http://hdl.handle.net/11459/CCR_C-2591_f769d93b-c007-d2c9-aff2-99e9177e5764> ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0106 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "up-down sampling"@en ;
+ skos:definition "converting an audio or video file into a different sample rate"@en ;
+ skos:broader csdtt:0007 .
+
+csdtt:0107 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "video recognition"@en ;
+ skos:definition "recognising objects and actions in a video"@en ;
+ skos:broader csdtt:0007 .
+
+csdtt:0108 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "visualisation"@en ;
+ skos:definition "software to create visual representations of complex data and information"@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Data_and_information_visualization> ;
+ skos:broader csdtt:0126 .
+
+csdtt:0109 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "word segmentation"@en ;
+ skos:definition "Word segmentation is the process of extracting words from continuous speech."@en ;
+ skos:broader csdtt:0050 .
+
+csdtt:0110 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "word sense disambiguation"@en ;
+ skos:definition "Word sense disambiguation is the process of identifying the right sense or meaning of a word when it has multiple meanings by making use of the context in which the word is used"@en ;
+ skos:broader csdtt:0081 .
+
+csdtt:0111 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "image processing"@en ;
+ skos:definition "Digital image processing is the use of a digital computer to process digital images through an algorithm"@en ;
+ rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Digital_image_processing> ;
+ skos:closeMatch tadirah:imaging ;
+ skos:broader tadirah:capture ;
+ skos:narrower csdtt:0062 ;
+ skos:topConceptOf csdtt: .
+
+
+csdtt:0112 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "speech processing"@en ;
+ skos:definition "software to process speech signals"@en ;
+ skos:narrower csdtt:0089, csdtt:0088, csdtt:0087 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0113 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "text categorization"@en ;
+ skos:definition "software to assign a tekst to one or more categories"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Document_classification> ;
+ skos:narrower csdtt:0104, csdtt:0092, csdtt:0084, csdtt:0075, csdtt:0072, csdtt:0039, csdtt:0008 ;
+ skos:broader csdtt:0100 .
+
+csdtt:0114 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "lexicon"@en ;
+ skos:definition "a set of entries of a linguistic unit (morpheme, word, multiword expression, etc) and its properties"@en ;
+ rdfs:seeAlso <https://en.wikipedia.org/wiki/Lexicon> ;
+ skos:narrower csdtt:0027, csdtt:0041 , csdtt:0042,  csdtt:0043;
+ skos:topConceptOf csdtt: .
+
+csdtt:0119 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "authorship identification"@en ;
+ skos:definition "determine the identity of the author of a text"@en ;
+ skos:broader csdtt:0113 .
+
+csdtt:0120 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "authorship profiling"@en ;
+ skos:definition "determine characteristics of the author of a text"@en ;
+ rdfs:isDefinedBy: <https://en.wikipedia.org/wiki/Author_profiling> ;
+ skos:broader csdtt:0113 .
+
+csdtt:0121 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "geographic linking"@en ;
+ skos:definition ""@en ;
+ skos:exactMatch tadirah:georeferencing ;
+ skos:narrower csdtt:0034 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0122 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "string processing"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0003 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0123 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "information"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0038 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0124 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "metadata"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0047, csdtt:0048 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0125 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "databases"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0036 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0126 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "presentation"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0108 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0127 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "generation"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0059 ;
+ skos:topConceptOf csdtt: .
+
+csdtt:0128 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "understanding"@en ;
+ skos:definition ""@en ;
+ skos:narrower csdtt:0060 ;
+ skos:topConceptOf csdtt: .
+
+#following imported from TaDiRAH because no equivalent in CSDTT
+tadirah:collocationAnalysis a skos:concept ;
+  skos:note "analysis of recurrent co-occurrences of two or more words in language."@en ;
+  skos:inScheme tadirah: ;
+  skos:broader tadirah:structuralAnalysis ;
+  skos:prefLabel "Collocation Analysis"@en ;
+  skos:broader csdtt:0056 ;
+  a owl:NamedIndividual:Concept .
+
+tadirah:concordance a skos:concept ;
+  skos:inScheme tadirah: ;
+  skos:broader tadirah:structuralAnalysis ;
+  skos:prefLabel "Concordance"@en ;
+  skos:definition "list of words or terms in a published book (Wikidata contributors, \"Q839018,\" Wikidata, https://www.wikidata.org/w/index.php?title=Q839018&oldid=1228232199 (accessed July 30, 2020)."@en ;
+  skos:broader csdtt:0020 ;
+  a owl:NamedIndividual.
+
+tadirah:informationRetrieval a skos:concept ;
+  skos:inScheme tadirah: ;
+  skos:broader tadirah:discovering, tadirah:contentAnalysis ;
+  skos:prefLabel "Information Retrieval"@en ;
+  skos:definition "activity of obtaining information resources relevant to an information need from a collection of information resources (Wikidata contributors, \"Q816826,\" Wikidata, https://www.wikidata.org/w/index.php?title=Q816826&oldid=1228359828 (accessed July 30, 2020)."@en ;
+  a owl:NamedIndividual.
+
+tadirah:principalComponentAnalysis a skos:concept ;
+  skos:inScheme tadirah: ;
+  skos:broader tadirah:stylisticAnalysis, tadirah:relationalAnalysis ;
+  skos:prefLabel "Principal Component Analysis"@en ;
+  skos:definition "conversion of a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components (Wikidata contributors, \"Q2873,\" Wikidata, https://www.wikidata.org/w/index.php?title=Q2873&oldid=1237203694 (accessed July 30, 2020)."@en ;
+  a owl:NamedIndividual.
+
+#
+#just import the TaDiRAK concepts , not define them as a ConceptScheme
+#tadirah:
+#  rdfs:label "TaDiRAH"@en ;
+#  a owl:NamedIndividual, owl:Ontology, skos:ConceptScheme .
+
+
+csdtt:0000 a skos:Concept ;
+ skos:inScheme csdtt: ;
+ skos:prefLabel "top"@en ;
+ skos:definition "highest element in a hierachy"@en ;
+ skos:topConceptOf csdtt: .
+
+
+csdtt: a skos:ConceptScheme ;
+ skos:prefLabel "CLARIN Services Description Tool Task taxonomy"@en ;
+ dc:description "Tool Tasks is a taxonomy for classifying tasks for services and tools such as we encounter these in the CLARIN domain"@en ;
+ dct:description "The task(s) carried out by the software or a typical task description of the software."@en ;
+ dc:contributor "Jan Odijk, Daan Broeder, Eline Westerhout, Rogier Kraf, Erica Renkens" ;
+ dct:license <https://creativecommons.org/publicdomain/zero/1.0> ;
+ dc:title "CLARIN taxonomy for tools and services tasks"@en ;
+ dct:created "2023-09-01"^^xsd:date ;
+ dct:language iso369-3:dut, iso369-3:eng;
+ dct:modified "2023-11-01"^^xsd:date ;
+ owl:versionInfo "1.2"^^xsd:string ;
+ dc:identifier <http://hdl.handle.net/11459/CCR_C-2500_a16d939a-58e3-121d-aaa3-05237ec2d206> ;
+ skos:hasTopConcept csdtt:0002, csdtt:0004, csdtt:0006, csdtt:0007, csdtt:0019, csdtt:0020, csdtt:0031, csdtt:0065, csdtt:0100, csdtt:0105, csdtt:0112 .
+
