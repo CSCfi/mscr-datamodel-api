@@ -55,10 +55,9 @@ public class SchemaService {
 
 	);
 
-	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "exclusiveMaximum",
-			"exclusiveMinimum", "maxItems", "minItems", "minLength", "maxLength");
+	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "maxItems", "minItems", "minLength", "maxLength");
 	
-	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties");
+	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties", "exclusiveMaximum", "exclusiveMinimum");
 
 	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID) {
 		for (String key : JSONSchemaToSHACLMap.keySet()) {
