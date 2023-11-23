@@ -55,16 +55,15 @@ public class SchemaService {
 
 	);
 
-	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "exclusiveMaximum",
-			"exclusiveMinimum", "maxItems", "minItems", "minLength", "maxLength");
+	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "maxItems", "minItems", "minLength", "maxLength");
 	
-	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties");
+	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties", "exclusiveMaximum", "exclusiveMinimum");
 
 	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID) {
 		for (String key : JSONSchemaToSHACLMap.keySet()) {
 			JsonNode propertyNode = node.findValue(key);
 			// the second condition ensures that an object's children properties are not added to that object
-			if (propertyNode != null & node.has(key)) {
+			if (propertyNode != null & node.has(key)) {				
 				if (JSONSchemaNumericalProperties.contains(key)) {
 					propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
 							model.createTypedLiteral(propertyNode.numberValue()));
