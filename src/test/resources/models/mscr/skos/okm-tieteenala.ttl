@@ -1,0 +1,569 @@
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix pid3cbbd7ed11f7401dbad069114fbd2c69: <urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69#> .
+@prefix okm:   <http://www.yso.fi/onto/okm-tieteenala/> .
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix yso:   <http://www.yso.fi/onto/yso/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xml:   <http://www.w3.org/XML/1998/namespace> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+
+<urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                "string"@en ;
+        rdfs:label                  "string2"@en ;
+        dcterms:contributor         <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;
+        dcterms:created             "2023-11-22T12:15:03.666Z"^^xsd:dateTime ;
+        dcterms:identifier          "urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2023-11-22T12:15:03.666Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69> ;
+        dcap:preferredXMLNamespacePrefix
+                "urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69" ;
+        <http://rdfs.org/ns/void#rootResource>
+                okm:conceptscheme ;
+        iow:contentModified         "2023-11-22T12:15:03.66Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "SKOSRDF" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "7d3a3c00-5a6b-489b-a3ed-63bb58c26a63" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PRIVATE" ;
+        owl:versionInfo             "DRAFT" .
+
+okm:ta3142  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3142" ;
+        skos:prefLabel  "FolkhÃ¤lsovetenskap, miljÃ¶ och arbetshÃ¤lsa"@sv , "Kansanterveystiede, ympÃ¤ristÃ¶ ja tyÃ¶terveys"@fi , "Public health care science, environmental and occupational health"@en ;
+        skos:scopeNote  "Kansanterveys ja ympÃ¤ristÃ¶terveys TyÃ¶terveyshuolto"@fi .
+
+okm:conceptscheme  a        skos:ConceptScheme ;
+        rdfs:label          "Korkeakoulujen tutkimustiedonkeruussa kÃ¤ytettÃ¤vÃ¤ tieteenalaluokitus"@fi ;
+        dc:creator          "Opetus- ja kulttuuriministeriÃ¶"@fi ;
+        dc:description      "Tieteenalaluokitusta kÃ¤ytetÃ¤Ã¤n OKM:n tutkimus- ja kehittÃ¤mistoimintaa koskevissa tilastoissa. Tilastokeskuksen vuonna 2007 kÃ¤yttÃ¶Ã¶nottamaa tieteenalaluokitusta uudistettiin vuonna 2010 jakamalla luokkia pienempiin ja aikaisempaa tarkoituksenmukaisempiin kokonaisuuksiin. Tieteenalaluokitus perustuu OECD:n T&K-toiminnan tilastoinnin tueksi julkaiseman Frascati-Manualin FOS-luokitteluun."@fi ;
+        dc:publisher        "Kansalliskirjasto"@fi , "Nationalbiblioteket i Finland"@sv , "National Library of Finland"@en ;
+        dc:title            "Korkeakoulujen tutkimustiedonkeruussa kÃ¤ytettÃ¤vÃ¤ tieteenalaluokitus"@fi ;
+        dcterms:language    <http://lexvo.org/id/iso639-3/fin> ;
+        skos:hasTopConcept  okm:ta3 , okm:ta1 , okm:ta5 , okm:ta2 , okm:ta4 , okm:ta6 , okm:ta9 ;
+        foaf:homepage       <https://confluence.csc.fi/pages/viewpage.action?pageId=38502967> .
+
+okm:ta3  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta3142 , okm:ta319 , okm:ta3121 , okm:ta313 , okm:ta3141 , okm:ta3126 , okm:ta318 , okm:ta3112 , okm:ta3125 , okm:ta317 , okm:ta3111 , okm:ta315 , okm:ta3122 , okm:ta316 , okm:ta3124 , okm:ta3123 ;
+        skos:notation      "3" ;
+        skos:prefLabel     "Medicin och hÃ¤lsovetenskaper"@sv , "Medical and health sciences"@en , "LÃ„Ã„KE- JA TERVEYSTIETEET"@fi ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta114  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "114" ;
+        skos:prefLabel  "Fysik"@sv , "Fysiikka"@fi , "Physical sciences"@en ;
+        skos:scopeNote  "Atomi- ja molekyylifysiikka ja kemiallinen fysiikka (atomi- ja molekyylifysiikkaan sisÃ¤ltyvÃ¤t tÃ¶rmÃ¤ykset, vuorovaikutus sÃ¤teilyn kanssa, magneettinen resonanssi, MÃ¶ssbauer-ilmiÃ¶), tiiviin aineen fysiikka (ml. aiempi kiinteÃ¤n olomuodon fysiikka, suprajohtavuus), hiukkasten ja kenttien fysiikka, ydinfysiikka, nestefysiikka ja plasmafysiikka (ml. pinta-fysiikka), optiikka (ml. laserja kvanttioptiikka), akustiikka"@fi .
+
+okm:ta1  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta114 , okm:ta1171 , okm:ta1184 , okm:ta119 , okm:ta113 , okm:ta1183 , okm:ta112 , okm:ta1182 , okm:ta111 , okm:ta1181 , okm:ta116 , okm:ta1172 , okm:ta115 ;
+        skos:notation      "1" ;
+        skos:prefLabel     "Natural sciences"@en , "Naturvetenskaper"@sv , "LUONNONTIETEET"@fi ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta1171  a           skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "1171" ;
+        skos:prefLabel  "Geovetenskaper"@sv , "Geotieteet"@fi , "Geosciences"@en ;
+        skos:scopeNote  "Monitieteelliset geotieteet, mineralogia, paleontologia, geokemia ja geofysiikka, luonnonmaantiede, geologia, vulkanologia Meteorologia ja ilmakehÃ¤tieteet, ilmastotutkimus Oseanografia, hydrologia, vesivarat"@fi .
+
+okm:ta513  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "513" ;
+        skos:prefLabel  "Juridik"@sv , "Oikeustiede"@fi , "Law"@en ;
+        skos:scopeNote  "Oikeustiede, kriminologia, penologia"@fi .
+
+okm:ta5  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta513 , okm:ta520 , okm:ta518 , okm:ta5142 , okm:ta517 , okm:ta511 , okm:ta5141 , okm:ta519 , okm:ta516 , okm:ta515 , okm:ta512 ;
+        skos:notation      "5" ;
+        skos:prefLabel     "YHTEISKUNTATIETEET"@fi , "SamhÃ¤llsvetenskaper"@sv , "Social sciences"@en ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta221  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "221" ;
+        skos:prefLabel  "Nanoteknologi"@sv , "Nanoteknologia"@fi , "Nano-technology"@en ;
+        skos:scopeNote  "Nanomateriaalit (tuotanto ja ominaisuudet) Nanoprosessit (nanotason sovellukset), (biomateriaalit luokkaan 220)"@fi .
+
+okm:ta2  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta221 , okm:ta219 , okm:ta213 , okm:ta220 , okm:ta218 , okm:ta212 , okm:ta217 , okm:ta211 , okm:ta216 , okm:ta222 , okm:ta215 , okm:ta214 ;
+        skos:notation      "2" ;
+        skos:prefLabel     "TEKNIIKKA"@fi , "Engineering and technology"@en , "Teknik"@sv ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta1184  a           skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "1184" ;
+        skos:prefLabel  "Genetik, utvecklingsbiologi, fysiologi"@sv , "Genetiikka, kehitysbiologia, fysiologia"@fi , "Genetics, developmental biology, physiology"@en ;
+        skos:scopeNote  "Genetiikka ja perinnÃ¶llisyystiede (lÃ¤Ã¤ketieteellinen genetiikka luokkaan 3), lisÃ¤Ã¤ntymisen biologia (lÃ¤Ã¤ketieteelliset nÃ¤kÃ¶kohdat luokkaan 3), kehitysbiologia"@fi .
+
+okm:ta319  a            skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "319" ;
+        skos:prefLabel  "RÃ¤ttsmedicin och Ã¶vrig medicinsk vetenskap"@sv , "OikeuslÃ¤Ã¤ketiede ja muut lÃ¤Ã¤ketieteet"@fi , "Forensic science and other medical sciences"@en ;
+        skos:scopeNote  "OikeuslÃ¤Ã¤ketiede Muut lÃ¤Ã¤ketieteet"@fi .
+
+okm:ta413  a            skos:Concept ;
+        skos:broader    okm:ta4 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "413" ;
+        skos:prefLabel  "VeterinÃ¤rvetenskap"@sv , "ElÃ¤inlÃ¤Ã¤ketiede"@fi , "Veterinary science"@en .
+
+okm:ta4  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta413 , okm:ta4112 , okm:ta412 , okm:ta414 , okm:ta4111 , okm:ta415 ;
+        skos:notation      "4" ;
+        skos:prefLabel     "Agriculture and forestry"@en , "Jordbruks- och skogsvetenskaper"@sv , "MAATALOUS- JA METSÃ„TIETEET"@fi ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta3121  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3121" ;
+        skos:prefLabel  "Inre medicin"@sv , "SisÃ¤taudit"@fi , "Internal medicine"@en ;
+        skos:scopeNote  "Andrologia, sydÃ¤n ja verenkiertojÃ¤rjestelmÃ¤, Ã¤Ã¤reisverenkierron sairaudet, hematologia, hengityselimet, iho- ja sukupuolitautioppi, allergiat, reumatologia, endokrinologia ja aineenvaihdunta (ml. diabetes, hormonit), gastroenterologia ja hepatologia, urologia ja nefrologia, geriatria ja gerontologia, yleislÃ¤Ã¤ketiede ja sisÃ¤tautioppi, muut kliinisen lÃ¤Ã¤ketieteen alueet, integroiva ja tÃ¤ydentÃ¤vÃ¤ lÃ¤Ã¤ketiede (vaihtoehtoiset hoitomenetelmÃ¤t)"@fi .
+
+okm:ta219  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "219" ;
+        skos:prefLabel  "MiljÃ¶bioteknologi"@sv , "YmpÃ¤ristÃ¶n bioteknologia"@fi , "Environmental biotechnology"@en ;
+        skos:scopeNote  "YmpÃ¤ristÃ¶biotekniikka, bioremediaatio, diagnostiset biotekniikat (DNA-sirut ja biomittauslaitteet) ympÃ¤ristÃ¶n-hallinnassa, ympÃ¤ristÃ¶biotekniikkaan liittyvÃ¤ etiikka"@fi .
+
+okm:ta520  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "520" ;
+        skos:prefLabel  "Ã–vriga samhÃ¤llsvetenskaper"@sv , "Muut yhteiskuntatieteet"@fi , "Other social sciences"@en ;
+        skos:scopeNote  "Monitieteelliset yhteiskuntatieteet Muut yhteiskuntatieteet"@fi .
+
+okm:ta518  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "518" ;
+        skos:prefLabel  "Medie- och kommunikationsvetenskap"@sv , "Media- ja viestintÃ¤tieteet"@fi , "Media and communications"@en ;
+        skos:scopeNote  "Journalistiikka, informatiikka (yhteiskunnalliset nÃ¤kÃ¶kulmat), kirjastotiede, mediaviestintÃ¤ ja sosiokulturaalinen viestintÃ¤"@fi .
+
+okm:ta5142  a           skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "5142" ;
+        skos:prefLabel  "Social- och samhÃ¤llspolitik"@sv , "Sosiaali- ja yhteiskuntapolitiikka"@fi , "Social policy"@en ;
+        skos:scopeNote  "Yhteiskunnalliset kysymykset, sosiaalityÃ¶, naistutkimus ja sukupuolitutkimus"@fi .
+
+okm:ta517  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "517" ;
+        skos:prefLabel  "Statsvetenskap"@sv , "Valtio-oppi, hallintotiede"@fi , "Political science"@en ;
+        skos:scopeNote  "Valtio-oppi, hallintotiede, organisaatioteoria"@fi .
+
+okm:ta511  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "511" ;
+        skos:prefLabel  "Nationalekonomi"@sv , "Kansantaloustiede"@fi , "Economics"@en .
+
+okm:ta5141  a           skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "5141" ;
+        skos:prefLabel  "Sociologi"@sv , "Sosiologia"@fi , "Sociology"@en ;
+        skos:scopeNote  "Sosiologia, vÃ¤estÃ¶tiede, antropologia, kansatiede Perhetutkimus, sosiaalipsykologia"@fi .
+
+okm:ta519  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "519" ;
+        skos:prefLabel  "Socialgeografi och ekonomisk geografi"@sv , "Yhteiskuntamaantiede, talousmaantiede"@fi , "Social and economic geography"@en ;
+        skos:scopeNote  "YmpÃ¤ristÃ¶tieteet (yhteiskunnalliset nÃ¤kÃ¶kulmat), kulttuuri- ja talousmaantiede, kaupunkitutkimus (suunnittelu ja kehitys), liikennesuunnittelu ja liikenteen yhteiskunnalliset nÃ¤kÃ¶kulmat (kuljetustekniikka luokkaan 212)"@fi .
+
+okm:ta516  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "516" ;
+        skos:prefLabel  "Pedagogik"@sv , "Kasvatustieteet"@fi , "Educational sciences"@en ;
+        skos:scopeNote  "Yleinen kasvatustiede, ml. koulutus, pedagogiikka, didaktiikka Erityiskasvatustiede (erityislahjakkaille ja oppimisvaikeuksista kÃ¤rsiville)"@fi .
+
+okm:ta515  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "515" ;
+        skos:prefLabel  "Psykologi"@sv , "Psykologia"@fi , "Psychology"@en ;
+        skos:scopeNote  "Psykologia (ml. ihmisen ja koneen vuorovaikutus) Erityispsykologia, (ml. eri terapiamuodot oppimishÃ¤iriÃ¶istÃ¤, puhe-, nÃ¤kÃ¶- ja kuulohÃ¤iriÃ¶istÃ¤ tai muista fyysisistÃ¤ tai psyykkisistÃ¤ haitoista kÃ¤rsiville)"@fi .
+
+okm:ta512  a            skos:Concept ;
+        skos:broader    okm:ta5 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "512" ;
+        skos:prefLabel  "FÃ¶retagsekonomi"@sv , "Liiketaloustiede"@fi , "Business and management"@en ;
+        skos:scopeNote  "Liiketoiminta ja liikkeenjohto"@fi .
+
+okm:ta6132  a           skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "6132" ;
+        skos:prefLabel  "Bildkonst och formgivning"@sv , "Kuvataide ja muotoilu"@fi , "Visual arts and design"@en ;
+        skos:scopeNote  "Taiteet, taidehistoria, arkkitehtisuunnittelu"@fi .
+
+okm:ta6  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta6132 , okm:ta6131 , okm:ta611 , okm:ta616 , okm:ta6122 , okm:ta615 , okm:ta6121 , okm:ta614 ;
+        skos:notation      "6" ;
+        skos:prefLabel     "HUMANISTISET TIETEET"@fi , "Humanities"@en , "Humanistiska vetenskaper"@sv ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta313  a            skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "313" ;
+        skos:prefLabel  "Odontologi"@sv , "HammaslÃ¤Ã¤ketieteet"@fi , "Dentistry"@en ;
+        skos:scopeNote  "Suukirurgia ja -lÃ¤Ã¤ketiede"@fi .
+
+okm:ta119  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "119" ;
+        skos:prefLabel  "Ã–vrig naturvetenskap"@sv , "Muut luonnontieteet"@fi , "Other natural sciences"@en .
+
+okm:ta213  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "213" ;
+        skos:prefLabel  "El-, automations- och telekommunikationsteknik, elektronik"@sv , "SÃ¤hkÃ¶-, automaatio- ja tietoliikennetekniikka, elektroniikka"@fi , "Electronic, automation and communications engineering, electronics"@en ;
+        skos:scopeNote  "SÃ¤hkÃ¶- ja automaatiotekniikka, elektroniikka, robotiikka ja automaattinen hallinta, automaatioja hallintajÃ¤rjestelmÃ¤t, tietoliikenne-tekniikka ja -jÃ¤rjestelmÃ¤t, tietoliikenne, tietokonelaitteistot ja jÃ¤rjestelmÃ¤arkkitehtuuri"@fi .
+
+okm:ta3141  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3141" ;
+        skos:prefLabel  "HÃ¤lsovetenskap"@sv , "Terveystiede"@fi , "Health care science"@en ;
+        skos:scopeNote  "Sairaanhoito, ravitsemustiede, ruokavalio-oppi Trooppinen lÃ¤Ã¤ketiede, parasitologia, infektiotaudit, epidemiologia Yhteiskunnalliset biolÃ¤Ã¤ketieteet (ml. perhesuunnittelu, seksuaaliterveys, psyko-ontologia, biolÃ¤Ã¤ketieteellisen tutkimuksen poliittiset ja yhteiskunnalliset vaikutukset), lÃ¤Ã¤ketieteen etiikka, pÃ¤ihdyttÃ¤vien aineiden vÃ¤Ã¤rinkÃ¤yttÃ¶"@fi .
+
+okm:ta113  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "113" ;
+        skos:prefLabel  "Data- och informationsvetenskap"@sv , "TietojenkÃ¤sittely ja informaatiotieteet"@fi , "Computer and information sciences"@en ;
+        skos:scopeNote  "TietojenkÃ¤sittelyoppi, informaatiotieteet ja bioinformatiikka (laitteistokehitys luokkaan 213, yhteiskunnallinen nÃ¤kÃ¶kulma luokkaan 518)"@fi .
+
+okm:ta3126  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3126" ;
+        skos:prefLabel  "Kirurgi, anestesiologi, intensivvÃ¥rd, radiologi"@sv , "Kirurgia, anestesiologia, tehohoito, radiologia"@fi , "Surgery, anesthesiology, intensive care, radiology"@en ;
+        skos:scopeNote  "Akuutti- ja ensihoito, anestesiologia, ortopedia, kirurgia, radiologia, isotooppi-lÃ¤Ã¤ketiede ja lÃ¤Ã¤ketieteellinen kuvantaminen, elinsiirrot"@fi .
+
+okm:ta999  a            skos:Concept ;
+        skos:broader    okm:ta9 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "999" ;
+        skos:prefLabel  "Ã–vrigt"@sv , "Muut"@fi , "Other"@en .
+
+okm:ta9  a                 skos:Concept ;
+        skos:inScheme      okm:conceptscheme ;
+        skos:narrower      okm:ta999 ;
+        skos:notation      "9" ;
+        skos:prefLabel     "Ã–vrigt"@sv , "Other"@en , "MUUT"@fi ;
+        skos:topConceptOf  okm:conceptscheme .
+
+okm:ta220  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "220" ;
+        skos:prefLabel  "Industriell bioteknologi"@sv , "Teollinen bioteknologia"@fi , "Industrial biotechnology"@en ;
+        skos:scopeNote  "Teollinen biotekniikka, bioprosessoinnin tekniikat (biologisten aineiden kÃ¤yttÃ¶ teollisten prosessien vaikuttavina aineina), biokatalyysi, fermentaatio, biotuotteet (tuotteet, jotka on valmistettu kÃ¤yttÃ¤en biologista materiaalia syÃ¶tteenÃ¤), biomateriaalit, biomuovit, biopolttoaineet, bioperÃ¤iset bulkki- ja hienokemikaalit, bioperÃ¤iset uusmateriaalit"@fi .
+
+okm:ta1183  a           skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "1183" ;
+        skos:prefLabel  "VÃ¤xtbiologi, mikrobiologi, virologi"@sv , "Kasvibiologia, mikrobiologia, virologia"@fi , "Plant biology, microbiology, virology"@en ;
+        skos:scopeNote  "Mikrobiologia, virologia Kasvitiede, botaniikka"@fi .
+
+okm:ta318  a            skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "318" ;
+        skos:prefLabel  "Medicinsk bioteknologi"@sv , "LÃ¤Ã¤ketieteen bioteknologia"@fi , "Medical biotechnology"@en ;
+        skos:scopeNote  "Terveyden biotieteet, solujen, kudosten, elinten tai koko elimistÃ¶n manipulointiin liittyvÃ¤t teknologiat (keinollinen lisÃ¤Ã¤ntyminen), DNA:n, proteiinien ja entsyymien toiminnan tunnistusteknologiat ja nÃ¤iden vaikutukset tautien puhkeamiseen ja hyvinvoinnin yllÃ¤pitÃ¤miseen (geenidiagnostiikka ja hoidollinen vÃ¤liintulo esim. farmakogenomiikka, geenihoito), biomateriaalit (lÃ¤Ã¤ketieteellisiin istutteisiin, laitteisiin ja sensoreihin liittyvÃ¤t), lÃ¤Ã¤ketiet. biotekniikkaan liittyvÃ¤ etiikka"@fi .
+
+okm:ta4112  a           skos:Concept ;
+        skos:broader    okm:ta4 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "4112" ;
+        skos:prefLabel  "Skogsvetenskap"@sv , "MetsÃ¤tiede"@fi , "Forestry"@en ;
+        skos:scopeNote  "MetsÃ¤talous"@fi .
+
+okm:ta412  a            skos:Concept ;
+        skos:broader    okm:ta4 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "412" ;
+        skos:prefLabel  "Djursvetenskap, mjÃ¶lkproduktlÃ¤ra"@sv , "KotielÃ¤intiede, maitotaloustiede"@fi , "Animal science, dairy science"@en ;
+        skos:scopeNote  "ElÃ¤intiede ja maitotaloustiede (elÃ¤imiin liittyvÃ¤ bioteknologia luokkaan 414) Karjatalous, lemmikkielÃ¤imet"@fi .
+
+okm:ta218  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "218" ;
+        skos:prefLabel  "MiljÃ¶teknik"@sv , "YmpÃ¤ristÃ¶tekniikka"@fi , "Environmental engineering"@en ;
+        skos:scopeNote  "YmpÃ¤ristÃ¶tekniikka ja teknillinen geologia, geotekniikka, petrokemian tekniikka (polttoaineet, Ã¶ljyt), energia ja polttoaineet, kaukokartoitus, kaivostoiminta ja mineraalien kÃ¤sittely, laivanrakennus, merialukset, meritekniikka"@fi .
+
+okm:ta414  a            skos:Concept ;
+        skos:broader    okm:ta4 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "414" ;
+        skos:prefLabel  "Jordbruksbioteknologi"@sv , "Maatalouden bioteknologia"@fi , "Agricultural biotechnology"@en ;
+        skos:scopeNote  "Maatalouden biotekniikka ja elintarvikebiotekniikka, geeni- manipulaatioteknologia (viljakasvit, karja), karjan kloonaaminen, markkeriavusteinen valinta, diagnostiikka (DNA-sirut ja bioanturit tautien varhaiseen/tarkkaan havaitsemiseen), biomassasyÃ¶tteen tuotantotekniikat, lÃ¤Ã¤keaineiden kehittÃ¤minen kasveissa, maatalouden biotekniikan etiikka"@fi .
+
+okm:ta4111  a           skos:Concept ;
+        skos:broader    okm:ta4 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "4111" ;
+        skos:prefLabel  "Jordbruksvetenskap"@sv , "Maataloustiede"@fi , "Agronomy"@en ;
+        skos:scopeNote  "Maatalous, kalatalous, maaperÃ¤tiede, puutarhatalous, viininviljely, maataloustiede, kasvinjalostus ja kasvinsuojelu (maatalouden bioteknologia luokkaan 414)"@fi .
+
+okm:ta415  a            skos:Concept ;
+        skos:broader    okm:ta4 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "415" ;
+        skos:prefLabel  "Ã–vriga jordbruksvetenskaper"@sv , "Muut maataloustieteet"@fi , "Other agricultural sciences"@en .
+
+okm:ta6131  a           skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "6131" ;
+        skos:prefLabel  "Teater, dans, musik, Ã¶vrig scenkonst"@sv , "Teatteri, tanssi, musiikki, muut esittÃ¤vÃ¤t taiteet"@fi , "Theatre, dance, music, other performing arts"@en ;
+        skos:scopeNote  "EsittÃ¤vÃ¤t taiteet (musiikkitiede, teatteritiede, dramaturgia), folkloristiikka Elokuva-, radio- ja televisiotutkimus"@fi .
+
+okm:ta212  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "212" ;
+        skos:prefLabel  "Byggnads- och samhÃ¤llsteknik"@sv , "Rakennus- ja yhdyskuntatekniikka"@fi , "Civil and Construction engineering"@en ;
+        skos:scopeNote  "Rakennustekniikka, rakennesuunnittelu, kunnallis- ja rakennetekniikka, kuljetustekniikka"@fi .
+
+okm:ta3112  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3112" ;
+        skos:prefLabel  "Neurotieteet"@fi , "Neurovetenskaper"@sv , "Neurosciences"@en ;
+        skos:scopeNote  "Neurotieteet"@fi .
+
+okm:ta611  a            skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "611" ;
+        skos:prefLabel  "Filosofi"@sv , "Filosofia"@fi , "Philosophy"@en ;
+        skos:scopeNote  "Filosofia, tieteen ja tekniikan historia ja filosofia Etiikka (paitsi yksittÃ¤isiin aihealueisiin liittyvÃ¤ etiikka)"@fi .
+
+okm:ta112  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "112" ;
+        skos:prefLabel  "Statistik"@sv , "Tilastotiede"@fi , "Statistics and probability"@en ;
+        skos:scopeNote  "SisÃ¤ltÃ¤Ã¤ tilastollisten menetelmien tutkimuksen, mutta ei soveltavan tilastotieteen tutkimusta, joka luokitellaan kuuluvaksi kulloiseenkin sovellusalueeseen (taloustiede, sosiologia jne.)"@fi .
+
+okm:ta3125  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3125" ;
+        skos:prefLabel  "Ã–ron-, nÃ¤s- och halssjukdomar, Ã¶gonsjukdomar"@sv , "Korva-, nenÃ¤- ja kurkkutaudit, silmÃ¤taudit"@fi , "Otorhinolaryngology, ophthalmology"@en ;
+        skos:scopeNote  "SilmÃ¤tautioppi, korva-, nenÃ¤- ja kurkkutautioppi"@fi .
+
+okm:ta1182  a           skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "1182" ;
+        skos:prefLabel  "Biokemi, cell- och molekylÃ¤rbiologi"@sv , "Biokemia, solu- ja molekyylibiologia"@fi , "Biochemistry, cell and molecular biology"@en ;
+        skos:scopeNote  "Solubiologia, biokemia ja molekyylibiologia, biokemian tutkimusmenetelmÃ¤t, biofysiikka"@fi .
+
+okm:ta317  a            skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "317" ;
+        skos:prefLabel  "Farmaci"@sv , "Farmasia"@fi , "Pharmacy"@en ;
+        skos:scopeNote  "Toksikologia, lÃ¤Ã¤keainekemia, farmakologia"@fi .
+
+okm:ta217  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "217" ;
+        skos:prefLabel  "Medicinsk teknik"@sv , "LÃ¤Ã¤ketieteen tekniikka"@fi , "Medical engineering"@en ;
+        skos:scopeNote  "LÃ¤Ã¤ketieteen tekniikka, lÃ¤Ã¤ketieteellinen laboratoriotekniikka (ml. laboratorionÃ¤ytteiden analyysi, diagnostiset tekniikat), (biomateriaalit luokkaan 220 [lÃ¤Ã¤ketieteellisiin istutteisiin, laitteisiin ja sensoreihin liittyvÃ¤n elÃ¤vÃ¤n aineen fyysiset ominaisuudet])"@fi .
+
+okm:ta3111  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3111" ;
+        skos:prefLabel  "Biomedicinska vetenskaper"@sv , "BiolÃ¤Ã¤ketieteet"@fi , "Biomedicine"@en ;
+        skos:scopeNote  "Anatomia ja morfologia (kasvitiede luokkaan 118), ihmisen genetiikka, immunologia, (ml. psykofysiologia), fysiologia (ml. sytologia) patologia."@fi .
+
+okm:ta315  a            skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "315" ;
+        skos:prefLabel  "Gymnastik- och idrottsvetenskap"@sv , "Liikuntatiede"@fi , "Sport and fitness sciences"@en .
+
+okm:ta3122  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3122" ;
+        skos:prefLabel  "Cancersjukdomar"@sv , "SyÃ¶pÃ¤taudit"@fi , "Cancers"@en ;
+        skos:scopeNote  "Onkologia"@fi .
+
+okm:ta316  a            skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "316" ;
+        skos:prefLabel  "VÃ¥rdvetenskap"@sv , "Hoitotiede"@fi , "Nursing"@en ;
+        skos:scopeNote  "Terveydenhuolto-oppi ja -palvelut (ml. sairaalahallinto, terveydenhuollon rahoitus), terveyspolitiikka ja -palvelut"@fi .
+
+okm:ta3124  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3124" ;
+        skos:prefLabel  "Neurologi och psykiatri"@sv , "Neurologia ja psykiatria"@fi , "Neurology and psychiatry"@en ;
+        skos:scopeNote  "Psykiatria, kliininen neurologia"@fi .
+
+okm:ta3123  a           skos:Concept ;
+        skos:broader    okm:ta3 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "3123" ;
+        skos:prefLabel  "Kvinno- och barnsjukdomar"@sv , "Naisten- ja lastentaudit"@fi , "Gynaecology and paediatrics"@en ;
+        skos:scopeNote  "Synnytysoppi ja gynekologia, lastentautioppi"@fi .
+
+okm:ta616  a            skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "616" ;
+        skos:prefLabel  "Ã–vriga humanistiska vetenskaper"@sv , "Muut humanistiset tieteet"@fi , "Other humanities"@en .
+
+okm:ta211  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "211" ;
+        skos:prefLabel  "Arkitektur"@sv , "Arkkitehtuuri"@fi , "Architecture"@en ;
+        skos:scopeNote  "(Arkkitehtuurisuunnittelu luokkaan 613,2)"@fi .
+
+okm:ta111  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "111" ;
+        skos:prefLabel  "Matematik"@sv , "Matematiikka"@fi , "Mathematics"@en ;
+        skos:scopeNote  "Matematiikka, soveltava matematiikka ja todennÃ¤kÃ¶isyyslaskenta"@fi .
+
+okm:ta6122  a           skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "6122" ;
+        skos:prefLabel  "Litteraturforskning"@sv , "Kirjallisuuden tutkimus"@fi , "Literature studies"@en ;
+        skos:scopeNote  "Yleiset kirjallisuus-opinnot, kirjallisuuden teoria, yksittÃ¤iset kirjallisuuden lajit"@fi .
+
+okm:ta1181  a           skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "1181" ;
+        skos:prefLabel  "Ekologi, evolutionsbiologi"@sv , "Ekologia, evoluutiobiologia"@fi , "Ecology, evolutionary biology"@en ;
+        skos:scopeNote  "Mykologia ElÃ¤intiede, ornitologia hyÃ¶nteistiede, kÃ¤yttÃ¤ytymistieteen alan biologia Meribiologia, makeanveden biologia, limnologia, ekologia, biodiversiteetin suojelu Biologia (teoreettinen, matemaattinen, termobiologia, kryobiologia, biologinen rytmi), evoluutiobiologia, muu biologia"@fi .
+
+okm:ta216  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "216" ;
+        skos:prefLabel  "Materialteknik"@sv , "Materiaalitekniikka"@fi , "Materials engineering"@en ;
+        skos:scopeNote  "Materiaalitekniikka, keramiikka, pinnoitteet ja kalvot, komposiitit (ml. laminaatit, lujitemuovit, kerametallit, sekoitekankaat luonnon- ja tekokuiduista, tÃ¤ytetyt komposiitit), paperi ja puu, tekstiilit ml. synteettiset vÃ¤riaineet, vÃ¤rit, kuidut (nanomateriaalit luokkaan 221, biomateriaalit luokkaan 220)"@fi .
+
+okm:ta222  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "222" ;
+        skos:prefLabel  "Ã–vrig teknik och teknologi"@sv , "Muu tekniikka"@fi , "Other engineering and technologies"@en ;
+        skos:scopeNote  "Elintarvike- ja juomateollisuus Muu tekniikka"@fi .
+
+okm:ta215  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "215" ;
+        skos:prefLabel  "Teknisk kemi, kemisk processteknik"@sv , "Teknillinen kemia, kemian prosessitekniikka"@fi , "Chemical engineering"@en ;
+        skos:scopeNote  "Kemian laitetekniikka (laitokset, tuotteet), kemian prosessitekniikka"@fi .
+
+okm:ta214  a            skos:Concept ;
+        skos:broader    okm:ta2 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "214" ;
+        skos:prefLabel  "Maskin- och produktionsteknik"@sv , "Kone- ja valmistustekniikka"@fi , "Mechanical engineering"@en ;
+        skos:scopeNote  "Konetekniikka, teknillinen mekaniikka, termodynamiikka Avaruus- ja ilmailutekniikka Ydinvoimatekniikka (ydinfysiikka luokkaan 114) Audiotekniikka, luotettavuusanalyysi"@fi .
+
+okm:ta615  a            skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "615" ;
+        skos:prefLabel  "Historia och arkeologi"@sv , "Historia ja arkeologia"@fi , "History and archaeology"@en ;
+        skos:scopeNote  "Historia (yksittÃ¤isten tieteenalojen historia kulloiseenkin tieteenalaan), arkeologia"@fi .
+
+okm:ta116  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "116" ;
+        skos:prefLabel  "Kemi"@sv , "Kemia"@fi , "Chemical sciences"@en ;
+        skos:scopeNote  "Orgaaninen kemia, epÃ¤orgaaninen kemia ja sÃ¤teilykemia, fysikaalinen kemia, polymeeritiede, sÃ¤hkÃ¶kemia (kuiva-kennot, akut ja paristot, polttokennot, korroosiometallit, elektrolyysi), kolloidikemia, analyyttinen kemia"@fi .
+
+okm:ta6121  a           skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "6121" ;
+        skos:prefLabel  "SprÃ¥kvetenskaper"@sv , "Kielitieteet"@fi , "Languages"@en ;
+        skos:scopeNote  "Yleiset kieliopinnot, yksittÃ¤iset kielet, kielitiede"@fi .
+
+okm:ta1172  a           skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "1172" ;
+        skos:prefLabel  "MiljÃ¶vetenskap"@sv , "YmpÃ¤ristÃ¶tiede"@fi , "Environmental sciences"@en ;
+        skos:scopeNote  "YmpÃ¤ristÃ¶tieteet (yhteiskunnalliset nÃ¤kÃ¶kulmat luokkaan 519)"@fi .
+
+okm:ta115  a            skos:Concept ;
+        skos:broader    okm:ta1 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "115" ;
+        skos:prefLabel  "Rymdvetenskap och astronomi"@sv , "Avaruustieteet ja tÃ¤htitiede"@fi , "Astronomy, Space science"@en .
+
+okm:ta614  a            skos:Concept ;
+        skos:broader    okm:ta6 ;
+        skos:inScheme   okm:conceptscheme ;
+        skos:notation   "614" ;
+        skos:prefLabel  "Teologi"@sv , "Teologia"@fi , "Theology"@en ;
+        skos:scopeNote  "Teologia, uskontotieteet"@fi .
