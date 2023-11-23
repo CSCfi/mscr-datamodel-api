@@ -55,9 +55,10 @@ public class SchemaService {
 
 	);
 
-	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "maxItems", "minItems", "minLength", "maxLength");
+	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "exclusiveMaximum",
+			"exclusiveMinimum", "maxItems", "minItems", "minLength", "maxLength");
 	
-	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties", "exclusiveMaximum", "exclusiveMinimum");
+	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties");
 
 	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID) {
 		for (String key : JSONSchemaToSHACLMap.keySet()) {
@@ -65,8 +66,24 @@ public class SchemaService {
 			// the second condition ensures that an object's children properties are not added to that object
 			if (propertyNode != null & node.has(key)) {
 				if (JSONSchemaNumericalProperties.contains(key)) {
-					propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
-							model.createTypedLiteral(propertyNode.numberValue()));
+					// special handing for exclusiveMaximum and exclusiveMinimum because they work differently with Jsonschema and SHACL (Draft 04!)
+					if(key.equals("exclusiveMaximum")) {
+						if(node.has("maximum")) {
+							propertyResource.addProperty(JSONSchemaToSHACLMap.get("exclusiveMaximum"),
+									model.createTypedLiteral(node.get("maximum").numberValue()));	
+						}
+					}
+					else if(key.equals("exclusiveMinimum")) {
+						if(node.has("minimum")) {
+							propertyResource.addProperty(JSONSchemaToSHACLMap.get("exclusiveMinimum"),
+									model.createTypedLiteral(node.get("minimum").numberValue()));	
+						}
+					}					
+					else {
+						propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
+								model.createTypedLiteral(propertyNode.numberValue()));						
+					}
+
 				} else if (JSONSchemaBooleanProperties.contains(key)) {
 					propertyResource.addProperty(JSONSchemaToSHACLMap.get(key),
 							model.createTypedLiteral(propertyNode.asBoolean()));

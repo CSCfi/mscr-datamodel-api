@@ -168,7 +168,7 @@ public class SchemaServiceTest {
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
-//		model.write(System.out, "TURTLE");
+		model.write(System.out, "TURTLE");
 
 		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/minNumber"), SH.minInclusive).getInt());		
 		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/maxNumber"), SH.maxInclusive).getInt());

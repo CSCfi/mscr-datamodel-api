@@ -18,16 +18,20 @@
     },
     "minNumberEx" : {
       "type" : "number",
-      "exclusiveMinimum" : 10
+      "minimum": 10,
+      "exclusiveMinimum" : true
     },
     "maxNumberEx" : {
       "type" : "number",
-      "exclusiveMaximum" : 100
+      "maximum" : 100,
+      "exclusiveMaximum" : true
     },
     "numberRangeEx" : {
       "type" : "number",
-      "exclusiveMinimum" : 10,
-      "exclusiveMaximum" : 100
+      "minimum" : 10,
+      "maximum" : 100,
+      "exclusiveMinimum" : true,
+      "exclusiveMaximum" : true
     }    
   }
 }
