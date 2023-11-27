@@ -402,6 +402,7 @@ public class MapperUtils {
     	SparqlUtils.addConstructProperty(r, b, RDFS.label, "?label");
     	SparqlUtils.addConstructProperty(r, b, DCTerms.created, "?created");
     	SparqlUtils.addConstructProperty(r, b, MSCR.versionLabel, "?versionLabel");
+    	SparqlUtils.addConstructProperty(r, b, MSCR.state, "?state");   
     	SparqlUtils.addConstructProperty(r, b, MSCR.aggregationKey, "?aggregationKey2");
     	
     	b.addWhere(pidResource, MSCR.namespace, "?ns");
@@ -423,6 +424,7 @@ public class MapperUtils {
     	SparqlUtils.addConstructProperty(r, b, RDFS.label, "?label");
     	SparqlUtils.addConstructProperty(r, b, DCTerms.created, "?created");
     	SparqlUtils.addConstructProperty(r, b, MSCR.versionLabel, "?versionLabel");    	
+    	SparqlUtils.addConstructProperty(r, b, MSCR.state, "?state");    	
     	b.addWhere(r, MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
     	Query q =  b.build();
 		
@@ -434,8 +436,9 @@ public class MapperUtils {
     	var pid = rev.getURI();
     	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
     	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel); 
-    	var created = ((XSDDateTime)rev.getProperty(DCTerms.created).getLiteral().getValue()).asCalendar().getTime();    	
-    	return new Revision(pid, created, label, versionLabel);
+    	var created = ((XSDDateTime)rev.getProperty(DCTerms.created).getLiteral().getValue()).asCalendar().getTime();
+    	var state = MapperUtils.propertyToString(rev, MSCR.state);
+    	return new Revision(pid, created, label, versionLabel, state);
     }
     
     public static Variant mapToVariant(Resource rev) {
@@ -443,6 +446,7 @@ public class MapperUtils {
     	var label = MapperUtils.localizedPropertyToMap(rev, RDFS.label);
     	var versionLabel = MapperUtils.propertyToString(rev, MSCR.versionLabel);
     	var aggregationKey = MapperUtils.propertyToString(rev, MSCR.aggregationKey);
-    	return new Variant(pid, label, versionLabel, aggregationKey);
+    	var state = MapperUtils.propertyToString(rev, MSCR.state);
+    	return new Variant(pid, label, versionLabel, aggregationKey, state);
     }      
 }
