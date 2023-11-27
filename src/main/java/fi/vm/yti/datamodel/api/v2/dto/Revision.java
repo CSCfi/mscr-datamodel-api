@@ -8,12 +8,14 @@ public class Revision {
 	private Date created;
 	private Map<String, String> label;
 	private String versionLabel;
+	private String state;
 	
-	public Revision(String pid, java.util.Date created, Map<String, String> label, String versionLabel) {
+	public Revision(String pid, java.util.Date created, Map<String, String> label, String versionLabel, String state) {
 		this.pid = pid;
 		this.created = created;
 		this.label = label;
 		this.versionLabel  = versionLabel;
+		this.state = state;
 	}
 	public String getPid() {
 		return pid;
@@ -39,6 +41,13 @@ public class Revision {
 	public void setVersionLabel(String versionLabel) {
 		this.versionLabel = versionLabel;
 	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	
 	
 	
 	

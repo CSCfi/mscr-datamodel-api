@@ -7,13 +7,14 @@ public class Variant {
 	private Map<String, String> label;
 	private String versionLabel;
 	private String aggregationKey;
+	private String state;
 
-	public Variant(String pid, Map<String, String> label, String versionLabel, String aggregationKey) {
+	public Variant(String pid, Map<String, String> label, String versionLabel, String aggregationKey, String state) {
 		this.pid = pid;
 		this.label = label;
 		this.versionLabel  = versionLabel;
 		this.aggregationKey = aggregationKey;
-
+		this.state = state;
 	}
 
 	public String getPid() {
@@ -46,6 +47,14 @@ public class Variant {
 
 	public void setAggregationKey(String aggregationKey) {
 		this.aggregationKey = aggregationKey;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 	
 	
