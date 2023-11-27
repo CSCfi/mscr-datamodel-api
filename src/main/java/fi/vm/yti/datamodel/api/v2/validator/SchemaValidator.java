@@ -123,10 +123,6 @@ public class SchemaValidator extends BaseValidator implements
     private void checkOrganizations(ConstraintValidatorContext context, SchemaDTO schema){
         var organizations = schema.getOrganizations();
         var existingOrgs = coreRepository.getOrganizations();
-        if(organizations.isEmpty()){
-            addConstraintViolation(context, ValidationConstants.MSG_VALUE_MISSING, "organization");
-            return;
-        }
         organizations.forEach(org -> {
             var queryRes = ResourceFactory.createResource(ModelConstants.URN_UUID + org.toString());
             if(!existingOrgs.containsResource(queryRes)){
