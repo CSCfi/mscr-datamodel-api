@@ -25,7 +25,7 @@ public class EndpointUtils {
     public static final YtiUser mockUser = new YtiUser("test@localhost",
             "test",
             "tester",
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             true,
             false,
             LocalDateTime.of(2001, 1, 1, 0,0),
