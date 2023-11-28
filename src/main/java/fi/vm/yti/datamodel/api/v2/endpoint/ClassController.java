@@ -6,6 +6,7 @@ import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
 import fi.vm.yti.datamodel.api.v2.service.ClassService;
 import fi.vm.yti.datamodel.api.v2.validator.ValidClass;
 import fi.vm.yti.datamodel.api.v2.validator.ValidNodeShape;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +20,7 @@ import java.util.Collection;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Hidden
 @RestController
 @RequestMapping("v2/class")
 @Tag(name = "Class" )
@@ -31,6 +33,7 @@ public class ClassController {
         this.classService = classService;
     }
 
+    
     @Operation(summary = "Add a class to a model")
     @ApiResponse(responseCode = "201", description = "Class added to model successfully")
     @PostMapping(value = "/library/{prefix}", consumes = APPLICATION_JSON_VALUE)

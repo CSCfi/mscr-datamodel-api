@@ -162,6 +162,7 @@ public class Crosswalk {
     @Operation(summary = "Modify crosswalk")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public void updateModel(@ValidCrosswalk @RequestBody CrosswalkDTO dto,
                             @PathVariable String pid) {
@@ -234,8 +235,7 @@ public class Crosswalk {
 	}
 	
 	@Operation(summary = "Get a mapping")
-	@ApiResponse(responseCode = "200")
-	@SecurityRequirement(name = "Bearer Authentication")
+	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public MappingDTO getMapping(@PathVariable String pid, @PathVariable String mappingPID) {
 		logger.info("Get Mapping {} for crosswalk {}", mappingPID, pid);
@@ -265,8 +265,7 @@ public class Crosswalk {
 	}
 		
 	@Operation(summary = "Get a mappings for a crosswalk")
-	@ApiResponse(responseCode = "200")
-	@SecurityRequirement(name = "Bearer Authentication")
+	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public List<MappingDTO> getMappings(@PathVariable String pid) {
 		logger.info("Get Mappings for crosswalk {}", pid);

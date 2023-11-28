@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ public class IndexController {
     }
 
     @Operation(summary = "Reindex all datamodels")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(value = "/reindex")
     public void reIndex(@RequestParam(required = false) String index) {
         indexer.reindex(index);

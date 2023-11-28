@@ -13,14 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @OpenAPIDefinition(
         info = @Info(
-                description = "YTI Datamodel Service",
+                description = "MSCR Service",
                 version = "1.0",
-                title = "YTI Datamodel Service",
+                title = "MSCR Service",
                 termsOfService = "https://opensource.org/licenses/EUPL-1.1",
                 contact = @Contact(
-                        name = "YTI Datamodel Service by the Digital and Population Data Services Agency",
-                        url = "https://yhteentoimiva.suomi.fi/",
-                        email = "yhteentoimivuus@dvv.fi"
+                        name = "CSC"                        
                 ),
                 license = @License(
                         name = "EUPL-1.2",

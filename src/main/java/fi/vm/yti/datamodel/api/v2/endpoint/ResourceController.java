@@ -4,6 +4,7 @@ import fi.vm.yti.datamodel.api.v2.dto.*;
 import fi.vm.yti.datamodel.api.v2.service.ResourceService;
 import fi.vm.yti.datamodel.api.v2.validator.ValidPropertyShape;
 import fi.vm.yti.datamodel.api.v2.validator.ValidResource;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Hidden
 @RestController
 @RequestMapping("v2/resource")
 @Tag(name = "Resource" )

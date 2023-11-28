@@ -22,6 +22,7 @@ import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
 import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import fi.vm.yti.security.YtiUser;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -111,6 +112,7 @@ public class FrontendController {
         return frontendService.getServiceCategories(sortLang);
     }
 
+    @Hidden
     @Operation(summary = "Search models")
     @ApiResponse(responseCode = "200", description = "List of data model objects")
     @GetMapping(value = "/search-models", produces = APPLICATION_JSON_VALUE)
@@ -118,6 +120,7 @@ public class FrontendController {
         return searchIndexService.searchModels(request, userProvider.getUser());
     }
 
+    @Hidden
     @Operation(summary = "Search resources", description = "List of resources")
     @ApiResponse(responseCode = "200", description = "List of resources as JSON")
     @GetMapping(path = "/search-internal-resources", produces = APPLICATION_JSON_VALUE)
@@ -125,6 +128,7 @@ public class FrontendController {
         return searchIndexService.searchInternalResources(request, userProvider.getUser());
     }
 
+    @Hidden
     @Operation(summary = "Search resources", description = "List of resources")
     @ApiResponse(responseCode = "200", description = "List of resources as JSON")
     @GetMapping(path = "/search-internal-resources-info", produces = APPLICATION_JSON_VALUE)
@@ -139,6 +143,7 @@ public class FrontendController {
         return ModelConstants.SUPPORTED_DATA_TYPES;
     }
 
+    @Hidden
     @Operation(summary = "Search schemas")
     @ApiResponse(responseCode = "200", description = "List of schema objects")
     @GetMapping(value = "/searchSchemas", produces = APPLICATION_JSON_VALUE)
@@ -146,6 +151,7 @@ public class FrontendController {
         return searchIndexService.searchSchemas(request, userProvider.getUser());
     }
     
+    @Hidden
     @Operation(summary = "Search crosswalks")
     @ApiResponse(responseCode = "200", description = "List of crosswalk objects")
     @GetMapping(value = "/searchCrosswalks", produces = APPLICATION_JSON_VALUE)
@@ -153,6 +159,7 @@ public class FrontendController {
         return searchIndexService.searchCrosswalks(request, userProvider.getUser());
     }
 
+    @Hidden
     @Operation(summary = "Get resolved external namespaces")
     @ApiResponse(responseCode = "200", description = "List of resolved namespaces")
     @GetMapping(path = "/namespaces", produces = APPLICATION_JSON_VALUE)
