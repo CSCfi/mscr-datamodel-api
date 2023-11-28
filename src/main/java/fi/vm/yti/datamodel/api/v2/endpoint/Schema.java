@@ -238,7 +238,10 @@ public class Schema {
 			}
 		}
 		logger.info("Create Schema {}", schemaDTO);
-		check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));	
+		if(!schemaDTO.getOrganizations().isEmpty()) {
+			check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));	
+		}
+			
 		final String PID = PIDService.mint(PIDType.HANDLE);
 
 		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey, userProvider.getUser());
