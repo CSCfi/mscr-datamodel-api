@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -116,9 +117,7 @@ public class Schema {
 	
 	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file) {
 		Model metadataModel = jenaService.getSchema(pid);		
-        var hasRightsToModel = authorizationManager.hasRightToModel(pid, metadataModel);
-		check(hasRightsToModel);
-        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+        var userMapper = groupManagementService.mapUser();
 
 		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
 		if(schemaDTO.getState() != MSCRState.DRAFT) {
@@ -270,6 +269,13 @@ public class Schema {
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
 			@RequestParam("file") MultipartFile file) throws Exception {
+		// check for auth here because addFileToSchema is not doing it
+		var model = jenaService.getSchema(pid);
+		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model);
+		if(!schemaDTO.getOrganizations().isEmpty()) {
+			Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
+			check(authorizationManager.hasRightToAnyOrganization(orgs));	
+		}		
 		return addFileToSchema(pid, contentType, file);
 	}
 	
