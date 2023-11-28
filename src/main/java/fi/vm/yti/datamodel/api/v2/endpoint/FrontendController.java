@@ -25,6 +25,7 @@ import fi.vm.yti.security.YtiUser;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.apache.jena.rdf.model.Model;
@@ -179,6 +180,7 @@ public class FrontendController {
     } 
     
     @Operation(summary = "Search user content")
+    @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks that are owned directly by the user")
     @GetMapping(value = "/mscrSearchPersonalContent", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> searchPersonalContent(MSCRSearchRequest request) {
@@ -187,6 +189,7 @@ public class FrontendController {
     } 
     
     @Operation(summary = "Search user's org content")
+    @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks that are part of some organization of the user")
     @GetMapping(value = "/mscrSearchOrgContent", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> searchOrgContent(MSCRSearchRequest request, @RequestParam String ownerOrg) {
