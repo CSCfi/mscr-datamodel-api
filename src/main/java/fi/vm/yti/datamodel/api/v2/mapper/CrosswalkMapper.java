@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -36,9 +35,9 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
-import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
+import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
@@ -68,7 +67,7 @@ public class CrosswalkMapper {
 	}
 	
 	
-	public Model mapToJenaModel(String PID, CrosswalkDTO dto, @NotNull YtiUser user) {
+	public Model mapToJenaModel(String PID, CrosswalkDTO dto, final String revisionOf, final String aggregationKey, @NotNull YtiUser user) {
 		log.info("Mapping CrosswalkDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -102,9 +101,9 @@ public class CrosswalkMapper {
 		
 		modelResource.addProperty(MSCR.format, dto.getFormat().toString());
 		
-		modelResource.addProperty(MSCR.sourceSchema, ResourceFactory.createResource(dto.getSourceSchema()));
-		modelResource.addProperty(MSCR.targetSchema, ResourceFactory.createResource(dto.getTargetSchema()));
-
+        modelResource.removeAll(MSCR.versionLabel);
+		modelResource.addProperty(MSCR.versionLabel, dto.getVersionLabel());
+		
 		modelResource.addProperty(MSCR.state, ResourceFactory.createStringLiteral(dto.getState().name()));
 		modelResource.addProperty(MSCR.visibility, ResourceFactory.createStringLiteral(dto.getVisibility().name()));
 
@@ -117,6 +116,22 @@ public class CrosswalkMapper {
 		else {
 			modelResource.addProperty(MSCR.owner, user.getId().toString());
 		}
+		
+		if(aggregationKey != null) {
+			if(jenaService.doesCrosswalkExist(revisionOf)) {				
+				modelResource.addProperty(MSCR.PROV_wasRevisionOf, ResourceFactory.createResource(revisionOf));
+				modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
+			}
+			else {
+				throw new RuntimeException("Could not find the target of crosswalk revision with a pid " + revisionOf);
+			}
+		}
+		else {
+			modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(PID));
+		}
+		
+		modelResource.addProperty(MSCR.sourceSchema, ResourceFactory.createResource(dto.getSourceSchema()));
+		modelResource.addProperty(MSCR.targetSchema, ResourceFactory.createResource(dto.getTargetSchema()));
 		
 		return model;
 	}
@@ -132,7 +147,40 @@ public class CrosswalkMapper {
         });
     }
 
+	public CrosswalkInfoDTO mapToFrontendCrosswalkDTO(String PID, Model model) {
+		var dto = new CrosswalkInfoDTO();
+		dto.setPID(PID);
+
+		var modelResource = model.getResource(PID);		
+		// Label
+		dto.setLabel(MapperUtils.localizedPropertyToMap(modelResource, RDFS.label));
+
+		// Description
+		dto.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));		
+		dto.setPID(PID);
+		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		
+		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
+		dto.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
+		
+		dto.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
+		dto.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
+		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
+		dto.setState(state);
+		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
+		dto.setVisibility(visibility);
+		
+		dto.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
+		dto.setSourceSchema(MapperUtils.propertyToString(modelResource, MSCR.sourceSchema));
+		dto.setTargetSchema(MapperUtils.propertyToString(modelResource, MSCR.targetSchema));
+
+		return dto;
+	}
+	
 	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper) {
+		return mapToCrosswalkDTO(PID, model, false, userMapper);
+	}
+	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper) {
 		var dto = new CrosswalkInfoDTO();
 		dto.setPID(PID);
 
@@ -155,8 +203,18 @@ public class CrosswalkMapper {
 
         MapperUtils.mapCreationInfo(dto, modelResource, userMapper);
 
+		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
+		Set<FileMetadata> fileMetadatas = new HashSet<>();
+		retrievedSchemaFiles.forEach(file -> {
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
+		});
+		dto.setFileMetadata(fileMetadatas);
 		
 		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		
+		dto.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
+		
+		dto.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
 		
 		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
 		dto.setState(state);
@@ -164,15 +222,31 @@ public class CrosswalkMapper {
 		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
 		dto.setVisibility(visibility);
 		
-		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
-		Set<FileMetadata> fileMetadatas = new HashSet<>();
-		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
-		});
-		dto.setFileMetadata(fileMetadatas);
 		dto.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
+		dto.setSourceSchema(MapperUtils.propertyToString(modelResource, MSCR.sourceSchema));
+		dto.setTargetSchema(MapperUtils.propertyToString(modelResource, MSCR.targetSchema));
 
+		if(modelResource.hasProperty(MSCR.PROV_wasRevisionOf)) {
+			dto.setRevisionOf(MapperUtils.propertyToString(modelResource, MSCR.PROV_wasRevisionOf));
+		}
+		if(modelResource.hasProperty(MSCR.hasRevision)) {
+			dto.setHasRevisions(MapperUtils.arrayPropertyToList(modelResource, MSCR.hasRevision));
+		}
 		
+		if(includeVersionData) {
+			// query for revisions and variants here		
+			List<Revision> revs = new ArrayList<Revision>();
+ 			var revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(dto.getAggregationKey()));			
+			revisionsModel.listSubjects().forEach(res -> {
+				revs.add(MapperUtils.mapToRevision(res));				
+			});
+			
+			List<Revision> orderedRevs = revs.stream()
+					.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
+					.collect(Collectors.toList());
+			dto.setRevisions(orderedRevs);
+					
+		}		
 		return dto;
 	}
 	
@@ -253,7 +327,7 @@ public class CrosswalkMapper {
 		
 	}
 	
-    public IndexCrosswalk mapToIndexModel(String pid, Model model, Model revisionsModel) {
+    public IndexCrosswalk mapToIndexModel(String pid, Model model, Model revisionsModel) {    	
     	var resource = model.getResource(pid);
         var indexModel = new IndexCrosswalk();
         indexModel.setId(pid);
@@ -277,28 +351,63 @@ public class CrosswalkMapper {
         indexModel.setContributor(contributors);
         indexModel.setOwner(MapperUtils.arrayPropertyToList(resource, MSCR.owner));
 		indexModel.setOrganizations(MapperUtils.mapToListOrganizations(contributors, coreRepository.getOrganizations()));
-
-		
+	
         var isPartOf = MapperUtils.arrayPropertyToList(resource, DCTerms.isPartOf);
         var serviceCategories = coreRepository.getServiceCategories();
         var groups = isPartOf.stream().map(serviceCat -> MapperUtils.propertyToString(serviceCategories.getResource(serviceCat), SKOS.notation)).collect(Collectors.toList());
         indexModel.setIsPartOf(groups);
         indexModel.setLanguage(MapperUtils.arrayPropertyToList(resource, DCTerms.language));
 
+        indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
+        indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));        
         indexModel.setFormat(MapperUtils.propertyToString(resource, MSCR.format));
         
+        indexModel.setAggregationKey(MapperUtils.propertyToString(resource, MSCR.aggregationKey));
+        indexModel.setRevisionOf(MapperUtils.propertyToString(resource, MSCR.PROV_wasRevisionOf));
+        indexModel.setHasRevision(MapperUtils.propertyToString(resource, MSCR.hasRevision));
+        
+        List<Revision> revs = new ArrayList<Revision>();
+        if(revisionsModel == null) {
+        	revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(indexModel.getAggregationKey()));
+        }
+        Resource aggregationResource = resource.getPropertyResourceValue(MSCR.aggregationKey);
+        if(aggregationResource != null) {
+            revisionsModel.listSubjectsWithProperty(MSCR.aggregationKey, aggregationResource) .forEach(res -> {
+    			revs.add(MapperUtils.mapToRevision(res));				
+    		});
+    		List<Revision> orderedRevs = revs.stream()
+    				.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
+    				.collect(Collectors.toList());
+    		indexModel.setRevisions(orderedRevs); 
+    		indexModel.setNumberOfRevisions(orderedRevs.size());	
+        }        
+        indexModel.setVersionLabel(MapperUtils.propertyToString(resource, MSCR.versionLabel));
+        
+       
         if(resource.hasProperty(MSCR.sourceSchema)) {
         	indexModel.setSourceSchema(resource.getPropertyResourceValue(MSCR.sourceSchema).getURI());
         }
         if(resource.hasProperty(MSCR.targetSchema)) {
         	indexModel.setTargetSchema(resource.getPropertyResourceValue(MSCR.targetSchema).getURI());
         }
-        indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
-        indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
         
         return indexModel;
     }
 
-	
+	public CrosswalkDTO mapToCrosswalkDTO(CrosswalkInfoDTO source) {		
+		CrosswalkDTO s = new CrosswalkDTO();
+		s.setStatus(source.getStatus());
+		s.setState(source.getState());
+		s.setVisibility(source.getVisibility());
+		s.setLabel(source.getLabel());
+		s.setDescription(source.getDescription());
+		s.setLanguages(source.getLanguages());
+		s.setOrganizations(source.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
+		s.setVersionLabel(source.getVersionLabel());
+		s.setFormat(source.getFormat());		
+		s.setSourceSchema(source.getSourceSchema());
+		s.setTargetSchema(source.getTargetSchema());
+		return s;
+	} 
 
 }

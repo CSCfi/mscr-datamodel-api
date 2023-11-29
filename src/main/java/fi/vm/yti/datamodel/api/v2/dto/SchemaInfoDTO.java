@@ -12,6 +12,9 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 	private MSCRState state = MSCRState.DRAFT;
 	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
 
+	private Set<FileMetadata> fileMetadata = Set.of();
+	private String PID;
+
 	private SchemaFormat format;
 	private String namespace;
 	private String versionLabel;
@@ -46,17 +49,7 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 
 	public void setState(MSCRState state) {
 		this.state = state;
-	}
-	
-	public Map<String, List<Variant>> getVariants2() {
-		return variants2;
-	}
-	public void setVariants2(Map<String, List<Variant>> variants2) {
-		this.variants2 = variants2;
-	}
-
-	private Set<FileMetadata> fileMetadata = Set.of();
-	private String PID;
+	}	
 
 	public String getPID() {
 		return PID;
@@ -136,6 +129,12 @@ public class SchemaInfoDTO extends DataModelInfoDTO {
 		this.hasRevisions = hasRevisions;
 	}
 
+	public Map<String, List<Variant>> getVariants2() {
+		return variants2;
+	}
+	public void setVariants2(Map<String, List<Variant>> variants2) {
+		this.variants2 = variants2;
+	}
 	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

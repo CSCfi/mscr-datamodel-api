@@ -11,6 +11,8 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO {
 	private MSCRState state = MSCRState.DRAFT;
 	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
 
+	private String PID;
+	
 	private CrosswalkFormat format;
 	private String aggregationKey;
 	private Set<FileMetadata> fileMetadata = Set.of();	
@@ -18,6 +20,12 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO {
 	private String targetSchema;
 	private Set<String> owner;
 	private List<MappingDTO> mappings;
+	
+	private String versionLabel;
+	private String revisionOf;		
+	private List<String> hasRevisions;
+	private List<Revision> revisions;
+	
 
 	public List<MappingDTO> getMappings() {
 		return mappings;
@@ -61,9 +69,7 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO {
 	}
 	public void setTargetSchema(String targetSchema) {
 		this.targetSchema = targetSchema;
-	}
-		
-	private String PID;
+	}	
 
 	public String getPID() {
 		return PID;
@@ -94,7 +100,41 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO {
 
 	public void setFileMetadata(Set<FileMetadata> fileMetadata) {
 		this.fileMetadata = fileMetadata;
-	}		
+	}	
+	
+	public String getVersionLabel() {
+		return versionLabel;
+	}
+
+	public void setVersionLabel(String versionLabel) {
+		this.versionLabel = versionLabel;
+	}
+	
+	public String getRevisionOf() {
+		return revisionOf;
+	}
+
+	public void setRevisionOf(String revisionOf) {
+		this.revisionOf = revisionOf;
+	}	
+	
+	public List<Revision> getRevisions() {
+		return revisions;
+	}
+
+	public void setRevisions(List<Revision> revisions) {
+		this.revisions = revisions;
+	}
+
+	
+	public List<String> getHasRevisions() {
+		return hasRevisions;
+	}
+
+	public void setHasRevisions(List<String> hasRevisions) {
+		this.hasRevisions = hasRevisions;
+	}
+	
 
 	@Override
     public String toString() {
