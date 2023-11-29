@@ -107,17 +107,10 @@ public class SchemaMapper {
 		
 		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(schemaDTO.getNamespace()));
 		modelResource.addProperty(MSCR.versionLabel, schemaDTO.getVersionLabel());
-		if(aggregationKey != null) {
-			if(jenaService.doesSchemaExist(revisionOf)) {				
-				modelResource.addProperty(MSCR.PROV_wasRevisionOf, ResourceFactory.createResource(revisionOf));
-				modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
-			}
-		}
-		else {
-			modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(PID));
-		}
+
 		modelResource.addProperty(MSCR.state, ResourceFactory.createStringLiteral(schemaDTO.getState().name()));
 		modelResource.addProperty(MSCR.visibility, ResourceFactory.createStringLiteral(schemaDTO.getVisibility().name()));
+		
 		var orgs = schemaDTO.getOrganizations();
 		if(orgs != null && !orgs.isEmpty()) {
 			orgs.forEach(org -> {
@@ -127,6 +120,16 @@ public class SchemaMapper {
 		else {
 			modelResource.addProperty(MSCR.owner, user.getId().toString());
 		}
+		
+		if(aggregationKey != null) {
+			if(jenaService.doesSchemaExist(revisionOf)) {				
+				modelResource.addProperty(MSCR.PROV_wasRevisionOf, ResourceFactory.createResource(revisionOf));
+				modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(aggregationKey));
+			}
+		}
+		else {
+			modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(PID));
+		}		
 		return model;
 	}
 	
@@ -188,9 +191,6 @@ public class SchemaMapper {
 		modelResource.addProperty(MSCR.format, dto.getFormat().toString());
 
 		
-        modelResource.removeAll(MSCR.namespace);
-		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(dto.getNamespace()));
-		
         modelResource.removeAll(MSCR.versionLabel);
 		modelResource.addProperty(MSCR.versionLabel, dto.getVersionLabel());
 		
@@ -205,6 +205,10 @@ public class SchemaMapper {
 			modelResource.addProperty(MSCR.owner, user.getId().toString());
 		}
 		
+		
+        modelResource.removeAll(MSCR.namespace);
+		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(dto.getNamespace()));
+		
 		return model;
 	}
 
@@ -212,7 +216,7 @@ public class SchemaMapper {
 		return mapToSchemaDTO(PID, model, false, userMapper);
 	}
 	
-	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model) {
+	public SchemaInfoDTO mapToFrontendSchemaDTO(String PID, Model model) {
 		var schemaInfoDTO = new SchemaInfoDTO();
 		schemaInfoDTO.setPID(PID);
 
@@ -224,6 +228,9 @@ public class SchemaMapper {
 		schemaInfoDTO.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));		
 		schemaInfoDTO.setPID(PID);
 		schemaInfoDTO.setFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		
+		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
+		schemaInfoDTO.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 		
 		schemaInfoDTO.setNamespace(MapperUtils.propertyToString(modelResource, MSCR.namespace));
 		schemaInfoDTO.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
@@ -269,12 +276,21 @@ public class SchemaMapper {
 			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
 		});
 		schemaInfoDTO.setFileMetadata(fileMetadatas);
-
-		schemaInfoDTO.setPID(PID);
+		
 		schemaInfoDTO.setFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
 		
 		schemaInfoDTO.setNamespace(MapperUtils.propertyToString(modelResource, MSCR.namespace));
 		schemaInfoDTO.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
+		
+		schemaInfoDTO.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
+		
+		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
+		schemaInfoDTO.setState(state);
+		
+		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
+		schemaInfoDTO.setVisibility(visibility);
+		
+		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
 		
 		if(modelResource.hasProperty(MSCR.PROV_wasRevisionOf)) {
 			schemaInfoDTO.setRevisionOf(MapperUtils.propertyToString(modelResource, MSCR.PROV_wasRevisionOf));
@@ -282,7 +298,6 @@ public class SchemaMapper {
 		if(modelResource.hasProperty(MSCR.hasRevision)) {
 			schemaInfoDTO.setHasRevisions(MapperUtils.arrayPropertyToList(modelResource, MSCR.hasRevision));
 		}
-		schemaInfoDTO.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
 		
 		if(includeVersionData) {
 			// query for revisions and variants here		
@@ -314,14 +329,6 @@ public class SchemaMapper {
 			schemaInfoDTO.setVariants2(v2);
 		
 		}
-		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
-		schemaInfoDTO.setState(state);
-		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
-		schemaInfoDTO.setVisibility(visibility);
-		
-		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
-		
-
 		return schemaInfoDTO;
 	}
 	
@@ -377,15 +384,17 @@ public class SchemaMapper {
         indexModel.setOwner(MapperUtils.arrayPropertyToList(resource, MSCR.owner));
 		indexModel.setOrganizations(MapperUtils.mapToListOrganizations(contributors, coreRepository.getOrganizations()));
         
-        
-        
         var isPartOf = MapperUtils.arrayPropertyToList(resource, DCTerms.isPartOf);
         var serviceCategories = coreRepository.getServiceCategories();
         var groups = isPartOf.stream().map(serviceCat -> MapperUtils.propertyToString(serviceCategories.getResource(serviceCat), SKOS.notation)).collect(Collectors.toList());
         indexModel.setIsPartOf(groups);
         indexModel.setLanguage(MapperUtils.arrayPropertyToList(resource, DCTerms.language));
 
+        indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
+        indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
         indexModel.setFormat(MapperUtils.propertyToString(resource, MSCR.format));
+        
+        
         indexModel.setAggregationKey(MapperUtils.propertyToString(resource, MSCR.aggregationKey));
         indexModel.setRevisionOf(MapperUtils.propertyToString(resource, MSCR.PROV_wasRevisionOf));
         indexModel.setHasRevision(MapperUtils.propertyToString(resource, MSCR.hasRevision));
@@ -405,10 +414,9 @@ public class SchemaMapper {
     		indexModel.setRevisions(orderedRevs); 
     		indexModel.setNumberOfRevisions(orderedRevs.size());	
         }
-        indexModel.setState(MSCRState.valueOf(resource.getProperty(MSCR.state).getString()));
-        indexModel.setVisibility(MSCRVisibility.valueOf(resource.getProperty(MSCR.visibility).getString()));
-        indexModel.setNamespace(MapperUtils.propertyToString(resource, MSCR.namespace));
         indexModel.setVersionLabel(resource.getProperty(MSCR.versionLabel).getString());
+
+        indexModel.setNamespace(MapperUtils.propertyToString(resource, MSCR.namespace));
 
         return indexModel;
     }     

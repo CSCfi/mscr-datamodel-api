@@ -5,8 +5,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -14,6 +17,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,14 +30,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
+import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
@@ -56,7 +63,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("v2")
 @Tag(name="Crosswalk")
 @Validated
-public class Crosswalk {
+public class Crosswalk extends BaseMSCRController {
 	private static final Logger logger = LoggerFactory.getLogger(Crosswalk.class);
 
     private final AuthorizationManager authorizationManager;
@@ -89,28 +96,76 @@ public class Crosswalk {
 		this.groupManagementService = groupManagementService;
 	}
 	
-	private CrosswalkInfoDTO createCrosswalkMetadata(CrosswalkDTO dto) {
-		check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));		
+	private CrosswalkInfoDTO getCrosswalkDTO(String pid, boolean includeVersionInfo) {
+        var model = jenaService.getCrosswalk(pid);
+        if(model == null){
+            throw new ResourceNotFoundException(pid);
+        }
+        var hasRightsToModel = authorizationManager.hasRightToModel(pid, model);
+        
+        check(hasRightsToModel);
+        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+        return mapper.mapToCrosswalkDTO(pid, model, includeVersionInfo, userMapper);
+	}	
+	
+	private CrosswalkInfoDTO createCrosswalkMetadata(CrosswalkDTO dto, String aggregationKey, String target) {
+		if(!dto.getOrganizations().isEmpty()) {
+			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
+		}
+				
 		final String PID = PIDService.mint(PIDType.HANDLE);
 
-		Model jenaModel = mapper.mapToJenaModel(PID, dto, userProvider.getUser());
+		Model jenaModel = mapper.mapToJenaModel(PID, dto, target, aggregationKey, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
+		
+		// handle possible versioning data
+		var crosswalkResource = jenaModel.createResource(PID);
+		if(jenaModel.contains(crosswalkResource, MSCR.PROV_wasRevisionOf)) {			
+			Model prevVersionModel = jenaService.getCrosswalk(target);
+			Resource prevVersionResource = prevVersionModel.getResource(target);
+			prevVersionResource.addProperty(MSCR.hasRevision, crosswalkResource);
+			jenaService.updateCrosswalk(target, prevVersionModel);			
+		}
 		
 		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
         openSearchIndexer.createCrosswalkToIndex(indexModel);
 
-        var userMapper = groupManagementService.mapUser();
-		
-		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), userMapper);
+        var userMapper = groupManagementService.mapUser();		
+		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
 	}
 	
+	private CrosswalkDTO mergeMetadata(CrosswalkInfoDTO prev, CrosswalkDTO input, boolean isRevision) {
+		if(input == null) {
+			// make a copy of the prev version's metadata and return it.
+			return mapper.mapToCrosswalkDTO(prev);
+		}
+		CrosswalkDTO s = new CrosswalkDTO();
+		// in case of revision the following data cannot be overridden
+		// - organization
+		s.setStatus(input.getStatus() != null ? input.getStatus() : Status.DRAFT);
+		s.setState(input.getState() != null ? input.getState() : MSCRState.DRAFT);
+		s.setLabel(!input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
+		s.setDescription(!input.getDescription().isEmpty() ? input.getDescription() : prev.getDescription());
+		s.setLanguages(!input.getLanguages().isEmpty() ? input.getLanguages() : prev.getLanguages());
+		if(isRevision || input.getOrganizations().isEmpty()) {
+			s.setOrganizations(prev.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
+		}	
+		else {
+			s.setOrganizations(input.getOrganizations());			
+		}	
+		s.setVersionLabel(input.getVersionLabel() != null ? input.getVersionLabel() : "");
+		s.setFormat(input.getFormat() != null ? input.getFormat() : prev.getFormat());
+		s.setSourceSchema(input.getSourceSchema() != null ? input.getSourceSchema() : prev.getSourceSchema());
+		s.setTargetSchema(input.getTargetSchema() != null ? input.getTargetSchema() : prev.getTargetSchema());
+		return s;
+		
+	}	
 	private CrosswalkInfoDTO addFileToCrosswalk(String pid, String contentType, MultipartFile file) {
 		Model metadataModel = jenaService.getCrosswalk(pid);
-		var hasRightsToModel = authorizationManager.hasRightToModel(pid, metadataModel);
-		check(hasRightsToModel);
-        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+        var userMapper = groupManagementService.mapUser();
 
-		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel, userMapper);
+		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel, false, userMapper);
 		
 		try {
 			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT).contains(dto.getFormat())) {
@@ -127,13 +182,28 @@ public class Crosswalk {
 		return mapper.mapToCrosswalkDTO(pid, metadataModel, userMapper);
 	}
 	
-	@Operation(summary = "Create crosswalk")
+	@Operation(summary = "Create crosswalk metadata record.")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public CrosswalkInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody CrosswalkDTO dto) {
+	public CrosswalkInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody(required = false) CrosswalkDTO dto, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
 		logger.info("Create Crosswalk {}", dto);
-		return createCrosswalkMetadata(dto);
+		validateActionParams(dto, action, target); 
+		String aggregationKey = null;
+		if(action != null) {			
+			CrosswalkInfoDTO prev = getCrosswalkDTO(target, true);
+			dto = mergeMetadata(prev, dto, action == CONTENT_ACTION.revisionOf);			
+			if(action == CONTENT_ACTION.revisionOf) {
+				// revision must be made from the latest version
+				if(prev.getHasRevisions() != null && !prev.getHasRevisions().isEmpty()) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
+				}
+				aggregationKey = prev.getAggregationKey();
+				
+			}
+		}
+		
+		return createCrosswalkMetadata(dto, aggregationKey, target);
 	}
 	
 	
@@ -143,6 +213,14 @@ public class Crosswalk {
 	@PutMapping(path = "/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO uploadSCrosswalkFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
 			@RequestParam("file") MultipartFile file) throws Exception {
+		// check for auth here because addFileToSchema is not doing it
+		var model = jenaService.getSchema(pid);
+		CrosswalkInfoDTO crosswalkDTO = mapper.mapToFrontendCrosswalkDTO(pid, model);
+		if(!crosswalkDTO.getOrganizations().isEmpty()) {
+			Collection<UUID> orgs = crosswalkDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
+			check(authorizationManager.hasRightToAnyOrganization(orgs));	
+		}		
+		
 		return addFileToCrosswalk(pid, contentType, file);
 		
 	}
@@ -152,9 +230,23 @@ public class Crosswalk {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO createSchemaFull(@ValidCrosswalk @RequestParam("metadata") CrosswalkDTO dto,
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
 		logger.info("Create Crosswalk {}", dto);
-		CrosswalkInfoDTO infoDto = createCrosswalkMetadata(dto);
+		validateActionParams(dto, action, target); 
+		String aggregationKey = null;
+		if(action != null) {			
+			CrosswalkInfoDTO prev = getCrosswalkDTO(target, true);
+			dto = mergeMetadata(prev, dto, action == CONTENT_ACTION.revisionOf);			
+			if(action == CONTENT_ACTION.revisionOf) {
+				// revision must be made from the latest version
+				if(prev.getHasRevisions() != null && !prev.getHasRevisions().isEmpty()) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
+				}
+				aggregationKey = prev.getAggregationKey();
+				
+			}
+		}		
+		CrosswalkInfoDTO infoDto = createCrosswalkMetadata(dto, aggregationKey, target);
 		return addFileToCrosswalk(infoDto.getPID(), file.getContentType(), file);
 		
 	}	
@@ -187,12 +279,12 @@ public class Crosswalk {
     @Operation(summary = "Get a crosswalk metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE)
-    public CrosswalkInfoDTO getCrosswalkMetadata(@PathVariable String pid){
+    public CrosswalkInfoDTO getCrosswalkMetadata(@PathVariable String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
     	var jenaModel = jenaService.getCrosswalk(pid);
 		var hasRightsToModel = authorizationManager.hasRightToModel(pid, jenaModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 
-    	return mapper.mapToCrosswalkDTO(pid, jenaModel, userMapper);
+    	return mapper.mapToCrosswalkDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper);
     }
     
     @Operation(summary = "Get original file version of the crosswalk (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
@@ -200,15 +292,7 @@ public class Crosswalk {
     @GetMapping(path = "/crosswalk/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable String pid) {
     	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
-    	if(files.size() == 1) {
-    		StoredFile file = files.get(0);
-			return ResponseEntity.ok()
-					.contentType(org.springframework.http.MediaType.parseMediaTypes(file.contentType()).get(0))
-					.body(file.data());					
-    	}
-    	else {
-    		return null;
-    	}
+    	return handleFileDownload(files);
 	}
     
 	@Operation(summary = "Create a mapping")
@@ -221,7 +305,6 @@ public class Crosswalk {
         if(crosswalkModel == null){
             throw new ResourceNotFoundException(pid);
         }
-
         check(authorizationManager.hasRightToModel(pid, crosswalkModel));
         
 		final String mappingPID = PIDService.mintPartIdentifier(pid);
@@ -259,6 +342,7 @@ public class Crosswalk {
         if(crosswalkModel == null){
             throw new ResourceNotFoundException(pid);
         }
+        check(authorizationManager.hasRightToModel(pid, crosswalkModel));
         crosswalkModel.remove(crosswalkModel.getResource(pid), MSCR.mappings, crosswalkModel.getResource(mappingPID));
 		jenaService.deleteFromCrosswalk(mappingPID);		
 				

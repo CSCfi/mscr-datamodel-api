@@ -220,7 +220,7 @@ public class FrontendController {
     @GetMapping(value="/schema/{pid}", produces = APPLICATION_JSON_VALUE)
     public CrosswalkEditorSchemaDTO getSchema(@PathVariable String pid) {   
 		Model model = jenaService.getSchema(pid);
-		SchemaInfoDTO metadata = schemaMapper.mapToSchemaDTO(pid, model);
+		SchemaInfoDTO metadata = schemaMapper.mapToFrontendSchemaDTO(pid, model);
 		String contentString = null;
 		if(metadata.getFormat() == SchemaFormat.SKOSRDF) {
 			try {

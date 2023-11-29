@@ -104,6 +104,12 @@ public class JenaService {
     	schemaWrite.put(graphName, model);
     	
     }
+    
+    public void updateCrosswalk(String graphName, Model model) {
+    	crosswalkWrite.delete(graphName);
+    	crosswalkWrite.put(graphName, model);
+    	
+    }    
 
 	public Model getSchema(String graph) {
         logger.debug("Getting schema {}", graph);
@@ -133,6 +139,17 @@ public class JenaService {
             throw new JenaQueryException();
         }
     }
+    
+    public boolean doesCrosswalkExist(String graph){
+        var askBuilder = new AskBuilder()
+                .addGraph(NodeFactory.createURI(graph), "?s", "?p", "?o");
+        try {
+            return crosswalkSparql.queryAsk(askBuilder.build());
+        }catch(HttpException ex){
+            throw new JenaQueryException();
+        }
+    }
+    
 
 	public void putToCrosswalk(String graph, Model model) {
 		crosswalkWrite.put(graph, model);

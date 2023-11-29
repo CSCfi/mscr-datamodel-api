@@ -67,11 +67,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("v2")
 @Tag(name = "Schema")
 @Validated
-public class Schema {
+public class Schema extends BaseMSCRController {
 	
-	public enum CreateActions {
-		copyOf, revisionOf
-	}
 
 	private static final Logger logger = LoggerFactory.getLogger(Schema.class);
 
@@ -205,7 +202,7 @@ public class Schema {
 
 	
 
-	private void validateActionParams(SchemaDTO dto, CreateActions action, String target) {
+	private void validateActionParams(SchemaDTO dto, CONTENT_ACTION action, String target) {
 		if(dto == null && action == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body must present if no action is provided.");
 		}
@@ -221,13 +218,13 @@ public class Schema {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {
+	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
 		validateActionParams(schemaDTO, action, target); 
 		String aggregationKey = null;
 		if(action != null) {			
 			SchemaInfoDTO prevSchema = getSchemaDTO(target, true);
-			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CreateActions.revisionOf);			
-			if(action == CreateActions.revisionOf) {
+			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CONTENT_ACTION.revisionOf);			
+			if(action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
 				if(prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
@@ -271,7 +268,7 @@ public class Schema {
 			@RequestParam("file") MultipartFile file) throws Exception {
 		// check for auth here because addFileToSchema is not doing it
 		var model = jenaService.getSchema(pid);
-		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model);
+		SchemaInfoDTO schemaDTO = mapper.mapToFrontendSchemaDTO(pid, model);
 		if(!schemaDTO.getOrganizations().isEmpty()) {
 			Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));	
@@ -284,7 +281,7 @@ public class Schema {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO createSchemaFull(@ValidSchema @RequestParam("metadata") SchemaDTO schemaDTO,
-			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CreateActions action, @RequestParam(name = "target", required = false) String target) {		
+			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		return addFileToSchema(dto.getPID(), file.getContentType(), file);						
 	}
@@ -333,38 +330,8 @@ public class Schema {
     @GetMapping(path = "/schema/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable("pid") String pid) throws IOException {
     	List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
-    	
-    	if (files.isEmpty()) {
-    		return ResponseEntity.notFound().build();   				
-    	}
-    	
-    	if (files.size() == 1) {
-    		StoredFile file = files.get(0);
-    		return ResponseEntity.ok()
-    				.contentType(MediaType.parseMediaTypes(file.contentType()).get(0))
-    				.body(file.data());		
-    	}
-    	else {
-    		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    		ZipOutputStream zipOut = new ZipOutputStream(baos);
+    	return handleFileDownload(files);
 
-    		for (StoredFile file : files) {
-    			ZipEntry zipEntry = new ZipEntry(file.fileID() + MimeTypes.getExtension(file.contentType()));
-    			zipOut.putNextEntry(zipEntry);
-    			zipOut.write(file.data(), 0, file.data().length);
-    		}
-      
-    		zipOut.close();           
-    		//baos.close();               
-    		
-    		byte [] zip = baos.toByteArray();    
-    				  
-    		return ResponseEntity.ok()
-    				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip")
-    				.contentType(MediaType.parseMediaType("application/zip"))
-    				.contentLength(zip.length)
-    				.body(zip); 										
-    	}
 	}
 
 	@Operation(summary = "Get SHACL version of the schema")
