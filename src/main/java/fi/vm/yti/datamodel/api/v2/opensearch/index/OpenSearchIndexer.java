@@ -294,7 +294,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, OWL.versionInfo, "?versionInfo");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
-        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.isPartOf, "?isPartOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
@@ -376,7 +376,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, OWL.versionInfo, "?versionInfo");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
-        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceSchema, "?sourceSchema");
