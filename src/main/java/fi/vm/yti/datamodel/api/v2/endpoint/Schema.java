@@ -112,12 +112,12 @@ public class Schema extends BaseMSCRController {
 	}
 	
 	
-	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file) {
+	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file, boolean isFull) {
 		Model metadataModel = jenaService.getSchema(pid);		
         var userMapper = groupManagementService.mapUser();
 
 		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
-		if(schemaDTO.getState() != MSCRState.DRAFT) {
+		if(!isFull && schemaDTO.getState() != MSCRState.DRAFT) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
 		}
 		try {
@@ -273,7 +273,7 @@ public class Schema extends BaseMSCRController {
 			Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));	
 		}		
-		return addFileToSchema(pid, contentType, file);
+		return addFileToSchema(pid, contentType, file, false);
 	}
 	
 	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
@@ -283,7 +283,7 @@ public class Schema extends BaseMSCRController {
 	public SchemaInfoDTO createSchemaFull(@ValidSchema @RequestParam("metadata") SchemaDTO schemaDTO,
 			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
-		return addFileToSchema(dto.getPID(), file.getContentType(), file);						
+		return addFileToSchema(dto.getPID(), file.getContentType(), file, true);						
 	}
   
     @Operation(summary = "Modify schema")
