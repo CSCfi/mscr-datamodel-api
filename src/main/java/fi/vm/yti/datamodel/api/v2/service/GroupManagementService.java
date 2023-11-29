@@ -4,23 +4,28 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fi.vm.yti.datamodel.api.v2.dto.GroupManagementOrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.GroupManagementUserDTO;
+import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
+import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.security.YtiUser;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
-import java.util.UUID;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import static fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper.mapGroupManagementOrganizationToModel;
+import static fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper.mapOrganizationsToModel;
 
 @Service
 public class GroupManagementService {
@@ -33,7 +38,7 @@ public class GroupManagementService {
     @Value("${fake.login.allowed:false}")
     private boolean fakeLoginAllowed;
 
-    Cache<String, YtiUser> userCache;
+    private final Cache<String, GroupManagementUserDTO> userCache;
 
     public GroupManagementService(
             @Qualifier("groupManagementClient") WebClient webClient,
@@ -44,30 +49,93 @@ public class GroupManagementService {
     }
 
     public void initOrganizations() {
+        var organizations = webClient.get().uri(builder -> builder
+                        .path("/organizations")
+                        .queryParam("onlyValid", "true")
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
+                })
+                .block();
+        if(organizations == null || organizations.isEmpty()){
+            throw new GroupManagementException("No organizations found, is group management service down?");
+        }
 
-        try {
-            var organizations = webClient.get().uri(builder -> builder
-                            .path("/organizations")
-                            .queryParam("onlyValid", "true")
-                            .build())
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
-                    })
-                    .block();
+        var model = ModelFactory.createDefaultModel();
+        mapOrganizationsToModel(organizations, model);
+        coreRepository.put(ModelConstants.ORGANIZATION_GRAPH, model);
+        LOG.info("Initialized organizations with {} organizations", organizations.size());
+    }
 
-            var model = mapGroupManagementOrganizationToModel(organizations);
+    @Scheduled(cron = "0 */30 * * * *")
+    public void updateOrganizations() {
+        LOG.info("Updating organizations cache");
+        var organizations = webClient.get().uri(builder -> builder
+                        .path("/organizations")
+                        .queryParam("onlyValid", "true")
+                        .build())
+                .ifModifiedSince(ZonedDateTime.now().minusMinutes(30))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
+                })
+                .block();
+
+        if (organizations != null && !organizations.isEmpty()) {
+            var model = coreRepository.fetch(ModelConstants.ORGANIZATION_GRAPH);
+            mapOrganizationsToModel(organizations, model);
             coreRepository.put(ModelConstants.ORGANIZATION_GRAPH, model);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            coreRepository.invalidateOrganizationCache();
+            LOG.info("Updated {} organizations to fuseki", organizations.size());
+        }else {
+            LOG.info("No updates to organizations found");
         }
     }
 
+    public void initUsers() {
+        LOG.info("Initializing user cache");
+        var users = webClient.get()
+                .uri(builder -> builder
+                        .path("/users")
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<GroupManagementUserDTO>>() {
+                })
+                .block();
+
+        if(users == null || users.isEmpty()){
+            throw new GroupManagementException("No users found, is group service down?");
+        }
+
+        var map = users.stream().collect(Collectors.toMap(user -> user.getId().toString(), user -> user));
+        userCache.invalidateAll();
+        userCache.putAll(map);
+        LOG.info("Initialized user cache with {} users", map.size());
+    }
+
+    @Scheduled(cron = "0 */30 * * * *")
     public void updateUsers() {
-        // TODO:
+        LOG.info("Updating user cache");
+        var users = webClient.get()
+                .uri(builder -> builder
+                    .path("/users")
+                .build())
+                .ifModifiedSince(ZonedDateTime.now().minusMinutes(30))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<GroupManagementUserDTO>>() {
+                })
+                .block();
+
+        if(users != null && !users.isEmpty()){
+            var oldSize = userCache.size();
+            var map = users.stream().collect(Collectors.toMap(user -> user.getId().toString(), user -> user));
+            userCache.putAll(map);
+            LOG.info("Updated {} users to cache, old count: {}, new count: {}", map.size(), oldSize, userCache.size());
+        }else{
+            LOG.info("No modifications to users found");
+        }
     }
 
     public Consumer<ResourceCommonDTO> mapUser() {
-        // TODO: fetch users and set them to cache
         return (var dto) -> {
             if (dto.getCreator().getId() == null || dto.getModifier().getId() == null) {
                 return;
@@ -89,7 +157,17 @@ public class GroupManagementService {
     }
 
     public List<UUID> getChildOrganizations(UUID orgId) {
-        return List.of();
+        var orgUrn = ModelConstants.URN_UUID + orgId.toString();
+        if(!coreRepository.resourceExistsInGraph(ModelConstants.ORGANIZATION_GRAPH, orgUrn)){
+            LOG.warn("Organization not found {}", orgUrn);
+            return new ArrayList<>();
+        }
+        var model = coreRepository.getOrganizations();
+
+        var resource = model.getResource(orgUrn);
+
+        return MapperUtils.arrayPropertyToList(resource, Iow.parentOrganization).stream()
+                .map(MapperUtils::getUUID).toList();
     }
 
     public List<GroupManagementUserDTO> getFakeableUsers() {
@@ -109,5 +187,26 @@ public class GroupManagementService {
             }
         }
         return List.of();
+    }
+
+    public Set<UUID> getOrganizationsForUser(YtiUser user) {
+        final var rolesInOrganizations = user.getRolesInOrganizations();
+
+        var orgIds = new HashSet<>(rolesInOrganizations.keySet());
+
+        // show child organization's incomplete content for main organization users
+        var childOrganizationIds = orgIds.stream()
+                .map(this::getChildOrganizations)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+
+        orgIds.addAll(childOrganizationIds);
+        return orgIds;
+    }
+
+    private static final class GroupManagementException extends RuntimeException{
+        private GroupManagementException(String message) {
+            super(message);
+        }
     }
 }

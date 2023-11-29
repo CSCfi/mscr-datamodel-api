@@ -91,4 +91,8 @@ public class CoreRepository extends BaseRepository{
         put(MSCR.FUNCTIONS_GRAPH, model);
 		
 	}
+	
+    public void invalidateOrganizationCache(){
+        modelCache.invalidate("organizations");
+    }
 }
