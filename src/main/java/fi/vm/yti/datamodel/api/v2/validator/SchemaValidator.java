@@ -33,6 +33,7 @@ public class SchemaValidator extends BaseValidator implements
         checkNamespace(context, dto);
         checkState(context, dto.getState());
         checkVisibility(context, dto.getVisibility(), dto.getState());
+        checkVersionLabel(context, dto.getVersionLabel());
         
         return !isConstraintViolationAdded();
     }

@@ -136,6 +136,12 @@ public abstract class BaseValidator implements Annotation{
         }
 
     }
+    
+    public void checkVersionLabel(ConstraintValidatorContext context, String versionLabel){
+        if(versionLabel == null){
+            addConstraintViolation(context, ValidationConstants.MSG_VALUE_MISSING, "versionLAbel");
+        }
+    }    
 }
 
 

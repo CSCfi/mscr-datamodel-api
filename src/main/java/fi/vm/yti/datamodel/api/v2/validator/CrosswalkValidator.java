@@ -32,6 +32,7 @@ public class CrosswalkValidator extends BaseValidator implements
         
         checkState(context, dto.getState());
         checkVisibility(context, dto.getVisibility(), dto.getState());
+        checkVersionLabel(context, dto.getVersionLabel());
         
         return !isConstraintViolationAdded();
     }
