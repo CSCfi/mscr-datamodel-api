@@ -6,5 +6,6 @@ public enum SchemaFormat {
 	JSONSCHEMA,
 	SHACL,
 	OWL,
-	SKOSRDF
+	SKOSRDF,
+	PDF
 }

@@ -13,6 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,9 +144,11 @@ public class Schema extends BaseMSCRController {
 				
 			}else if(schemaDTO.getFormat() == SchemaFormat.SKOSRDF) {
 				// TODO: validate skos file
-				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);
-				
-				
+				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);				
+			}else if(schemaDTO.getFormat() == SchemaFormat.PDF) {
+				// do nothing
+				schemaModel = ModelFactory.createDefaultModel();
+							
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));

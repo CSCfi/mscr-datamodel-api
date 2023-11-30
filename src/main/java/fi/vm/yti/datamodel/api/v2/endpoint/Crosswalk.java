@@ -161,14 +161,15 @@ public class Crosswalk extends BaseMSCRController {
 		return s;
 		
 	}	
-	private CrosswalkInfoDTO addFileToCrosswalk(String pid, String contentType, MultipartFile file) {
+	private CrosswalkInfoDTO addFileToCrosswalk(String pid, MultipartFile file) {
+		String contentType = file.getContentType();
 		Model metadataModel = jenaService.getCrosswalk(pid);
         var userMapper = groupManagementService.mapUser();
 
 		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel, false, userMapper);
 		
 		try {
-			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT).contains(dto.getFormat())) {
+			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(dto.getFormat())) {
 				storageService.storeCrosswalkFile(pid, contentType, file.getBytes());
 			}
 			else {
@@ -221,7 +222,7 @@ public class Crosswalk extends BaseMSCRController {
 			check(authorizationManager.hasRightToAnyOrganization(orgs));	
 		}		
 		
-		return addFileToCrosswalk(pid, contentType, file);
+		return addFileToCrosswalk(pid, file);
 		
 	}
 	
@@ -247,7 +248,7 @@ public class Crosswalk extends BaseMSCRController {
 			}
 		}		
 		CrosswalkInfoDTO infoDto = createCrosswalkMetadata(dto, aggregationKey, target);
-		return addFileToCrosswalk(infoDto.getPID(), file.getContentType(), file);
+		return addFileToCrosswalk(infoDto.getPID(), file);
 		
 	}	
 	
