@@ -302,6 +302,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.versionLabel, "?versionLabel");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.namespace, "?namespace");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.aggregationKey, "?aggregationKey");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.PROV_wasRevisionOf, "?revisionOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.hasRevision, "?hasRevision");
@@ -384,6 +385,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.owner, "?owner");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.versionLabel, "?versionLabel");
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
@@ -531,6 +533,7 @@ public class OpenSearchIndexer {
         		Map.entry("contentModified", getDateProperty()),
         		Map.entry("format", getKeywordProperty()),
         		Map.entry("versionLabel", getKeywordProperty()),
+        		Map.entry("namespace", getKeywordProperty()),
         		Map.entry("aggregationKey", getKeywordProperty()),
         		Map.entry("revisionOf", getKeywordProperty()),
         		Map.entry("hasRevisions", getKeywordProperty()),
