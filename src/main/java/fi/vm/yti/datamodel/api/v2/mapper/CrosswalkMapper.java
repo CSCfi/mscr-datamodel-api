@@ -318,6 +318,9 @@ public class CrosswalkMapper {
 			modelResource.addProperty(MSCR.owner, user.getId().toString());
 		}        
 
+        modelResource.removeAll(MSCR.versionLabel);
+		modelResource.addProperty(MSCR.versionLabel, dto.getVersionLabel());
+
         return model;
 		
 

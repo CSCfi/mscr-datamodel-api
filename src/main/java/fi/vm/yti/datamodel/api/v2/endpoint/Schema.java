@@ -113,7 +113,8 @@ public class Schema extends BaseMSCRController {
 	}
 	
 	
-	private SchemaInfoDTO addFileToSchema(String pid, String contentType, MultipartFile file, boolean isFull) {
+	private SchemaInfoDTO addFileToSchema(String pid, MultipartFile file, boolean isFull) {
+		String contentType = file.getContentType();
 		Model metadataModel = jenaService.getSchema(pid);		
         var userMapper = groupManagementService.mapUser();
 
@@ -267,8 +268,7 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
-			@RequestParam("file") MultipartFile file) throws Exception {
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws Exception {
 		// check for auth here because addFileToSchema is not doing it
 		var model = jenaService.getSchema(pid);
 		SchemaInfoDTO schemaDTO = mapper.mapToFrontendSchemaDTO(pid, model);
@@ -276,7 +276,7 @@ public class Schema extends BaseMSCRController {
 			Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));	
 		}		
-		return addFileToSchema(pid, contentType, file, false);
+		return addFileToSchema(pid, file, false);
 	}
 	
 	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
@@ -286,14 +286,14 @@ public class Schema extends BaseMSCRController {
 	public SchemaInfoDTO createSchemaFull(@ValidSchema @RequestParam("metadata") SchemaDTO schemaDTO,
 			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
-		return addFileToSchema(dto.getPID(), file.getContentType(), file, true);						
+		return addFileToSchema(dto.getPID(), file, true);						
 	}
   
     @Operation(summary = "Modify schema")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
     @PostMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public void updateModel(@ValidSchema @RequestBody SchemaDTO schemaDTO,
+    public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO,
                             @PathVariable String pid) {
         logger.info("Updating schema {}", schemaDTO);
 
@@ -301,9 +301,10 @@ public class Schema extends BaseMSCRController {
         if(oldModel == null){
             throw new ResourceNotFoundException(pid);
         }
-
-        check(authorizationManager.hasRightToModel(pid, oldModel));
-
+        check(authorizationManager.hasRightToModel(pid, oldModel));        
+        var userMapper = groupManagementService.mapUser();
+        SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, userMapper);        
+        schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		        
         var jenaModel = mapper.mapToUpdateJenaModel(pid, schemaDTO, oldModel, userProvider.getUser());
 
         jenaService.putToSchema(pid, jenaModel);
@@ -311,6 +312,7 @@ public class Schema extends BaseMSCRController {
 
         var indexModel = mapper.mapToIndexModel(pid, jenaModel);
         openSearchIndexer.updateSchemaToIndex(indexModel);
+        return mapper.mapToSchemaDTO(pid, jenaModel, false, userMapper);
     }
 
     

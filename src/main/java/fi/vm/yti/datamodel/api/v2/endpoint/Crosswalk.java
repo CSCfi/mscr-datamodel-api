@@ -40,6 +40,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
@@ -257,7 +258,7 @@ public class Crosswalk extends BaseMSCRController {
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public void updateModel(@ValidCrosswalk @RequestBody CrosswalkDTO dto,
+    public CrosswalkInfoDTO updateModel(@RequestBody CrosswalkDTO dto,
                             @PathVariable String pid) {
         logger.info("Updating crosswalk {}", dto);
 
@@ -267,6 +268,9 @@ public class Crosswalk extends BaseMSCRController {
         }
 
         check(authorizationManager.hasRightToModel(pid, oldModel));
+        var userMapper = groupManagementService.mapUser();
+        CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
+        dto = mergeMetadata(prev, dto, false);		        
 
         var jenaModel = mapper.mapToUpdateJenaModel(pid, dto, oldModel, userProvider.getUser());
 
@@ -275,6 +279,8 @@ public class Crosswalk extends BaseMSCRController {
 
         var indexModel = mapper.mapToIndexModel(pid, jenaModel);
         openSearchIndexer.updateCrosswalkToIndex(indexModel);
+        CrosswalkInfoDTO updated = mapper.mapToCrosswalkDTO(pid, jenaModel, false, userMapper);
+        return updated;
     }        
 	
     @Operation(summary = "Get a crosswalk metadata")
