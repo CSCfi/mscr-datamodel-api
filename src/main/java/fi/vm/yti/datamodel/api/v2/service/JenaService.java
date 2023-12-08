@@ -160,6 +160,10 @@ public class JenaService {
 		crosswalkWrite.delete(graph);
 	}
 	
+	public void deleteFromSchema(String graph) {
+		schemaWrite.delete(graph);
+	}	
+	
 	public Model getCrosswalk(String graph) {
         logger.debug("Getting crosswalk {}", graph);
         try {

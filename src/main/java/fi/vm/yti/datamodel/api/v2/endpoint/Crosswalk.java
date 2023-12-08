@@ -110,12 +110,12 @@ public class Crosswalk extends BaseMSCRController {
         return mapper.mapToCrosswalkDTO(pid, model, includeVersionInfo, userMapper);
 	}	
 	
-	private CrosswalkInfoDTO createCrosswalkMetadata(CrosswalkDTO dto, String aggregationKey, String target) {
+	private void createCrosswalkMetadata(final String PID, CrosswalkDTO dto, String aggregationKey, String target) {
 		if(!dto.getOrganizations().isEmpty()) {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
 				
-		final String PID = PIDService.mint(PIDType.HANDLE);
+		
 
 		Model jenaModel = mapper.mapToJenaModel(PID, dto, target, aggregationKey, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
@@ -131,9 +131,6 @@ public class Crosswalk extends BaseMSCRController {
 		
 		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
         openSearchIndexer.createCrosswalkToIndex(indexModel);
-
-        var userMapper = groupManagementService.mapUser();		
-		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
 	}
 	
 	private CrosswalkDTO mergeMetadata(CrosswalkInfoDTO prev, CrosswalkDTO input, boolean isRevision) {
@@ -162,15 +159,10 @@ public class Crosswalk extends BaseMSCRController {
 		return s;
 		
 	}	
-	private CrosswalkInfoDTO addFileToCrosswalk(String pid, MultipartFile file) {
-		String contentType = file.getContentType();
-		Model metadataModel = jenaService.getCrosswalk(pid);
-        var userMapper = groupManagementService.mapUser();
-
-		CrosswalkInfoDTO dto = mapper.mapToCrosswalkDTO(pid, metadataModel, false, userMapper);
-		
+	private void addFileToCrosswalk(final String pid, CrosswalkFormat format, MultipartFile file) {
+		final String contentType = file.getContentType();		 
 		try {
-			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(dto.getFormat())) {
+			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
 				storageService.storeCrosswalkFile(pid, contentType, file.getBytes());
 			}
 			else {
@@ -181,7 +173,7 @@ public class Crosswalk extends BaseMSCRController {
 		} catch (Exception ex) {
 			throw new RuntimeException("Error occured while ingesting file based crosswalk description", ex);
 		}
-		return mapper.mapToCrosswalkDTO(pid, metadataModel, userMapper);
+		
 	}
 	
 	@Operation(summary = "Create crosswalk metadata record.")
@@ -204,8 +196,22 @@ public class Crosswalk extends BaseMSCRController {
 				
 			}
 		}
-		
-		return createCrosswalkMetadata(dto, aggregationKey, target);
+		final String PID = PIDService.mint(PIDType.HANDLE);
+		try {
+			createCrosswalkMetadata(PID, dto, aggregationKey, target);
+			var userMapper = groupManagementService.mapUser();
+			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
+		}catch(Exception ex) {
+			// revert any possible changes
+			try { jenaService.deleteFromCrosswalk(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			try { openSearchIndexer.deleteCrosswalkFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			if(ex instanceof ResponseStatusException) {
+				throw ex;
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			}
+		}  
 	}
 	
 	
@@ -213,18 +219,32 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public CrosswalkInfoDTO uploadSCrosswalkFile(@PathVariable String pid, @RequestParam("contentType") String contentType,
+	public CrosswalkInfoDTO uploadCrosswalkFile(@PathVariable String pid,
 			@RequestParam("file") MultipartFile file) throws Exception {
-		// check for auth here because addFileToSchema is not doing it
-		var model = jenaService.getSchema(pid);
-		CrosswalkInfoDTO crosswalkDTO = mapper.mapToFrontendCrosswalkDTO(pid, model);
-		if(!crosswalkDTO.getOrganizations().isEmpty()) {
-			Collection<UUID> orgs = crosswalkDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
-			check(authorizationManager.hasRightToAnyOrganization(orgs));	
-		}		
 		
-		return addFileToCrosswalk(pid, file);
-		
+		try {
+			// check for auth here because addFileToSchema is not doing it
+			var model = jenaService.getCrosswalk(pid);
+			var userMapper = groupManagementService.mapUser();
+			CrosswalkInfoDTO crosswalkDTO = mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			if(!crosswalkDTO.getOrganizations().isEmpty()) {
+				Collection<UUID> orgs = crosswalkDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
+				check(authorizationManager.hasRightToAnyOrganization(orgs));	
+			}		
+			
+			addFileToCrosswalk(pid, crosswalkDTO.getFormat(), file);
+			return mapper.mapToCrosswalkDTO(pid, model, userMapper);
+		}catch(Exception ex) {
+			// revert any possible changes
+			try {storageService.deleteAllCrosswalkFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			if(ex instanceof ResponseStatusException) {
+				throw ex;
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			}
+		}
+					
 	}
 	
 	@Operation(summary = "Create crosswalk by uploading metadata and files in one multipart request")
@@ -247,9 +267,28 @@ public class Crosswalk extends BaseMSCRController {
 				aggregationKey = prev.getAggregationKey();
 				
 			}
-		}		
-		CrosswalkInfoDTO infoDto = createCrosswalkMetadata(dto, aggregationKey, target);
-		return addFileToCrosswalk(infoDto.getPID(), file);
+		}	
+		final String PID = PIDService.mint(PIDType.HANDLE);
+		try {
+			createCrosswalkMetadata(PID, dto, aggregationKey, target);
+			addFileToCrosswalk(PID, dto.getFormat(), file);
+			var userMapper = groupManagementService.mapUser();
+			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
+			
+		}catch(Exception ex) {
+			// revert any possible changes
+			try { jenaService.deleteFromCrosswalk(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			try { openSearchIndexer.deleteCrosswalkFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			try {storageService.retrieveAllSchemaFiles(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}			
+			
+			if(ex instanceof ResponseStatusException) {
+				throw ex;
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			}
+		} 
+		
 		
 	}	
 	

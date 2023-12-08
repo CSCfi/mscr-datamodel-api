@@ -20,6 +20,8 @@ public interface StorageService {
 	public record StoredFile(String contentType, byte[] data, long fileID, MSCRType type) {}
 	public record StoredFileMetadata(String contentType, int dataSize, long fileID, MSCRType type) {}
 
-  public void removeFile(long fileID);
+    public void removeFile(long fileID);
+	public void deleteAllCrosswalkFiles(String pid);
+	public void deleteAllSchemaFiles(String pid);
 
 }

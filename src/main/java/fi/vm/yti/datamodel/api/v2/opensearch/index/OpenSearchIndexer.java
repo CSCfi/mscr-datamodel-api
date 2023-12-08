@@ -251,6 +251,9 @@ public class OpenSearchIndexer {
         openSearchConnector.removeFromIndex(OPEN_SEARCH_INDEX_CROSSWALK, graph);
     }
 
+	public void deleteSchemaFromIndex(String graph) {
+		openSearchConnector.removeFromIndex(OPEN_SEARCH_INDEX_SCHEMA, graph);		
+	}
 
     /**
      * Init model index
@@ -616,5 +619,7 @@ public class OpenSearchIndexer {
         return new org.opensearch.client.opensearch._types.mapping.Property.Builder()
         		.integer(new IntegerNumberProperty.Builder().build()).build();
     }
+
+
     
 }
