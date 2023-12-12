@@ -1,0 +1,1 @@
+ALTER TABLE mscr_files ADD COLUMN filename VARCHAR(255);

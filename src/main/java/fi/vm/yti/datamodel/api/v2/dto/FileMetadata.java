@@ -4,25 +4,30 @@ public class FileMetadata {
 	private String contentType;
 	private int size;
 	private long fileID;
+	private String filename;
 	
 	
-	public FileMetadata(String contentType, int size, long fileID) {
+	public FileMetadata(String contentType, int size, long fileID, String filename) {
 		this.contentType = contentType;
 		this.size = size;
 		this.fileID = fileID;
+		this.filename = filename;
 	}
 	
 	public String getContentType() {
-		return contentType;
+		return this.contentType;
 	}
 
 	public long getFileID() {
-		return fileID;
+		return this.fileID;
 	}
 	
 	public int getSize() {
-		return size;
+		return this.size;
 	}
 	
+	public String getFilename() {
+		return this.filename;
+	}
 	
 }

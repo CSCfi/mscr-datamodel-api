@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
@@ -72,6 +73,14 @@ public abstract class BaseMSCRController {
     			return ResponseEntity.internalServerError().build();    		
     		}    		
     	}		
+	}
+	
+	protected String generateFilename(String PID, MultipartFile file) {
+		String contentType = file.getContentType();
+		if(contentType != null && !contentType.equals("") && contentType.indexOf("/") > 0) {
+			return PID + "." + contentType.substring(contentType.lastIndexOf("/") + 1);
+		}
+		return PID;
 	}
 	
 }

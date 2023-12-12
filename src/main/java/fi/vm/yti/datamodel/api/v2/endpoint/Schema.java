@@ -176,7 +176,7 @@ public class Schema extends BaseMSCRController {
 			}
 			schemaModel.add(metadataModel);
 			jenaService.updateSchema(pid, schemaModel);
-			storageService.storeSchemaFile(pid, contentType, file.getBytes());
+			storageService.storeSchemaFile(pid, contentType, file.getBytes(), generateFilename(pid, file));
 			
 
 		} catch (Exception ex) {

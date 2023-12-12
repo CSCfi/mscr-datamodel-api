@@ -206,7 +206,7 @@ public class CrosswalkMapper {
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename()));
 		});
 		dto.setFileMetadata(fileMetadatas);
 		

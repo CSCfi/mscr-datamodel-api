@@ -34,26 +34,27 @@ public class PostgresStorageService implements StorageService {
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public int storeSchemaFile(String schemaPID, String contentType, byte[] data) {
-		return storeFile(schemaPID, contentType, data, MSCRType.SCHEMA);
+	public int storeSchemaFile(String schemaPID, String contentType, byte[] data, String filename) {
+		return storeFile(schemaPID, contentType, data, MSCRType.SCHEMA, filename);
 	}
 
 	@Override
-	public int storeCrosswalkFile(String crosswalkPID, String contentType, byte[] data) {
-		return storeFile(crosswalkPID, contentType, data, MSCRType.CROSSWALK);
+	public int storeCrosswalkFile(String crosswalkPID, String contentType, byte[] data, String filename) {
+		return storeFile(crosswalkPID, contentType, data, MSCRType.CROSSWALK, filename);
 	}
 
-	private int storeFile(String pid, String contentType, byte[] data, MSCRType type) {
+	private int storeFile(String pid, String contentType, byte[] data, MSCRType type, String filename) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
 		jdbcTemplate.update(con -> {
 			PreparedStatement ps = con.prepareStatement(
-					"insert into mscr_files(pid, content_type, data, type) values(?, ?, ?, ?)",
+					"insert into mscr_files(pid, content_type, data, type, filename) values(?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, pid);
 			ps.setString(2, contentType);
 			ps.setBytes(3, data);
 			ps.setString(4, type.name());
+			ps.setString(5, filename);
 			return ps;
 		}, keyHolder);
 
@@ -67,7 +68,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data from mscr_files where pid = ? and id = ? and type = ?");
+						.prepareStatement("select content_type, data, filename from mscr_files where pid = ? and id = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setLong(2, fileID);
 				ps.setString(3, type.name());
@@ -80,7 +81,8 @@ public class PostgresStorageService implements StorageService {
 				rs.next();
 				String contentType = rs.getString(1);
 				byte[] data = rs.getBytes(2);
-				return new StoredFile(contentType, data, fileID, type);
+				String filename = rs.getString(3);
+				return new StoredFile(contentType, data, fileID, type, filename);
 			}
 		});
 	}
@@ -101,7 +103,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, data, id, filename from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setString(2, type.name());
 				return ps;
@@ -115,7 +117,8 @@ public class PostgresStorageService implements StorageService {
 					String contentType = rs.getString(1);
 					byte[] data = rs.getBytes(2);
 					long fileID = rs.getLong(3);
-					files.add(new StoredFile(contentType, data, fileID, type));
+					String filename = rs.getString(4);
+					files.add(new StoredFile(contentType, data, fileID, type, filename));
 				}
 				return files;
 			}
@@ -138,7 +141,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, length(data) as size, id from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, length(data) as size, id, filename from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setString(2, type.name());
 				return ps;
@@ -152,7 +155,8 @@ public class PostgresStorageService implements StorageService {
 					String contentType = rs.getString(1);
 					int size = rs.getInt(2);
 					long fileID = rs.getLong(3);
-					files.add(new StoredFileMetadata(contentType, size, fileID, type));
+					String filename = rs.getString(4);
+					files.add(new StoredFileMetadata(contentType, size, fileID, type, filename));
 				}
 				return files;
 			}

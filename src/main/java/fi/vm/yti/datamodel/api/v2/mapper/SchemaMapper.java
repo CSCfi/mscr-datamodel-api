@@ -273,7 +273,7 @@ public class SchemaMapper {
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID()));
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename()));
 		});
 		schemaInfoDTO.setFileMetadata(fileMetadatas);
 		
