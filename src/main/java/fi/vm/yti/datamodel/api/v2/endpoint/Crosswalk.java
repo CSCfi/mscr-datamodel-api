@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
@@ -40,8 +43,8 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
+import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
@@ -67,6 +70,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class Crosswalk extends BaseMSCRController {
 	private static final Logger logger = LoggerFactory.getLogger(Crosswalk.class);
 
+
+	
     private final AuthorizationManager authorizationManager;
     private final OpenSearchIndexer openSearchIndexer;
 	private final PIDService PIDService;
@@ -76,6 +81,7 @@ public class Crosswalk extends BaseMSCRController {
 	private final MappingMapper mappingMapper;
 	private final AuthenticatedUserProvider userProvider;
     private final GroupManagementService groupManagementService;
+
 
 	public Crosswalk(AuthorizationManager authorizationManager,
             OpenSearchIndexer openSearchIndexer,
@@ -205,7 +211,7 @@ public class Crosswalk extends BaseMSCRController {
 			// revert any possible changes
 			try { jenaService.deleteFromCrosswalk(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
 			try { openSearchIndexer.deleteCrosswalkFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if(ex instanceof ResponseStatusException) {
+			if( (ex instanceof ResponseStatusException) || (ex instanceof MappingError)) {
 				throw ex;
 			}
 			else {
@@ -236,8 +242,9 @@ public class Crosswalk extends BaseMSCRController {
 			return mapper.mapToCrosswalkDTO(pid, model, userMapper);
 		}catch(Exception ex) {
 			// revert any possible changes
+			
 			try {storageService.deleteAllCrosswalkFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if(ex instanceof ResponseStatusException) {
+			if( (ex instanceof ResponseStatusException)) {
 				throw ex;
 			}
 			else {
@@ -247,48 +254,27 @@ public class Crosswalk extends BaseMSCRController {
 					
 	}
 	
+	
 	@Operation(summary = "Create crosswalk by uploading metadata and files in one multipart request")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public CrosswalkInfoDTO createSchemaFull(@ValidCrosswalk @RequestParam("metadata") CrosswalkDTO dto,
+	public CrosswalkInfoDTO createCrosswalkFull(@RequestParam("metadata") String metadataString,
 			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
-		logger.info("Create Crosswalk {}", dto);
-		validateActionParams(dto, action, target); 
-		String aggregationKey = null;
-		if(action != null) {			
-			CrosswalkInfoDTO prev = getCrosswalkDTO(target, true);
-			dto = mergeMetadata(prev, dto, action == CONTENT_ACTION.revisionOf);			
-			if(action == CONTENT_ACTION.revisionOf) {
-				// revision must be made from the latest version
-				if(prev.getHasRevisions() != null && !prev.getHasRevisions().isEmpty()) {
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
-				}
-				aggregationKey = prev.getAggregationKey();
-				
-			}
-		}	
-		final String PID = PIDService.mint(PIDType.HANDLE);
-		try {
-			createCrosswalkMetadata(PID, dto, aggregationKey, target);
-			addFileToCrosswalk(PID, dto.getFormat(), file);
-			var userMapper = groupManagementService.mapUser();
-			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
-			
-		}catch(Exception ex) {
-			// revert any possible changes
-			try { jenaService.deleteFromCrosswalk(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			try { openSearchIndexer.deleteCrosswalkFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			try {storageService.retrieveAllSchemaFiles(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}			
-			
-			if(ex instanceof ResponseStatusException) {
-				throw ex;
-			}
-			else {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
-			}
-		} 
 		
+		ObjectMapper objMapper = new ObjectMapper();
+		CrosswalkDTO dto = null;
+		try {
+			dto = objMapper.readValue(metadataString, CrosswalkDTO.class);
+		} catch (JsonProcessingException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse CrosswalkDTO from the metadata content. " + e.getMessage(), e);
+		}
+		
+		CrosswalkInfoDTO infoDto = createCrosswalk(dto, action, target);
+		final String PID = infoDto.getPID();
+		addFileToCrosswalk(PID, dto.getFormat(), file);
+		var userMapper = groupManagementService.mapUser();
+		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
 		
 	}	
 	

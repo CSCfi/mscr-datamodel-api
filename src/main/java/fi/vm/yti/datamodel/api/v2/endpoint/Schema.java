@@ -29,7 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
@@ -39,6 +41,7 @@ import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
+import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
@@ -283,7 +286,7 @@ public class Schema extends BaseMSCRController {
 			// revert any possible changes
 			try { jenaService.deleteFromSchema(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
 			try { openSearchIndexer.deleteSchemaFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if(ex instanceof ResponseStatusException) {
+			if( (ex instanceof ResponseStatusException) || (ex instanceof MappingError)) {
 				throw ex;
 			}
 			else {
@@ -297,7 +300,7 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws Exception {
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) {
 		try {
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getSchema(pid);
@@ -315,7 +318,7 @@ public class Schema extends BaseMSCRController {
 		}catch(Exception ex) {
 			// revert any possible changes
 			try {storageService.deleteAllSchemaFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if(ex instanceof ResponseStatusException) {
+			if( (ex instanceof ResponseStatusException) || (ex instanceof MappingError)) {
 				throw ex;
 			}
 			else {
@@ -328,23 +331,26 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO createSchemaFull(@ValidSchema @RequestParam("metadata") SchemaDTO schemaDTO,
+	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
 			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
-			
-		validateFileUpload(file, schemaDTO.getFormat());
-		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);	
-		try {						
-			return addFileToSchema(dto, file, true);
+		
+		ObjectMapper objMapper = new ObjectMapper();
+		SchemaDTO schemaDTO = null;
+		try {
+			schemaDTO = objMapper.readValue(metadataString, SchemaDTO.class);
+		} catch (JsonProcessingException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse SchemaDTO from the metadata content. " + e.getMessage(), e);
+		}
+		try {
+			validateFileUpload(file, schemaDTO.getFormat());
 		}catch(Exception ex) {
-			// revert any possible changes
-			try {storageService.retrieveAllSchemaFiles(dto.getPID());}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}			
-			if(ex instanceof ResponseStatusException) {
-				throw ex;
-			}
-			else {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
-			}
-		}		
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		}
+		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
+		final String PID = dto.getPID();
+		uploadSchemaFile(PID, file);
+		var userMapper = groupManagementService.mapUser();
+		return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
 	}
   
     @Operation(summary = "Modify schema")
