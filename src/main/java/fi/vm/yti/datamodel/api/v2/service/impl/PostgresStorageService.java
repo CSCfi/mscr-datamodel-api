@@ -167,5 +167,21 @@ public class PostgresStorageService implements StorageService {
 			return ps;
 		});
 	}
+
+	@Override
+	public void deleteAllCrosswalkFiles(String pid) {
+		List<StoredFileMetadata> md = retrieveAllCrosswalkFilesMetadata(pid);
+		md.forEach(m -> {
+			removeFile(m.fileID());
+		});
+	}
+
+	@Override
+	public void deleteAllSchemaFiles(String pid) {
+		List<StoredFileMetadata> md = retrieveAllSchemaFilesMetadata(pid);
+		md.forEach(m -> {
+			removeFile(m.fileID());
+		});		
+	}
 		
 }

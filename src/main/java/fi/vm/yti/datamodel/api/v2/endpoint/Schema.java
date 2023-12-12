@@ -3,23 +3,18 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,7 +40,6 @@ import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
-import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
@@ -112,16 +106,39 @@ public class Schema extends BaseMSCRController {
 		this.groupManagementService = groupManagementService;		
 	}
 	
-	
-	private SchemaInfoDTO addFileToSchema(String pid, MultipartFile file, boolean isFull) {
-		String contentType = file.getContentType();
-		Model metadataModel = jenaService.getSchema(pid);		
-        var userMapper = groupManagementService.mapUser();
+	private void validateFileUpload(MultipartFile file, SchemaFormat format) {
+		try {
+			byte[] fileInBytes = file.getBytes();
+			
+			if (format == SchemaFormat.JSONSCHEMA) {
+				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
+				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
 
-		SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
-		if(!isFull && schemaDTO.getState() != MSCRState.DRAFT) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
-		}
+				boolean isValidJSONSchema = validationRecord.isValid();
+				List<String> validationMessages = validationRecord.validationOutput();
+
+				if (!isValidJSONSchema) {
+					String exceptionOutput = String.join("\n", validationMessages);
+					throw new Exception(exceptionOutput);
+				}
+
+			} else {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
+						format));
+			}			
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description. " + ex.getMessage(), ex);
+		}		
+		
+	}
+	
+	private SchemaInfoDTO addFileToSchema(SchemaInfoDTO schemaDTO, MultipartFile file, boolean isFull) {
+		var userMapper = groupManagementService.mapUser();
+		String contentType = file.getContentType();
+		final String pid = schemaDTO.getPID();
+		Model metadataModel = jenaService.getSchema(pid);		
 		try {
 			byte[] fileInBytes = file.getBytes();
 			Model schemaModel = null;
@@ -223,6 +240,7 @@ public class Schema extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
+		
 		validateActionParams(schemaDTO, action, target); 
 		String aggregationKey = null;
 		if(action != null) {			
@@ -243,24 +261,35 @@ public class Schema extends BaseMSCRController {
 		}
 			
 		final String PID = PIDService.mint(PIDType.HANDLE);
-
-		var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey, userProvider.getUser());
-		jenaService.putToSchema(PID, jenaModel);
-		
-		// handle possible versioning data
-		var schemaResource = jenaModel.createResource(PID);
-		if(jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {			
-			Model prevVersionModel = jenaService.getSchema(target);
-			Resource prevVersionResource = prevVersionModel.getResource(target);
-			prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
-			jenaService.updateSchema(target, prevVersionModel);
+		try {
+			var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey, userProvider.getUser());
+			jenaService.putToSchema(PID, jenaModel);
 			
-		}
-		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
-        openSearchIndexer.createSchemaToIndex(indexModel);
-        var userMapper = groupManagementService.mapUser();
-
-        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
+			// handle possible versioning data
+			var schemaResource = jenaModel.createResource(PID);
+			if(jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {			
+				Model prevVersionModel = jenaService.getSchema(target);
+				Resource prevVersionResource = prevVersionModel.getResource(target);
+				prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
+				jenaService.updateSchema(target, prevVersionModel);
+				
+			}
+			var indexModel = mapper.mapToIndexModel(PID, jenaModel);
+	        openSearchIndexer.createSchemaToIndex(indexModel);
+	        var userMapper = groupManagementService.mapUser();
+	
+	        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
+		}catch(Exception ex) {
+			// revert any possible changes
+			try { jenaService.deleteFromSchema(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			try { openSearchIndexer.deleteSchemaFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			if(ex instanceof ResponseStatusException) {
+				throw ex;
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			}
+		}        
 				
 	}
     
@@ -269,14 +298,30 @@ public class Schema extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws Exception {
-		// check for auth here because addFileToSchema is not doing it
-		var model = jenaService.getSchema(pid);
-		SchemaInfoDTO schemaDTO = mapper.mapToFrontendSchemaDTO(pid, model);
-		if(!schemaDTO.getOrganizations().isEmpty()) {
-			Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
-			check(authorizationManager.hasRightToAnyOrganization(orgs));	
-		}		
-		return addFileToSchema(pid, file, false);
+		try {
+			// check for auth here because addFileToSchema is not doing it
+			var model = jenaService.getSchema(pid);
+	        var userMapper = groupManagementService.mapUser();
+			SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model, userMapper);
+			if(schemaDTO.getState() != MSCRState.DRAFT) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
+			}		
+			if(!schemaDTO.getOrganizations().isEmpty()) {
+				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
+				check(authorizationManager.hasRightToAnyOrganization(orgs));	
+			}			
+			validateFileUpload(file, schemaDTO.getFormat());			
+			return addFileToSchema(schemaDTO, file, false);
+		}catch(Exception ex) {
+			// revert any possible changes
+			try {storageService.deleteAllSchemaFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
+			if(ex instanceof ResponseStatusException) {
+				throw ex;
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			}
+		}
 	}
 	
 	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
@@ -285,8 +330,21 @@ public class Schema extends BaseMSCRController {
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO createSchemaFull(@ValidSchema @RequestParam("metadata") SchemaDTO schemaDTO,
 			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
-		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
-		return addFileToSchema(dto.getPID(), file, true);						
+			
+		validateFileUpload(file, schemaDTO.getFormat());
+		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);	
+		try {						
+			return addFileToSchema(dto, file, true);
+		}catch(Exception ex) {
+			// revert any possible changes
+			try {storageService.retrieveAllSchemaFiles(dto.getPID());}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}			
+			if(ex instanceof ResponseStatusException) {
+				throw ex;
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			}
+		}		
 	}
   
     @Operation(summary = "Modify schema")
