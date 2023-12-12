@@ -6,8 +6,8 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 
 public interface StorageService {
 
-	public int storeSchemaFile(String schemaPID, String contentType, byte[] data);
-	public int storeCrosswalkFile(String schemaPID, String contentType, byte[] data);
+	public int storeSchemaFile(String schemaPID, String contentType, byte[] data, String filename);
+	public int storeCrosswalkFile(String schemaPID, String contentType, byte[] data, String filename);
 	
 	public StoredFile retrieveFile(String pid, long fileID, MSCRType type);
 	
@@ -17,8 +17,8 @@ public interface StorageService {
 	public List<StoredFileMetadata> retrieveAllSchemaFilesMetadata(String pid);
 	public List<StoredFileMetadata> retrieveAllCrosswalkFilesMetadata(String pid);
 	
-	public record StoredFile(String contentType, byte[] data, long fileID, MSCRType type) {}
-	public record StoredFileMetadata(String contentType, int dataSize, long fileID, MSCRType type) {}
+	public record StoredFile(String contentType, byte[] data, long fileID, MSCRType type, String filename) {}
+	public record StoredFileMetadata(String contentType, int dataSize, long fileID, MSCRType type, String filename) {}
 
     public void removeFile(long fileID);
 	public void deleteAllCrosswalkFiles(String pid);
