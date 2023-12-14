@@ -213,7 +213,7 @@ public class SchemaMapper {
 	}
 
 	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper) {
-		return mapToSchemaDTO(PID, model, false, userMapper);
+		return mapToSchemaDTO(PID, model, false, false, userMapper);
 	}
 	
 	public SchemaInfoDTO mapToFrontendSchemaDTO(String PID, Model model) {
@@ -246,7 +246,7 @@ public class SchemaMapper {
 	}
 
 	
-	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper) {
+	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, boolean includeVarientInfo, Consumer<ResourceCommonDTO> userMapper) {
 
 		var schemaInfoDTO = new SchemaInfoDTO();
 		schemaInfoDTO.setPID(PID);
@@ -311,7 +311,8 @@ public class SchemaMapper {
 					.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
 					.collect(Collectors.toList());
 			schemaInfoDTO.setRevisions(orderedRevs);
-			
+		}
+		if(includeVarientInfo) {
 			List<Variant> variants = new ArrayList<Variant>();
 			try {
 	 			var variantsModel = jenaService.constructWithQuerySchemas(MapperUtils.getSchemaVariantsQuery(PID, schemaInfoDTO.getNamespace()));			
