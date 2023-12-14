@@ -9,6 +9,13 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Selector;
+import org.apache.jena.rdf.model.SimpleSelector;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -18,6 +25,9 @@ import org.apache.jena.vocabulary.SKOS;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -56,6 +66,35 @@ public class CoreRepository extends BaseRepository{
 
         modelCache.put("organizations", organizations);
         return organizations;
+    }
+    
+    /**
+     * Very simple implementation that does not query anything 
+     * but just uses the whole org model to get the data.
+     * 
+     * @param ids
+     * @return
+     */
+    public Model getOrganizationsByIds(Set<UUID> ids) {
+    	var organizations = modelCache.getIfPresent("organizations");
+    	if(organizations == null) {
+    		organizations = getOrganizations();
+    	}
+    	Model model = ModelFactory.createDefaultModel();
+    	for(UUID id : ids) {
+    	
+    		Resource subject = model.getResource(ModelConstants.URN_UUID +id.toString());
+    		if(subject != null) {
+    			Selector selector = new SimpleSelector(subject, (Property)null, (RDFNode)null);
+    			StmtIterator i = organizations.listStatements(selector);
+    			while(i.hasNext()) {
+    				model.add(i.next());
+    			}
+    			    			
+			}
+    		
+    	};    	
+    	return model;    	
     }
 
     public Model getServiceCategories(){
