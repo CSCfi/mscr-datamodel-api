@@ -248,6 +248,7 @@ public class Schema extends BaseMSCRController {
 		
 		validateActionParams(schemaDTO, action, target);
 		checkVisibility(schemaDTO);
+		checkState(null, schemaDTO);
 		
 		String aggregationKey = null;
 		if(action != null) {			
@@ -374,7 +375,7 @@ public class Schema extends BaseMSCRController {
         SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, userMapper);        
         schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		
 		checkVisibility(schemaDTO);
-
+		checkState(prevSchema, schemaDTO);
         var jenaModel = mapper.mapToUpdateJenaModel(pid, schemaDTO, oldModel, userProvider.getUser());
 
         jenaService.putToSchema(pid, jenaModel);

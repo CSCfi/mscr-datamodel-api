@@ -93,4 +93,25 @@ public abstract class BaseMSCRController {
 		
 	}
 	
+	protected void checkState(MSCRCommonMetadata prev, MSCRCommonMetadata dto) {
+		if(prev == null) {
+			// content
+			if(dto.getState() != MSCRState.DRAFT && dto.getState() != MSCRState.PUBLISHED && dto.getState() != MSCRState.DEPRECATED) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Newly created content must be in one of the following states: DRAFT, PUBLISHED, DEPRECATED");
+			}
+		}
+		if(prev.getState() == MSCRState.DRAFT && dto.getState() != MSCRState.PUBLISHED) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: DRAFT -> PUBLIShED");
+		}
+		if(prev.getState() == MSCRState.PUBLISHED && (dto.getState() != MSCRState.INVALID && dto.getState() != MSCRState.DEPRECATED)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transitions: PUBLISHED -> INVALID, PUBLISHED -> DEPRECATED");
+		}		
+		if(prev.getState() == MSCRState.DEPRECATED && dto.getState() != MSCRState.REMOVED) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: DEPRECATED -> REMOVED");
+		}
+		if(prev.getState() == MSCRState.INVALID && dto.getState() != MSCRState.REMOVED) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: INVALID -> REMOVED");
+		}		
+	}
+	
 }
