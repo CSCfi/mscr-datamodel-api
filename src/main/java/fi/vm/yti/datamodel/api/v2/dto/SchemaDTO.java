@@ -2,7 +2,7 @@ package fi.vm.yti.datamodel.api.v2.dto;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class SchemaDTO extends DataModelDTO {
+public class SchemaDTO extends DataModelDTO implements MSCRCommonMetadata {
 
 	private MSCRState state = MSCRState.DRAFT;
 	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;

@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
@@ -194,7 +195,8 @@ public class Schema extends BaseMSCRController {
 		// in case of revision the following data cannot be overridden
 		// - organization
 		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : Status.DRAFT);
-		s.setState(inputSchema.getState() != null ? inputSchema.getState() : MSCRState.DRAFT);
+		s.setState(inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
+		s.setVisibility(inputSchema.getVisibility() != null ? inputSchema.getVisibility() : prevSchema.getVisibility());
 		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
 		s.setDescription(!inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
 		s.setLanguages(!inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
@@ -244,7 +246,9 @@ public class Schema extends BaseMSCRController {
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
 		
-		validateActionParams(schemaDTO, action, target); 
+		validateActionParams(schemaDTO, action, target);
+		checkVisibility(schemaDTO);
+		
 		String aggregationKey = null;
 		if(action != null) {			
 			SchemaInfoDTO prevSchema = getSchemaDTO(target, true);
@@ -368,7 +372,9 @@ public class Schema extends BaseMSCRController {
         check(authorizationManager.hasRightToModel(pid, oldModel));        
         var userMapper = groupManagementService.mapUser();
         SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, userMapper);        
-        schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		        
+        schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		
+		checkVisibility(schemaDTO);
+
         var jenaModel = mapper.mapToUpdateJenaModel(pid, schemaDTO, oldModel, userProvider.getUser());
 
         jenaService.putToSchema(pid, jenaModel);

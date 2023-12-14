@@ -41,6 +41,7 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
@@ -120,8 +121,7 @@ public class Crosswalk extends BaseMSCRController {
 		if(!dto.getOrganizations().isEmpty()) {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
-				
-		
+		checkVisibility(dto);		
 
 		Model jenaModel = mapper.mapToJenaModel(PID, dto, target, aggregationKey, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
@@ -148,7 +148,8 @@ public class Crosswalk extends BaseMSCRController {
 		// in case of revision the following data cannot be overridden
 		// - organization
 		s.setStatus(input.getStatus() != null ? input.getStatus() : Status.DRAFT);
-		s.setState(input.getState() != null ? input.getState() : MSCRState.DRAFT);
+		s.setState(input.getState() != null ? input.getState() : prev.getState());
+		s.setVisibility(input.getVisibility() != null ? input.getVisibility() : prev.getVisibility());
 		s.setLabel(!input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
 		s.setDescription(!input.getDescription().isEmpty() ? input.getDescription() : prev.getDescription());
 		s.setLanguages(!input.getLanguages().isEmpty() ? input.getLanguages() : prev.getLanguages());
@@ -295,7 +296,8 @@ public class Crosswalk extends BaseMSCRController {
         check(authorizationManager.hasRightToModel(pid, oldModel));
         var userMapper = groupManagementService.mapUser();
         CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
-        dto = mergeMetadata(prev, dto, false);		        
+        dto = mergeMetadata(prev, dto, false);		    
+        checkVisibility(dto);
 
         var jenaModel = mapper.mapToUpdateJenaModel(pid, dto, oldModel, userProvider.getUser());
 
