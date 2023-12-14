@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.jena.rdf.model.Model;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +43,12 @@ public class FrontendService {
     public FrontendService(CoreRepository coreRepository) {
         this.coreRepository = coreRepository;
         
+    }
+    
+    public List<OrganizationDTO> getOrganizationsByID(Set<UUID> ids) {
+    	var model = coreRepository.getOrganizationsByIds(ids);
+    	var dtos = OrganizationMapper.mapToListOrganizationDTO(model);
+    	return dtos;
     }
 
     public List<OrganizationDTO> getOrganizations(@NotNull String sortLanguage, boolean includeChildOrganizations) {
