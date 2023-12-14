@@ -213,7 +213,7 @@ public class Schema extends BaseMSCRController {
 		
 	}
 	
-	private SchemaInfoDTO getSchemaDTO(String pid, boolean includeVersionInfo) {
+	private SchemaInfoDTO getSchemaDTO(String pid, boolean includeVersionInfo, boolean includeVariantInfo) {
         var model = jenaService.getSchema(pid);
         if(model == null){
             throw new ResourceNotFoundException(pid);
@@ -223,7 +223,7 @@ public class Schema extends BaseMSCRController {
         check(hasRightsToModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 
-        return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, userMapper);
+        return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper);
 	}
 
 	
@@ -252,7 +252,7 @@ public class Schema extends BaseMSCRController {
 		
 		String aggregationKey = null;
 		if(action != null) {			
-			SchemaInfoDTO prevSchema = getSchemaDTO(target, true);
+			SchemaInfoDTO prevSchema = getSchemaDTO(target, true, false);
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CONTENT_ACTION.revisionOf);			
 			if(action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
@@ -372,7 +372,7 @@ public class Schema extends BaseMSCRController {
         }
         check(authorizationManager.hasRightToModel(pid, oldModel));        
         var userMapper = groupManagementService.mapUser();
-        SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, userMapper);        
+        SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper);        
         schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		
 		checkVisibility(schemaDTO);
 		checkState(prevSchema, schemaDTO);
@@ -383,7 +383,7 @@ public class Schema extends BaseMSCRController {
 
         var indexModel = mapper.mapToIndexModel(pid, jenaModel);
         openSearchIndexer.updateSchemaToIndex(indexModel);
-        return mapper.mapToSchemaDTO(pid, jenaModel, false, userMapper);
+        return mapper.mapToSchemaDTO(pid, jenaModel, false, false, userMapper);
     }
 
     
@@ -391,12 +391,12 @@ public class Schema extends BaseMSCRController {
     @Operation(summary = "Get a schema metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
-    public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){    	
+    public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo, @RequestParam(name = "includeVariantInfo", defaultValue = "false") String includeVariantInfo){    	
     	var jenaModel = jenaService.getSchema(pid);
 		var hasRightsToModel = authorizationManager.hasRightToModel(pid, jenaModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 
-    	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper);
+    	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), Boolean.parseBoolean(includeVariantInfo), userMapper);
     }
     
 
