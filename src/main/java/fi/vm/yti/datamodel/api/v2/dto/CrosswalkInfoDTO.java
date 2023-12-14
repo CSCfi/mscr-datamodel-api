@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class CrosswalkInfoDTO extends DataModelInfoDTO {
+public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
 	
 	private MSCRState state = MSCRState.DRAFT;
 	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;

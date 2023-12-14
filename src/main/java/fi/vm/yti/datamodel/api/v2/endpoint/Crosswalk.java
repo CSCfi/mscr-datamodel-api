@@ -121,10 +121,7 @@ public class Crosswalk extends BaseMSCRController {
 		if(!dto.getOrganizations().isEmpty()) {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
-		if(dto.getState() != MSCRState.DRAFT && dto.getVisibility() != MSCRVisibility.PUBLIC) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only DRAFT content can have non public visibility");
-		}
-		
+		checkVisibility(dto);		
 
 		Model jenaModel = mapper.mapToJenaModel(PID, dto, target, aggregationKey, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
@@ -299,10 +296,8 @@ public class Crosswalk extends BaseMSCRController {
         check(authorizationManager.hasRightToModel(pid, oldModel));
         var userMapper = groupManagementService.mapUser();
         CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
-        dto = mergeMetadata(prev, dto, false);		        
-		if(dto.getState() != MSCRState.DRAFT && dto.getVisibility() != MSCRVisibility.PUBLIC) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only DRAFT content can have non public visibility");
-		}
+        dto = mergeMetadata(prev, dto, false);		    
+        checkVisibility(dto);
 
         var jenaModel = mapper.mapToUpdateJenaModel(pid, dto, oldModel, userProvider.getUser());
 

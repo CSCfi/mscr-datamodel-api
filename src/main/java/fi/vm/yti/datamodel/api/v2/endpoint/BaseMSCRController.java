@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCRCommonMetadata;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 
@@ -81,6 +84,13 @@ public abstract class BaseMSCRController {
 			return PID + "." + contentType.substring(contentType.lastIndexOf("/") + 1);
 		}
 		return PID;
+	}
+	
+	protected void checkVisibility(MSCRCommonMetadata dto) {
+		if(dto.getState() != MSCRState.DRAFT && dto.getVisibility() != MSCRVisibility.PUBLIC) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only DRAFT content can have non public visibility");
+		}
+		
 	}
 	
 }

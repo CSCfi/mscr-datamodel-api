@@ -246,10 +246,8 @@ public class Schema extends BaseMSCRController {
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
 		
-		validateActionParams(schemaDTO, action, target); 
-		if(schemaDTO.getState() != MSCRState.DRAFT && schemaDTO.getVisibility() != MSCRVisibility.PUBLIC) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only DRAFT content can have non public visibility");
-		}
+		validateActionParams(schemaDTO, action, target);
+		checkVisibility(schemaDTO);
 		
 		String aggregationKey = null;
 		if(action != null) {			
@@ -375,11 +373,8 @@ public class Schema extends BaseMSCRController {
         var userMapper = groupManagementService.mapUser();
         SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, userMapper);        
         schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		
-        
-		if(schemaDTO.getState() != MSCRState.DRAFT && schemaDTO.getVisibility() != MSCRVisibility.PUBLIC) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only DRAFT content can have non public visibility");
-		}
-        
+		checkVisibility(schemaDTO);
+
         var jenaModel = mapper.mapToUpdateJenaModel(pid, schemaDTO, oldModel, userProvider.getUser());
 
         jenaService.putToSchema(pid, jenaModel);
