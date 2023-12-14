@@ -51,7 +51,7 @@ public class MSCRUser implements UserDetails {
 	private List<OrganizationDTO> organizations;
 
 	public MSCRUser(YtiUser user, final List<OrganizationDTO> organizations) {
-		this(false, user.getEmail(), user.getFirstName(), user.getLastName(),  
+		this(user.isAnonymous(), user.getEmail(), user.getFirstName(), user.getLastName(),  
 				user.getId(), user.isSuperuser(), user.isNewlyCreated(), user.getTokenCreatedAt(),
 				user.getTokenInvalidationAt(), user.getRolesInOrganizations(),
 				user.getContainerUri(), user.getTokenRole(), organizations
