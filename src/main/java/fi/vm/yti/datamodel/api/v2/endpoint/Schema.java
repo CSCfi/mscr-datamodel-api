@@ -126,11 +126,16 @@ public class Schema extends BaseMSCRController {
 					throw new Exception(exceptionOutput);
 				}
 
-			} else {
+			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML) {
+				// do nothing for now
+			}			
+			else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
 						format));
 			}			
 
+		} catch(ResponseStatusException statusex) {
+			throw statusex;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description. " + ex.getMessage(), ex);
@@ -170,7 +175,9 @@ public class Schema extends BaseMSCRController {
 			}else if(schemaDTO.getFormat() == SchemaFormat.PDF) {
 				// do nothing
 				schemaModel = ModelFactory.createDefaultModel();
-							
+			}else if(schemaDTO.getFormat() == SchemaFormat.XSD || schemaDTO.getFormat() == SchemaFormat.XML) {
+				// do nothing
+				schemaModel = ModelFactory.createDefaultModel();			
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));
@@ -179,7 +186,8 @@ public class Schema extends BaseMSCRController {
 			jenaService.updateSchema(pid, schemaModel);
 			storageService.storeSchemaFile(pid, contentType, file.getBytes(), generateFilename(pid, file));
 			
-
+		} catch(ResponseStatusException statusex) {
+			throw statusex;		
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description", ex);
@@ -317,8 +325,7 @@ public class Schema extends BaseMSCRController {
 			if(!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
-			}			
-			validateFileUpload(file, schemaDTO.getFormat());			
+			}									
 			return addFileToSchema(schemaDTO, file, false);
 		}catch(Exception ex) {
 			// revert any possible changes
