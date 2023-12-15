@@ -143,7 +143,7 @@ public class Schema extends BaseMSCRController {
 		
 	}
 	
-	private SchemaInfoDTO addFileToSchema(SchemaInfoDTO schemaDTO, MultipartFile file, boolean isFull) {
+	private SchemaInfoDTO addFileToSchema(SchemaInfoDTO schemaDTO, MultipartFile file) {
 		var userMapper = groupManagementService.mapUser();
 		String contentType = file.getContentType();
 		final String pid = schemaDTO.getPID();
@@ -313,20 +313,20 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) {
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file, boolean isFull) {
 		try {
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getSchema(pid);
 	        var userMapper = groupManagementService.mapUser();
 			SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model, userMapper);
-			if(schemaDTO.getState() != MSCRState.DRAFT) {
+			if(!isFull && schemaDTO.getState() != MSCRState.DRAFT) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
 			}		
 			if(!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
 			}									
-			return addFileToSchema(schemaDTO, file, false);
+			return addFileToSchema(schemaDTO, file);
 		}catch(Exception ex) {
 			// revert any possible changes
 			try {storageService.deleteAllSchemaFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
@@ -360,7 +360,7 @@ public class Schema extends BaseMSCRController {
 		}
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		final String PID = dto.getPID();
-		uploadSchemaFile(PID, file);
+		uploadSchemaFile(PID, file, true);
 		var userMapper = groupManagementService.mapUser();
 		return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
 	}

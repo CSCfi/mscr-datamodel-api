@@ -235,6 +235,10 @@ public class Crosswalk extends BaseMSCRController {
 			var model = jenaService.getCrosswalk(pid);
 			var userMapper = groupManagementService.mapUser();
 			CrosswalkInfoDTO crosswalkDTO = mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			if(crosswalkDTO.getState() != MSCRState.DRAFT) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
+			}				
+			
 			if(!crosswalkDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = crosswalkDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
