@@ -126,7 +126,11 @@ public class Schema extends BaseMSCRController {
 					throw new Exception(exceptionOutput);
 				}
 
-			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML) {
+			} else if (format == SchemaFormat.XSD || 
+					format == SchemaFormat.XML || 
+					format == SchemaFormat.CSV ||
+					format == SchemaFormat.SKOSRDF ||
+					format == SchemaFormat.PDF) {
 				// do nothing for now
 			}			
 			else {
