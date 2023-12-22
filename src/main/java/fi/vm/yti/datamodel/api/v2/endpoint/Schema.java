@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -206,7 +207,7 @@ public class Schema extends BaseMSCRController {
 		SchemaDTO s = new SchemaDTO();
 		// in case of revision the following data cannot be overridden
 		// - organization
-		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : Status.DRAFT);
+		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : prevSchema.getStatus());
 		s.setState(inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
 		s.setVisibility(inputSchema.getVisibility() != null ? inputSchema.getVisibility() : prevSchema.getVisibility());
 		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
@@ -372,7 +373,7 @@ public class Schema extends BaseMSCRController {
     @Operation(summary = "Modify schema")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
-    @PostMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO,
                             @PathVariable String pid) {
         logger.info("Updating schema {}", schemaDTO);

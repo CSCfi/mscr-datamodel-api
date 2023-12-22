@@ -4,41 +4,22 @@ import java.util.List;
 
 public class MappingDTO {
 
+	protected String id;
+	protected List<String> depends_on;
+	protected List<NodeInfo> source;
+	protected String sourceType; // type for all sources as a whole
+	protected String sourceDescription; // desc for all sources as a whole
+	protected String predicate;
+	protected MappingFilterDTO filter;
+	protected List<NodeInfo> target;
+	protected String targetType;
+	protected String targetDescription;	
+	protected ProcessingInfo processing; 
 	
-	private String PID;
-	private String isPartOf;
-	private String id;
-	private List<String> depends_on;
-	private List<NodeInfo> source;
-	private String sourceType; // type for all sources as a whole
-	private String sourceDescription; // desc for all sources as a whole
-	private String predicate;
-	private MappingFilterDTO filter;
-	private List<NodeInfo> target;
-	private String targetType;
-	private String targetDescription;	
-	private ProcessingInfo processing; 
-	
-	private List<OneOfDTO> oneOf;
+	protected List<OneOfDTO> oneOf;
 
 	public MappingDTO() {
 		
-	}
-	
-	public String getIsPartOf() {
-		return isPartOf;
-	}
-
-	public void setIsPartOf(String isPartOf) {
-		this.isPartOf = isPartOf;
-	}
-
-	public String getPID() {
-		return PID;
-	}
-
-	public void setPID(String pID) {
-		PID = pID;
 	}
 
 	public String getId() {
