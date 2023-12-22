@@ -1,5 +1,6 @@
 package fi.vm.yti.datamodel.api.security;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import fi.vm.yti.security.YtiUser;
@@ -44,6 +45,16 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
                             orgUri.lastIndexOf(":")+ 1));
         }).collect(Collectors.toSet());
         return hasRightToAnyOrganization(organizations);
+    }
+    
+    public boolean hasRightToModelMSCR(String pid, Model model) {
+    	var res = model.getResource(pid);
+        var owners = res.listProperties(MSCR.owner).toSet().stream().map(prop -> {
+            var uuidStr = prop.getObject().toString();
+            return UUID.fromString(uuidStr);
+        }).collect(Collectors.toSet());
+        YtiUser user = getUser();
+        return user.isSuperuser() || owners.contains(user.getId()) || user.isInAnyRole(EnumSet.of(ADMIN, DATA_MODEL_EDITOR), owners);    	
     }
 
     public boolean isAdminOfAnyOrganization(Collection<UUID> organizations) {

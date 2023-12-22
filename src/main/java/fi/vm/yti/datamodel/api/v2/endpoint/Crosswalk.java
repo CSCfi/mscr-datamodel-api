@@ -110,7 +110,7 @@ public class Crosswalk extends BaseMSCRController {
         if(model == null){
             throw new ResourceNotFoundException(pid);
         }
-        var hasRightsToModel = authorizationManager.hasRightToModel(pid, model);
+        var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, model);
         
         check(hasRightsToModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
@@ -319,7 +319,7 @@ public class Crosswalk extends BaseMSCRController {
             throw new ResourceNotFoundException(pid);
         }
 
-        check(authorizationManager.hasRightToModel(pid, oldModel));
+        check(authorizationManager.hasRightToModelMSCR(pid, oldModel));
         var userMapper = groupManagementService.mapUser();
         CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
         dto = mergeMetadata(prev, dto, false);		    
@@ -342,7 +342,7 @@ public class Crosswalk extends BaseMSCRController {
     @GetMapping(value = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE)
     public CrosswalkInfoDTO getCrosswalkMetadata(@PathVariable String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
     	var jenaModel = jenaService.getCrosswalk(pid);
-		var hasRightsToModel = authorizationManager.hasRightToModel(pid, jenaModel);
+		var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 
     	return mapper.mapToCrosswalkDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper);
@@ -366,7 +366,7 @@ public class Crosswalk extends BaseMSCRController {
         if(crosswalkModel == null){
             throw new ResourceNotFoundException(pid);
         }
-        check(authorizationManager.hasRightToModel(pid, crosswalkModel));
+        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
         
 		final String mappingPID = PIDService.mintPartIdentifier(pid);
 
@@ -394,7 +394,7 @@ public class Crosswalk extends BaseMSCRController {
         if(crosswalkModel == null){
             throw new ResourceNotFoundException(pid);
         }
-        check(authorizationManager.hasRightToModel(pid, crosswalkModel));
+        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
 		Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
 		jenaService. putToCrosswalk(mappingPID, mappingModel);
 		Resource crosswalkResource = crosswalkModel.getResource(pid);
@@ -432,7 +432,7 @@ public class Crosswalk extends BaseMSCRController {
         if(crosswalkModel == null){
             throw new ResourceNotFoundException(pid);
         }
-        check(authorizationManager.hasRightToModel(pid, crosswalkModel));
+        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
         crosswalkModel.remove(crosswalkModel.getResource(pid), MSCR.mappings, crosswalkModel.getResource(mappingPID));
 		jenaService.deleteFromCrosswalk(mappingPID);		
 				

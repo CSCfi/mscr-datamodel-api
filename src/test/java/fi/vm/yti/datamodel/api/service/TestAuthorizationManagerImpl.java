@@ -82,4 +82,9 @@ public class TestAuthorizationManagerImpl implements AuthorizationManager {
         return true;
     }
 
+	@Override
+	public boolean hasRightToModelMSCR(String pid, Model model) {
+		return true;
+	}
+
 }
