@@ -31,5 +31,8 @@ public interface AuthorizationManager {
 
     boolean hasRightToSuggestConcept();
     boolean hasRightToDropDatabase();
+    
+    boolean hasRightToModelMSCR(String pid, Model model);
+
 
 }
