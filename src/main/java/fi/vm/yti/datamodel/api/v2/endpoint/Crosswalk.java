@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,13 +42,13 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
-import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
+import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
-import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
@@ -148,7 +149,7 @@ public class Crosswalk extends BaseMSCRController {
 		CrosswalkDTO s = new CrosswalkDTO();
 		// in case of revision the following data cannot be overridden
 		// - organization
-		s.setStatus(input.getStatus() != null ? input.getStatus() : Status.DRAFT);
+		s.setStatus(input.getStatus() != null ? input.getStatus() : prev.getStatus());
 		s.setState(input.getState() != null ? input.getState() : prev.getState());
 		s.setVisibility(input.getVisibility() != null ? input.getVisibility() : prev.getVisibility());
 		s.setLabel(!input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
@@ -167,6 +168,26 @@ public class Crosswalk extends BaseMSCRController {
 		return s;
 		
 	}	
+	
+	private MappingDTO mergeMetadata(MappingInfoDTO prev, MappingDTO input) {
+		MappingDTO d = new MappingDTO();
+		
+		d.setId(input != null && input.getId() != null ? input.getId() : prev.getId());
+		d.setDepends_on(input != null && input.getDepends_on() != null ? input.getDepends_on() : prev.getDepends_on());
+		d.setSource(input != null && input.getSource() != null ? input.getSource() : prev.getSource());
+		d.setSourceType(input != null && input.getSourceType() != null ? input.getSourceType() : prev.getSourceType());
+		d.setSourceDescription(input != null && input.getSourceDescription() != null ? input.getSourceDescription() : prev.getSourceDescription());
+		d.setPredicate(input != null && input.getPredicate() != null ? input.getPredicate() : prev.getPredicate());
+		d.setFilter(input != null && input.getFilter() != null ? input.getFilter() : prev.getFilter());
+		d.setTarget(input != null && input.getTarget() != null ? input.getTarget() : prev.getTarget());
+		d.setTargetType(input != null && input.getTargetType() != null ? input.getTargetType() : prev.getTargetType());
+		d.setTargetDescription(input != null && input.getTargetDescription() != null ? input.getTargetDescription() : prev.getTargetDescription());
+		d.setProcessing(input != null && input.getProcessing() != null ? input.getProcessing() : prev.getProcessing());
+		d.setOneOf(input != null && input.getOneOf() != null ? input.getOneOf() : prev.getOneOf());
+		return d;
+		
+	}
+	
 	private void addFileToCrosswalk(final String pid, CrosswalkFormat format, MultipartFile file) {
 		final String contentType = file.getContentType();		 
 		try {
@@ -284,11 +305,11 @@ public class Crosswalk extends BaseMSCRController {
 		
 	}	
 	
-    @Operation(summary = "Modify crosswalk")
+    @Operation(summary = "Modify crosswalk metadata")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public CrosswalkInfoDTO updateModel(@RequestBody CrosswalkDTO dto,
                             @PathVariable String pid) {
         logger.info("Updating crosswalk {}", dto);
@@ -339,7 +360,7 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingDTO createMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String pid) {
+	public MappingInfoDTO createMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String pid) {
 		logger.info("Create Mapping {} for crosswalk {}", dto, pid);
         var crosswalkModel = jenaService.getCrosswalk(pid);
         if(crosswalkModel == null){
@@ -357,11 +378,37 @@ public class Crosswalk extends BaseMSCRController {
 		return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);		
 	}
 	
+	
+	
+	@Operation(summary = "Update mapping")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO updateMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) {
+		logger.info("Update Mapping {} for id {}", dto, mappingPID);
+		var mappingModelOriginal = jenaService.getCrosswalk(mappingPID);
+		Resource mappingResource = mappingModelOriginal.getResource(mappingPID);
+		String pid = MapperUtils.propertyToString(mappingResource, DCTerms.isPartOf);		
+		
+        var crosswalkModel = jenaService.getCrosswalk(pid);
+        if(crosswalkModel == null){
+            throw new ResourceNotFoundException(pid);
+        }
+        check(authorizationManager.hasRightToModel(pid, crosswalkModel));
+		Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
+		jenaService. putToCrosswalk(mappingPID, mappingModel);
+		Resource crosswalkResource = crosswalkModel.getResource(pid);
+		crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
+		jenaService.putToCrosswalk(pid, crosswalkModel);
+		return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
+
+	}	
+	
 	@Operation(summary = "Get a mapping")
 	@ApiResponse(responseCode = "200")	
-	@GetMapping(path="/crosswalk/{pid}/mapping/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingDTO getMapping(@PathVariable String pid, @PathVariable String mappingPID) {
-		logger.info("Get Mapping {} for crosswalk {}", mappingPID, pid);
+	@GetMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO getMapping(@PathVariable String mappingPID) {
+		logger.info("Get Mapping {}", mappingPID);
 		// TODO: check that crosswalk exists
 		var mappingModel = jenaService.getCrosswalk(mappingPID);
         if(mappingModel == null){
@@ -374,10 +421,13 @@ public class Crosswalk extends BaseMSCRController {
 	@Operation(summary = "Delete a mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@DeleteMapping(path="/crosswalk/{pid}/mapping/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public void deleteMapping(@PathVariable String pid, @PathVariable String mappingPID) {
-		logger.info("Delete Mapping {} for crosswalk {}", mappingPID, pid);
+	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public void deleteMapping(@PathVariable String mappingPID) {
+		logger.info("Delete Mapping {}", mappingPID);
 		// TODO: check that crosswalk exists
+		var mappingModel = jenaService.getCrosswalk(mappingPID);
+		Resource mappingResource = mappingModel.getResource(mappingPID);
+		String pid = MapperUtils.propertyToString(mappingResource, DCTerms.isPartOf);		
 		var crosswalkModel = jenaService.getCrosswalk(pid);
         if(crosswalkModel == null){
             throw new ResourceNotFoundException(pid);

@@ -8,8 +8,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
 	
-	private MSCRState state = MSCRState.DRAFT;
-	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
+	private MSCRState state;
+	private MSCRVisibility visibility;
 
 	private String PID;
 	

@@ -100,7 +100,7 @@ public abstract class BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Newly created content must be in one of the following states: DRAFT, PUBLISHED, DEPRECATED");
 			}
 		}
-		if(prev != null) {
+		if(prev != null && prev.getState() != dto.getState()) {
 			if(prev.getState() == MSCRState.DRAFT && dto.getState() != MSCRState.PUBLISHED) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: DRAFT -> PUBLIShED");
 			}

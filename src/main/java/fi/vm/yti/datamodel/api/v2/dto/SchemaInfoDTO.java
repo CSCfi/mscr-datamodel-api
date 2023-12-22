@@ -9,8 +9,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
  
-	private MSCRState state = MSCRState.DRAFT;
-	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
+	private MSCRState state;
+	private MSCRVisibility visibility;
 
 	private Set<FileMetadata> fileMetadata = Set.of();
 	private String PID;

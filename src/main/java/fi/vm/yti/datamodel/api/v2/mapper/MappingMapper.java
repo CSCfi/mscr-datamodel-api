@@ -11,12 +11,10 @@ import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Seq;
 import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -25,6 +23,7 @@ import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingFilterDTO;
+import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 import fi.vm.yti.datamodel.api.v2.dto.OneOfDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
@@ -156,10 +155,10 @@ public class MappingMapper {
 		return model;
 	}
 
-	public MappingDTO mapToMappingDTO(String mappingPID, Model model) {
+	public MappingInfoDTO mapToMappingDTO(String mappingPID, Model model) {
 		Resource r = model.getResource(mappingPID);
 		
-		MappingDTO m = new MappingDTO();
+		MappingInfoDTO m = new MappingInfoDTO();
 		m.setPID(mappingPID);
 		m.setIsPartOf(r.getProperty(DCTerms.isPartOf).getResource().getURI());
 		m.setId(MapperUtils.propertyToString(r, MSCR.id));
@@ -173,6 +172,7 @@ public class MappingMapper {
 			m.setProcessing(mapProcessingInfoToDTO(r.getPropertyResourceValue(MSCR.processing)));
 		}
 		m.setPredicate(MapperUtils.propertyToString(r, MSCR.predicate));
+		m.setIsPartOf(MapperUtils.propertyToString(r, DCTerms.isPartOf));
 		return m;
 	}
 
