@@ -147,24 +147,22 @@ public class Crosswalk extends BaseMSCRController {
 			return mapper.mapToCrosswalkDTO(prev);
 		}
 		CrosswalkDTO s = new CrosswalkDTO();
-		// in case of revision the following data cannot be overridden
-		// - organization
-		s.setStatus(input.getStatus() != null ? input.getStatus() : prev.getStatus());
-		s.setState(input.getState() != null ? input.getState() : prev.getState());
-		s.setVisibility(input.getVisibility() != null ? input.getVisibility() : prev.getVisibility());
-		s.setLabel(!input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
-		s.setDescription(!input.getDescription().isEmpty() ? input.getDescription() : prev.getDescription());
+		s.setStatus(input != null && input.getStatus() != null ? input.getStatus() : prev.getStatus());
+		s.setState(input != null && input.getState() != null ? input.getState() : prev.getState());
+		s.setVisibility(input != null && input.getVisibility() != null ? input.getVisibility() : prev.getVisibility());
+		s.setLabel(input != null && !input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
+		s.setDescription(input != null && !input.getDescription().isEmpty() ? input.getDescription() : prev.getDescription());
 		s.setLanguages(!input.getLanguages().isEmpty() ? input.getLanguages() : prev.getLanguages());
-		if(isRevision || input.getOrganizations().isEmpty()) {
-			s.setOrganizations(prev.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
-		}	
-		else {
+		if(input != null && input.getOrganizations() !=null && !input.getOrganizations().isEmpty()) {
 			s.setOrganizations(input.getOrganizations());			
 		}	
-		s.setVersionLabel(input.getVersionLabel() != null ? input.getVersionLabel() : "");
-		s.setFormat(input.getFormat() != null ? input.getFormat() : prev.getFormat());
-		s.setSourceSchema(input.getSourceSchema() != null ? input.getSourceSchema() : prev.getSourceSchema());
-		s.setTargetSchema(input.getTargetSchema() != null ? input.getTargetSchema() : prev.getTargetSchema());
+		else {
+			s.setOrganizations(prev.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
+		}	
+		s.setVersionLabel(input != null && input.getVersionLabel() != null ? input.getVersionLabel() : "");
+		s.setFormat(input != null && input.getFormat() != null ? input.getFormat() : prev.getFormat());
+		s.setSourceSchema(prev.getSourceSchema());
+		s.setTargetSchema(prev.getTargetSchema());
 		return s;
 		
 	}	

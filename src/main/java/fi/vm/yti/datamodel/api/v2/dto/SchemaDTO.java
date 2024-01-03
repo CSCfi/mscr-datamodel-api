@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class SchemaDTO extends DataModelDTO implements MSCRCommonMetadata {
 
 	private MSCRState state;
-	private MSCRVisibility visibility;
+	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
 
 	private SchemaFormat format;
 	private String namespace;

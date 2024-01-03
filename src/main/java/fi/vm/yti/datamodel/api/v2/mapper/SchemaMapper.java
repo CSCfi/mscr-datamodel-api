@@ -429,25 +429,6 @@ public class SchemaMapper {
         SparqlUtils.addConstructProperty("?version", builder, MSCR.aggregationKey, "?aggregationKey");
         builder.addWhere(prevVersion, MSCR.aggregationKey, "?aggregationKey");
         return builder.build();
-	}    
-      
-        
-	public SchemaDTO mapToSchemaDTO(SchemaInfoDTO source) {		
-		SchemaDTO s = new SchemaDTO();
-		s.setStatus(source.getStatus());
-		s.setState(source.getState());
-		s.setVisibility(source.getVisibility());
-		s.setLabel(source.getLabel());
-		s.setDescription(source.getDescription());
-		s.setLanguages(source.getLanguages());
-		s.setNamespace(source.getNamespace());
-		s.setOrganizations(source.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
-		s.setVersionLabel(source.getVersionLabel());
-		s.setFormat(source.getFormat());		
-		return s;
-	} 
-	
-
-
+	}
 
 }
