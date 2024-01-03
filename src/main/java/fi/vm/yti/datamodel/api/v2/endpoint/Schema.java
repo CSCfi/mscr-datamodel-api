@@ -201,27 +201,24 @@ public class Schema extends BaseMSCRController {
 	}
 	
 	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, boolean isRevision) {
-		if(inputSchema == null) {
-			return mapper.mapToSchemaDTO(prevSchema);
-		}
 		SchemaDTO s = new SchemaDTO();
 		// in case of revision the following data cannot be overridden
 		// - organization
-		s.setStatus(inputSchema.getStatus() != null ? inputSchema.getStatus() : prevSchema.getStatus());
-		s.setState(inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
-		s.setVisibility(inputSchema.getVisibility() != null ? inputSchema.getVisibility() : prevSchema.getVisibility());
+		s.setStatus(inputSchema != null && inputSchema.getStatus() != null ? inputSchema.getStatus() : prevSchema.getStatus());
+		s.setState(inputSchema != null && inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
+		s.setVisibility(inputSchema != null && inputSchema.getVisibility() != null ? inputSchema.getVisibility() : prevSchema.getVisibility());
 		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
-		s.setDescription(!inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
-		s.setLanguages(!inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
-		s.setNamespace(inputSchema.getNamespace() != null ? inputSchema.getNamespace() : prevSchema.getNamespace());		
-		if(isRevision || inputSchema.getOrganizations().isEmpty()) {
+		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
+		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
+		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace() : prevSchema.getNamespace());		
+		if(isRevision || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
 			s.setOrganizations(prevSchema.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
 		}	
 		else {
 			s.setOrganizations(inputSchema.getOrganizations());			
 		}	
-		s.setVersionLabel(inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
-		s.setFormat(inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
+		s.setVersionLabel(inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
+		s.setFormat(inputSchema != null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		return s;
 		
 	}

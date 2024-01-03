@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class CrosswalkDTO extends DataModelDTO implements MSCRCommonMetadata {
 
 	private MSCRState state;
-	private MSCRVisibility visibility;
+	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
 
 	private CrosswalkFormat format;
 	private String sourceSchema;
