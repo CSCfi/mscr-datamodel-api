@@ -438,7 +438,7 @@ public class Crosswalk extends BaseMSCRController {
 		
 	@Operation(summary = "Get a mappings for a crosswalk")
 	@ApiResponse(responseCode = "200")	
-	@GetMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	@GetMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE)
 	public List<MappingDTO> getMappings(@PathVariable String pid) {
 		logger.info("Get Mappings for crosswalk {}", pid);
 		// TODO: check that crosswalk exists
@@ -447,7 +447,7 @@ public class Crosswalk extends BaseMSCRController {
 		NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
 		while(i.hasNext()) {
 			Resource mappingResource = i.next().asResource();			
-			MappingDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), crosswalkModel);
+			MappingDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), jenaService.getCrosswalk(mappingResource.getURI()));
 			mappings.add(dto);
 		}
 		
