@@ -419,7 +419,7 @@ public class Crosswalk extends BaseMSCRController {
 	@Operation(summary = "Delete a mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE)
 	public void deleteMapping(@PathVariable String mappingPID) {
 		logger.info("Delete Mapping {}", mappingPID);
 		// TODO: check that crosswalk exists
