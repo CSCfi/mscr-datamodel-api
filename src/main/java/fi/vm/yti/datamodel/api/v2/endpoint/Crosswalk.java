@@ -432,7 +432,8 @@ public class Crosswalk extends BaseMSCRController {
         }
         check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
         crosswalkModel.remove(crosswalkModel.getResource(pid), MSCR.mappings, crosswalkModel.getResource(mappingPID));
-		jenaService.deleteFromCrosswalk(mappingPID);		
+		jenaService.deleteFromCrosswalk(mappingPID);
+		jenaService.putToCrosswalk(pid, crosswalkModel);
 				
 	}
 		
