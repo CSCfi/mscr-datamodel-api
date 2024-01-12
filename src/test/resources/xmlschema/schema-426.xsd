@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id$ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://tempuri.org/po.xsd"
+               xmlns="http://tempuri.org/po.xsd" elementFormDefault="qualified">
+	<!--  -->
+      <xs:complexType name="USAddress">
+
+        <xs:sequence>
+          <xs:element name="name"   type="required-string-textarea-simpletype"/>
+        </xs:sequence>
+        <xs:attribute name="country" type="xs:NMTOKEN"
+                      fixed="US"/>
+      </xs:complexType>
+	<xs:simpleType name="required-string-textarea-simpletype">
+		<xs:restriction base="xs:string">
+            <xs:pattern value="\d{3}-[A-Z]{2}"/>
+			<xs:minLength value="1"/>
+			<xs:maxLength value="65535"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+      <xs:element name="purchaseOrder" type="USAddress"/>
+
+</xs:schema>

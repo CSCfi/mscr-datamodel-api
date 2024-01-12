@@ -62,7 +62,7 @@ public class SchemaServiceTest {
 		
 		Resource root = model.createResource(schemaPID + "#root/Root");
 		
-//		model.write(System.out, "TURTLE");
+		model.write(System.out, "TURTLE");
 		
 		assertTrue(model.contains(root, RDF.type, SH.NodeShape));		
 		assertEquals(3, model.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size());
@@ -285,7 +285,31 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		model.write(System.out, "TTL");
+	
 	}
 	
+	@Test
+	void testSampleXmlSchema() throws Exception {
+		JsonNode data = getJsonNodeFromPath("xmlschema/sample-schema.json");
+		
+		ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(data);
+		assertTrue(validationRecord.isValid());
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
+		//model.write(System.out, "TTL");
+	
+	}
+	
+	@Test
+	void testEmlXmlSchema() throws Exception {
+		JsonNode data = getJsonNodeFromPath("xmlschema/eml1/eml-schema.json");
+		
+		ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(data);
+		assertTrue(validationRecord.isValid());
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
+		model.write(System.out, "TTL");
+	
+	}	
 }
 
