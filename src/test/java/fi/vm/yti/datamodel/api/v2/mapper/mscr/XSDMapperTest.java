@@ -1,5 +1,6 @@
 package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -96,7 +97,9 @@ import fi.vm.yti.datamodel.api.v2.service.SchemaService;
 	XSDMapper.class,
 	ClassMapper.class,
 	ResourceMapper.class,
-	CoreRepository.class
+	CoreRepository.class,
+	XSDMapper.class,
+	JSONSchemaMapper.class
 })
 public class XSDMapperTest {
 
@@ -157,7 +160,7 @@ public class XSDMapperTest {
 	
 	@Test
 	void testTraverseTree() throws Exception {
-		//String filePath = "src/test/resources/xmlschema/sample.xsd";
+		String filePath = "src/test/resources/xmlschema/sample.xsd";
 		//String filePath = "src/test/resources/xmlschema/eml1/eml.xsd";
 		//String filePath = "src/test/resources/xmlschema/clarin/LinguisticFieldtrip.xsd";
 		//String filePath = "https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1407745712081/xsd";
@@ -166,8 +169,9 @@ public class XSDMapperTest {
 		//String filePath = "https://raw.githubusercontent.com/jkesanie/eml-profile/master/eml.xsd";
         //String filePath = "src/test/resources/xmlschema/dublincore/simpledc20021212.xsd";
 		//String filePath = "src/test/resources/xmlschema/dublincore/dcterms.xsd";
-		String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
-
+		//String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
+		//String filePath = "src/test/resources/xmlschema/eudat-core/eudat-core.xsd";
+		
 		ObjectNode jroot = mapper.mapToInternalJson(filePath);
         ObjectWriter writer = m.writer(new DefaultPrettyPrinter());
         writer.writeValue(new File("xmlschema-to-jsonschema.json"), jroot);
@@ -178,14 +182,41 @@ public class XSDMapperTest {
 	
 
 	
+	
 	@Test
-	void testLoadImports() throws Exception {		
+	void testLoadImportDatacite_4_4() throws Exception {		
 		//String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
 		String filePath = "src/test/resources/xmlschema/datacite/4.4/metadata.xsd";		
 		SchemaParserResultDTO r = mapper.loadSchema(filePath);
 		assertTrue(r.isOk());
-		
-		
+		assertEquals(11,  r.getTree().getHasPart().size());
+		assertEquals("include/xml.xsd", r.getTree().getHasPart().get(0).getPath());
+		assertEquals("include/datacite-numberType-v4.xsd", r.getTree().getHasPart().get(10).getPath());
 	}
+	
+	@Test
+	void testLoadImportEml() throws Exception {		
+		//String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
+		String filePath = "src/test/resources/xmlschema/eml1/eml.xsd";		
+		SchemaParserResultDTO r = mapper.loadSchema(filePath);
+		assertTrue(r.isOk());
+		assertEquals(2,  r.getTree().getHasPart().size());
+		assertEquals("eml-gbif-profile.xsd", r.getTree().getHasPart().get(1).getPath());
+		assertEquals("http://www.w3.org/2001/xml.xsd", r.getTree().getHasPart().get(0).getPath());
+		
+		SchemaPart p = r.getTree().getHasPart().get(1);
+		assertEquals(3, p.getHasPart().size());
+		assertEquals("eml.xsd", p.getHasPart().get(0).getPath());
+		assertEquals("dc.xsd", p.getHasPart().get(1).getPath());
+		assertEquals("http://rs.gbif.org/schema/xml.xsd", p.getHasPart().get(2).getPath());
+		assertEquals(0, p.getHasPart().get(0).getHasPart().size()); // cycle
+		assertEquals(0, p.getHasPart().get(1).getHasPart().size());
+		assertEquals(0, p.getHasPart().get(1).getHasPart().size());
+		
+
+	}	
+		
+	
+	
 	
 }

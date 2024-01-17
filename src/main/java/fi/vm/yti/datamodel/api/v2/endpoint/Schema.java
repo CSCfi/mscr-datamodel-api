@@ -180,9 +180,12 @@ public class Schema extends BaseMSCRController {
 			}else if(schemaDTO.getFormat() == SchemaFormat.PDF) {
 				// do nothing
 				schemaModel = ModelFactory.createDefaultModel();
-			}else if(schemaDTO.getFormat() == SchemaFormat.XSD || schemaDTO.getFormat() == SchemaFormat.XML) {
+			}else if(schemaDTO.getFormat() == SchemaFormat.XSD) {
+				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
+						
+			} else if(schemaDTO.getFormat() == SchemaFormat.XML) {
 				// do nothing
-				schemaModel = ModelFactory.createDefaultModel();			
+				schemaModel = ModelFactory.createDefaultModel();				
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
 						schemaDTO.getFormat()));

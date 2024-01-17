@@ -2,11 +2,14 @@ package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
 import org.xmlet.xsdparser.core.XsdParser;
 import org.xmlet.xsdparser.xsdelements.XsdAbstractElement;
 import org.xmlet.xsdparser.xsdelements.XsdAll;
@@ -33,26 +36,36 @@ import com.google.common.primitives.UnsignedLong;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaParserResultDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaPart;
 
+@Service
 public class XSDMapper {
 
-	 private static final ObjectMapper m = new ObjectMapper();
+	private static final ObjectMapper m = new ObjectMapper();
 	
-	private void processSchema(SchemaPart part, String schemaLocation, Map<String, XsdSchema> map) {
+	private void processSchema(SchemaPart part, String schemaLocation, Map<String, XsdSchema> map, Set<String> added) {
 		SchemaPart newPart = new SchemaPart(schemaLocation, true);
 		part.getHasPart().add(newPart);
 		XsdSchema newSchema = map.get( map.keySet().stream().filter(key -> key.endsWith(schemaLocation)).findFirst().get() );
-		traverseSchemaTree(newPart, newSchema, map);
+		traverseSchemaTree(newPart, newSchema, map, added);	
+		
 		
 	}
-	private void traverseSchemaTree(SchemaPart part, XsdSchema schema, Map<String, XsdSchema> map) {
+	private void traverseSchemaTree(SchemaPart part, XsdSchema schema, Map<String, XsdSchema> map, Set<String> added) {
 		if(schema.getChildrenImports() != null) {
 			schema.getChildrenImports().forEach(i -> {
-				processSchema(part, i.getSchemaLocation(), map);
+				if(!added.contains(i.getSchemaLocation())) {
+					added.add(i.getSchemaLocation());
+					processSchema(part, i.getSchemaLocation(), map, added);	
+				}
+				
 			});
 		}
 		if(schema.getChildrenIncludes() != null) {
 			schema.getChildrenIncludes().forEach(i -> {				
-				processSchema(part, i.getSchemaLocation(), map);
+				if(!added.contains(i.getSchemaLocation())) {
+					added.add(i.getSchemaLocation());
+					processSchema(part, i.getSchemaLocation(), map, added);
+				}
+
 			});
 		}		
 				
@@ -74,7 +87,8 @@ public class XSDMapper {
 			XsdSchema rootSchema = p.getResultXsdSchemas().filter(e -> e.getFilePath().equals(filePath)).findFirst().get(); // since parsing was successful this should work	
 			System.out.println(rootSchema.getTargetNamespace());
 			System.out.println("***");
-			traverseSchemaTree(root, rootSchema, schemaMap);
+			Set<String> added = new HashSet<String>();
+			traverseSchemaTree(root, rootSchema, schemaMap, added);
 			r.setTree(root);
 			r.setOk(true);
 		}catch(Exception ex) {
@@ -102,6 +116,7 @@ public class XSDMapper {
         jroot.put("type", "object");
         jroot.set("properties", rootProperties);
         jroot.put("$schema", "http://json-schema.org/draft-04/schema#");
+        /*
         XsdElement root = getRootElement(p, filePath);
         if(root != null) {
             System.out.println("Root element: " + root.getName());        
@@ -117,6 +132,12 @@ public class XSDMapper {
         		handleElement(e, jroot, rootProperties);
         	});
         }
+        */
+        List<XsdElement> list = p.getResultXsdElements().toList();
+    	list.forEach(e -> {
+    		handleElement(e, jroot, rootProperties);
+    	});        
+        
         return jroot;
 	}	
 	

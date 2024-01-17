@@ -181,7 +181,7 @@ jacocoTestReport {
 }
 test {
     useJUnitPlatform()
-    forkEvery 20
+    forkEvery 3
 }
 
 

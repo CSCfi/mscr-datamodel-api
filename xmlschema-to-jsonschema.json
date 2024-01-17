@@ -1,0 +1,117 @@
+{
+  "type" : "object",
+  "properties" : {
+    "purchaseOrder" : {
+      "type" : "object",
+      "properties" : {
+        "shipTo" : {
+          "type" : "object",
+          "properties" : {
+            "name" : {
+              "type" : "string",
+              "title" : "name",
+              "@id" : "http://tempuri.org/po.xsd#name"
+            },
+            "street" : {
+              "type" : "string",
+              "title" : "street",
+              "@id" : "http://tempuri.org/po.xsd#street"
+            },
+            "city" : {
+              "type" : "string",
+              "title" : "city",
+              "@id" : "http://tempuri.org/po.xsd#city"
+            },
+            "state" : {
+              "type" : "string",
+              "title" : "state",
+              "@id" : "http://tempuri.org/po.xsd#state"
+            },
+            "zip" : {
+              "type" : "number",
+              "title" : "zip",
+              "@id" : "http://tempuri.org/po.xsd#zip"
+            }
+          },
+          "title" : "shipTo",
+          "@id" : "http://tempuri.org/po.xsd#shipTo"
+        },
+        "billTo" : {
+          "type" : "object",
+          "properties" : {
+            "name" : {
+              "type" : "string",
+              "title" : "name",
+              "@id" : "http://tempuri.org/po.xsd#name"
+            },
+            "street" : {
+              "type" : "string",
+              "title" : "street",
+              "@id" : "http://tempuri.org/po.xsd#street"
+            },
+            "city" : {
+              "type" : "string",
+              "title" : "city",
+              "@id" : "http://tempuri.org/po.xsd#city"
+            },
+            "state" : {
+              "type" : "string",
+              "title" : "state",
+              "@id" : "http://tempuri.org/po.xsd#state"
+            },
+            "zip" : {
+              "type" : "number",
+              "title" : "zip",
+              "@id" : "http://tempuri.org/po.xsd#zip"
+            }
+          },
+          "title" : "billTo",
+          "@id" : "http://tempuri.org/po.xsd#billTo"
+        },
+        "items" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "item" : {
+                "type" : "object",
+                "properties" : {
+                  "productName" : {
+                    "type" : "string",
+                    "title" : "productName",
+                    "@id" : "http://tempuri.org/po.xsd#productName"
+                  },
+                  "quantity" : {
+                    "type" : "integer",
+                    "minimum" : 0,
+                    "exclusiveMinimum" : true,
+                    "title" : "quantity",
+                    "@id" : "http://tempuri.org/po.xsd#quantity"
+                  },
+                  "USPrice" : {
+                    "type" : "number",
+                    "title" : "USPrice",
+                    "@id" : "http://tempuri.org/po.xsd#USPrice"
+                  },
+                  "shipDate" : {
+                    "type" : "string",
+                    "pattern" : "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
+                    "title" : "shipDate",
+                    "@id" : "http://tempuri.org/po.xsd#shipDate"
+                  }
+                },
+                "title" : "item",
+                "@id" : "http://tempuri.org/po.xsd#item"
+              }
+            }
+          },
+          "title" : "items",
+          "@id" : "http://tempuri.org/po.xsd#items"
+        }
+      },
+      "title" : "purchaseOrder",
+      "@id" : "http://tempuri.org/po.xsd#purchaseOrder"
+    }
+  },
+  "$schema" : "http://json-schema.org/draft-04/schema#"
+}
