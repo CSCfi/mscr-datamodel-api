@@ -1,32 +1,12 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
-import fi.vm.yti.datamodel.api.v2.dto.CrosswalkEditorSchemaDTO;
-import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
-import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
-import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
-import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
-import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
-import fi.vm.yti.datamodel.api.v2.opensearch.OpenSearchUtil;
-import fi.vm.yti.datamodel.api.v2.opensearch.dto.*;
-import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResource;
-import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
-import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexModel;
-import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
-import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
-import fi.vm.yti.datamodel.api.v2.service.FrontendService;
-import fi.vm.yti.datamodel.api.v2.service.JenaService;
-import fi.vm.yti.datamodel.api.v2.service.JsonSchemaWriter;
-import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
-import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
-import fi.vm.yti.security.AuthenticatedUserProvider;
-import fi.vm.yti.security.YtiUser;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.jena.rdf.model.Model;
 import org.opensearch.client.opensearch.core.SearchResponse;
@@ -43,16 +23,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkEditorSchemaDTO;
+import fi.vm.yti.datamodel.api.v2.dto.FunctionDTO;
+import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaParserResultDTO;
+import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
+import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
+import fi.vm.yti.datamodel.api.v2.opensearch.OpenSearchUtil;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.CountRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.CountSearchResponse;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.CrosswalkSearchRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.ModelSearchRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.ResourceSearchRequest;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.SearchResponseDTO;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexModel;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResource;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
+import fi.vm.yti.datamodel.api.v2.service.FrontendService;
+import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.JsonSchemaWriter;
+import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
+import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
+import fi.vm.yti.security.AuthenticatedUserProvider;
+import fi.vm.yti.security.YtiUser;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("v2/frontend")
@@ -68,6 +74,7 @@ public class FrontendController {
     private final JenaService jenaService;
     private final SchemaMapper schemaMapper;
     private final JsonSchemaWriter schemaWriter;
+    
 
     @Autowired
     public FrontendController(SearchIndexService searchIndexService,
@@ -76,7 +83,9 @@ public class FrontendController {
                               NamespaceService namespaceService,
                               JenaService jenaService,
                               SchemaMapper schemaMapper,
-                      		  JsonSchemaWriter schemaWriter) {
+                      		  JsonSchemaWriter schemaWriter
+                      		  
+    							) {
         this.searchIndexService = searchIndexService;
         this.frontendService = frontendService;
         this.userProvider = userProvider;
@@ -240,5 +249,21 @@ public class FrontendController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
     }    
+    
+    
+	@Operation(summary = "Get XSD schema file structure")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@GetMapping(path = "/xsdStructure", produces = APPLICATION_JSON_VALUE)
+	public SchemaParserResultDTO getXsdSchemaStructure(
+			@RequestParam(value = "url", required = true) String url) {
+		// require a user session
+		YtiUser user = userProvider.getUser();
+		if(user == null || user.isAnonymous()) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This endpoint requires a user session.");
+		}
+		return frontendService.getSchemaStructure(url);
+		
+	}    
         
 }
