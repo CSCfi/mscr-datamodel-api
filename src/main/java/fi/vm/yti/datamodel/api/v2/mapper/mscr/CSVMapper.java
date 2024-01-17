@@ -38,6 +38,7 @@ public class CSVMapper {
 			property.addLiteral(SH.maxCount, 1);
 			property.addLiteral(model.createProperty(MSCR.URI + "column"), c);
 			property.addProperty(SH.path, model.createResource(pid + "#" + propertyName));
+			property.addLiteral(SH.name, propertyName);
 			root.addProperty(SH.property, property);
 			
 			c = c + 1;
