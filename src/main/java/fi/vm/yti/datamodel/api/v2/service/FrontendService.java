@@ -25,10 +25,12 @@ import fi.vm.yti.datamodel.api.v2.dto.OrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.OutputDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ParameterDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaParserResultDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ServiceCategoryDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.FunctionMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ServiceCategoryMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import io.zenwave360.jsonrefparser.$RefParser;
 import io.zenwave360.jsonrefparser.$Refs;
@@ -37,12 +39,13 @@ import io.zenwave360.jsonrefparser.$Refs;
 public class FrontendService {
 
     private final CoreRepository coreRepository;
-
+    private final XSDMapper xsdMapper;
     
     
-    public FrontendService(CoreRepository coreRepository) {
+    public FrontendService(CoreRepository coreRepository, XSDMapper xsdMapper) {
         this.coreRepository = coreRepository;
-        
+        this.xsdMapper = xsdMapper;
+
     }
     
     public List<OrganizationDTO> getOrganizationsByID(Set<UUID> ids) {
@@ -172,5 +175,9 @@ public class FrontendService {
 		
 		
 		return list;
+	}
+	
+	public SchemaParserResultDTO getSchemaStructure(String path) {
+		return xsdMapper.loadSchema(path);
 	}
 }
