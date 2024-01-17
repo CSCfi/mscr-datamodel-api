@@ -124,6 +124,9 @@
         },
         "modified": {
             "type": "string"
+        },
+        "mscr_repeatable": {
+            "type": "boolean"
         }
     },
     "dependencies": {

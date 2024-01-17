@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version 1.0 - Created 2020-08-01 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schema.eudat.eu/schemas/v1.1" targetNamespace="http://schema.eudat.eu/schemas/v1.1" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+  <xs:include schemaLocation="eudat-nameType-v1.xsd"/>
+  <!-- TYPE DECLARATIONS -->
+  <!-- defines value for mandatory fields -->
+  <xs:simpleType name="nonEmptyContentStringType" id="nonEmptyContentStringType">
+    <xs:restriction base="xs:token">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- creator and contributor types -->
+  <xs:complexType name="baseCreatorName" id="baseCreatorName">
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyContentStringType">
+        <xs:attribute name="nameType" type="nameType" use="optional"/>
+        <xs:attribute ref="xml:lang"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!-- definition for nameIdentifier -->
+  <xs:complexType name="nameIdentifierType">
+    <xs:annotation>
+      <xs:documentation>Uniquely identifies a creator or contributor, according to various identifier schemes.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyContentStringType">
+        <xs:attribute name="nameIdentifierScheme" type="nonEmptyContentStringType" use="required"/>
+        <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!-- definition for EDTF dates, modified from PREMIS 2.0 -->
+  <xs:simpleType name="edtf" id="edtf">
+    <xs:restriction base="nonEmptyContentStringType">
+      <!-- pattern for ISO-8601 date-time -->
+      <xs:pattern value="(-)?[0-9]{4}(-[0-9]{2})?(-[0-9]{2})?(T([0-9]{2}:){2}[0-9]{2}Z)?"/>
+
+      <!--
+      The following pattern is for year (yyyy) or year-month (yyyy-mm)
+      The last or last two digits of year may be '?'  meaning "one year in that range but not sure which year", for example 19?? means some year from 1990 to 1999.  Similarly month may be '??' so that 2004-?? "means some month in 2004".  And the entire string may end with '?' or '~' for "uncertain" or "approximate".
+      Hyphen must separate year and month.
+      -->
+      <xs:pattern value="\d{2}(\d{2}|\?\?|\d(\d|\?))(-(\d{2}|\?\?))?~?\??"/>
+      <!--
+      The following pattern is for  yearMonthDay - yyyymmdd,  where 'dd' may be '??'  so '200412??' means "some day during the month of 12/2004".
+      The whole  string may be followed by '?' or '~'  to mean "questionable" or "approximate".     Hypens are  not allowed for this pattern.
+      -->
+      <xs:pattern value="\d{6}(\d{2}|\?\?)~?\??"/>
+      <!--
+
+      The following pattern is for date and time with T separator:'yyyymmddThhmmss'.
+      Hypens in date and colons in time not allowed for this pattern.
+      -->
+      <xs:pattern value="\d{8}T\d{6}"/>
+      <!--
+
+      The following pattern is for a date range. in years: 'yyyy/yyyy'; or year/month: yyyy-mm/yyyy-mm, or year/month/day: yyyy-mm-dd/yyyy-mm-dd. Beginning or end of range value may be 'unknown'. End of range value may be 'open'.
+      Hypens mandatory when month is present.
+      -->
+      <xs:pattern value="((-)?(\d{4}(-\d{2})?(-\d{2})?)|unknown)/((-)?(\d{4}(-\d{2})?(-\d{2})?)|unknown|open)"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="date" id="date">
+    <xs:simpleContent>
+      <xs:extension base="edtf">
+        <xs:attribute name="format" type="nonEmptyContentStringType" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+<xs:complexType name="dateTime">
+    <xs:simpleContent>
+      <xs:extension base="xs:dateTime">
+        <xs:attribute name="format" type="nonEmptyContentStringType" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!-- definition for partially controlled (allows open input) identifiers -->
+  <xs:simpleType name="openIdentifierType">
+    <xs:union memberTypes="identifierType anyString"/>
+  </xs:simpleType>
+  <xs:simpleType name="anyString">
+    <xs:restriction base="nonEmptyContentStringType">
+      <xs:pattern value="[A-Za-z]{2,}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- definition for affiliation -->
+  <xs:complexType name="affiliationType">
+    <xs:annotation>
+      <xs:documentation>Uniquely identifies an affiliation, according to various identifier schemes.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="nonEmptyContentStringType">
+        <xs:attribute name="affiliationIdentifier" type="nonEmptyContentStringType" use="optional"/>
+        <xs:attribute name="affiliationIdentifierScheme" type="nonEmptyContentStringType" use="optional"/>
+        <xs:attribute name="schemeURI" type="xs:anyURI" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <!-- defines the value for a year -->
+  <xs:simpleType name="yearType" id="yearType">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[\d]{4}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- definitions for geoLocation -->
+  <xs:complexType name="point" id="point">
+    <xs:all>
+      <xs:element name="pointLongitude" type="longitudeType" minOccurs="1"/>
+      <xs:element name="pointLatitude" type="latitudeType" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="box" id="box">
+    <xs:all>
+      <xs:element name="westBoundLongitude" type="longitudeType" minOccurs="1"/>
+      <xs:element name="eastBoundLongitude" type="longitudeType" minOccurs="1"/>
+      <xs:element name="southBoundLatitude" type="latitudeType" minOccurs="1"/>
+      <xs:element name="northBoundLatitude" type="latitudeType" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:simpleType name="longitudeType" id="longitudeType">
+    <xs:restriction base="xs:float">
+      <xs:minInclusive value="-180"/>
+      <xs:maxInclusive value="180"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="latitudeType" id="latitudeType">
+    <xs:restriction base="xs:float">
+      <xs:minInclusive value="-90"/>
+      <xs:maxInclusive value="90"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

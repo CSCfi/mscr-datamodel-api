@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eml="eml://ecoinformatics.org/eml-2.1.1">
+  <xs:include schemaLocation="eml-gbif-profile.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"  schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+  <xs:element name="eml">
+      
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="dataset"/>
+        <xs:element ref="additionalMetadata" maxOccurs="1" minOccurs="0"/>
+        <xs:element name="alternateIdentifier" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>This is the only identifier issued by the IPT for the metadata document; it is a UUID</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="onlineUrl" minOccurs="0"/>
+        <xs:choice maxOccurs="unbounded" minOccurs="1">
+          <xs:element name="organizationName" type="NonEmptyStringType">
+            <xs:annotation>
+              <xs:documentation>The full name of the organization that is associated with the resource. This field is intended to describe which institution or overall organization is associated with the resource being described.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element ref="individualName"/>
+          <xs:element name="positionName" type="NonEmptyStringType">
+            <xs:annotation>
+              <xs:documentation>This field is intended to be used instead of a particular person or full organization name. If the associated person who holds the role changes frequently, then Position Name would be used for consistency. E.g., GBIF Data Manager.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="packageId" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unique global ID for this exact version of the EML document</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="scope" use="required" type="xs:string" fixed="system"/>
+      <xs:attribute name="system" use="required">
+        <xs:simpleType>
+          <xs:list itemType="xs:string"/>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute ref="xml:lang" use="optional">
+        <xs:annotation>
+          <xs:documentation>The language in which the metadata (as opposed to the resource being described by the metadata) is written</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

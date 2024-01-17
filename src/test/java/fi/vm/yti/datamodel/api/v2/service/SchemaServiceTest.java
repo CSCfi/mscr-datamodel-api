@@ -31,13 +31,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 @ExtendWith(SpringExtension.class)
 @Import({
 	SchemaService.class,
 	ClassMapper.class,
 	ResourceMapper.class,
-	CoreRepository.class
+	CoreRepository.class,
+	XSDMapper.class,
+	JSONSchemaMapper.class
 })
 public class SchemaServiceTest {
 
@@ -62,7 +66,7 @@ public class SchemaServiceTest {
 		
 		Resource root = model.createResource(schemaPID + "#root/Root");
 		
-//		model.write(System.out, "TURTLE");
+		model.write(System.out, "TURTLE");
 		
 		assertTrue(model.contains(root, RDF.type, SH.NodeShape));		
 		assertEquals(3, model.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size());
@@ -285,7 +289,32 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		model.write(System.out, "TTL");
+	
 	}
 	
+	//
+	//String filePath = "src/test/resources/xmlschema/eml1/eml.xsd";
+	//String filePath = "src/test/resources/xmlschema/clarin/LinguisticFieldtrip.xsd";
+	//String filePath = "https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1407745712081/xsd";
+	//String filePath = "src/test/resources/xmlschema/datacite/4.4/metadata.xsd";
+	//String filePath = "https://schema.datacite.org/meta/kernel-4.4/metadata.xsd";
+	//String filePath = "https://raw.githubusercontent.com/jkesanie/eml-profile/master/eml.xsd";
+    //String filePath = "src/test/resources/xmlschema/dublincore/simpledc20021212.xsd";
+	//String filePath = "src/test/resources/xmlschema/dublincore/dcterms.xsd";
+	//String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
+	//String filePath = "src/test/resources/xmlschema/eudat-core/eudat-core.xsd";
+	
+	@Test
+	void testSampleXMLSchema() throws Exception {
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		String filePath = "src/test/resources/xmlschema/sample.xsd";
+		Model m = service.transformXSDToInternal(schemaPID, filePath);
+		
+		assertEquals(19, m.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size()); // just element instances, no attributes
+		assertEquals(6, m.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size()); // 5 + root
+		
+		
+		
+	}
 }
 

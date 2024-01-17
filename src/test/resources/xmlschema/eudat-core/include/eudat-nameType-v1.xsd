@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Version 1.0 - Created 2020-08-01 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schema.eudat.eu/schemas/v1.1" targetNamespace="http://schema.eudat.eu/schemas/v1.1" elementFormDefault="qualified">
+  <xs:simpleType name="nameType" id="nameType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Organizational"/>
+      <xs:enumeration value="Personal"/>
+      <xs:enumeration value="Instrumental"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

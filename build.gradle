@@ -40,6 +40,9 @@ repositories {
     jcenter {
         content { excludeGroupByRegex "fi\\.vm\\.yti.*" }
     }
+    maven{            
+        url "https://xqj.net/maven"
+    }    
     maven {
         url = uri("https://maven.pkg.github.com/CSCfi/yti-spring-security")
         credentials {
@@ -155,6 +158,11 @@ dependencies {
     implementation('io.github.zenwave360:json-schema-ref-parser-jvm:0.8.2') {
         exclude group: 'com.jayway.jsonpath'
     }
+    // https://mvnrepository.com/artifact/com.github.xmlet/xsdParser
+    implementation group: 'com.github.xmlet', name: 'xsdParser', version: '1.2.4'
+
+
+
 }
 
 sonarqube {
@@ -173,7 +181,7 @@ jacocoTestReport {
 }
 test {
     useJUnitPlatform()
-    forkEvery 20
+    forkEvery 3
 }
 
 
@@ -186,4 +194,7 @@ dependencyCheck {
     data {
         directory = System.getenv('OWASP_DATA_DIR')
     }
+}
+configurations {
+   all*.exclude group: 'xml-apis'
 }
