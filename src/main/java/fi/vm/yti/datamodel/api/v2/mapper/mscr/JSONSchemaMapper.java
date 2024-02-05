@@ -133,7 +133,12 @@ public class JSONSchemaMapper {
 			propertyResource.addProperty(SH.datatype, RDF.langString);	
 		}
 		else {
-			propertyResource.addProperty(SH.datatype, XSDTypesMap.get(type));	
+			Resource typeResource = XSDTypesMap.get(type);
+			if(typeResource == null) {
+				System.out.println(type);
+				typeResource = XSD.xstring;
+			}
+			propertyResource.addProperty(SH.datatype, typeResource);
 		}
 		
 		propertyResource.addProperty(SH.path, ResourceFactory.createResource("mscr:" + propID));

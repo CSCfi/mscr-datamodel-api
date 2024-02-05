@@ -160,7 +160,7 @@ public class XSDMapperTest {
 	
 	@Test
 	void testTraverseTree() throws Exception {
-		String filePath = "src/test/resources/xmlschema/sample.xsd";
+		//String filePath = "src/test/resources/xmlschema/sample.xsd";
 		//String filePath = "src/test/resources/xmlschema/eml1/eml.xsd";
 		//String filePath = "src/test/resources/xmlschema/clarin/LinguisticFieldtrip.xsd";
 		//String filePath = "https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1407745712081/xsd";
@@ -169,7 +169,7 @@ public class XSDMapperTest {
 		//String filePath = "https://raw.githubusercontent.com/jkesanie/eml-profile/master/eml.xsd";
         //String filePath = "src/test/resources/xmlschema/dublincore/simpledc20021212.xsd";
 		//String filePath = "src/test/resources/xmlschema/dublincore/dcterms.xsd";
-		//String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
+		String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
 		//String filePath = "src/test/resources/xmlschema/eudat-core/eudat-core.xsd";
 		
 		ObjectNode jroot = mapper.mapToInternalJson(filePath);

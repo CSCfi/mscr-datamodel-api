@@ -1,116 +1,296 @@
 {
   "type" : "object",
   "properties" : {
-    "purchaseOrder" : {
+    "resource" : {
       "type" : "object",
       "properties" : {
-        "shipTo" : {
-          "type" : "object",
-          "properties" : {
-            "name" : {
-              "type" : "string",
-              "title" : "name",
-              "@id" : "http://tempuri.org/po.xsd#name"
-            },
-            "street" : {
-              "type" : "string",
-              "title" : "street",
-              "@id" : "http://tempuri.org/po.xsd#street"
-            },
-            "city" : {
-              "type" : "string",
-              "title" : "city",
-              "@id" : "http://tempuri.org/po.xsd#city"
-            },
-            "state" : {
-              "type" : "string",
-              "title" : "state",
-              "@id" : "http://tempuri.org/po.xsd#state"
-            },
-            "zip" : {
-              "type" : "number",
-              "title" : "zip",
-              "@id" : "http://tempuri.org/po.xsd#zip"
-            }
-          },
-          "title" : "shipTo",
-          "@id" : "http://tempuri.org/po.xsd#shipTo"
+        "identifier" : {
+          "type" : "string",
+          "description" : "A persistent identifier that identifies a resource.Currently, only DOI is allowed.",
+          "title" : "identifier",
+          "@id" : "http://datacite.org/schema/kernel-3identifier"
         },
-        "billTo" : {
-          "type" : "object",
-          "properties" : {
-            "name" : {
-              "type" : "string",
-              "title" : "name",
-              "@id" : "http://tempuri.org/po.xsd#name"
-            },
-            "street" : {
-              "type" : "string",
-              "title" : "street",
-              "@id" : "http://tempuri.org/po.xsd#street"
-            },
-            "city" : {
-              "type" : "string",
-              "title" : "city",
-              "@id" : "http://tempuri.org/po.xsd#city"
-            },
-            "state" : {
-              "type" : "string",
-              "title" : "state",
-              "@id" : "http://tempuri.org/po.xsd#state"
-            },
-            "zip" : {
-              "type" : "number",
-              "title" : "zip",
-              "@id" : "http://tempuri.org/po.xsd#zip"
-            }
-          },
-          "title" : "billTo",
-          "@id" : "http://tempuri.org/po.xsd#billTo"
-        },
-        "items" : {
+        "creators" : {
           "type" : "array",
           "items" : {
             "type" : "object",
             "properties" : {
-              "item" : {
+              "creator" : {
                 "type" : "object",
                 "properties" : {
-                  "productName" : {
+                  "creatorName" : {
                     "type" : "string",
-                    "title" : "productName",
-                    "@id" : "http://tempuri.org/po.xsd#productName"
+                    "title" : "creatorName",
+                    "@id" : "http://datacite.org/schema/kernel-3creatorName"
                   },
-                  "quantity" : {
-                    "type" : "integer",
-                    "minimum" : 0,
-                    "exclusiveMinimum" : true,
-                    "title" : "quantity",
-                    "@id" : "http://tempuri.org/po.xsd#quantity"
-                  },
-                  "USPrice" : {
-                    "type" : "number",
-                    "title" : "USPrice",
-                    "@id" : "http://tempuri.org/po.xsd#USPrice"
-                  },
-                  "shipDate" : {
+                  "nameIdentifier" : {
                     "type" : "string",
-                    "pattern" : "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
-                    "title" : "shipDate",
-                    "@id" : "http://tempuri.org/po.xsd#shipDate"
+                    "title" : "nameIdentifier",
+                    "@id" : "http://datacite.org/schema/kernel-3nameIdentifier"
+                  },
+                  "affiliation" : {
+                    "type" : "string",
+                    "title" : "affiliation"
                   }
                 },
-                "title" : "item",
-                "@id" : "http://tempuri.org/po.xsd#item"
+                "description" : "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.",
+                "title" : "creator",
+                "@id" : "http://datacite.org/schema/kernel-3creator"
               }
             }
           },
-          "title" : "items",
-          "@id" : "http://tempuri.org/po.xsd#items"
+          "title" : "creators",
+          "@id" : "http://datacite.org/schema/kernel-3creators"
+        },
+        "titles" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "title" : {
+                "type" : "string",
+                "description" : "A name or title by which a resource is known.",
+                "title" : "title",
+                "@id" : "http://datacite.org/schema/kernel-3title"
+              }
+            }
+          },
+          "title" : "titles",
+          "@id" : "http://datacite.org/schema/kernel-3titles"
+        },
+        "publisher" : {
+          "type" : "string",
+          "description" : "The name of the entity that holds, archives, publishes prints, distributes, releases, issues, or produces the resource. This property will be used to formulate the citation, so consider the prominence of the role.In the case of datasets, \"publish\" is understood to mean making the data available to the community of researchers.",
+          "title" : "publisher",
+          "@id" : "http://datacite.org/schema/kernel-3publisher"
+        },
+        "publicationYear" : {
+          "type" : "string",
+          "description" : "Year when the data is made publicly available. If an embargo period has been in effect, use the date when the embargo period ends.In the case of datasets, \"publish\" is understood to mean making the data available on a specific date to the community of researchers. If there is no standard publication year value, use the date that would be preferred from a citation perspective.YYYY",
+          "title" : "publicationYear",
+          "@id" : "http://datacite.org/schema/kernel-3publicationYear"
+        },
+        "subjects" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "subject" : {
+                "type" : "string",
+                "description" : "Subject, keywords, classification codes, or key phrases describing the resource.",
+                "title" : "subject",
+                "@id" : "http://datacite.org/schema/kernel-3subject"
+              }
+            }
+          },
+          "title" : "subjects",
+          "@id" : "http://datacite.org/schema/kernel-3subjects"
+        },
+        "contributors" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "contributor" : {
+                "type" : "object",
+                "properties" : {
+                  "contributorName" : {
+                    "type" : "string",
+                    "title" : "contributorName",
+                    "@id" : "http://datacite.org/schema/kernel-3contributorName"
+                  },
+                  "nameIdentifier" : {
+                    "type" : "string",
+                    "title" : "nameIdentifier",
+                    "@id" : "http://datacite.org/schema/kernel-3nameIdentifier"
+                  },
+                  "affiliation" : {
+                    "type" : "string",
+                    "title" : "affiliation"
+                  }
+                },
+                "description" : "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given.",
+                "title" : "contributor",
+                "@id" : "http://datacite.org/schema/kernel-3contributor"
+              }
+            }
+          },
+          "title" : "contributors",
+          "@id" : "http://datacite.org/schema/kernel-3contributors"
+        },
+        "dates" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "date" : {
+                "type" : "string",
+                "description" : "Different dates relevant to the work.YYYY,YYYY-MM-DD, YYYY-MM-DDThh:mm:ssTZD or any other format or level of granularity described in W3CDTF. Use RKMS-ISO8601 standard for depicting date ranges.",
+                "title" : "date",
+                "@id" : "http://datacite.org/schema/kernel-3date"
+              }
+            }
+          },
+          "title" : "dates",
+          "@id" : "http://datacite.org/schema/kernel-3dates"
+        },
+        "language" : {
+          "type" : "unknown",
+          "description" : "Primary language of the resource. Allowed values are taken from  IETF BCP 47, ISO 639-1 language codes.",
+          "title" : "language",
+          "@id" : "http://datacite.org/schema/kernel-3language"
+        },
+        "resourceType" : {
+          "type" : "string",
+          "description" : "The type of a resource. You may enter an additional free text description.The format is open, but the preferred format is a single term of some detail so that a pair can be formed with the sub-property.",
+          "title" : "resourceType",
+          "@id" : "http://datacite.org/schema/kernel-3resourceType"
+        },
+        "alternateIdentifiers" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "alternateIdentifier" : {
+                "type" : "string",
+                "description" : "An identifier or identifiers other than the primary Identifier applied to the resource being registered. This may be any alphanumeric string which is unique within its domain of issue. May be used for local identifiers. AlternateIdentifier should be used for another identifier of the same instance (same location, same file).",
+                "title" : "alternateIdentifier",
+                "@id" : "http://datacite.org/schema/kernel-3alternateIdentifier"
+              }
+            }
+          },
+          "title" : "alternateIdentifiers",
+          "@id" : "http://datacite.org/schema/kernel-3alternateIdentifiers"
+        },
+        "relatedIdentifiers" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "relatedIdentifier" : {
+                "type" : "string",
+                "description" : "Identifiers of related resources. Use this property to indicate subsets of properties, as appropriate.",
+                "title" : "relatedIdentifier",
+                "@id" : "http://datacite.org/schema/kernel-3relatedIdentifier"
+              }
+            }
+          },
+          "title" : "relatedIdentifiers",
+          "@id" : "http://datacite.org/schema/kernel-3relatedIdentifiers"
+        },
+        "sizes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "size" : {
+                "type" : "string",
+                "description" : "Unstructures size information about the resource.",
+                "title" : "size",
+                "@id" : "http://datacite.org/schema/kernel-3size"
+              }
+            }
+          },
+          "title" : "sizes",
+          "@id" : "http://datacite.org/schema/kernel-3sizes"
+        },
+        "formats" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "format" : {
+                "type" : "string",
+                "description" : "Technical format of the resource.Use file extension or MIME type where possible.",
+                "title" : "format",
+                "@id" : "http://datacite.org/schema/kernel-3format"
+              }
+            }
+          },
+          "title" : "formats",
+          "@id" : "http://datacite.org/schema/kernel-3formats"
+        },
+        "version" : {
+          "type" : "string",
+          "description" : "Version number of the resource. If the primary resource has changed the version number increases.Register a new identifier for a major version change. Individual stewards need to determine which are major vs. minor versions. May be used in conjunction with properties 11 and 12 (AlternateIdentifier and RelatedIdentifier) to indicate various information updates. May be used in conjunction with property 17 (Description) to indicate the nature and file/record range of version.",
+          "title" : "version",
+          "@id" : "http://datacite.org/schema/kernel-3version"
+        },
+        "rightsList" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "rights" : {
+                "type" : "string",
+                "description" : "Any rights information for this resource. Provide a rights management statement for the resource or reference a service providing such information. Include embargo information if applicable. \nUse the complete title of a license and include version information if applicable.",
+                "title" : "rights",
+                "@id" : "http://datacite.org/schema/kernel-3rights"
+              }
+            }
+          },
+          "title" : "rightsList",
+          "@id" : "http://datacite.org/schema/kernel-3rightsList"
+        },
+        "descriptions" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "description" : {
+                "type" : "object",
+                "properties" : {
+                  "br" : {
+                    "type" : "string",
+                    "title" : "br",
+                    "@id" : "http://datacite.org/schema/kernel-3br"
+                  }
+                },
+                "description" : "All additional information that does not fit in any of the other categories. May be used for technical information. It is a best practice to supply a description.",
+                "title" : "description",
+                "@id" : "http://datacite.org/schema/kernel-3description"
+              }
+            }
+          },
+          "title" : "descriptions",
+          "@id" : "http://datacite.org/schema/kernel-3descriptions"
+        },
+        "geoLocations" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "geoLocation" : {
+                "type" : "object",
+                "properties" : {
+                  "geoLocationPoint" : {
+                    "type" : "string",
+                    "title" : "geoLocationPoint",
+                    "@id" : "http://datacite.org/schema/kernel-3geoLocationPoint"
+                  },
+                  "geoLocationBox" : {
+                    "type" : "string",
+                    "title" : "geoLocationBox",
+                    "@id" : "http://datacite.org/schema/kernel-3geoLocationBox"
+                  },
+                  "geoLocationPlace" : {
+                    "type" : "string",
+                    "title" : "geoLocationPlace"
+                  }
+                },
+                "description" : "Spatial region or named place where the data was gathered or about which the data is focused.A point contains a single latitude-longitude pair, separated by whitespace.A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner.",
+                "title" : "geoLocation",
+                "@id" : "http://datacite.org/schema/kernel-3geoLocation"
+              }
+            }
+          },
+          "title" : "geoLocations",
+          "@id" : "http://datacite.org/schema/kernel-3geoLocations"
         }
       },
-      "title" : "purchaseOrder",
-      "@id" : "http://tempuri.org/po.xsd#purchaseOrder"
+      "description" : "Root element of a single record. This wrapper element is for XML implementation only and is not defined in the DataCite DOI standard.\n        Note: This is the case for all wrapper elements within this schema!No content in this wrapper element.",
+      "title" : "resource",
+      "@id" : "http://datacite.org/schema/kernel-3resource"
     }
   },
   "$schema" : "http://json-schema.org/draft-04/schema#"

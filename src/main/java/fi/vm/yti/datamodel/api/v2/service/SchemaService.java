@@ -136,6 +136,7 @@ public class SchemaService {
 			Model m = transformXSDToInternal(pid, tempFile.getPath());
 			return m;
 		}catch(Exception ex) {
+			ex.printStackTrace();
 			throw new Exception("Could not transform schema file." + ex.getMessage());	
 		}	
 		finally {
