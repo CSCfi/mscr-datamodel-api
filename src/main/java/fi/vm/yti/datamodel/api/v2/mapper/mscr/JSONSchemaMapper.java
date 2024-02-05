@@ -135,7 +135,6 @@ public class JSONSchemaMapper {
 		else {
 			Resource typeResource = XSDTypesMap.get(type);
 			if(typeResource == null) {
-				System.out.println(type);
 				typeResource = XSD.xstring;
 			}
 			propertyResource.addProperty(SH.datatype, typeResource);
