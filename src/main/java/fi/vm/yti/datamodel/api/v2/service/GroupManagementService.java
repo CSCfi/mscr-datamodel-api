@@ -20,7 +20,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ public class GroupManagementService {
     }
 
     public void initOrganizations() {
+    	
         var organizations = webClient.get().uri(builder -> builder
                         .path("/organizations")
                         .queryParam("onlyValid", "true")
@@ -56,7 +59,7 @@ public class GroupManagementService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
                 })
-                .block();
+                .block(Duration.of(10, ChronoUnit.SECONDS));
         if(organizations == null || organizations.isEmpty()){
             throw new GroupManagementException("No organizations found, is group management service down?");
         }
