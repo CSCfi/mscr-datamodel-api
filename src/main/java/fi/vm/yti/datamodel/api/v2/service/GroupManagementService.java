@@ -54,9 +54,10 @@ public class GroupManagementService {
                     .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
                     })
                     .block();
-
+            LOG.info("got orgs");
             var model = mapGroupManagementOrganizationToModel(organizations);
             coreRepository.put(ModelConstants.ORGANIZATION_GRAPH, model);
+            LOG.info("Put orgs");
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
         }

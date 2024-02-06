@@ -46,7 +46,9 @@ public class StartUpListener {
         logger.info("System is starting ...");
 
         initDefaultNamespaces();
+        logger.info("start org init");
         initOrganizations();
+        logger.info("Org init done");
         initServiceCategories();
         initOpenSearchIndices();
         groupManagementService.updateUsers();
