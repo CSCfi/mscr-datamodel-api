@@ -46,7 +46,7 @@ public class StartUpListener {
         logger.info("System is starting ...");
 
         initDefaultNamespaces();
-        logger.info("Default namespaces initialized");
+        logger.info("Default namespaces initialized");        
         initOrganizations();        
         initServiceCategories();
         initOpenSearchIndices();

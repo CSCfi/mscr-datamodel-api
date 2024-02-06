@@ -51,7 +51,7 @@ public class GroupManagementService {
     }
 
     public void initOrganizations() {
-    	
+    	LOG.info("Init organizations");    	
         var organizations = webClient.get().uri(builder -> builder
                         .path("/organizations")
                         .queryParam("onlyValid", "true")
@@ -63,10 +63,11 @@ public class GroupManagementService {
         if(organizations == null || organizations.isEmpty()){
             throw new GroupManagementException("No organizations found, is group management service down?");
         }
-
+        LOG.info("Request done");
         var model = ModelFactory.createDefaultModel();
         mapOrganizationsToModel(organizations, model);
         coreRepository.put(ModelConstants.ORGANIZATION_GRAPH, model);
+        LOG.info("core put");
         LOG.info("Initialized organizations with {} organizations", organizations.size());
     }
 
