@@ -236,7 +236,7 @@ public class CrosswalkMapper {
 		if(includeVersionData) {
 			// query for revisions and variants here		
 			List<Revision> revs = new ArrayList<Revision>();
- 			var revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(dto.getAggregationKey()));			
+ 			var revisionsModel = jenaService.constructWithQueryCrosswalks(MapperUtils.getRevisionsQuery(dto.getAggregationKey()));			
 			revisionsModel.listSubjects().forEach(res -> {
 				revs.add(MapperUtils.mapToRevision(res));				
 			});
