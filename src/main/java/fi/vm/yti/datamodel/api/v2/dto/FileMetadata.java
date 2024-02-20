@@ -5,13 +5,15 @@ public class FileMetadata {
 	private int size;
 	private long fileID;
 	private String filename;
+	private String timestamp;
 	
 	
-	public FileMetadata(String contentType, int size, long fileID, String filename) {
+	public FileMetadata(String contentType, int size, long fileID, String filename, String timestamp) {
 		this.contentType = contentType;
 		this.size = size;
 		this.fileID = fileID;
 		this.filename = filename;
+		this.timestamp = timestamp;
 	}
 	
 	public String getContentType() {
@@ -28,6 +30,10 @@ public class FileMetadata {
 	
 	public String getFilename() {
 		return this.filename;
+	}
+	
+	public String getTimestamp() {
+		return this.timestamp;
 	}
 	
 }

@@ -1,0 +1,1 @@
+ALTER TABLE mscr_files ADD COLUMN timestamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP;
