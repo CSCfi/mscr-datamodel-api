@@ -162,6 +162,7 @@ public class Crosswalk extends BaseMSCRController {
 		}	
 		s.setVersionLabel(input != null && input.getVersionLabel() != null ? input.getVersionLabel() : "");
 		s.setFormat(input != null && input.getFormat() != null ? input.getFormat() : prev.getFormat());
+		s.setContact(input != null && input.getContact() != null ? input.getContact() : prev.getContact());
 		s.setSourceSchema(prev.getSourceSchema());
 		s.setTargetSchema(prev.getTargetSchema());
 		return s;

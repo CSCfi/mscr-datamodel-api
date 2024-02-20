@@ -214,7 +214,8 @@ public class Schema extends BaseMSCRController {
 		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
 		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
 		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
-		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace() : prevSchema.getNamespace());		
+		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace() : prevSchema.getNamespace());
+		s.setContact(inputSchema != null && inputSchema.getContact() != null ? inputSchema.getContact() : prevSchema.getContact());
 		if(isRevision || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
 			s.setOrganizations(prevSchema.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
 		}	

@@ -98,6 +98,7 @@ public class SchemaMapper {
 
 		addOrgsToModel(schemaDTO, modelResource);
 		MapperUtils.addCreationMetadata(modelResource, user);
+		MapperUtils.addOptionalStringProperty(modelResource, Iow.contact, schemaDTO.getContact());
 		
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
@@ -244,7 +245,9 @@ public class SchemaMapper {
 		schemaInfoDTO.setVisibility(visibility);
 		
 		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));		
-
+		
+		schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
+		
 		return schemaInfoDTO;
 	}
 
@@ -272,6 +275,7 @@ public class SchemaMapper {
 		schemaInfoDTO.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 
         MapperUtils.mapCreationInfo(schemaInfoDTO, modelResource, userMapper);
+        schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
 
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();

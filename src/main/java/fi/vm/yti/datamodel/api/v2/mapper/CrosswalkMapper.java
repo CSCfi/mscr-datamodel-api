@@ -95,6 +95,7 @@ public class CrosswalkMapper {
 
 		addOrgsToModel(dto, modelResource);
 		MapperUtils.addCreationMetadata(modelResource, user);
+		MapperUtils.addOptionalStringProperty(modelResource, Iow.contact, dto.getContact());
 
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
@@ -166,6 +167,8 @@ public class CrosswalkMapper {
 		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
 		dto.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 		
+		dto.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
+		
 		dto.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
 		dto.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
 		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
@@ -205,6 +208,7 @@ public class CrosswalkMapper {
 		dto.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
 
         MapperUtils.mapCreationInfo(dto, modelResource, userMapper);
+        dto.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
 
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
