@@ -1,5 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.mapper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -57,7 +59,8 @@ public class SchemaMapper {
 	private final StorageService storageService;
 	private final CoreRepository coreRepository;
 	private final JenaService jenaService;
-
+	private final DateFormat timestampFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:MM:SSZ");
+	
 	public SchemaMapper(
 			CoreRepository coreRepository,
 			PostgresStorageService storageService,
@@ -273,7 +276,7 @@ public class SchemaMapper {
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename()));
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename(), timestampFormat.format(file.timestamp())));
 		});
 		schemaInfoDTO.setFileMetadata(fileMetadatas);
 		

@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +68,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, filename from mscr_files where pid = ? and id = ? and type = ?");
+						.prepareStatement("select content_type, data, filename, timestamp from mscr_files where pid = ? and id = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setLong(2, fileID);
 				ps.setString(3, type.name());
@@ -82,7 +82,8 @@ public class PostgresStorageService implements StorageService {
 				String contentType = rs.getString(1);
 				byte[] data = rs.getBytes(2);
 				String filename = rs.getString(3);
-				return new StoredFile(contentType, data, fileID, type, filename);
+				Timestamp timestamp = rs.getTimestamp(4);
+				return new StoredFile(contentType, data, fileID, type, filename, timestamp);
 			}
 		});
 	}
@@ -103,7 +104,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, data, id, filename from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, data, id, filename, timestamp from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setString(2, type.name());
 				return ps;
@@ -118,7 +119,9 @@ public class PostgresStorageService implements StorageService {
 					byte[] data = rs.getBytes(2);
 					long fileID = rs.getLong(3);
 					String filename = rs.getString(4);
-					files.add(new StoredFile(contentType, data, fileID, type, filename));
+					Timestamp timestamp = rs.getTimestamp(5);
+
+					files.add(new StoredFile(contentType, data, fileID, type, filename, timestamp));
 				}
 				return files;
 			}
@@ -141,7 +144,7 @@ public class PostgresStorageService implements StorageService {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con
-						.prepareStatement("select content_type, length(data) as size, id, filename from mscr_files where pid = ? and type = ?");
+						.prepareStatement("select content_type, length(data) as size, id, filename, timestamp from mscr_files where pid = ? and type = ?");
 				ps.setString(1, pid);
 				ps.setString(2, type.name());
 				return ps;
@@ -156,7 +159,9 @@ public class PostgresStorageService implements StorageService {
 					int size = rs.getInt(2);
 					long fileID = rs.getLong(3);
 					String filename = rs.getString(4);
-					files.add(new StoredFileMetadata(contentType, size, fileID, type, filename));
+					Timestamp timestamp = rs.getTimestamp(5);
+
+					files.add(new StoredFileMetadata(contentType, size, fileID, type, filename, timestamp));
 				}
 				return files;
 			}

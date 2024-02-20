@@ -1,5 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.mapper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -54,7 +56,8 @@ public class CrosswalkMapper {
 	private final CoreRepository coreRepository;
     private final String defaultNamespace;
     private final JenaService jenaService;
-    
+    private final DateFormat timestampFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:MM:SSZ");
+	
 	public CrosswalkMapper(
 			CoreRepository coreRepository,
 			PostgresStorageService storageService,
@@ -206,7 +209,7 @@ public class CrosswalkMapper {
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename()));
+			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename(), timestampFormat.format(file.timestamp())));
 		});
 		dto.setFileMetadata(fileMetadatas);
 		
