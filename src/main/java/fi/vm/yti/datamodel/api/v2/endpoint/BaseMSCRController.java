@@ -39,17 +39,28 @@ public abstract class BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Action parameter requires a target");
 		}		
 	}	
-	
 	protected ResponseEntity<byte[]> handleFileDownload(List<StoredFile> files) {
+		return handleFileDownload(files, "false");
+	}
+	protected ResponseEntity<byte[]> handleFileDownload(List<StoredFile> files, String download) {
     	if (files.isEmpty()) {
     		return ResponseEntity.notFound().build();   				
     	}
     	
     	if (files.size() == 1) {
     		StoredFile file = files.get(0);
-    		return ResponseEntity.ok()    				
-    				.contentType(MediaType.parseMediaTypes(file.contentType()).get(0))
-    				.body(file.data());		
+    		if("false".equals(download)) {
+        		return ResponseEntity.ok()    				
+        				.contentType(MediaType.parseMediaTypes(file.contentType()).get(0))
+        				.body(file.data());		    	
+    		}
+    		else {
+        		return ResponseEntity.ok()    				
+        				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.filename())
+        				.contentType(MediaType.parseMediaTypes(file.contentType()).get(0))
+        				.body(file.data());		    	
+    			
+    		}
     	}
     	else {
     		ByteArrayOutputStream baos = new ByteArrayOutputStream();

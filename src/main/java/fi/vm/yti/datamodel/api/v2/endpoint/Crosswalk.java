@@ -42,6 +42,7 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
@@ -353,6 +354,17 @@ public class Crosswalk extends BaseMSCRController {
     	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
     	return handleFileDownload(files);
 	}
+    
+    @Operation(summary = "Download crosswalk related file with a given id.")
+    @ApiResponse(responseCode ="200")
+    @GetMapping(path = "/crosswalk/{pid}/files/{fileID}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID, @RequestParam(name="download", defaultValue = "false" ) String download) {
+    	StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.CROSSWALK);
+    	if(file == null) {
+    		throw new ResourceNotFoundException(pid + "@file=" + fileID); 
+    	}
+    	return handleFileDownload(List.of(file), download);
+    }
     
 	@Operation(summary = "Create a mapping")
 	@ApiResponse(responseCode = "200")

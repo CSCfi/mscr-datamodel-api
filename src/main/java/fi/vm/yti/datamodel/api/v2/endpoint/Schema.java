@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
@@ -421,6 +422,17 @@ public class Schema extends BaseMSCRController {
     	return handleFileDownload(files);
 
 	}
+    
+    @Operation(summary = "Download schema related file with a given id.")
+    @ApiResponse(responseCode ="200")
+    @GetMapping(path = "/schema/{pid}/files/{fileID}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID, @RequestParam(name="download", defaultValue = "false" ) String download) {
+    	StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.SCHEMA);
+    	if(file == null) {
+    		throw new ResourceNotFoundException(pid + "@file=" + fileID); 
+    	}
+    	return handleFileDownload(List.of(file), download);
+    }    
 
 	@Operation(summary = "Get SHACL version of the schema")
 	@ApiResponse(responseCode = "200", description = "")
