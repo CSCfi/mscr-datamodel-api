@@ -238,18 +238,21 @@ public class JsonSchemaWriter {
 		ParameterizedSparqlString pss = new ParameterizedSparqlString();
 
 		String selectResources = "SELECT ?resource ?targetClass ?className ?localClassName ?classTitle ?classDeactivated ?classDescription ?minProperties ?maxProperties ?property ?propertyDeactivated ?valueList ?schemeList ?predicate ?id ?title ?description ?predicateName ?datatype ?shapeRef ?shapeRefName ?min ?max ?minLength ?maxLength ?pattern ?idBoolean ?example \n"
-				+ "WHERE {\n" + "?resource a sh:NodeShape . " + "OPTIONAL { ?resource sh:name ?classTitle . }"
+				+ "WHERE {\n" + "?resource a sh:NodeShape . " 
+				+ "OPTIONAL { ?resource sh:name ?classTitle . }"
 				+ "OPTIONAL { ?resource sh:description ?classDescription } "
 				+ "BIND(afn:localname(?resource) as ?className) . "
 				+ "OPTIONAL { ?resource iow:localName ?localClassName . } "
-				+ "OPTIONAL	{ ?resource sh:property ?property . " + "OPTIONAL {   ?property sh:path ?predicate . }"
-				+ "OPTIONAL {?property sh:name ?title . }\n" + "OPTIONAL { ?property sh:description ?description . }\n"
-				+ "OPTIONAL { ?property sh:datatype ?datatype . }"
-				+ "OPTIONAL { ?property sh:node ?shapeRef . BIND(afn:localname(?shapeRef) as ?shapeRefName) }"
-				+ "OPTIONAL { ?property sh:maxCount ?max . }" + "OPTIONAL { ?property sh:minCount ?min . }"
-				+ "OPTIONAL { ?property sh:pattern ?pattern . }" + "OPTIONAL { ?property sh:minLength ?minLength . }"
-				+ "OPTIONAL { ?property sh:maxLength ?maxLength . }" + "OPTIONAL { ?property skos:example ?example . }"
-				+ "OPTIONAL { ?property sh:in ?valueList . } " + "BIND(afn:localname(?predicate) as ?predicateName)"
+				+ "OPTIONAL	{ ?resource sh:property ?property . " 
+					+ "OPTIONAL {   ?property sh:path ?predicate . }"
+					+ "OPTIONAL {?property sh:name ?title . }\n" 
+					+ "OPTIONAL { ?property sh:description ?description . }\n"
+					+ "OPTIONAL { ?property sh:datatype ?datatype . }"
+					+ "OPTIONAL { ?property sh:node ?shapeRef . BIND(afn:localname(?shapeRef) as ?shapeRefName) }"
+					+ "OPTIONAL { ?property sh:maxCount ?max . }" + "OPTIONAL { ?property sh:minCount ?min . }"
+					+ "OPTIONAL { ?property sh:pattern ?pattern . }" + "OPTIONAL { ?property sh:minLength ?minLength . }"
+					+ "OPTIONAL { ?property sh:maxLength ?maxLength . }" + "OPTIONAL { ?property skos:example ?example . }"
+					+ "OPTIONAL { ?property sh:in ?valueList . } " + "BIND(STR(?predicate) as ?predicateName)"				
 				+ "} }";
 
 		pss.setIri("modelPartGraph", modelID + "#HasPartGraph");
