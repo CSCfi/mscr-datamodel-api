@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -14,9 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRCommonMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
+import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 
@@ -125,6 +129,16 @@ public abstract class BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: INVALID -> REMOVED");
 			}	
 		}
+	}
+	
+	protected boolean isEditable(Model model, String pid) {
+		var modelResource = model.getResource(pid);
+		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
+		if(state.equals(MSCRState.DRAFT)) {
+			return true;
+		}
+		return false;
+		
 	}
 	
 }

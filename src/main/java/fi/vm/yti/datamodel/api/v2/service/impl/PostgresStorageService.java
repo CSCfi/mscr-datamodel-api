@@ -192,5 +192,43 @@ public class PostgresStorageService implements StorageService {
 			removeFile(m.fileID());
 		});		
 	}
+
+	@Override
+	public StoredFileMetadata retrieveFileMetadata(String pid, long fileID, MSCRType type) {
+		List<StoredFileMetadata> file = jdbcTemplate.query(new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con
+						.prepareStatement("select content_type, length(data) as size, id, filename, timestamp from mscr_files where pid = ? and id = ? and type = ?");
+				ps.setString(1, pid);
+				ps.setLong(2, fileID);
+				ps.setString(3, type.name());
+				return ps;
+			}
+		}, new ResultSetExtractor<List<StoredFileMetadata>>() {
+
+			@Override
+			public List<StoredFileMetadata> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				List<StoredFileMetadata> files = new ArrayList<StoredFileMetadata>();
+				while (rs.next()) {
+					String contentType = rs.getString(1);
+					int size = rs.getInt(2);
+					long fileID = rs.getLong(3);
+					String filename = rs.getString(4);
+					Timestamp timestamp = rs.getTimestamp(5);
+
+					files.add(new StoredFileMetadata(contentType, size, fileID, type, filename, timestamp));
+				}
+				return files;
+			}
+		});
+		if(file.size() == 1) {
+			return file.get(0);
+		}
+		else {
+			return null;
+		}
+	}
 		
 }

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -324,11 +325,13 @@ public class Schema extends BaseMSCRController {
 		try {
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getSchema(pid);
+			if(!isEditable(model, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			}
+			
 	        var userMapper = groupManagementService.mapUser();
 			SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model, userMapper);
-			if(!isFull && schemaDTO.getState() != MSCRState.DRAFT) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
-			}		
+
 			if(!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
@@ -435,6 +438,24 @@ public class Schema extends BaseMSCRController {
     	return handleFileDownload(List.of(file), download);
     }    
 
+	@Operation(summary = "Delete file")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path="/schema/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
+		var model = jenaService.getCrosswalk(pid);
+		check(authorizationManager.hasRightToModelMSCR(pid, model));
+		if(!isEditable(model, pid)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		}
+
+		var fileMetadata = storageService.retrieveFileMetadata(pid, fileID, MSCRType.SCHEMA);
+		if(fileMetadata == null) {
+			throw new ResourceNotFoundException(pid + "@file=" + fileID);
+		}
+		storageService.removeFile(fileID);	
+	} 
+	
 	@Operation(summary = "Get SHACL version of the schema")
 	@ApiResponse(responseCode = "200", description = "")
 	@GetMapping(path = "/schema/{pid}/internal", produces = "text/turtle")

@@ -254,11 +254,12 @@ public class Crosswalk extends BaseMSCRController {
 		try {
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getCrosswalk(pid);
+			if(!isEditable(model, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			}
+
 			var userMapper = groupManagementService.mapUser();
 			CrosswalkInfoDTO crosswalkDTO = mapper.mapToCrosswalkDTO(pid, model, userMapper);
-			if(crosswalkDTO.getState() != MSCRState.DRAFT) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Files can only be added to content in the DRAFT state.");			
-			}				
 			
 			if(!crosswalkDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = crosswalkDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
@@ -367,6 +368,23 @@ public class Crosswalk extends BaseMSCRController {
     	return handleFileDownload(List.of(file), download);
     }
     
+	@Operation(summary = "Delete file")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path="/crosswalk/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
+		var crosswalkModel = jenaService.getCrosswalk(pid);
+		check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+		if(!isEditable(crosswalkModel, pid)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		}
+		var fileMetadata = storageService.retrieveFileMetadata(pid, fileID, MSCRType.CROSSWALK);
+		if(fileMetadata == null) {
+			throw new ResourceNotFoundException(pid + "@file=" + fileID);
+		}
+		storageService.removeFile(fileID);	
+	}        
+    
 	@Operation(summary = "Create a mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
@@ -378,6 +396,9 @@ public class Crosswalk extends BaseMSCRController {
             throw new ResourceNotFoundException(pid);
         }
         check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+		if(!isEditable(crosswalkModel, pid)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		}
         
 		final String mappingPID = PIDService.mintPartIdentifier(pid);
 
@@ -395,7 +416,7 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingInfoDTO updateMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) {
+	public MappingInfoDTO updateMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) throws Exception {
 		logger.info("Update Mapping {} for id {}", dto, mappingPID);
 		var mappingModelOriginal = jenaService.getCrosswalk(mappingPID);
 		Resource mappingResource = mappingModelOriginal.getResource(mappingPID);
@@ -406,6 +427,10 @@ public class Crosswalk extends BaseMSCRController {
             throw new ResourceNotFoundException(pid);
         }
         check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+		if(!isEditable(crosswalkModel, pid)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		}
+
 		Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
 		jenaService. putToCrosswalk(mappingPID, mappingModel);
 		Resource crosswalkResource = crosswalkModel.getResource(pid);
@@ -433,7 +458,7 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteMapping(@PathVariable String mappingPID) {
+	public void deleteMapping(@PathVariable String mappingPID) throws Exception {
 		logger.info("Delete Mapping {}", mappingPID);
 		// TODO: check that crosswalk exists
 		var mappingModel = jenaService.getCrosswalk(mappingPID);
@@ -444,6 +469,11 @@ public class Crosswalk extends BaseMSCRController {
             throw new ResourceNotFoundException(pid);
         }
         check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+		if(!isEditable(crosswalkModel, pid)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		}
+
+        
         crosswalkModel.remove(crosswalkModel.getResource(pid), MSCR.mappings, crosswalkModel.getResource(mappingPID));
 		jenaService.deleteFromCrosswalk(mappingPID);
 		jenaService.putToCrosswalk(pid, crosswalkModel);
