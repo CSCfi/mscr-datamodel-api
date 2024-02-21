@@ -330,7 +330,7 @@ public class Schema extends BaseMSCRController {
 		try {
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getSchema(pid);
-			if(!isEditable(model, pid)) {
+			if(!isFull && !isEditable(model, pid)) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
 			}
 			
