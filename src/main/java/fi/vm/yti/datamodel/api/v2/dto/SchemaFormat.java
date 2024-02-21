@@ -4,6 +4,7 @@ public enum SchemaFormat {
 	CSV,
 	XSD,
 	JSONSCHEMA,
+	RDFS,
 	SHACL,
 	OWL,
 	SKOSRDF,

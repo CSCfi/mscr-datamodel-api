@@ -239,6 +239,14 @@ public class FrontendController {
 				e.printStackTrace();
 			}
 		}
+		else if(metadata.getFormat() == SchemaFormat.RDFS) {
+			try {
+				contentString = schemaWriter.rdfs(pid, model, "en");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
 		else {
 			contentString = schemaWriter.newModelSchema(pid, model, "en");
 		}

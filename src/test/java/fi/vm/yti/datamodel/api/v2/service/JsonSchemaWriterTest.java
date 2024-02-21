@@ -1,12 +1,27 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 
 
 @ExtendWith(SpringExtension.class)
@@ -72,6 +87,25 @@ public class JsonSchemaWriterTest {
 		String json = service.newModelSchema("urn:IAMNOTAPID:41ce9689-b3b2-440d-ad62-633dc734a88d", model, "en");
 		// TODO: Add assertions
 	}
+	
+	@Test
+	public void testCERIF2() throws Exception {
+		Model model = ModelFactory.createDefaultModel();
+		model.read("rdfs/cerif2/core.ttl");		
+		String json = service.rdfs("urn:IAMNOTAPID:cerif2", model, "en");		
+		System.out.println(json);
+		//FileUtils.write(new File("RDFS-test.json"), json);
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode j = mapper.readTree(json);
+		
+		// check that each class can be found in the root object
+		assertEquals(
+				model.listSubjectsWithProperty(RDF.type, RDFS.Class).toList().size(), 
+				((JsonNode)j.get("properties")).size()
+		);
+		
+	}
+
 	
 
 }
