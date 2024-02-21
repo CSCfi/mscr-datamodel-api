@@ -11,6 +11,7 @@ public interface StorageService {
 	public int storeCrosswalkFile(String schemaPID, String contentType, byte[] data, String filename);
 	
 	public StoredFile retrieveFile(String pid, long fileID, MSCRType type);
+	public StoredFileMetadata retrieveFileMetadata(String pid, long fileID, MSCRType type);
 	
 	public List<StoredFile> retrieveAllSchemaFiles(String pid);
 	public List<StoredFile> retrieveAllCrosswalkFiles(String pid);
