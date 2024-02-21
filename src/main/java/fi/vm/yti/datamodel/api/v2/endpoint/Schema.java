@@ -133,6 +133,7 @@ public class Schema extends BaseMSCRController {
 					format == SchemaFormat.XML || 
 					format == SchemaFormat.CSV ||
 					format == SchemaFormat.SKOSRDF ||
+					format == SchemaFormat.RDFS ||					
 					format == SchemaFormat.PDF) {
 				// do nothing for now
 			}			
@@ -181,7 +182,11 @@ public class Schema extends BaseMSCRController {
 				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);				
 			}else if(schemaDTO.getFormat() == SchemaFormat.PDF) {
 				// do nothing
-				schemaModel = ModelFactory.createDefaultModel();
+				schemaModel = ModelFactory.createDefaultModel();							
+
+			}else if(schemaDTO.getFormat() == SchemaFormat.RDFS) {
+				schemaModel = schemaService.addRDFS(pid, fileInBytes);
+				
 			}else if(schemaDTO.getFormat() == SchemaFormat.XSD) {
 				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
 						

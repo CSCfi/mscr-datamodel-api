@@ -26,6 +26,8 @@ import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.resultset.ResultSetPeekable;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.VOID;
 import org.slf4j.Logger;
@@ -894,6 +896,81 @@ public class JsonSchemaWriter {
 
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(schema);
+	}
+	
+	private void addRDFSProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions) throws Exception {		
+		model.listSubjectsWithProperty(RDFS.domain, s).forEach(ps -> {
+			String psID = ps.getURI();
+			Map<String, Object> psProps = new HashMap<String, Object>();
+			
+			String range = ps.getPropertyResourceValue(RDFS.range).getURI();
+			String comment = MapperUtils.propertyToString(ps, RDFS.comment);
+			String label = MapperUtils.propertyToString(ps, RDFS.label);
+			if(label == null) {
+				label = psID;
+			}
+			psProps.put("datatype", range);
+			psProps.put("description", comment);
+			psProps.put("title", label);
+			
+			Resource parent = s.getPropertyResourceValue(RDFS.subClassOf);
+			if(parent != null) {
+				try {
+					addRDFSProps(model, parent, props, definitions);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			definitions.put(psID, psProps);
+			props.put(psID, psProps);
+		});
+		
+	}
+
+	public String rdfs(String pid, Model model, String string) throws Exception {
+		Map<String, Object> definitions = new HashMap<String, Object>();
+
+		Map<String, Object> rootDefinition = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new HashMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);		
+
+		Map<String, Object> schema = new HashMap<String, Object>();
+		schema.put("definitions", definitions);
+		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+		schema.put("type", "object");
+
+		schema.put("properties", rootProperties);
+
+		
+		model.listSubjectsWithProperty(RDF.type, RDFS.Class).forEach(s -> {
+			String className = s.getURI();
+			Map<String, Object> classDef = new HashMap<String, Object>();
+			Map<String, Object> classProps = new HashMap<String, Object>();
+			classDef.put("title", MapperUtils.propertyToString(s, RDFS.label));
+			classDef.put("description", MapperUtils.propertyToString(s, RDFS.comment));
+			rootProperties.put(className, classDef);
+			try {
+				addRDFSProps(model, s, classProps, definitions);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(classProps.keySet().size() > 0 ) {
+				classDef.put("type", "object");
+				classDef.put("properties", classProps);
+			}
+			else {
+				// what happens here?
+			}
+			definitions.put(className, classDef);
+
+			
+		});
+
+		ObjectMapper mapper = new ObjectMapper();
+		
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
 
 }

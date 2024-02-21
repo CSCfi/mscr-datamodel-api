@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.VOID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,5 +144,19 @@ public class SchemaService {
 			if(tempFile != null) { tempFile.delete();}			
 		}
 		
+	}
+
+	public Model addRDFS(String pid, byte[] fileInBytes) throws Exception {
+		Model m = ModelFactory.createDefaultModel();
+		ByteArrayInputStream input = new ByteArrayInputStream(fileInBytes);
+		m.read(input, null, "TTL");
+		input.close();
+		
+		// add all classes as root resources 
+		Resource schema = m.createResource(pid);
+		m.listSubjectsWithProperty(RDF.type, RDFS.Class).forEach(resource -> {
+			schema.addProperty(VOID.rootResource, resource);
+		});
+		return m;
 	}
 }
