@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Locale;
+import org.junit.jupiter.api.BeforeEach;
 
 @ExtendWith(SpringExtension.class)
 
@@ -26,7 +27,10 @@ import java.util.Locale;
 
 public class JSONValidationServiceTest {
 
-	
+  @BeforeEach
+  public void setUp() {
+    Locale.setDefault(Locale.ENGLISH);
+  }
 
 	
 	private JsonNode jsonNodeFromPath(String schemaPath) throws Exception, IOException {
@@ -56,7 +60,6 @@ public class JSONValidationServiceTest {
 
 	@Test
 	void testInvalidJSONSchemaDetailsType() throws Exception, IOException {
-    Locale.setDefault(Locale.ENGLISH);
 		String firstInvalidInputSchemaPath = "jsonschema/test_jsonschema_invalid_types.json";
 		List<String> expectedErrorMessages = Arrays.asList(
 				"$.properties.creators.type: does not have a value in the enumeration [array, boolean, integer, null, number, object, string]",
