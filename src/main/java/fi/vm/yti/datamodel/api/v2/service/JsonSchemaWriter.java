@@ -23,6 +23,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.resultset.ResultSetPeekable;
@@ -33,6 +34,7 @@ import org.apache.jena.vocabulary.VOID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -821,7 +823,14 @@ public class JsonSchemaWriter {
 		}
 
 		o.put("@type", "http://www.w3.org/2001/XMLSchema#anyURI");
-
+		
+		if(model.qnameFor(uri) != null) {
+			o.put("qname", model.qnameFor(uri));	
+		}
+		else {
+			o.put("qname", ":" + concept.getLocalName());
+		}
+		
 		if (!definitions.containsKey(localName)) {
 			definitions.put(localName, o);
 		}
@@ -912,6 +921,13 @@ public class JsonSchemaWriter {
 			psProps.put("datatype", range);
 			psProps.put("description", comment);
 			psProps.put("title", label);
+			psProps.put("@id", psID);
+			if(model.qnameFor(psID) != null) {
+				psProps.put("qname", model.qnameFor(psID));	
+			}
+			else {
+				psProps.put("qname", ":" + ps.getLocalName());
+			}			
 			
 			Resource parent = s.getPropertyResourceValue(RDFS.subClassOf);
 			if(parent != null) {
@@ -949,6 +965,8 @@ public class JsonSchemaWriter {
 			Map<String, Object> classProps = new HashMap<String, Object>();
 			classDef.put("title", MapperUtils.propertyToString(s, RDFS.label));
 			classDef.put("description", MapperUtils.propertyToString(s, RDFS.comment));
+			classDef.put("qname", model.qnameFor(className));
+			classDef.put("@id", className);			
 			rootProperties.put(className, classDef);
 			try {
 				addRDFSProps(model, s, classProps, definitions);
@@ -958,6 +976,7 @@ public class JsonSchemaWriter {
 			}
 			if(classProps.keySet().size() > 0 ) {
 				classDef.put("type", "object");
+				classDef.put("@type", model.qnameFor(className));				
 				classDef.put("properties", classProps);
 			}
 			else {
@@ -972,5 +991,102 @@ public class JsonSchemaWriter {
 		
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
+	
+	public String shacl(String pid, Model model, String string) throws Exception {
+		Map<String, Object> definitions = new HashMap<String, Object>();
+
+		Map<String, Object> rootDefinition = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new HashMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);		
+
+		Map<String, Object> schema = new HashMap<String, Object>();
+		schema.put("definitions", definitions);
+		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+		schema.put("type", "object");
+
+		schema.put("properties", rootProperties);
+		model.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(s -> {
+			String shapeID = s.getURI();
+			Map<String, Object> shapeDef = new HashMap<String, Object>();
+			Map<String, Object> shapeProps = new HashMap<String, Object>();
+			shapeDef.put("@id", shapeID);
+			shapeDef.put("qname", model.qnameFor(shapeID));
+			//System.out.println(shapeID);
+			shapeDef.put("title", s.getRequiredProperty(SH.name).getObject().asLiteral().getString());
+			shapeDef.put("description", s.getRequiredProperty(SH.description).getObject().asLiteral().getString());			
+			rootProperties.put(shapeID, shapeDef);
+			try {
+				addSHACLProps(model, s, shapeProps, definitions);
+			}catch(Exception ex) {
+				ex.printStackTrace();
+			}
+			if(shapeProps.keySet().size() > 0 ) {
+				shapeDef.put("type", "object");
+				if(s.hasProperty(SH.targetClass)) {
+					RDFNode typeNode = s.getProperty(SH.targetClass).getObject();
+					if(typeNode.isLiteral()) {
+						shapeDef.put("@type", typeNode.asLiteral().getString());	
+					}
+					else if(typeNode.isResource()) {
+						shapeDef.put("@type", model.qnameFor(typeNode.asResource().getURI()));
+					}
+					
+				}
+				//
+				shapeDef.put("properties", shapeProps);
+			}
+			else {
+				// what happens here?
+			}
+			definitions.put(shapeID, shapeDef);			
+
+		});
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
+	}
+
+	private void addSHACLProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions) {
+		model.listObjectsOfProperty(s, SH.property).forEach(_ps -> {
+			Resource ps = _ps.asResource();
+			String psID = ps.getURI();
+			
+			Map<String, Object> psProps = new HashMap<String, Object>();
+			//System.out.println(ps.getPropertyResourceValue(SH.path).getLocalName());
+			//System.out.println(model.getNsURIPrefix(ps.getPropertyResourceValue(SH.path).getNameSpace()));
+
+			if(model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()) != null) {
+				psProps.put("qname", model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()));	
+			}
+			else {
+				psProps.put("qname", ":" + ps.getPropertyResourceValue(SH.path).getLocalName());
+			}
+						
+			
+			String description = MapperUtils.propertyToString(ps, SH.description);
+			String label = MapperUtils.propertyToString(ps, SH.name);
+			if(label == null) {
+				label = psID;
+			}
+			psProps.put("description", description);
+			psProps.put("title", label);
+
+			String datatype = "object";			
+			if(ps.hasProperty(SH.node)) {
+				
+				datatype = model.qnameFor(ps.getPropertyResourceValue(SH.node).getURI());				
+			}
+			else if(ps.hasProperty(SH.datatype)) {
+				datatype = ps.getPropertyResourceValue(SH.datatype).getLocalName();
+			}
+			
+			psProps.put("datatype", datatype);
+			
+			definitions.put(psID, psProps);
+			props.put(psID, psProps);
+		});
+		
+	}	
 
 }
