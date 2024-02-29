@@ -18,6 +18,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Locale;
+import org.junit.jupiter.api.BeforeEach;
 
 @ExtendWith(SpringExtension.class)
 
@@ -25,7 +27,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JSONValidationServiceTest {
 
-	
+  @BeforeEach
+  public void setUp() {
+    Locale.setDefault(Locale.ENGLISH);
+  }
 
 	
 	private JsonNode jsonNodeFromPath(String schemaPath) throws Exception, IOException {
