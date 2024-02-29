@@ -246,7 +246,15 @@ public class FrontendController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}		
+		}
+		else if(metadata.getFormat() == SchemaFormat.SHACL) {
+			try {
+				contentString = schemaWriter.shacl(pid, model, "en");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}			
 		else {
 			contentString = schemaWriter.newModelSchema(pid, model, "en");
 		}

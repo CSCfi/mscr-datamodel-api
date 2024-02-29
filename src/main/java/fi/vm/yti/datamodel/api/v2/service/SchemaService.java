@@ -18,6 +18,7 @@ import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.VOID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -158,5 +159,21 @@ public class SchemaService {
 			schema.addProperty(VOID.rootResource, resource);
 		});
 		return m;
+	}
+
+	public Model addSHACL(String pid, byte[] fileInBytes) throws Exception {
+		Model m = ModelFactory.createDefaultModel();
+		ByteArrayInputStream input = new ByteArrayInputStream(fileInBytes);
+		m.read(input, null, "TTL");
+		input.close();
+		
+		// add all nodeshapes as root resources
+		Resource schema = m.createResource(pid);
+		m.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(resource -> {
+			schema.addProperty(VOID.rootResource, resource);
+		});		
+		
+		return m;
+		
 	}
 }

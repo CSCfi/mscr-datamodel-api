@@ -133,7 +133,8 @@ public class Schema extends BaseMSCRController {
 					format == SchemaFormat.XML || 
 					format == SchemaFormat.CSV ||
 					format == SchemaFormat.SKOSRDF ||
-					format == SchemaFormat.RDFS ||					
+					format == SchemaFormat.RDFS ||	
+					format == SchemaFormat.SHACL ||		
 					format == SchemaFormat.PDF) {
 				// do nothing for now
 			}			
@@ -187,6 +188,9 @@ public class Schema extends BaseMSCRController {
 			}else if(schemaDTO.getFormat() == SchemaFormat.RDFS) {
 				schemaModel = schemaService.addRDFS(pid, fileInBytes);
 				
+			}else if(schemaDTO.getFormat() == SchemaFormat.SHACL) {
+				schemaModel = schemaService.addSHACL(pid, fileInBytes);
+			
 			}else if(schemaDTO.getFormat() == SchemaFormat.XSD) {
 				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
 						
