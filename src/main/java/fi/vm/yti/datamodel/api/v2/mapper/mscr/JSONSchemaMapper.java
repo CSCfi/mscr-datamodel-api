@@ -49,7 +49,7 @@ public class JSONSchemaMapper {
 
 	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID) {
 		for (String key : JSONSchemaToSHACLMap.keySet()) {
-			JsonNode propertyNode = node.findValue(key);
+			JsonNode propertyNode = node.get(key);
 			// the second condition ensures that an object's children properties are not added to that object
 			if (propertyNode != null & node.has(key)) {
 				if (JSONSchemaNumericalProperties.contains(key)) {
