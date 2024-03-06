@@ -3,12 +3,15 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -21,7 +24,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,14 +39,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
-import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
-import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
-import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
@@ -113,9 +112,8 @@ public class Schema extends BaseMSCRController {
 		this.groupManagementService = groupManagementService;		
 	}
 	
-	private void validateFileUpload(MultipartFile file, SchemaFormat format) {
-		try {
-			byte[] fileInBytes = file.getBytes();
+	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format) {
+		try {			
 			
 			if (format == SchemaFormat.JSONSCHEMA) {
 				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
@@ -148,20 +146,18 @@ public class Schema extends BaseMSCRController {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description. " + ex.getMessage(), ex);
-		}		
+		}
+		return fileInBytes;
 		
 	}
 	
-	private SchemaInfoDTO addFileToSchema(SchemaInfoDTO schemaDTO, MultipartFile file) {
+	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentType) {
 		var userMapper = groupManagementService.mapUser();
-		String contentType = file.getContentType();
-		final String pid = schemaDTO.getPID();
 		Model metadataModel = jenaService.getSchema(pid);		
-		try {
-			byte[] fileInBytes = file.getBytes();
+		try {			
 			Model schemaModel = null;
 			
-			if (schemaDTO.getFormat() == SchemaFormat.JSONSCHEMA) {
+			if (format == SchemaFormat.JSONSCHEMA) {
 				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
 
@@ -175,35 +171,35 @@ public class Schema extends BaseMSCRController {
 					throw new Exception(exceptionOutput);
 				}
 
-			}else if (schemaDTO.getFormat() == SchemaFormat.CSV) {
+			}else if (format == SchemaFormat.CSV) {
 				schemaModel = schemaService.transformCSVSchemaToInternal(pid, fileInBytes, ";");
 				
-			}else if(schemaDTO.getFormat() == SchemaFormat.SKOSRDF) {
+			}else if(format == SchemaFormat.SKOSRDF) {
 				// TODO: validate skos file
 				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);				
-			}else if(schemaDTO.getFormat() == SchemaFormat.PDF) {
+			}else if(format == SchemaFormat.PDF) {
 				// do nothing
 				schemaModel = ModelFactory.createDefaultModel();							
 
-			}else if(schemaDTO.getFormat() == SchemaFormat.RDFS) {
+			}else if(format == SchemaFormat.RDFS) {
 				schemaModel = schemaService.addRDFS(pid, fileInBytes);
 				
-			}else if(schemaDTO.getFormat() == SchemaFormat.SHACL) {
+			}else if(format == SchemaFormat.SHACL) {
 				schemaModel = schemaService.addSHACL(pid, fileInBytes);
 			
-			}else if(schemaDTO.getFormat() == SchemaFormat.XSD) {
+			}else if(format == SchemaFormat.XSD) {
 				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
 						
-			} else if(schemaDTO.getFormat() == SchemaFormat.XML) {
+			} else if(format == SchemaFormat.XML) {
 				// do nothing
 				schemaModel = ModelFactory.createDefaultModel();				
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
-						schemaDTO.getFormat()));
+						format));
 			}
 			schemaModel.add(metadataModel);
 			jenaService.updateSchema(pid, schemaModel);
-			storageService.storeSchemaFile(pid, contentType, file.getBytes(), generateFilename(pid, file));
+			storageService.storeSchemaFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
 			
 		} catch(ResponseStatusException statusex) {
 			throw statusex;		
@@ -330,11 +326,11 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file, boolean isFull) {
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws Exception {
 		try {
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getSchema(pid);
-			if(!isFull && !isEditable(model, pid)) {
+			if(!isEditable(model, pid)) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
 			}
 			
@@ -345,7 +341,7 @@ public class Schema extends BaseMSCRController {
 				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
 			}									
-			return addFileToSchema(schemaDTO, file);
+			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), file.getContentType());
 		}catch(Exception ex) {
 			// revert any possible changes
 			try {storageService.deleteAllSchemaFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
@@ -362,9 +358,12 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
-			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
+	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString, @RequestParam(name = "contentURL", required = false) String contentURL,
+			@RequestParam(name = "file", required = false) MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
 		
+		if(contentURL == null && file == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Either file or contentURL parameter must be supplied.");
+		}
 		ObjectMapper objMapper = new ObjectMapper();
 		SchemaDTO schemaDTO = null;
 		try {
@@ -372,16 +371,34 @@ public class Schema extends BaseMSCRController {
 		} catch (JsonProcessingException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse SchemaDTO from the metadata content. " + e.getMessage(), e);
 		}
+		String contentType = "";
+		byte[] fileBytes = null;
 		try {
-			validateFileUpload(file, schemaDTO.getFormat());
+			if(file == null) {
+				// try to download url to file 
+				File tempFile = File.createTempFile("schema", "temp"); 
+				FileUtils.copyURLToFile(new URL(contentURL), tempFile);
+				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat());
+			}
+			else {
+				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat());	
+				contentType = file.getContentType();
+			}
+			
 		}catch(Exception ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
+		
+		System.out.println(contentType);
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		final String PID = dto.getPID();
-		uploadSchemaFile(PID, file, true);
-		var userMapper = groupManagementService.mapUser();
-		return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
+		         
+		if(!schemaDTO.getOrganizations().isEmpty()) {
+			Collection<UUID> orgs = schemaDTO.getOrganizations();
+			check(authorizationManager.hasRightToAnyOrganization(orgs));	
+		}									
+		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentType);
+		
 	}
   
     @Operation(summary = "Modify schema")
