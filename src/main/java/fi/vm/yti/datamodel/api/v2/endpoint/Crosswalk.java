@@ -192,7 +192,7 @@ public class Crosswalk extends BaseMSCRController {
 		final String contentType = file.getContentType();		 
 		try {
 			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
-				storageService.storeCrosswalkFile(pid, contentType, file.getBytes(), generateFilename(pid, file));
+				storageService.storeCrosswalkFile(pid, contentType, file.getBytes(), generateFilename(pid, file.getContentType()));
 			}
 			else {
 				throw new Exception("Unsupported crosswalk description format. Supported formats are: " + String.join(", ", Arrays.toString(CrosswalkFormat.values()) ));

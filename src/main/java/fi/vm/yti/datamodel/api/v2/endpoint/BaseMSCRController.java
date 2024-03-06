@@ -93,8 +93,7 @@ public abstract class BaseMSCRController {
     	}		
 	}
 	
-	protected String generateFilename(String PID, MultipartFile file) {
-		String contentType = file.getContentType();
+	protected String generateFilename(String PID, String contentType) {		
 		if(contentType != null && !contentType.equals("") && contentType.indexOf("/") > 0) {
 			return PID + "." + contentType.substring(contentType.lastIndexOf("/") + 1);
 		}
