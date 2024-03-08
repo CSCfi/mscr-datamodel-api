@@ -3,6 +3,7 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,10 +13,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.SKOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -403,7 +407,7 @@ public class Crosswalk extends BaseMSCRController {
 		final String mappingPID = PIDService.mintPartIdentifier(pid);
 
 		Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
-		jenaService. putToCrosswalk(mappingPID, mappingModel);
+		jenaService.putToCrosswalk(mappingPID, mappingModel);
 		Resource crosswalkResource = crosswalkModel.getResource(pid);
 		crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
 		jenaService.putToCrosswalk(pid, crosswalkModel);
@@ -482,11 +486,12 @@ public class Crosswalk extends BaseMSCRController {
 		
 	@Operation(summary = "Get a mappings for a crosswalk")
 	@ApiResponse(responseCode = "200")	
-	@GetMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE)
-	public List<MappingDTO> getMappings(@PathVariable String pid) {
+	@GetMapping(path="/crosswalk/{pid}/mapping")
+	public ResponseEntity<Object> getMappings(@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat) {
 		logger.info("Get Mappings for crosswalk {}", pid);
 		// TODO: check that crosswalk exists
 		var crosswalkModel = jenaService.getCrosswalk(pid);
+		
 		List<MappingDTO> mappings = new ArrayList<MappingDTO>();
 		NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
 		while(i.hasNext()) {
@@ -494,7 +499,34 @@ public class Crosswalk extends BaseMSCRController {
 			MappingDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), jenaService.getCrosswalk(mappingResource.getURI()));
 			mappings.add(dto);
 		}
-		
-		return mappings;
+		if(exportFormat !=null) {
+			// TODO: check for crosswalk format == MSCR and source and target scheama format == X,Y,Z
+			if(exportFormat.equals("skos")) {
+				Model model = ModelFactory.createDefaultModel();
+				mappings.forEach(mapping -> {
+					String predicate = mapping.getPredicate();
+					mapping.getSource().forEach(sourceNode -> {
+						if(sourceNode.getUri() != null) {
+							//map to all targets
+							mapping.getTarget().forEach(targetNode -> {
+								if(targetNode.getUri() != null) {									
+									model.add(
+										model.createResource(sourceNode.getUri()),
+										model.createProperty(predicate),
+										model.createResource(targetNode.getUri())
+									);
+								}
+							});
+						}
+					});
+				});
+				
+				StringWriter writer = new StringWriter();
+
+				model.write(writer, "TURTLE");
+				return ResponseEntity.ok(writer.getBuffer().toString());
+			}
+		}
+		return ResponseEntity.ok(mappings);		
 	}	
 }
