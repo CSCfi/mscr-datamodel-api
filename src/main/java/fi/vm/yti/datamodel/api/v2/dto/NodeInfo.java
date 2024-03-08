@@ -4,6 +4,7 @@ public class NodeInfo {
 	private String id;
 	private String label;	
 	private ProcessingInfo processing;
+	private String uri;
 	
 	public NodeInfo() {}
 
@@ -36,6 +37,14 @@ public class NodeInfo {
 
 	public void setProcessing(ProcessingInfo processing) {
 		this.processing = processing;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 	
 	
