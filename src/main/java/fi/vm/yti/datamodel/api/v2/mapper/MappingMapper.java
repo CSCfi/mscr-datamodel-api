@@ -71,7 +71,10 @@ public class MappingMapper {
 			Resource p = mapProcessingInfoToModel(ni.getProcessing(), model);
 			sourceResource.addProperty(MSCR.processing, p);
 		}
-		
+		if(ni.getUri() != null) {
+			Resource nodeUri = model.createResource(ni.getUri());
+			sourceResource.addProperty(MSCR.uri, nodeUri);
+		}
 		return sourceResource;
 
 	}
@@ -87,6 +90,10 @@ public class MappingMapper {
 			if(item.hasProperty(MSCR.processing)) {
 				nodeInfo.setProcessing(mapProcessingInfoToDTO(item.getPropertyResourceValue(MSCR.processing)));
 			}
+			if(item.hasProperty(MSCR.uri)) {
+				nodeInfo.setUri(MapperUtils.propertyToString(item, MSCR.uri));
+			}
+
 			infos.add(nodeInfo);
 		}
 		
@@ -113,7 +120,7 @@ public class MappingMapper {
 	}
 	
 	private Resource mapMappingToModel(MappingDTO m, Model model, Resource mappingResource) {
-		MapperUtils.addLiteral(mappingResource, MSCR.id, m.getId());		
+		MapperUtils.addLiteral(mappingResource, MSCR.id, m.getId());	
 		if(m.getSource() != null && m.getSource().size() > 0) {
 			Seq items = model.createSeq();
 			m.getSource().forEach(_r -> {
