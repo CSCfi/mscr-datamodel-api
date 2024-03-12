@@ -199,7 +199,7 @@ public class Schema extends BaseMSCRController {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Error occured while ingesting file based schema description", ex);
+					"Error occured while ingesting file based schema description." + ex.getMessage(), ex);
 		}
 		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
 	}
