@@ -70,7 +70,7 @@ public class CrosswalkMapper {
 	}
 	
 	
-	public Model mapToJenaModel(String PID, CrosswalkDTO dto, final String revisionOf, final String aggregationKey, @NotNull YtiUser user) {
+	public Model mapToJenaModel(String PID, String handle, CrosswalkDTO dto, final String revisionOf, final String aggregationKey, @NotNull YtiUser user) {
 		log.info("Mapping CrosswalkDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -100,7 +100,7 @@ public class CrosswalkMapper {
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
 
-		String prefix = MapperUtils.getMSCRPrefix(PID);
+		String prefix = "";
 		model.setNsPrefix(prefix, modelUri + "#");
 		
 		modelResource.addProperty(MSCR.format, dto.getFormat().toString());
@@ -136,6 +136,10 @@ public class CrosswalkMapper {
 		
 		modelResource.addProperty(MSCR.sourceSchema, ResourceFactory.createResource(dto.getSourceSchema()));
 		modelResource.addProperty(MSCR.targetSchema, ResourceFactory.createResource(dto.getTargetSchema()));
+		
+		if(handle != null) {
+			modelResource.addProperty(MSCR.handle, model.createLiteral(handle));
+		}
 		
 		return model;
 	}
@@ -253,11 +257,14 @@ public class CrosswalkMapper {
 					.collect(Collectors.toList());
 			dto.setRevisions(orderedRevs);
 					
+		}	
+		if(modelResource.hasProperty(MSCR.handle)) {
+			dto.setHandle(MapperUtils.propertyToString(modelResource, MSCR.handle));	
 		}		
 		return dto;
 	}
 	
-	public Model mapToUpdateJenaModel(String pid, CrosswalkDTO dto, Model model, YtiUser user) {
+	public Model mapToUpdateJenaModel(String pid, String handle, CrosswalkDTO dto, Model model, YtiUser user) {
         var updateDate = new XSDDateTime(Calendar.getInstance());
         var modelResource = model.getResource(pid);
         var modelType = MapperUtils.getModelTypeFromResource(modelResource);
@@ -328,6 +335,11 @@ public class CrosswalkMapper {
         modelResource.removeAll(MSCR.versionLabel);
 		modelResource.addProperty(MSCR.versionLabel, dto.getVersionLabel());
 
+		if(handle != null) {
+			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));
+			
+		}
+		
         return model;
 		
 
@@ -400,6 +412,7 @@ public class CrosswalkMapper {
         if(resource.hasProperty(MSCR.targetSchema)) {
         	indexModel.setTargetSchema(resource.getPropertyResourceValue(MSCR.targetSchema).getURI());
         }
+        indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
         
         return indexModel;
     }

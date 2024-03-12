@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
@@ -59,6 +60,7 @@ import fi.vm.yti.datamodel.api.v2.service.ValidationRecord;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.validator.ValidSchema;
 import fi.vm.yti.security.AuthenticatedUserProvider;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -69,7 +71,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Schema")
 @Validated
 public class Schema extends BaseMSCRController {
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(Schema.class);
 
@@ -84,23 +85,18 @@ public class Schema extends BaseMSCRController {
 	private final SchemaService schemaService;
 
 	private final PIDService PIDService;
-	
-	private final StorageService storageService;	
-	
+
+	private final StorageService storageService;
+
 	private final AuthenticatedUserProvider userProvider;
-	
-    private final GroupManagementService groupManagementService;
-    
-	public Schema(JenaService jenaService,
-            AuthorizationManager authorizationManager,
-            OpenSearchIndexer openSearchIndexer,
-            SchemaMapper schemaMapper,
-            SchemaService schemaService,
-            PIDService PIDService,
-            PostgresStorageService storageService,
-            AuthenticatedUserProvider userProvider,
-            GroupManagementService groupManagementService) {
-		
+
+	private final GroupManagementService groupManagementService;
+
+	public Schema(JenaService jenaService, AuthorizationManager authorizationManager,
+			OpenSearchIndexer openSearchIndexer, SchemaMapper schemaMapper, SchemaService schemaService,
+			PIDService PIDService, PostgresStorageService storageService, AuthenticatedUserProvider userProvider,
+			GroupManagementService groupManagementService) {
+
 		this.jenaService = jenaService;
 		this.openSearchIndexer = openSearchIndexer;
 		this.authorizationManager = authorizationManager;
@@ -109,12 +105,12 @@ public class Schema extends BaseMSCRController {
 		this.PIDService = PIDService;
 		this.storageService = storageService;
 		this.userProvider = userProvider;
-		this.groupManagementService = groupManagementService;		
+		this.groupManagementService = groupManagementService;
 	}
-	
+
 	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format) {
-		try {			
-			
+		try {
+
 			if (format == SchemaFormat.JSONSCHEMA) {
 				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
@@ -127,36 +123,33 @@ public class Schema extends BaseMSCRController {
 					throw new Exception(exceptionOutput);
 				}
 
-			} else if (format == SchemaFormat.XSD || 
-					format == SchemaFormat.XML || 
-					format == SchemaFormat.CSV ||
-					format == SchemaFormat.SKOSRDF ||
-					format == SchemaFormat.RDFS ||	
-					format == SchemaFormat.SHACL ||		
-					format == SchemaFormat.PDF) {
+			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML || format == SchemaFormat.CSV
+					|| format == SchemaFormat.SKOSRDF || format == SchemaFormat.RDFS || format == SchemaFormat.SHACL
+					|| format == SchemaFormat.PDF) {
 				// do nothing for now
-			}			
-			else {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
-						format));
-			}			
+			} else {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						String.format("Unsupported schema description format: %s not supported", format));
+			}
 
-		} catch(ResponseStatusException statusex) {
+		} catch (ResponseStatusException statusex) {
 			throw statusex;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description. " + ex.getMessage(), ex);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occured while ingesting file based schema description. " + ex.getMessage(), ex);
 		}
 		return fileInBytes;
-		
+
 	}
-	
-	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentType) {
+
+	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes,
+			final String contentType) {
 		var userMapper = groupManagementService.mapUser();
-		Model metadataModel = jenaService.getSchema(pid);		
-		try {			
+		Model metadataModel = jenaService.getSchema(pid);
+		try {
 			Model schemaModel = null;
-			
+
 			if (format == SchemaFormat.JSONSCHEMA) {
 				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
@@ -171,326 +164,499 @@ public class Schema extends BaseMSCRController {
 					throw new Exception(exceptionOutput);
 				}
 
-			}else if (format == SchemaFormat.CSV) {
+			} else if (format == SchemaFormat.CSV) {
 				schemaModel = schemaService.transformCSVSchemaToInternal(pid, fileInBytes, ";");
-				
-			}else if(format == SchemaFormat.SKOSRDF) {
-				// TODO: validate skos file
-				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);				
-			}else if(format == SchemaFormat.PDF) {
-				// do nothing
-				schemaModel = ModelFactory.createDefaultModel();							
 
-			}else if(format == SchemaFormat.RDFS) {
-				schemaModel = schemaService.addRDFS(pid, fileInBytes);
-				
-			}else if(format == SchemaFormat.SHACL) {
-				schemaModel = schemaService.addSHACL(pid, fileInBytes);
-			
-			}else if(format == SchemaFormat.XSD) {
-				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
-						
-			} else if(format == SchemaFormat.XML) {
+			} else if (format == SchemaFormat.SKOSRDF) {
+				// TODO: validate skos file
+				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);
+			} else if (format == SchemaFormat.PDF) {
 				// do nothing
-				schemaModel = ModelFactory.createDefaultModel();				
+				schemaModel = ModelFactory.createDefaultModel();
+
+			} else if (format == SchemaFormat.RDFS) {
+				schemaModel = schemaService.addRDFS(pid, fileInBytes);
+
+			} else if (format == SchemaFormat.SHACL) {
+				schemaModel = schemaService.addSHACL(pid, fileInBytes);
+
+			} else if (format == SchemaFormat.XSD) {
+				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
+
+			} else if (format == SchemaFormat.XML) {
+				// do nothing
+				schemaModel = ModelFactory.createDefaultModel();
 			} else {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Unsupported schema description format: %s not supported",
-						format));
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						String.format("Unsupported schema description format: %s not supported", format));
 			}
 			schemaModel.add(metadataModel);
 			jenaService.updateSchema(pid, schemaModel);
 			storageService.storeSchemaFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
-			
-		} catch(ResponseStatusException statusex) {
-			throw statusex;		
+
+		} catch (ResponseStatusException statusex) {
+			throw statusex;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occured while ingesting file based schema description", ex);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error occured while ingesting file based schema description", ex);
 		}
 		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
 	}
-	
+
 	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, boolean isRevision) {
 		SchemaDTO s = new SchemaDTO();
 		// in case of revision the following data cannot be overridden
 		// - organization
-		s.setStatus(inputSchema != null && inputSchema.getStatus() != null ? inputSchema.getStatus() : prevSchema.getStatus());
-		s.setState(inputSchema != null && inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
-		s.setVisibility(inputSchema != null && inputSchema.getVisibility() != null ? inputSchema.getVisibility() : prevSchema.getVisibility());
-		s.setLabel(!inputSchema.getLabel().isEmpty()? inputSchema.getLabel() : prevSchema.getLabel());
-		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription() : prevSchema.getDescription());
-		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages() : prevSchema.getLanguages());
-		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace() : prevSchema.getNamespace());
-		s.setContact(inputSchema != null && inputSchema.getContact() != null ? inputSchema.getContact() : prevSchema.getContact());
-		if(isRevision || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
-			s.setOrganizations(prevSchema.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
-		}	
-		else {
-			s.setOrganizations(inputSchema.getOrganizations());			
-		}	
-		s.setVersionLabel(inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
-		s.setFormat(inputSchema != null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
+		s.setStatus(inputSchema != null && inputSchema.getStatus() != null ? inputSchema.getStatus()
+				: prevSchema.getStatus());
+		s.setState(
+				inputSchema != null && inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
+		s.setVisibility(inputSchema != null && inputSchema.getVisibility() != null ? inputSchema.getVisibility()
+				: prevSchema.getVisibility());
+		s.setLabel(!inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
+		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription()
+				: prevSchema.getDescription());
+		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages()
+				: prevSchema.getLanguages());
+		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace()
+				: prevSchema.getNamespace());
+		s.setContact(inputSchema != null && inputSchema.getContact() != null ? inputSchema.getContact()
+				: prevSchema.getContact());
+		if (isRevision || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
+			s.setOrganizations(prevSchema.getOrganizations().stream().map(org -> UUID.fromString(org.getId()))
+					.collect(Collectors.toSet()));
+		} else {
+			s.setOrganizations(inputSchema.getOrganizations());
+		}
+		s.setVersionLabel(
+				inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
+		s.setFormat(inputSchema != null && inputSchema.getFormat() != null ? inputSchema.getFormat()
+				: prevSchema.getFormat());
 		return s;
-		
+
 	}
-	
+
 	private SchemaInfoDTO getSchemaDTO(String pid, boolean includeVersionInfo, boolean includeVariantInfo) {
-        var model = jenaService.getSchema(pid);
-        if(model == null){
-            throw new ResourceNotFoundException(pid);
-        }
-        var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, model);
-        
-        check(hasRightsToModel);
-        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+		var model = jenaService.getSchema(pid);
+		if (model == null) {
+			throw new ResourceNotFoundException(pid);
+		}
+		var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, model);
 
-        return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper);
+		check(hasRightsToModel);
+		var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+		return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper);
 	}
-
-	
 
 	private void validateActionParams(SchemaDTO dto, CONTENT_ACTION action, String target) {
-		if(dto == null && action == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body must present if no action is provided.");
+		if (dto == null && action == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Request body must present if no action is provided.");
 		}
-		if(action ==null && target != null) {
+		if (action == null && target != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Target parameter requires an action.");
 		}
-		if(action !=null && target == null) {
+		if (action != null && target == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Action parameter requires a target");
-		}		
+		}
 	}
-	
+
 	@Operation(summary = "Create schema metadata")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
-		
+	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO,
+			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
+			@RequestParam(name = "target", required = false) String target) throws Exception {
+
 		validateActionParams(schemaDTO, action, target);
 		checkVisibility(schemaDTO);
 		checkState(null, schemaDTO);
-		
+
 		String aggregationKey = null;
-		if(action != null) {			
+		if (action != null) {
 			SchemaInfoDTO prevSchema = getSchemaDTO(target, true, false);
-			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CONTENT_ACTION.revisionOf);			
-			if(action == CONTENT_ACTION.revisionOf) {
+			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CONTENT_ACTION.revisionOf);
+			if (action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if(prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
+				if (prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+							"Revisions can only be created from the latest revision. Check your target PID.");
 				}
 				aggregationKey = prevSchema.getAggregationKey();
-				
+
 			}
 		}
 		logger.info("Create Schema {}", schemaDTO);
-		if(!schemaDTO.getOrganizations().isEmpty()) {
-			check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));	
+		if (!schemaDTO.getOrganizations().isEmpty()) {
+			check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));
 		}
-			
-		final String PID = PIDService.mint(PIDType.HANDLE);
+
+		final String PID = "mscr:schema:" + UUID.randomUUID();
 		try {
-			var jenaModel = mapper.mapToJenaModel(PID, schemaDTO, target, aggregationKey, userProvider.getUser());
+			String handle = null;
+			if (schemaDTO.getState() == MSCRState.PUBLISHED || schemaDTO.getState() == MSCRState.DEPRECATED) {
+				handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, PID);
+
+			}
+			var jenaModel = mapper.mapToJenaModel(PID, handle, schemaDTO, target, aggregationKey,
+					userProvider.getUser());
 			jenaService.putToSchema(PID, jenaModel);
-			
+
 			// handle possible versioning data
 			var schemaResource = jenaModel.createResource(PID);
-			if(jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {			
+			if (jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {
 				Model prevVersionModel = jenaService.getSchema(target);
 				Resource prevVersionResource = prevVersionModel.getResource(target);
 				prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
 				jenaService.updateSchema(target, prevVersionModel);
-				
+
 			}
 			var indexModel = mapper.mapToIndexModel(PID, jenaModel);
-	        openSearchIndexer.createSchemaToIndex(indexModel);
-	        var userMapper = groupManagementService.mapUser();
-	
-	        return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
-		}catch(Exception ex) {
+			openSearchIndexer.createSchemaToIndex(indexModel);
+			var userMapper = groupManagementService.mapUser();
+
+			return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
+		} catch (Exception ex) {
 			// revert any possible changes
-			try { jenaService.deleteFromSchema(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			try { openSearchIndexer.deleteSchemaFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if( (ex instanceof ResponseStatusException) || (ex instanceof MappingError)) {
+			try {
+				jenaService.deleteFromSchema(PID);
+			} catch (Exception _ex) {
+				logger.error(_ex.getMessage(), _ex);
+			}
+			try {
+				openSearchIndexer.deleteSchemaFromIndex(PID);
+			} catch (Exception _ex) {
+				logger.error(_ex.getMessage(), _ex);
+			}
+			if ((ex instanceof ResponseStatusException) || (ex instanceof MappingError)) {
 				throw ex;
+			} else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+						"Unknown error occured. " + ex.getMessage(), ex);
 			}
-			else {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
-			}
-		}        
-				
+		}
+
 	}
-    
+
 	@Operation(summary = "Upload and associate a schema description file to an existing schema")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) throws Exception {
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) {
+		return uploadSchemaFile(pid, null, file);
+	}
+
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/schema/{pid}/{suffix}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public SchemaInfoDTO uploadSchemaFile(
+			@PathVariable String pid,
+			@PathVariable String suffix, 
+			@RequestParam("file") MultipartFile file) {
+
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
 		try {
+			pid = PIDService.mapToInternal(pid);
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getSchema(pid);
-			if(!isEditable(model, pid)) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			if (!isEditable(model, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Content can only be edited in the DRAFT state.");
 			}
-			
-	        var userMapper = groupManagementService.mapUser();
+
+			var userMapper = groupManagementService.mapUser();
 			SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model, userMapper);
 
-			if(!schemaDTO.getOrganizations().isEmpty()) {
-				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
-				check(authorizationManager.hasRightToAnyOrganization(orgs));	
-			}									
-			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), file.getContentType());
-		}catch(Exception ex) {
-			// revert any possible changes
-			try {storageService.deleteAllSchemaFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if( (ex instanceof ResponseStatusException) || (ex instanceof MappingError)) {
-				throw ex;
+			if (!schemaDTO.getOrganizations().isEmpty()) {
+				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org -> UUID.fromString(org.getId()))
+						.toList();
+				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			else {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
+			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), file.getContentType());
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		} finally {
+			try {
+				storageService.deleteAllSchemaFiles(pid);
+			} catch (Exception _ex) {
 			}
 		}
 	}
-	
+
 	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString, @RequestParam(name = "contentURL", required = false) String contentURL,
-			@RequestParam(name = "file", required = false) MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {		
-		
-		if(contentURL == null && file == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Either file or contentURL parameter must be supplied.");
+	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
+			@RequestParam(name = "contentURL", required = false) String contentURL,
+			@RequestParam(name = "file", required = false) MultipartFile file,
+			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
+			@RequestParam(name = "target", required = false) String target) throws Exception {
+
+		if (contentURL == null && file == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Either file or contentURL parameter must be supplied.");
 		}
 		ObjectMapper objMapper = new ObjectMapper();
 		SchemaDTO schemaDTO = null;
 		try {
 			schemaDTO = objMapper.readValue(metadataString, SchemaDTO.class);
 		} catch (JsonProcessingException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse SchemaDTO from the metadata content. " + e.getMessage(), e);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Could not parse SchemaDTO from the metadata content. " + e.getMessage(), e);
 		}
 		String contentType = "";
 		byte[] fileBytes = null;
 		try {
-			if(file == null) {
-				// try to download url to file 
-				File tempFile = File.createTempFile("schema", "temp"); 
+			if (file == null) {
+				// try to download url to file
+				File tempFile = File.createTempFile("schema", "temp");
 				FileUtils.copyURLToFile(new URL(contentURL), tempFile);
 				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat());
-			}
-			else {
-				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat());	
+			} else {
+				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat());
 				contentType = file.getContentType();
 			}
-			
-		}catch(Exception ex) {
+
+		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
-		
+
 		System.out.println(contentType);
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		final String PID = dto.getPID();
-		         
-		if(!schemaDTO.getOrganizations().isEmpty()) {
+
+		if (!schemaDTO.getOrganizations().isEmpty()) {
 			Collection<UUID> orgs = schemaDTO.getOrganizations();
-			check(authorizationManager.hasRightToAnyOrganization(orgs));	
-		}									
+			check(authorizationManager.hasRightToAnyOrganization(orgs));
+		}
 		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentType);
-		
-	}
-  
-    @Operation(summary = "Modify schema")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
-    @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
-    @PatchMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO,
-                            @PathVariable String pid) {
-        logger.info("Updating schema {}", schemaDTO);
-
-        var oldModel = jenaService.getSchema(pid);
-        if(oldModel == null){
-            throw new ResourceNotFoundException(pid);
-        }
-        check(authorizationManager.hasRightToModelMSCR(pid, oldModel));        
-        var userMapper = groupManagementService.mapUser();
-        SchemaInfoDTO prevSchema =  mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper);        
-        schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);		
-		checkVisibility(schemaDTO);
-		checkState(prevSchema, schemaDTO);
-        var jenaModel = mapper.mapToUpdateJenaModel(pid, schemaDTO, oldModel, userProvider.getUser());
-
-        jenaService.putToSchema(pid, jenaModel);
-
-
-        var indexModel = mapper.mapToIndexModel(pid, jenaModel);
-        openSearchIndexer.updateSchemaToIndex(indexModel);
-        return mapper.mapToSchemaDTO(pid, jenaModel, false, false, userMapper);
-    }
-
-    
-    
-    @Operation(summary = "Get a schema metadata")
-    @ApiResponse(responseCode = "200", description = "")
-    @GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
-    public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo, @RequestParam(name = "includeVariantInfo", defaultValue = "false") String includeVariantInfo){    	
-    	var jenaModel = jenaService.getSchema(pid);
-		var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
-        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
-
-    	return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), Boolean.parseBoolean(includeVariantInfo), userMapper);
-    }
-    
-
-     
-    @Operation(summary = "Get original file version of the schema (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
-    @ApiResponse(responseCode = "200", description = "")
-    @GetMapping(path = "/schema/{pid}/original")
-    public ResponseEntity<byte[]> exportOriginalFile(@PathVariable("pid") String pid) throws IOException {
-    	List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
-    	return handleFileDownload(files);
 
 	}
-    
-    @Operation(summary = "Download schema related file with a given id.")
-    @ApiResponse(responseCode ="200")
-    @GetMapping(path = "/schema/{pid}/files/{fileID}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID, @RequestParam(name="download", defaultValue = "false" ) String download) {
-    	StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.SCHEMA);
-    	if(file == null) {
-    		throw new ResourceNotFoundException(pid + "@file=" + fileID); 
-    	}
-    	return handleFileDownload(List.of(file), download);
-    }    
+
+	@Operation(summary = "Modify schema")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
+	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+	@PatchMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO, @PathVariable String pid) {
+		return updateModel(schemaDTO, pid, null);
+	}
+
+	@Hidden
+	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+	@PatchMapping(path = "/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO, @PathVariable String pid,
+			@PathVariable String suffix) {
+		logger.info("Updating schema {}", schemaDTO);
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);
+
+			var oldModel = jenaService.getSchema(pid);
+			if (oldModel == null) {
+				throw new ResourceNotFoundException(pid);
+			}
+			check(authorizationManager.hasRightToModelMSCR(pid, oldModel));
+			var userMapper = groupManagementService.mapUser();
+			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper);
+			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);
+			checkVisibility(schemaDTO);
+			checkState(prevSchema, schemaDTO);
+			Model jenaModel = null;
+			if (prevSchema.getState() == MSCRState.DRAFT && schemaDTO.getState() == MSCRState.PUBLISHED) {
+				try {
+					String handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, pid);
+					jenaModel = mapper.mapToUpdateJenaModel(pid, handle, schemaDTO, oldModel, userProvider.getUser());
+				} catch (Exception ex) {
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+							"Exception while geting a new handle for the schema." + ex.getMessage());
+				}
+			} else {
+				jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, oldModel, userProvider.getUser());
+			}
+
+			jenaService.putToSchema(pid, jenaModel);
+
+			var indexModel = mapper.mapToIndexModel(pid, jenaModel);
+			openSearchIndexer.updateSchemaToIndex(indexModel);
+			return mapper.mapToSchemaDTO(pid, jenaModel, false, false, userMapper);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+
+	}
+
+	@Operation(summary = "Get a schema metadata")
+	@ApiResponse(responseCode = "200", description = "")
+	@GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid,
+			@RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo,
+			@RequestParam(name = "includeVariantInfo", defaultValue = "false") String includeVariantInfo) {
+		return getSchemaMetadata(pid, null, includeVersionInfo, includeVariantInfo);
+	}
+
+	@Hidden
+	@GetMapping(value = "/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO getSchemaMetadata(
+			@PathVariable String pid,
+			@PathVariable String suffix,
+			@RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo,
+			@RequestParam(name = "includeVariantInfo", defaultValue = "false") String includeVariantInfo) {
+		try {
+			if (suffix != null) {
+				pid = pid + "/" + suffix;
+			}
+			pid = PIDService.mapToInternal(pid);
+			var jenaModel = jenaService.getSchema(pid);
+			var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
+			var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+
+			return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo),
+					Boolean.parseBoolean(includeVariantInfo), userMapper);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+	}
+
+	@Operation(summary = "Get original file version of the schema (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
+	@ApiResponse(responseCode = "200", description = "")
+	@GetMapping(path = "/schema/{pid}/original")
+	public ResponseEntity<byte[]> exportOriginalFile(@PathVariable("pid") String pid) {
+		return exportOriginalFile(pid, null);
+	}
+
+	@Hidden
+	@GetMapping(path = "/schema/{pid}/{suffix}/original")
+	public ResponseEntity<byte[]> exportOriginalFile(
+			@PathVariable String pid,
+			@PathVariable String suffix) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);
+			List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
+			return handleFileDownload(files);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+
+	}
+
+	@Operation(summary = "Download schema related file with a given id.")
+	@ApiResponse(responseCode = "200")
+	@GetMapping(path = "/schema/{pid}/files/{fileID}")
+	public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID,
+			@RequestParam(name = "download", defaultValue = "false") String download) {
+		return downloadFile(pid, null, fileID, download);
+	}
+
+	@Hidden
+	@GetMapping(path = "/schema/{pid}/{suffix}/files/{fileID}")
+	public ResponseEntity<byte[]> downloadFile(
+			@PathVariable String pid,
+			@PathVariable String suffix, @PathVariable String fileID,
+			@RequestParam(name = "download", defaultValue = "false") String download) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);
+			StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.SCHEMA);
+			if (file == null) {
+				throw new ResourceNotFoundException(pid + "@file=" + fileID);
+			}
+			return handleFileDownload(List.of(file), download);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+
+	}
 
 	@Operation(summary = "Delete file")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@DeleteMapping(path="/schema/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
-		var model = jenaService.getCrosswalk(pid);
-		check(authorizationManager.hasRightToModelMSCR(pid, model));
-		if(!isEditable(model, pid)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+	@DeleteMapping(path = "/schema/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) {
+		deleteFile(pid, null, fileID);
+	}
+
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path = "/schema/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public void deleteFile(
+			@PathVariable String pid, 
+			@PathVariable String suffix,
+			@PathVariable Long fileID) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);
+			var model = jenaService.getCrosswalk(pid);
+			check(authorizationManager.hasRightToModelMSCR(pid, model));
+			if (!isEditable(model, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Content can only be edited in the DRAFT state.");
+			}
+
+			var fileMetadata = storageService.retrieveFileMetadata(pid, fileID, MSCRType.SCHEMA);
+			if (fileMetadata == null) {
+				throw new ResourceNotFoundException(pid + "@file=" + fileID);
+			}
+			storageService.removeFile(fileID);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
 
-		var fileMetadata = storageService.retrieveFileMetadata(pid, fileID, MSCRType.SCHEMA);
-		if(fileMetadata == null) {
-			throw new ResourceNotFoundException(pid + "@file=" + fileID);
-		}
-		storageService.removeFile(fileID);	
-	} 
-	
+	}
+
 	@Operation(summary = "Get SHACL version of the schema")
 	@ApiResponse(responseCode = "200", description = "")
 	@GetMapping(path = "/schema/{pid}/internal", produces = "text/turtle")
 	public ResponseEntity<StreamingResponseBody> exportRawModel(@PathVariable String pid) {
-		var model = jenaService.getSchema(pid);
-		StreamingResponseBody responseBody = httpResponseOutputStream -> {
-			model.write(httpResponseOutputStream, "TURTLE");
-		};
-		return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+		return exportRawModel(pid, null);
+	}
+
+	@Hidden
+	@GetMapping(path = "/schema/{pid}/{suffix}/internal", produces = "text/turtle")
+	public ResponseEntity<StreamingResponseBody> exportRawModel(
+			@PathVariable String pid,
+			@PathVariable String suffix) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);
+			var model = jenaService.getSchema(pid);
+			StreamingResponseBody responseBody = httpResponseOutputStream -> {
+				model.write(httpResponseOutputStream, "TURTLE");
+			};
+			return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
 	}
 
 }

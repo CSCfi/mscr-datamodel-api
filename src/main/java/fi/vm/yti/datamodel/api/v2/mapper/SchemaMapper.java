@@ -69,11 +69,11 @@ public class SchemaMapper {
 		this.storageService = storageService;
 		this.jenaService = jenaService;
 	}
-	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO, YtiUser user) {
-		return mapToJenaModel(PID, schemaDTO, null, null, user);
+	public Model mapToJenaModel(String PID, String handle, SchemaDTO schemaDTO, YtiUser user) {
+		return mapToJenaModel(PID, handle, schemaDTO, null, null, user);
 	}
 
-	public Model mapToJenaModel(String PID, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey, YtiUser user) {
+	public Model mapToJenaModel(String PID, String handle, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey, YtiUser user) {
 		log.info("Mapping SchemaDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -103,7 +103,7 @@ public class SchemaMapper {
 		// addInternalNamespaceToDatamodel(modelDTO, modelResource, model);
 		// addExternalNamespaceToDatamodel(modelDTO, model, modelResource);
 
-		String prefix = MapperUtils.getMSCRPrefix(PID);
+		String prefix = "";
 		model.setNsPrefix(prefix, modelUri + "#");
 
 		modelResource.addProperty(MSCR.format, schemaDTO.getFormat().toString());
@@ -133,11 +133,15 @@ public class SchemaMapper {
 		}
 		else {
 			modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(PID));
-		}		
+		}	
+		
+		if(handle != null) {
+			modelResource.addProperty(MSCR.handle, model.createLiteral(handle));
+		}
 		return model;
 	}
-	
-	public Model mapToUpdateJenaModel(String pid, SchemaDTO dto, Model model, YtiUser user) {
+
+	public Model mapToUpdateJenaModel(String pid, String handle, SchemaDTO dto, Model model, YtiUser user) {
         var updateDate = new XSDDateTime(Calendar.getInstance());
         var modelResource = model.getResource(pid);
 
@@ -213,6 +217,10 @@ public class SchemaMapper {
         modelResource.removeAll(MSCR.namespace);
 		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(dto.getNamespace()));
 		
+		if(handle != null) {
+			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));
+			
+		}
 		return model;
 	}
 
@@ -247,7 +255,7 @@ public class SchemaMapper {
 		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));		
 		
 		schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
-		
+				
 		return schemaInfoDTO;
 	}
 
@@ -337,6 +345,10 @@ public class SchemaMapper {
 			schemaInfoDTO.setVariants2(v2);
 		
 		}
+		if(modelResource.hasProperty(MSCR.handle)) {
+			schemaInfoDTO.setHandle(MapperUtils.propertyToString(modelResource, MSCR.handle));	
+		}
+		
 		return schemaInfoDTO;
 	}
 	
@@ -425,7 +437,7 @@ public class SchemaMapper {
         indexModel.setVersionLabel(resource.getProperty(MSCR.versionLabel).getString());
 
         indexModel.setNamespace(MapperUtils.propertyToString(resource, MSCR.namespace));
-
+        indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
         return indexModel;
     }     
 	

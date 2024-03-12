@@ -36,6 +36,7 @@ public class IndexSchema extends IndexBase {
     private List<String> owner;
     private String versionLabel;
     private String namespace;
+    private String handle;
     
     public MSCRVisibility getVisibility() {
 		return visibility;
@@ -186,6 +187,14 @@ public class IndexSchema extends IndexBase {
 
 	public void setNamespace(String namespace) {
 		this.namespace = namespace;
+	}
+
+	public String getHandle() {
+		return handle;
+	}
+
+	public void setHandle(String handle) {
+		this.handle = handle;
 	}
 	
 }
