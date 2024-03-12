@@ -11,12 +11,14 @@ import java.net.URLEncoder;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
 
+@Profile({"test", "prod"})
 @Service
 public class PIDMSServiceImpl implements PIDService {
 
