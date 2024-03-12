@@ -18,6 +18,7 @@ public class DataModelInfoDTO extends ResourceCommonDTO {
     private Set<CodeListDTO> codeLists = Set.of();
     private String contact;
     private Map<String, String> documentation = Map.of();
+    private String handle;
 
     public ModelType getType() {
         return type;
@@ -130,4 +131,14 @@ public class DataModelInfoDTO extends ResourceCommonDTO {
     public void setDocumentation(Map<String, String> documentation) {
         this.documentation = documentation;
     }
+
+	public String getHandle() {
+		return handle;
+	}
+
+	public void setHandle(String handle) {
+		this.handle = handle;
+	}
+    
+    
 }

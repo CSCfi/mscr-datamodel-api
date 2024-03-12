@@ -51,3 +51,9 @@ fake.login.lastName=Testaaja
 spring.elasticsearch.uris=http://localhost:9002
 management.endpoints.web.exposure.include=health,info
 
+# PID MS
+pidms.apikey=
+pidms.url=
+pidms.prefix=
+pidms.mscrUrl=
+

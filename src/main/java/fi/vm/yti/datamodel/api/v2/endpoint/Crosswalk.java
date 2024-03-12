@@ -18,7 +18,6 @@ import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.SKOS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,6 +63,7 @@ import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.validator.ValidCrosswalk;
 import fi.vm.yti.datamodel.api.v2.validator.ValidMapping;
 import fi.vm.yti.security.AuthenticatedUserProvider;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -123,14 +122,14 @@ public class Crosswalk extends BaseMSCRController {
         return mapper.mapToCrosswalkDTO(pid, model, includeVersionInfo, userMapper);
 	}	
 	
-	private void createCrosswalkMetadata(final String PID, CrosswalkDTO dto, String aggregationKey, String target) {
+	private void createCrosswalkMetadata(final String PID, final String handle, CrosswalkDTO dto, String aggregationKey, String target) {
 		if(!dto.getOrganizations().isEmpty()) {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
 		checkVisibility(dto);	
 		checkState(null, dto);
 
-		Model jenaModel = mapper.mapToJenaModel(PID, dto, target, aggregationKey, userProvider.getUser());
+		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
 		
 		// handle possible versioning data
@@ -213,7 +212,7 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public CrosswalkInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody(required = false) CrosswalkDTO dto, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
+	public CrosswalkInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody(required = false) CrosswalkDTO dto, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
 		logger.info("Create Crosswalk {}", dto);
 		validateActionParams(dto, action, target); 
 		String aggregationKey = null;
@@ -229,9 +228,14 @@ public class Crosswalk extends BaseMSCRController {
 				
 			}
 		}
-		final String PID = PIDService.mint(PIDType.HANDLE);
+		final String PID = "mscr:crosswalk:" + UUID.randomUUID();
 		try {
-			createCrosswalkMetadata(PID, dto, aggregationKey, target);
+			String handle = null;
+			if(dto.getState() == MSCRState.PUBLISHED || dto.getState() == MSCRState.DEPRECATED) {
+				 handle = PIDService.mint(PIDType.HANDLE, MSCRType.CROSSWALK, PID);
+				
+			}
+			createCrosswalkMetadata(PID, handle, dto, aggregationKey, target);
 			var userMapper = groupManagementService.mapUser();
 			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
 		}catch(Exception ex) {
@@ -253,9 +257,24 @@ public class Crosswalk extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO uploadCrosswalkFile(@PathVariable String pid,
-			@RequestParam("file") MultipartFile file) throws Exception {
+			@RequestParam("file") MultipartFile file) {
+		return uploadCrosswalkFile(pid, null, file);
 		
+	}
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/crosswalk/{pid}/{suffix}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public CrosswalkInfoDTO uploadCrosswalkFile(
+			@PathVariable String pid,
+			@PathVariable(name = "suffix") String suffix,
+			@RequestParam("file") MultipartFile file
+			) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}		
 		try {
+			pid = PIDService.mapToInternal(pid);
 			// check for auth here because addFileToSchema is not doing it
 			var model = jenaService.getCrosswalk(pid);
 			if(!isEditable(model, pid)) {
@@ -272,18 +291,15 @@ public class Crosswalk extends BaseMSCRController {
 			
 			addFileToCrosswalk(pid, crosswalkDTO.getFormat(), file);
 			return mapper.mapToCrosswalkDTO(pid, model, userMapper);
-		}catch(Exception ex) {
-			// revert any possible changes
-			
-			try {storageService.deleteAllCrosswalkFiles(pid);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
-			if( (ex instanceof ResponseStatusException)) {
-				throw ex;
-			}
-			else {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured. " + ex.getMessage(), ex);
-			}
-		}
-					
+		
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		} finally {
+			try {storageService.deleteAllCrosswalkFiles(pid);}catch(Exception _ex) { }
+
+		}							
 	}
 	
 	
@@ -292,7 +308,7 @@ public class Crosswalk extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO createCrosswalkFull(@RequestParam("metadata") String metadataString,
-			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) {
+			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
 		
 		ObjectMapper objMapper = new ObjectMapper();
 		CrosswalkDTO dto = null;
@@ -316,60 +332,154 @@ public class Crosswalk extends BaseMSCRController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PatchMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public CrosswalkInfoDTO updateModel(@RequestBody CrosswalkDTO dto,
-                            @PathVariable String pid) {
+    		@PathVariable String pid) {
+    	return updateModel(dto, pid, null);
+    }
+    
+    @Hidden
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PatchMapping(path = "/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    public CrosswalkInfoDTO updateModel(@RequestBody CrosswalkDTO dto,
+                            @PathVariable String pid,
+                            @PathVariable(name = "suffix") String suffix) {
         logger.info("Updating crosswalk {}", dto);
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);
 
-        var oldModel = jenaService.getCrosswalk(pid);
-        if(oldModel == null){
-            throw new ResourceNotFoundException(pid);
-        }
-
-        check(authorizationManager.hasRightToModelMSCR(pid, oldModel));
-        var userMapper = groupManagementService.mapUser();
-        CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
-        dto = mergeMetadata(prev, dto, false);		    
-        checkVisibility(dto);
-        checkState(prev, dto);
-        
-        var jenaModel = mapper.mapToUpdateJenaModel(pid, dto, oldModel, userProvider.getUser());
-
-        jenaService.putToCrosswalk(pid, jenaModel);
-
-
-        var indexModel = mapper.mapToIndexModel(pid, jenaModel);
-        openSearchIndexer.updateCrosswalkToIndex(indexModel);
-        CrosswalkInfoDTO updated = mapper.mapToCrosswalkDTO(pid, jenaModel, false, userMapper);
-        return updated;
+	        var oldModel = jenaService.getCrosswalk(pid);
+	        if(oldModel == null){
+	            throw new ResourceNotFoundException(pid);
+	        }
+	
+	        check(authorizationManager.hasRightToModelMSCR(pid, oldModel));
+	        var userMapper = groupManagementService.mapUser();
+	        CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
+	        dto = mergeMetadata(prev, dto, false);		    
+	        checkVisibility(dto);
+	        checkState(prev, dto);
+	        Model jenaModel = null;
+	        if(prev.getState() == MSCRState.DRAFT && dto.getState() == MSCRState.PUBLISHED) {
+				try {
+					String handle = PIDService.mint(PIDType.HANDLE, MSCRType.CROSSWALK, pid);
+					jenaModel = mapper.mapToUpdateJenaModel(pid, handle, dto, oldModel, userProvider.getUser());	
+				}catch(Exception ex) {
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception while geting a new handle for the schema." + ex.getMessage());
+				}
+			}
+			else {
+				jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, oldModel, userProvider.getUser());	
+			}
+	        
+	
+	        jenaService.putToCrosswalk(pid, jenaModel);
+	
+	
+	        var indexModel = mapper.mapToIndexModel(pid, jenaModel);
+	        openSearchIndexer.updateCrosswalkToIndex(indexModel);
+	        CrosswalkInfoDTO updated = mapper.mapToCrosswalkDTO(pid, jenaModel, false, userMapper);
+	        return updated;
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}	        
     }        
 	
     @Operation(summary = "Get a crosswalk metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE)
-    public CrosswalkInfoDTO getCrosswalkMetadata(@PathVariable String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
-    	var jenaModel = jenaService.getCrosswalk(pid);
-		var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
-        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+    public ResponseEntity<Object> getCrosswalkMetadata(@PathVariable String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
+    	return getCrosswalkMetadata(pid, null, includeVersionInfo);
+    }
+    
+    @Hidden
+    @GetMapping(value = "/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getCrosswalkMetadata(
+    		@PathVariable String pid, 
+    		@PathVariable(name = "suffix") String suffix,
+    		@RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
+		// TODO: get rid of this
+    	if(pid.indexOf("@") > 0 || (suffix != null && suffix.indexOf("@") > 0)) {
 
-    	return mapper.mapToCrosswalkDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper);
+    		return getMapping(pid, suffix);
+    	}
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);    	
+    	
+	    	var jenaModel = jenaService.getCrosswalk(pid);
+			var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
+	        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+	
+	    	return ResponseEntity.ok(mapper.mapToCrosswalkDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper));
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+	    	
     }
     
     @Operation(summary = "Get original file version of the crosswalk (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(path = "/crosswalk/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable String pid) {
-    	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
-    	return handleFileDownload(files);
+    	return exportOriginalFile(pid, null);
+    }
+    
+    @Hidden
+    @GetMapping(path = "/crosswalk/{pid}/{suffix}/original")
+    public ResponseEntity<byte[]> exportOriginalFile(
+    		@PathVariable String pid,
+    		@PathVariable(name = "suffix") String suffix) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);    	
+	    	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
+	    	return handleFileDownload(files);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}	    	
 	}
     
     @Operation(summary = "Download crosswalk related file with a given id.")
     @ApiResponse(responseCode ="200")
     @GetMapping(path = "/crosswalk/{pid}/files/{fileID}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID, @RequestParam(name="download", defaultValue = "false" ) String download) {
-    	StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.CROSSWALK);
-    	if(file == null) {
-    		throw new ResourceNotFoundException(pid + "@file=" + fileID); 
-    	}
-    	return handleFileDownload(List.of(file), download);
+    	return downloadFile(pid, null, fileID, download); 
+    }
+    
+    @Hidden
+    @GetMapping(path = "/crosswalk/{pid}/{suffix}/files/{fileID}")
+    public ResponseEntity<byte[]> downloadFile(
+    		@PathVariable String pid,
+    		@PathVariable String suffix,
+    		@PathVariable String fileID, 
+    		@RequestParam(name="download", defaultValue = "false" ) String download) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			pid = PIDService.mapToInternal(pid);    	
+	    	StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.CROSSWALK);
+	    	if(file == null) {
+	    		throw new ResourceNotFoundException(pid + "@file=" + fileID); 
+	    	}
+	    	return handleFileDownload(List.of(file), download);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}	    	
     }
     
 	@Operation(summary = "Delete file")
@@ -377,16 +487,36 @@ public class Crosswalk extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
 	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
-		var crosswalkModel = jenaService.getCrosswalk(pid);
-		check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
-		if(!isEditable(crosswalkModel, pid)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		deleteFile(pid, null, fileID);
+	}
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path="/crosswalk/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public void deleteFile(
+			@PathVariable String pid, 
+			@PathVariable String suffix,
+			@PathVariable Long fileID) throws Exception {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
 		}
-		var fileMetadata = storageService.retrieveFileMetadata(pid, fileID, MSCRType.CROSSWALK);
-		if(fileMetadata == null) {
-			throw new ResourceNotFoundException(pid + "@file=" + fileID);
-		}
-		storageService.removeFile(fileID);	
+		try {
+			pid = PIDService.mapToInternal(pid);		
+			var crosswalkModel = jenaService.getCrosswalk(pid);
+			check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+			if(!isEditable(crosswalkModel, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			}
+			var fileMetadata = storageService.retrieveFileMetadata(pid, fileID, MSCRType.CROSSWALK);
+			if(fileMetadata == null) {
+				throw new ResourceNotFoundException(pid + "@file=" + fileID);
+			}
+			storageService.removeFile(fileID);	
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}			
 	}        
     
 	@Operation(summary = "Create a mapping")
@@ -394,24 +524,43 @@ public class Crosswalk extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public MappingInfoDTO createMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String pid) {
-		logger.info("Create Mapping {} for crosswalk {}", dto, pid);
-        var crosswalkModel = jenaService.getCrosswalk(pid);
-        if(crosswalkModel == null){
-            throw new ResourceNotFoundException(pid);
-        }
-        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
-		if(!isEditable(crosswalkModel, pid)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+		return createMapping(dto, pid, null);
+	}
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/crosswalk/{pid}/{suffix}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO createMapping(
+			@ValidMapping @RequestBody MappingDTO dto, 
+			@PathVariable String pid,
+			@PathVariable String suffix
+			) {
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
 		}
-        
-		final String mappingPID = PIDService.mintPartIdentifier(pid);
-
-		Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
-		jenaService.putToCrosswalk(mappingPID, mappingModel);
-		Resource crosswalkResource = crosswalkModel.getResource(pid);
-		crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
-		jenaService.putToCrosswalk(pid, crosswalkModel);
-		return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);		
+		try {	
+			pid = PIDService.mapToInternal(pid);
+			logger.info("Create Mapping {} for crosswalk {}", dto, pid);		
+	        var crosswalkModel = jenaService.getCrosswalk(pid);
+	        if(crosswalkModel == null){
+	            throw new ResourceNotFoundException(pid);
+	        }
+	        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+			if(!isEditable(crosswalkModel, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			}
+	        
+			final String mappingPID = PIDService.mintPartIdentifier(pid);
+	
+			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
+			jenaService.putToCrosswalk(mappingPID, mappingModel);
+			Resource crosswalkResource = crosswalkModel.getResource(pid);
+			crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
+			jenaService.putToCrosswalk(pid, crosswalkModel);
+			return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
 	}
 	
 	
@@ -420,113 +569,194 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingInfoDTO updateMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) throws Exception {
-		logger.info("Update Mapping {} for id {}", dto, mappingPID);
-		var mappingModelOriginal = jenaService.getCrosswalk(mappingPID);
-		Resource mappingResource = mappingModelOriginal.getResource(mappingPID);
-		String pid = MapperUtils.propertyToString(mappingResource, DCTerms.isPartOf);		
-		
-        var crosswalkModel = jenaService.getCrosswalk(pid);
-        if(crosswalkModel == null){
-            throw new ResourceNotFoundException(pid);
-        }
-        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
-		if(!isEditable(crosswalkModel, pid)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+	public MappingInfoDTO updateMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) {
+		return updateMapping(dto, mappingPID, null);
+	}
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO updateMapping(
+			@ValidMapping @RequestBody MappingDTO dto,
+			@PathVariable String mappingPID,
+			@PathVariable String suffix) {
+		if (suffix != null) {
+			mappingPID = mappingPID + "/" + suffix;
 		}
-
-		Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
-		jenaService. putToCrosswalk(mappingPID, mappingModel);
-		Resource crosswalkResource = crosswalkModel.getResource(pid);
-		crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
-		jenaService.putToCrosswalk(pid, crosswalkModel);
-		return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
+		try {
+			mappingPID = PIDService.mapToInternal(mappingPID);		
+			logger.info("Update Mapping {} for id {}", dto, mappingPID);
+			var mappingModelOriginal = jenaService.getCrosswalk(mappingPID);
+			Resource mappingResource = mappingModelOriginal.getResource(mappingPID);
+			String pid = MapperUtils.propertyToString(mappingResource, DCTerms.isPartOf);		
+			
+	        var crosswalkModel = jenaService.getCrosswalk(pid);
+	        if(crosswalkModel == null){
+	            throw new ResourceNotFoundException(pid);
+	        }
+	        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+			if(!isEditable(crosswalkModel, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			}
+	
+			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
+			jenaService. putToCrosswalk(mappingPID, mappingModel);
+			Resource crosswalkResource = crosswalkModel.getResource(pid);
+			crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
+			jenaService.putToCrosswalk(pid, crosswalkModel);
+			return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
 
 	}	
 	
 	@Operation(summary = "Get a mapping")
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingInfoDTO getMapping(@PathVariable String mappingPID) {
-		logger.info("Get Mapping {}", mappingPID);
-		// TODO: check that crosswalk exists
-		var mappingModel = jenaService.getCrosswalk(mappingPID);
-        if(mappingModel == null){
-            throw new ResourceNotFoundException(mappingPID);
-        }
-		
-		return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);		
+	public ResponseEntity<Object> getMapping(@PathVariable String mappingPID) {		
+		return getMapping(mappingPID, null);
+	}
+	
+	@Hidden
+	@GetMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getMapping(
+			@PathVariable String mappingPID,
+			@PathVariable String suffix
+			) {
+		// TODO: get rid of this
+    	if((mappingPID.indexOf("@") < 0 && suffix == null) || (mappingPID.indexOf("@") < 0 && suffix != null && suffix.indexOf("@") < 0)) {
+    		return getCrosswalkMetadata(mappingPID, suffix, "false");
+    	}
+    	
+		if (suffix != null) {
+			mappingPID = mappingPID + "/" + suffix;
+		}
+		try {
+			mappingPID = PIDService.mapToInternal(mappingPID);			
+			logger.info("Get Mapping {}", mappingPID);
+			// TODO: check that crosswalk exists
+			var mappingModel = jenaService.getCrosswalk(mappingPID);
+	        if(mappingModel == null){
+	            throw new ResourceNotFoundException(mappingPID);
+	        }
+			
+			return ResponseEntity.ok().body(mappingMapper.mapToMappingDTO(mappingPID, mappingModel));
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
 	}
 	
 	@Operation(summary = "Delete a mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteMapping(@PathVariable String mappingPID) throws Exception {
-		logger.info("Delete Mapping {}", mappingPID);
-		// TODO: check that crosswalk exists
-		var mappingModel = jenaService.getCrosswalk(mappingPID);
-		Resource mappingResource = mappingModel.getResource(mappingPID);
-		String pid = MapperUtils.propertyToString(mappingResource, DCTerms.isPartOf);		
-		var crosswalkModel = jenaService.getCrosswalk(pid);
-        if(crosswalkModel == null){
-            throw new ResourceNotFoundException(pid);
-        }
-        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
-		if(!isEditable(crosswalkModel, pid)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+	public void deleteMapping(@PathVariable String mappingPID) {
+		deleteMapping(mappingPID, null);
+	}
+	
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE)
+	public void deleteMapping(
+			@PathVariable String mappingPID,
+			@PathVariable String suffix) {
+		if (suffix != null) {
+			mappingPID = mappingPID + "/" + suffix;
 		}
-
-        
-        crosswalkModel.remove(crosswalkModel.getResource(pid), MSCR.mappings, crosswalkModel.getResource(mappingPID));
-		jenaService.deleteFromCrosswalk(mappingPID);
-		jenaService.putToCrosswalk(pid, crosswalkModel);
-				
+		try {
+			mappingPID = PIDService.mapToInternal(mappingPID);		
+			logger.info("Delete Mapping {}", mappingPID);
+			// TODO: check that crosswalk exists
+			var mappingModel = jenaService.getCrosswalk(mappingPID);
+			Resource mappingResource = mappingModel.getResource(mappingPID);
+			String pid = MapperUtils.propertyToString(mappingResource, DCTerms.isPartOf);		
+			var crosswalkModel = jenaService.getCrosswalk(pid);
+	        if(crosswalkModel == null){
+	            throw new ResourceNotFoundException(pid);
+	        }
+	        check(authorizationManager.hasRightToModelMSCR(pid, crosswalkModel));
+			if(!isEditable(crosswalkModel, pid)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
+			}
+	
+	        
+	        crosswalkModel.remove(crosswalkModel.getResource(pid), MSCR.mappings, crosswalkModel.getResource(mappingPID));
+			jenaService.deleteFromCrosswalk(mappingPID);
+			jenaService.putToCrosswalk(pid, crosswalkModel);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
 	}
 		
 	@Operation(summary = "Get a mappings for a crosswalk")
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping")
-	public ResponseEntity<Object> getMappings(@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat) {
-		logger.info("Get Mappings for crosswalk {}", pid);
-		// TODO: check that crosswalk exists
-		var crosswalkModel = jenaService.getCrosswalk(pid);
-		
-		List<MappingDTO> mappings = new ArrayList<MappingDTO>();
-		NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
-		while(i.hasNext()) {
-			Resource mappingResource = i.next().asResource();			
-			MappingDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), jenaService.getCrosswalk(mappingResource.getURI()));
-			mappings.add(dto);
-		}
-		if(exportFormat !=null) {
-			// TODO: check for crosswalk format == MSCR and source and target scheama format == X,Y,Z
-			if(exportFormat.equals("skos")) {
-				Model model = ModelFactory.createDefaultModel();
-				mappings.forEach(mapping -> {
-					String predicate = mapping.getPredicate();
-					mapping.getSource().forEach(sourceNode -> {
-						if(sourceNode.getUri() != null) {
-							//map to all targets
-							mapping.getTarget().forEach(targetNode -> {
-								if(targetNode.getUri() != null) {									
-									model.add(
-										model.createResource(sourceNode.getUri()),
-										model.createProperty(predicate),
-										model.createResource(targetNode.getUri())
-									);
-								}
-							});
-						}
-					});
-				});
-				
-				StringWriter writer = new StringWriter();
+	public ResponseEntity<Object> getMappings(
+			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat) {
+		return getMappings(pid, null, exportFormat); 
+	}
 
-				model.write(writer, "TURTLE");
-				return ResponseEntity.ok(writer.getBuffer().toString());
-			}
+		@ApiResponse(responseCode = "200")	
+	@GetMapping(path="/crosswalk/{pid}/{suffix}/mapping")
+	public ResponseEntity<Object> getMappings(
+			@PathVariable String pid, 
+			@PathVariable String suffix, 
+			@RequestParam(name = "exportFormat", required = false) String exportFormat) {
+		
+		// TODO: check that crosswalk exists
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
 		}
-		return ResponseEntity.ok(mappings);		
+		try {
+			logger.info("Get Mappings for crosswalk {}", pid);
+			pid = PIDService.mapToInternal(pid);	
+			var crosswalkModel = jenaService.getCrosswalk(pid);		
+			List<MappingDTO> mappings = new ArrayList<MappingDTO>();
+			NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
+			while(i.hasNext()) {
+				Resource mappingResource = i.next().asResource();			
+				MappingDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), jenaService.getCrosswalk(mappingResource.getURI()));
+				mappings.add(dto);
+			}
+			if(exportFormat !=null) {
+				// TODO: check for crosswalk format == MSCR and source and target scheama format == X,Y,Z
+				if(exportFormat.equals("skos")) {
+					Model model = ModelFactory.createDefaultModel();
+					mappings.forEach(mapping -> {
+						String predicate = mapping.getPredicate();
+						mapping.getSource().forEach(sourceNode -> {
+							if(sourceNode.getUri() != null) {
+								//map to all targets
+								mapping.getTarget().forEach(targetNode -> {
+									if(targetNode.getUri() != null) {									
+										model.add(
+											model.createResource(sourceNode.getUri()),
+											model.createProperty(predicate),
+											model.createResource(targetNode.getUri())
+										);
+									}
+								});
+							}
+						});
+					});
+					
+					StringWriter writer = new StringWriter();
+	
+					model.write(writer, "TURTLE");
+					return ResponseEntity.ok(writer.getBuffer().toString());
+				}
+			}
+			return ResponseEntity.ok(mappings);
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
 	}	
 }

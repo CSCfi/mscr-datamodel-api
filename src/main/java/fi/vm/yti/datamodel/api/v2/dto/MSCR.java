@@ -67,6 +67,7 @@ public class MSCR {
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
 
     public static final Property id = ResourceFactory.createProperty(URI, "id");
+    public static final Property handle = ResourceFactory.createProperty(URI, "handle");
     public static final Property uri = ResourceFactory.createProperty(URI, "uri");
     public static final Property label = ResourceFactory.createProperty(URI, "label");
     public static final Property type = ResourceFactory.createProperty(URI, "type");
