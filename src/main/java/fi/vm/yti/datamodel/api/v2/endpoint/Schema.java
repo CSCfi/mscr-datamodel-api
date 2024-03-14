@@ -420,6 +420,7 @@ public class Schema extends BaseMSCRController {
 				File tempFile = File.createTempFile("schema", "temp");
 				FileUtils.copyURLToFile(new URL(contentURL), tempFile);
 				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat());
+				contentType = "application/octet-stream"; // TODO: fix this
 			} else {
 				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat());
 				contentType = file.getContentType();
