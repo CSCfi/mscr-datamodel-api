@@ -531,6 +531,38 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
 	}
+	
+    @Operation(summary = "Delete schema metadata and content")
+    @ApiResponse(responseCode = "200", description = "")
+    @DeleteMapping(value = "/schema/{pid}")
+    public void deleteSchema(@PathVariable String pid){
+    	deleteSchema(pid, null);
+    }
+    
+    @Hidden
+    @DeleteMapping(value = "/schema/{pid}/{suffix}")
+    public void deleteSchema(
+    		@PathVariable String pid, 
+    		@PathVariable(name = "suffix") String suffix){
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			var internalID = PIDService.mapToInternal(pid);
+			var model = jenaService.getSchema(internalID);
+			if (model == null) {
+				throw new ResourceNotFoundException(pid);
+			}
+			check(authorizationManager.hasRightToModelMSCR(internalID, model));
+			storageService.deleteAllSchemaFiles(internalID);
+			jenaService.deleteFromSchema(internalID);
+			
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+    }
 
 	@Operation(summary = "Get original file version of the schema (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
 	@ApiResponse(responseCode = "200", description = "")

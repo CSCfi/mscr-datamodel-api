@@ -425,6 +425,43 @@ public class Crosswalk extends BaseMSCRController {
 	    	
     }
     
+    @Operation(summary = "Delete crosswalk metadata and content")
+    @ApiResponse(responseCode = "200", description = "")
+    @DeleteMapping(value = "/crosswalk/{pid}")
+    public void deleteCrosswalk(@PathVariable String pid){
+    	deleteCrosswalk(pid, null);
+    }
+    
+    @Hidden
+    @DeleteMapping(value = "/crosswalk/{pid}/{suffix}")
+    public void deleteCrosswalk(
+    		@PathVariable String pid, 
+    		@PathVariable(name = "suffix") String suffix){
+		// TODO: get rid of this
+    	if(pid.indexOf("@") > 0 || (suffix != null && suffix.indexOf("@") > 0)) {
+    		deleteMapping(pid, suffix);
+    	}
+		if (suffix != null) {
+			pid = pid + "/" + suffix;
+		}
+		try {
+			var internalID = PIDService.mapToInternal(pid);   
+	        var model = jenaService.getCrosswalk(internalID);
+	        if(model == null){
+	            throw new ResourceNotFoundException(pid);
+	        }
+	
+	        check(authorizationManager.hasRightToModelMSCR(internalID, model));
+			storageService.deleteAllCrosswalkFiles(internalID);
+			jenaService.deleteFromCrosswalk(internalID);
+			
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}
+    }
+    
     @Operation(summary = "Get original file version of the crosswalk (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(path = "/crosswalk/{pid}/original")
