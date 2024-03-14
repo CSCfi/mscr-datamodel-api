@@ -426,6 +426,7 @@ public class Crosswalk extends BaseMSCRController {
     }
     
     @Operation(summary = "Delete crosswalk metadata and content")
+    @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "")
     @DeleteMapping(value = "/crosswalk/{pid}")
     public void deleteCrosswalk(@PathVariable String pid){
@@ -433,6 +434,7 @@ public class Crosswalk extends BaseMSCRController {
     }
     
     @Hidden
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping(value = "/crosswalk/{pid}/{suffix}")
     public void deleteCrosswalk(
     		@PathVariable String pid, 
@@ -563,6 +565,8 @@ public class Crosswalk extends BaseMSCRController {
 	public MappingInfoDTO createMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String pid) {
 		return createMapping(dto, pid, null);
 	}
+	
+	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{pid}/{suffix}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public MappingInfoDTO createMapping(
@@ -696,6 +700,7 @@ public class Crosswalk extends BaseMSCRController {
 		deleteMapping(mappingPID, null);
 	}
 	
+	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE)
 	public void deleteMapping(
@@ -739,7 +744,8 @@ public class Crosswalk extends BaseMSCRController {
 		return getMappings(pid, null, exportFormat); 
 	}
 
-		@ApiResponse(responseCode = "200")	
+	@Hidden
+	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/{suffix}/mapping")
 	public ResponseEntity<Object> getMappings(
 			@PathVariable String pid, 

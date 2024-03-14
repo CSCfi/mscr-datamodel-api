@@ -533,6 +533,7 @@ public class Schema extends BaseMSCRController {
 	}
 	
     @Operation(summary = "Delete schema metadata and content")
+    @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "")
     @DeleteMapping(value = "/schema/{pid}")
     public void deleteSchema(@PathVariable String pid){
@@ -540,6 +541,7 @@ public class Schema extends BaseMSCRController {
     }
     
     @Hidden
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping(value = "/schema/{pid}/{suffix}")
     public void deleteSchema(
     		@PathVariable String pid, 
