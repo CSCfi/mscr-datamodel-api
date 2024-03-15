@@ -292,7 +292,7 @@ public class SchemaServiceTest {
 		assertTrue(validationRecord.isValid());
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
-		model.write(System.out, "TTL");
+		//model.write(System.out, "TTL");
 	
 	}
 	
@@ -318,6 +318,19 @@ public class SchemaServiceTest {
 		assertEquals(6, m.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size()); // 5 + root
 		
 		
+		
+	}
+	
+	@Test
+	void testDTR1() throws Exception {
+		JsonNode data = getJsonNodeFromPath("jsonschema/dtr/db605a11c81e79e1efc4.json");
+		
+		ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(data);
+		assertTrue(validationRecord.isValid());
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		Model model = service.transformJSONSchemaToInternal(schemaPID, data);		
+		
+		//model.write(System.out, "TTL");
 		
 	}
 }
