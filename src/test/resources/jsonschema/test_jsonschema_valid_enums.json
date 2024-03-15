@@ -15,6 +15,9 @@
       "type" : "integer",
       "enum" : [ 1, 2, 3 ]
     },
+    "defaultwithouttype" : {
+      "enum" : [ "one", "two" ]
+    },
     "arrayString" : {
       "type" : "array",
       "items" : {

@@ -226,6 +226,10 @@ public class SchemaServiceTest {
 		Bag strings = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/string"), SH.in).getBag();
 		assertEquals(2, strings.size());
 
+		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in));		
+		Bag defaultwithouttype = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in).getBag();
+		assertEquals(2, defaultwithouttype.size());
+		
 		List<String> stringList = new ArrayList<String>();
 		Iterator<RDFNode> i = strings.iterator();
 		while (i.hasNext()) {
@@ -288,7 +292,7 @@ public class SchemaServiceTest {
 		assertTrue(validationRecord.isValid());
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
-		model.write(System.out, "TTL");
+		//model.write(System.out, "TTL");
 	
 	}
 	
@@ -314,6 +318,19 @@ public class SchemaServiceTest {
 		assertEquals(6, m.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size()); // 5 + root
 		
 		
+		
+	}
+	
+	@Test
+	void testDTR1() throws Exception {
+		JsonNode data = getJsonNodeFromPath("jsonschema/dtr/db605a11c81e79e1efc4.json");
+		
+		ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(data);
+		assertTrue(validationRecord.isValid());
+		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
+		Model model = service.transformJSONSchemaToInternal(schemaPID, data);		
+		
+		//model.write(System.out, "TTL");
 		
 	}
 }
