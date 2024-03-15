@@ -15,15 +15,21 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.vm.yti.datamodel.api.index.OpenSearchConnector;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 
 @Service
 public class JSONSchemaMapper {
+	
+	private static final Logger logger = LoggerFactory.getLogger(JSONSchemaMapper.class);
+	
 	private final Map<String, Resource> XSDTypesMap = Map.ofEntries(Map.entry("string", XSD.xstring),
 			Map.entry("number", XSD.xfloat), Map.entry("integer", XSD.integer), Map.entry("boolean", XSD.xboolean),
 			Map.entry("null", MSCR.NULL), Map.entry("object", XSD.anyURI));
@@ -208,7 +214,8 @@ public class JSONSchemaMapper {
 	}
 	
 	private boolean hasObjectItems(Entry <String, JsonNode> entry) {
-		return (entry.getValue().get("items").has("type") 
+		
+		return (entry.getValue().has("items") && entry.getValue().get("items").has("type") 
 			 && entry.getValue().get("items").get("type").asText().equals("object"));
 	}
 	
@@ -273,8 +280,14 @@ public class JSONSchemaMapper {
 						handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue().get("items"), schemaPID, model);
 					}
 					else {
-						Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
-						handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
+						if(!entry.getValue().has("items")) {
+							logger.warn("Array property " + entry.getKey() + " does not have any items. Skipping.");
+						}
+						else {
+							Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
+							handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
+							
+						}
 					}
 					
 				}
