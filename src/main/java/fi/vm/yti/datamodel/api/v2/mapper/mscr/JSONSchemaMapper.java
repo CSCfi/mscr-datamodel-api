@@ -78,11 +78,11 @@ public class JSONSchemaMapper {
 				else if(key == "enum") {
 					if (!propertyNode.isEmpty()) {
 						Bag bag = model.createBag();
-						
+						String nodeType = node.has("type") ? node.get("type").asText() : "string";
 						for(int i = 0; i < propertyNode.size(); i++){
-							if (node.get("type").asText().equals("boolean"))
+							if (nodeType.equals("boolean"))
 								bag.add(model.createTypedLiteral(propertyNode.get(i).asBoolean())); 
-							else if (node.get("type").asText().equals("integer"))
+							else if (nodeType.equals("integer"))
 								bag.add(model.createTypedLiteral(propertyNode.get(i).numberValue()));
 							else 
 								bag.add(model.createLiteral(propertyNode.get(i).asText()));
@@ -172,13 +172,15 @@ public class JSONSchemaMapper {
 
 	private void handleDatatypeProperty(String propID, Entry<String, JsonNode> entry, Model model, String schemaPID,
 			Resource nodeShapeResource, boolean isRequired, boolean isArrayItem) {
+		
+		String entryType = entry.getValue().has("type") ? entry.getValue().get("type").asText() : "string"; 
 		Resource propertyResource = addDatatypeProperty(propID + "/" + entry.getKey(), entry.getValue(), model,
-				schemaPID, entry.getValue().get("type").asText());
+				schemaPID, entryType);
 		nodeShapeResource.addProperty(SH.property, propertyResource);
 		if (!isArrayItem) {
 			handleRequiredProperty(entry.getValue(), model, propertyResource, isRequired);
 		} 
-		if (entry.getValue().get("type").asText().equals("string") & entry.getValue().has("pattern")) {
+		if (entry.getValue().get("type") != null && entry.getValue().get("type").asText().equals("string") & entry.getValue().has("pattern")) {
 			propertyResource.addProperty(SH.pattern, entry.getValue().get("pattern").asText());
 		}
 	}
@@ -242,13 +244,14 @@ public class JSONSchemaMapper {
 
 		Iterator<Entry<String, JsonNode>> propertiesIterator = node.get("properties").fields();
 		while (propertiesIterator.hasNext()) {
-			Entry<String, JsonNode> entry = propertiesIterator.next();			
+			Entry<String, JsonNode> entry = propertiesIterator.next();
+			String valueType = "string"; // default value
 			if (entry.getKey().startsWith("_") || entry.getKey().startsWith("$"))
 				continue;
-			if (entry.getValue().get("type") == null) {
-				throw new RuntimeException(entry.getKey() + " is missing 'type' property");				
+			if (entry.getValue().get("type") != null) {
+				valueType = entry.getValue().get("type").asText();
 			}
-			if (isObject(entry)) {
+			if (valueType.equals("object")) {
 				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
 						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey() +"/" + StringUtils.capitalise(entry.getKey()));
 				// default max
@@ -256,7 +259,7 @@ public class JSONSchemaMapper {
 				nodeShapeResource.addProperty(SH.property, propertyShape);
 				handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), schemaPID, model);	
 			}
-			else if (isArray(entry)) {
+			else if (valueType.equals("array")) {
 				if(isLangString(entry)) {
 					Entry<String, JsonNode> item = Map.entry(entry.getKey(), entry.getValue());
 					handleDatatypeProperty(propIDCapitalised, item, model, schemaPID, nodeShapeResource, false, true);

@@ -226,6 +226,10 @@ public class SchemaServiceTest {
 		Bag strings = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/string"), SH.in).getBag();
 		assertEquals(2, strings.size());
 
+		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in));		
+		Bag defaultwithouttype = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in).getBag();
+		assertEquals(2, defaultwithouttype.size());
+		
 		List<String> stringList = new ArrayList<String>();
 		Iterator<RDFNode> i = strings.iterator();
 		while (i.hasNext()) {
