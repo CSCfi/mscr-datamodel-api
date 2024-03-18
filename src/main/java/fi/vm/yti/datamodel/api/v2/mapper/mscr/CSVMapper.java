@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.Scanner;
 
 import org.apache.jena.rdf.model.Model;
@@ -31,8 +32,8 @@ public class CSVMapper {
 		Resource root = model.getResource(rootURI);
 		int c = 1;
 		for(String propertyName : properties) {
-			Resource property = model.createResource(rootURI + "/" + propertyName);
-			
+			propertyName = propertyName.trim().replaceAll(" ", "-");
+			Resource property = model.createResource(rootURI + "/" + URLEncoder.encode(propertyName));			
 			property.addProperty(RDF.type, SH.PropertyShape);
 			property.addProperty(SH.datatype, XSD.xstring);
 			property.addLiteral(SH.maxCount, 1);
@@ -48,12 +49,12 @@ public class CSVMapper {
 	public Model mapToModel(String pid, byte[] data, String delimiter) throws Exception {
 		Model m = ModelFactory.createDefaultModel();		
 		InputStream input = new ByteArrayInputStream(data);
-		Scanner scanner = new Scanner(input);
+		Scanner scanner = new Scanner(input);		
 		if(!scanner.hasNextLine() ) {
 			scanner.close();
 			throw new Exception("CSV schema must have exactly one line.");
-		}
-		String[] columns = scanner.next().split(delimiter);		
+		}		
+		String[] columns = scanner.nextLine().split(delimiter);		
 		input.close();
 		scanner.close();
 		
