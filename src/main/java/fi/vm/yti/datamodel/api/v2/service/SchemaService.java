@@ -3,7 +3,9 @@ package fi.vm.yti.datamodel.api.v2.service;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
@@ -23,11 +25,13 @@ import org.topbraid.shacl.vocabulary.SH;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.jsonldjava.utils.JsonUtils;
 
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.CSVMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.SKOSMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
+import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
 import io.zenwave360.jsonrefparser.$RefParser;
 import io.zenwave360.jsonrefparser.$Refs;
 
@@ -42,6 +46,8 @@ public class SchemaService {
 	@Autowired
 	private XSDMapper xsdMapper;
 
+	@Autowired
+	private DTRClient dtrClient;
 
 	/**
 	 * Transforms a JSON schema into an internal RDF model.
@@ -174,6 +180,48 @@ public class SchemaService {
 		});		
 		
 		return m;
+		
+	}
+
+	public void updatePropertyDataTypeFromDTR(Model model, String propID, String datatypeURI) throws Exception {		
+		Resource prop = model.createResource(propID);
+		Resource datatype = model.createResource(datatypeURI);
+		model.removeAll(prop, SH.datatype, null);
+		model.add(prop, SH.datatype, datatype);
+
+	}
+	public Model fetchAndMapDTRType(String newPropID) throws Exception {		
+		// fetch json schema version through the typeapi 
+		String json = dtrClient.getTypeAsJSONSchema(newPropID);
+		ObjectMapper m = new ObjectMapper();
+		ObjectNode propertyNode = (ObjectNode)m.readTree(json);
+		if(propertyNode.get("type") == null) {
+			throw new Exception("JSON Schema representation of a DTR type must have property type");
+		}
+		if(propertyNode.get("type").asText().equals("object")) {
+			throw new Exception("Complex DTR types are not supported yet");
+		}
+		
+		ObjectNode context = m.createObjectNode();
+		context.put("title", "mscr:jsonschema:title");
+
+		context.put("description", "mscr:jsonschema:description");
+		context.put("type", "mscr:jsonschema:type");
+		context.put("pattern", "mscr:jsonschema:pattern");
+		context.put("$schema", "mscr:jsonschema:schema");
+		
+		propertyNode.set("@context", context);
+		propertyNode.put("@id", "dtr:" +newPropID);
+		propertyNode.put("@type", "mscr:JSONSchema");
+		// transform json schema to RDF
+		Model propModel = ModelFactory.createDefaultModel();
+		String newJson = m.writeValueAsString(propertyNode);
+	
+		StringReader reader = new StringReader(newJson);
+		propModel.read(reader, null, "JSON-LD");
+		reader.close();
+		
+		return propModel;
 		
 	}
 }

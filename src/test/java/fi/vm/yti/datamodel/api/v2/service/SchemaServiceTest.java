@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.topbraid.shacl.vocabulary.SH;
 
@@ -34,6 +35,7 @@ import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
+import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
 @ExtendWith(SpringExtension.class)
 @Import({
 	SchemaService.class,
@@ -41,8 +43,12 @@ import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 	ResourceMapper.class,
 	CoreRepository.class,
 	XSDMapper.class,
-	JSONSchemaMapper.class
+	JSONSchemaMapper.class,
+	DTRClient.class
 })
+@TestPropertySource(properties = {
+	    "dtr.typeAPIEndpoint=https://typeapi.lab.pidconsortium.net/v1/types/schema/",
+	})
 public class SchemaServiceTest {
 
 	@Autowired
@@ -332,6 +338,12 @@ public class SchemaServiceTest {
 		
 		//model.write(System.out, "TTL");
 		
+	}
+	
+	@Test
+	void testFetchAndMapDTRType() throws Exception {
+		Model m = service.fetchAndMapDTRType("21.11104/e944e035caf3ec24192c");
+		m.write(System.out,  "TURTLE");
 	}
 }
 

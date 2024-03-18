@@ -299,5 +299,10 @@ public class JSONSchemaMapper {
 			}
 
 		}
+	
+	}
+	
+	public void addDatatype(String uri, JsonNode propertyNode, Model model) {
+		
 	}
 }
