@@ -12,13 +12,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRCommonMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
-import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
@@ -107,24 +105,24 @@ public abstract class BaseMSCRController {
 		
 	}
 	
-	protected void checkState(MSCRCommonMetadata prev, MSCRCommonMetadata dto) {
+	protected void checkState(MSCRCommonMetadata prev, MSCRState newState) {
 		if(prev == null) {
 			// content
-			if(dto.getState() != MSCRState.DRAFT && dto.getState() != MSCRState.PUBLISHED && dto.getState() != MSCRState.DEPRECATED) {
+			if(newState != MSCRState.DRAFT && newState != MSCRState.PUBLISHED && newState != MSCRState.DEPRECATED) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Newly created content must be in one of the following states: DRAFT, PUBLISHED, DEPRECATED");
 			}
 		}
-		if(prev != null && prev.getState() != dto.getState()) {
-			if(prev.getState() == MSCRState.DRAFT && dto.getState() != MSCRState.PUBLISHED) {
+		if(prev != null && prev.getState() != newState) {
+			if(prev.getState() == MSCRState.DRAFT && newState != MSCRState.PUBLISHED) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: DRAFT -> PUBLIShED");
 			}
-			if(prev.getState() == MSCRState.PUBLISHED && (dto.getState() != MSCRState.INVALID && dto.getState() != MSCRState.DEPRECATED)) {
+			if(prev.getState() == MSCRState.PUBLISHED && (newState != MSCRState.INVALID && newState != MSCRState.DEPRECATED)) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transitions: PUBLISHED -> INVALID, PUBLISHED -> DEPRECATED");
 			}		
-			if(prev.getState() == MSCRState.DEPRECATED && dto.getState() != MSCRState.REMOVED) {
+			if(prev.getState() == MSCRState.DEPRECATED && newState != MSCRState.REMOVED) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: DEPRECATED -> REMOVED");
 			}
-			if(prev.getState() == MSCRState.INVALID && dto.getState() != MSCRState.REMOVED) {
+			if(prev.getState() == MSCRState.INVALID && newState != MSCRState.REMOVED) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid state change. Allowed transition: INVALID -> REMOVED");
 			}	
 		}
@@ -132,8 +130,8 @@ public abstract class BaseMSCRController {
 	
 	protected boolean isEditable(Model model, String pid) {
 		var modelResource = model.getResource(pid);
-		var state = MSCRState.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.state));
-		if(state.equals(MSCRState.DRAFT)) {
+		var state = MapperUtils.propertyToString(modelResource,  MSCR.state);
+		if(MSCRState.DRAFT.name().equals(state)) {
 			return true;
 		}
 		return false;

@@ -282,7 +282,7 @@ public class Schema extends BaseMSCRController {
 
 		validateActionParams(schemaDTO, action, target);
 		checkVisibility(schemaDTO);
-		checkState(null, schemaDTO);
+		checkState(null, schemaDTO.getState());
 
 		String aggregationKey = null;
 		if (action != null) {
@@ -480,7 +480,7 @@ public class Schema extends BaseMSCRController {
 			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper);
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);
 			checkVisibility(schemaDTO);
-			checkState(prevSchema, schemaDTO);
+			checkState(prevSchema, schemaDTO.getState());
 			Model jenaModel = null;
 			if (prevSchema.getState() == MSCRState.DRAFT && schemaDTO.getState() == MSCRState.PUBLISHED) {
 				try {
@@ -565,9 +565,21 @@ public class Schema extends BaseMSCRController {
 				throw new ResourceNotFoundException(pid);
 			}
 			check(authorizationManager.hasRightToModelMSCR(internalID, model));
-			storageService.deleteAllSchemaFiles(internalID);
-			jenaService.deleteFromSchema(internalID);
-			
+			var userMapper = groupManagementService.mapUser();
+			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(internalID, model, false, false, userMapper);
+			if(prevSchema.getState() == MSCRState.DRAFT) {
+				jenaService.deleteFromSchema(internalID);
+				storageService.deleteAllSchemaFiles(internalID);				
+			}
+			else {
+				checkState(prevSchema, MSCRState.REMOVED);
+				SchemaDTO schemaDTO = new SchemaDTO();
+				schemaDTO.setState(MSCRState.REMOVED);
+				schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);
+				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, ModelFactory.createDefaultModel(), userProvider.getUser());
+				jenaService.updateSchema(internalID, jenaModel);
+				storageService.deleteAllSchemaFiles(internalID);				
+			}			
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
