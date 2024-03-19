@@ -452,10 +452,22 @@ public class Crosswalk extends BaseMSCRController {
 	        if(model == null){
 	            throw new ResourceNotFoundException(pid);
 	        }
-	
 	        check(authorizationManager.hasRightToModelMSCR(internalID, model));
-			storageService.deleteAllCrosswalkFiles(internalID);
-			jenaService.deleteFromCrosswalk(internalID);
+			var userMapper = groupManagementService.mapUser();
+			CrosswalkInfoDTO prev = mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			if(prev.getState() == MSCRState.DRAFT) {
+				storageService.deleteAllCrosswalkFiles(internalID);
+				jenaService.deleteFromCrosswalk(internalID);				
+			}
+			else {
+				checkState(prev, MSCRState.REMOVED);
+				CrosswalkDTO dto = new CrosswalkDTO();
+				dto.setState(MSCRState.REMOVED);
+				dto = mergeMetadata(prev, dto, false);
+				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, ModelFactory.createDefaultModel(), userProvider.getUser());
+				jenaService.updateCrosswalk(internalID, jenaModel);
+				storageService.deleteAllCrosswalkFiles(internalID);				
+			}
 			
 		} catch (RuntimeException rex) {
 			throw rex;
