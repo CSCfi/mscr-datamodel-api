@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -47,6 +49,7 @@ import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
+import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
@@ -143,7 +146,7 @@ public class Schema extends BaseMSCRController {
 
 	}
 
-	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes,
+	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {
 		var userMapper = groupManagementService.mapUser();
 		Model metadataModel = jenaService.getSchema(pid);
@@ -181,7 +184,13 @@ public class Schema extends BaseMSCRController {
 				schemaModel = schemaService.addSHACL(pid, fileInBytes);
 
 			} else if (format == SchemaFormat.XSD) {
-				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
+				if(contentURL != null) {
+					schemaModel = schemaService.transformXSDToInternal(pid,contentURL);	
+				}
+				else {
+					schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);	
+				}
+				
 
 			} else if (format == SchemaFormat.XML) {
 				// do nothing
@@ -377,7 +386,7 @@ public class Schema extends BaseMSCRController {
 						.toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), file.getContentType());
+			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType());
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -438,7 +447,7 @@ public class Schema extends BaseMSCRController {
 			Collection<UUID> orgs = schemaDTO.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 		}
-		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentType);
+		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);
 
 	}
 
@@ -692,6 +701,52 @@ public class Schema extends BaseMSCRController {
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
+	}
+	
+	@Operation(summary = "Update data type of a SHACL property")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
+	public void updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype") String datatype) {
+		updateProperty(null, schemaID, target, datatype);
+	}	
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	public void updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
+		if (prefix != null) {
+			schemaID = prefix + "/" + schemaID;
+		}
+		try {
+			schemaID = PIDService.mapToInternal(schemaID);
+			Model model = jenaService.getSchema(schemaID);
+			check(authorizationManager.hasRightToModelMSCR(schemaID, model));
+			if(model == null) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
+			}
+			// only available for certain schema formats
+			String format = MapperUtils.propertyToString(model.getResource(schemaID), MSCR.format);
+			if(!Set.of(SchemaFormat.CSV.name(), SchemaFormat.JSONSCHEMA.name(), SchemaFormat.SHACL.name(), SchemaFormat.XSD.name()).contains(format)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be CSV, JSONSCHEMA, SHAC or XSD");
+			}
+			Resource propResource = model.getResource(target);
+			if(propResource == null) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);
+			}
+			
+			Model propModel = schemaService.fetchAndMapDTRType(datatype);
+			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
+			jenaService.putToSchema(datatypeResource.getURI(), propModel);
+			schemaService.updatePropertyDataTypeFromDTR(model, target, datatypeResource.getURI());
+			jenaService.putToSchema(schemaID, model);
+			
+
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
 	}
 
 }

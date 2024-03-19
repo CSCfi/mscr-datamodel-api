@@ -88,6 +88,7 @@ import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.SchemaService;
+import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
 
 //import es.weso.xmlschema2shex.parser.XMLSchema2ShexParser;
 
@@ -99,7 +100,8 @@ import fi.vm.yti.datamodel.api.v2.service.SchemaService;
 	ResourceMapper.class,
 	CoreRepository.class,
 	XSDMapper.class,
-	JSONSchemaMapper.class
+	JSONSchemaMapper.class,
+	DTRClient.class
 })
 public class XSDMapperTest {
 

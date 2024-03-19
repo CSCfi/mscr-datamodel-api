@@ -1,8 +1,5 @@
 package fi.vm.yti.datamodel.api.v2.service.impl;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
+import fi.vm.yti.datamodel.api.v2.utils.RestUtils;
 
 @Profile({"test", "prod"})
 @Service
@@ -58,7 +56,7 @@ public class PIDMSServiceImpl implements PIDService {
 			if (status != 200) {
 				throw new Exception("Could not mint PID using url " + url);
 			}
-			String content = readContent(con.getInputStream());
+			String content = RestUtils.readContent(con.getInputStream());
 			return content;
 		} catch (Exception ex) {
 			throw ex;
@@ -96,7 +94,7 @@ public class PIDMSServiceImpl implements PIDService {
 				if (status != 200) {
 					throw new Exception("Could not resolve URI using url " + url);
 				}
-				String content = readContent(con.getInputStream());
+				String content = RestUtils.readContent(con.getInputStream());
 				String internalPID = content.substring(content.lastIndexOf("/") + 1);
 				if(partId != null) {
 					return internalPID + "@mapping=" + partId; 
@@ -116,15 +114,6 @@ public class PIDMSServiceImpl implements PIDService {
 		throw new RuntimeException("Unknown identifier type");
 	}
 	
-	private String readContent(InputStream is) throws Exception {
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-		String inputLine;
-		StringBuffer content = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) {
-			content.append(inputLine);
-		}
-		in.close();	
-		return content.toString();
-	}
+
 
 }
