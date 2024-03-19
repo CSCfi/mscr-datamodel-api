@@ -127,7 +127,7 @@ public class Crosswalk extends BaseMSCRController {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
 		checkVisibility(dto);	
-		checkState(null, dto);
+		checkState(null, dto.getState());
 
 		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser());
 		jenaService.putToCrosswalk(PID, jenaModel);
@@ -359,7 +359,7 @@ public class Crosswalk extends BaseMSCRController {
 	        CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
 	        dto = mergeMetadata(prev, dto, false);		    
 	        checkVisibility(dto);
-	        checkState(prev, dto);
+	        checkState(prev, dto.getState());
 	        Model jenaModel = null;
 	        if(prev.getState() == MSCRState.DRAFT && dto.getState() == MSCRState.PUBLISHED) {
 				try {
@@ -452,10 +452,22 @@ public class Crosswalk extends BaseMSCRController {
 	        if(model == null){
 	            throw new ResourceNotFoundException(pid);
 	        }
-	
 	        check(authorizationManager.hasRightToModelMSCR(internalID, model));
-			storageService.deleteAllCrosswalkFiles(internalID);
-			jenaService.deleteFromCrosswalk(internalID);
+			var userMapper = groupManagementService.mapUser();
+			CrosswalkInfoDTO prev = mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			if(prev.getState() == MSCRState.DRAFT) {
+				storageService.deleteAllCrosswalkFiles(internalID);
+				jenaService.deleteFromCrosswalk(internalID);				
+			}
+			else {
+				checkState(prev, MSCRState.REMOVED);
+				CrosswalkDTO dto = new CrosswalkDTO();
+				dto.setState(MSCRState.REMOVED);
+				dto = mergeMetadata(prev, dto, false);
+				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, ModelFactory.createDefaultModel(), userProvider.getUser());
+				jenaService.updateCrosswalk(internalID, jenaModel);
+				storageService.deleteAllCrosswalkFiles(internalID);				
+			}
 			
 		} catch (RuntimeException rex) {
 			throw rex;
