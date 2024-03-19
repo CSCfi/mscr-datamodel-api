@@ -146,7 +146,7 @@ public class Schema extends BaseMSCRController {
 
 	}
 
-	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes,
+	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {
 		var userMapper = groupManagementService.mapUser();
 		Model metadataModel = jenaService.getSchema(pid);
@@ -184,7 +184,13 @@ public class Schema extends BaseMSCRController {
 				schemaModel = schemaService.addSHACL(pid, fileInBytes);
 
 			} else if (format == SchemaFormat.XSD) {
-				schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);
+				if(contentURL != null) {
+					schemaModel = schemaService.transformXSDToInternal(pid,contentURL);	
+				}
+				else {
+					schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);	
+				}
+				
 
 			} else if (format == SchemaFormat.XML) {
 				// do nothing
@@ -380,7 +386,7 @@ public class Schema extends BaseMSCRController {
 						.toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), file.getContentType());
+			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType());
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -441,7 +447,7 @@ public class Schema extends BaseMSCRController {
 			Collection<UUID> orgs = schemaDTO.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 		}
-		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentType);
+		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);
 
 	}
 
@@ -699,20 +705,23 @@ public class Schema extends BaseMSCRController {
 	
 	@Operation(summary = "Update data type of a SHACL property")
 	@ApiResponse(responseCode = "200", description = "")
-	@PatchMapping(path = "/schema/{schemaID}/properties", produces = "application/json")
-	public void updateProperty(@PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
+	public void updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype") String datatype) {
 		updateProperty(null, schemaID, target, datatype);
 	}	
 	
 	@Hidden
-	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties/{propID}", produces = "application/json")
-	public void updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @PathVariable String propID, @RequestParam String newPropID) {
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	public void updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
 		if (prefix != null) {
 			schemaID = prefix + "/" + schemaID;
 		}
 		try {
 			schemaID = PIDService.mapToInternal(schemaID);
 			Model model = jenaService.getSchema(schemaID);
+			check(authorizationManager.hasRightToModelMSCR(schemaID, model));
 			if(model == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
 			}
@@ -721,15 +730,15 @@ public class Schema extends BaseMSCRController {
 			if(!Set.of(SchemaFormat.CSV.name(), SchemaFormat.JSONSCHEMA.name(), SchemaFormat.SHACL.name(), SchemaFormat.XSD.name()).contains(format)) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be CSV, JSONSCHEMA, SHAC or XSD");
 			}
-			Resource propResource = model.getResource(propID);
+			Resource propResource = model.getResource(target);
 			if(propResource == null) {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + propID + " not in schema " + schemaID);
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);
 			}
 			
-			Model propModel = schemaService.fetchAndMapDTRType(newPropID);
+			Model propModel = schemaService.fetchAndMapDTRType(datatype);
 			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
 			jenaService.putToSchema(datatypeResource.getURI(), propModel);
-			schemaService.updatePropertyDataTypeFromDTR(model, propID, datatypeResource.getURI());
+			schemaService.updatePropertyDataTypeFromDTR(model, target, datatypeResource.getURI());
 			jenaService.putToSchema(schemaID, model);
 			
 
