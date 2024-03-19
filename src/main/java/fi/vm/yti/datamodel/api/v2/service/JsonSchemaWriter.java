@@ -961,28 +961,37 @@ public class JsonSchemaWriter {
 		
 		model.listSubjectsWithProperty(RDF.type, RDFS.Class).forEach(s -> {
 			String className = s.getURI();
-			Map<String, Object> classDef = new HashMap<String, Object>();
-			Map<String, Object> classProps = new HashMap<String, Object>();
-			classDef.put("title", MapperUtils.propertyToString(s, RDFS.label));
-			classDef.put("description", MapperUtils.propertyToString(s, RDFS.comment));
-			classDef.put("qname", model.qnameFor(className));
-			classDef.put("@id", className);			
-			rootProperties.put(className, classDef);
-			try {
-				addRDFSProps(model, s, classProps, definitions);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(classProps.keySet().size() > 0 ) {
-				classDef.put("type", "object");
-				classDef.put("@type", model.qnameFor(className));				
-				classDef.put("properties", classProps);
+			if(className == null) {
+				// blank node
+				
 			}
 			else {
-				// what happens here?
+			
+				String qName = model.qnameFor(className);
+				
+				Map<String, Object> classDef = new HashMap<String, Object>();
+				Map<String, Object> classProps = new HashMap<String, Object>();
+				classDef.put("title", MapperUtils.propertyToString(s, RDFS.label));
+				classDef.put("description", MapperUtils.propertyToString(s, RDFS.comment));
+				classDef.put("qname", qName);
+				classDef.put("@id", className);			
+				rootProperties.put(className, classDef);
+				try {
+					addRDFSProps(model, s, classProps, definitions);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(classProps.keySet().size() > 0 ) {
+					classDef.put("type", "object");
+					classDef.put("@type", model.qnameFor(className));				
+					classDef.put("properties", classProps);
+				}
+				else {
+					// what happens here?
+				}
+				definitions.put(className, classDef);
 			}
-			definitions.put(className, classDef);
 
 			
 		});
