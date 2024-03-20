@@ -457,7 +457,8 @@ public class Crosswalk extends BaseMSCRController {
 			CrosswalkInfoDTO prev = mapper.mapToCrosswalkDTO(pid, model, userMapper);
 			if(prev.getState() == MSCRState.DRAFT) {
 				storageService.deleteAllCrosswalkFiles(internalID);
-				jenaService.deleteFromCrosswalk(internalID);				
+				jenaService.deleteFromCrosswalk(internalID);	
+				openSearchIndexer.deleteCrosswalkFromIndex(internalID);
 			}
 			else {
 				checkState(prev, MSCRState.REMOVED);
@@ -465,8 +466,10 @@ public class Crosswalk extends BaseMSCRController {
 				dto.setState(MSCRState.REMOVED);
 				dto = mergeMetadata(prev, dto, false);
 				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, ModelFactory.createDefaultModel(), userProvider.getUser());
+				var indexModel = mapper.mapToIndexModel(internalID, jenaModel);								
 				jenaService.updateCrosswalk(internalID, jenaModel);
-				storageService.deleteAllCrosswalkFiles(internalID);				
+				storageService.deleteAllCrosswalkFiles(internalID);
+				openSearchIndexer.updateCrosswalkToIndex(indexModel);
 			}
 			
 		} catch (RuntimeException rex) {

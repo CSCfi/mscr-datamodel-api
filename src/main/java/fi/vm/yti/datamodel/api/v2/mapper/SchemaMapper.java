@@ -386,7 +386,9 @@ public class SchemaMapper {
         indexModel.setId(pid);
         indexModel.setStatus(Status.valueOf(resource.getProperty(OWL.versionInfo).getString()));
         indexModel.setModified(resource.getProperty(DCTerms.modified).getString());
-        indexModel.setCreated(resource.getProperty(DCTerms.created).getString());
+        if(resource.getProperty(DCTerms.created) != null) {
+            indexModel.setCreated(resource.getProperty(DCTerms.created).getString());        	
+        }
         var contentModified = resource.getProperty(Iow.contentModified);
         if(contentModified != null) {
             indexModel.setContentModified(contentModified.getString());

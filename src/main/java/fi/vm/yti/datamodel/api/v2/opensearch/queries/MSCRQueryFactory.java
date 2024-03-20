@@ -49,6 +49,11 @@ public class MSCRQueryFactory {
             var stateQuery = QueryFactoryUtils.termsQuery("state", state.stream().map(MSCRState::name).toList());
             must.add(stateQuery);              
         }
+        else {
+            // filter out removed content            
+        	var stateQuery = QueryFactoryUtils.termsQuery("state", List.of(MSCRState.REMOVED.name()));
+        	mustNot.add(stateQuery);                      	
+        }
         
         var organizations = request.getOrganizations();
         if(organizations != null && !organizations.isEmpty()){
