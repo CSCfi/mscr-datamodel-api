@@ -209,9 +209,10 @@ public class SchemaService {
 		context.put("type", "mscr:jsonschema:type");
 		context.put("pattern", "mscr:jsonschema:pattern");
 		context.put("$schema", "mscr:jsonschema:schema");
+		context.put("hdl", "https://hdl.handle.net/");
 		
 		propertyNode.set("@context", context);
-		propertyNode.put("@id", "dtr:" +newPropID);
+		propertyNode.put("@id", "hdl:" +newPropID);
 		propertyNode.put("@type", "mscr:JSONSchema");
 		// transform json schema to RDF
 		Model propModel = ModelFactory.createDefaultModel();
