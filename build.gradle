@@ -161,7 +161,10 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.xmlet/xsdParser
     implementation group: 'com.github.xmlet', name: 'xsdParser', version: '1.2.4'
 
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi-distribution
+	implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.5.0'
 
 }
 
