@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,13 +19,19 @@ import java.util.UUID;
 
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
@@ -344,6 +354,24 @@ public class SchemaServiceTest {
 	void testFetchAndMapDTRType() throws Exception {
 		Model m = service.fetchAndMapDTRType("21.11104/e944e035caf3ec24192c");
 		m.write(System.out,  "TURTLE");
+	}
+	
+	@Test
+	void testDCATOWL() throws Exception {
+		String url = "https://www.w3.org/ns/dcat.ttl";
+		OWLOntologyManager manager =OWLManager.createOWLOntologyManager();
+		IRI ontologyIRI = IRI.create(url);
+		OWLOntology ont = manager.loadOntologyFromOntologyDocument(ontologyIRI);
+		TurtleOntologyFormat outputFormat = new TurtleOntologyFormat();
+		Path file = Files.createTempFile("prov", ".ttl");
+		try (OutputStream outputStream = Files.newOutputStream(file)) {
+			manager.saveOntology(ont, outputFormat,				
+					outputStream);
+		}
+		Model model = ModelFactory.createDefaultModel();
+		model.read(file.toUri().toString());
+		assertTrue(model.size() > 0);		
+		
 	}
 }
 

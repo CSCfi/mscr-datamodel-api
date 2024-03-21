@@ -912,15 +912,21 @@ public class JsonSchemaWriter {
 			String psID = ps.getURI();
 			Map<String, Object> psProps = new HashMap<String, Object>();
 			
-			String range = ps.getPropertyResourceValue(RDFS.range).getURI();
-			String comment = MapperUtils.propertyToString(ps, RDFS.comment);
-			String label = MapperUtils.propertyToString(ps, RDFS.label);
-			if(label == null) {
-				label = psID;
+			String range = RDFS.Literal.getURI(); // default range
+			if(ps.hasProperty(RDFS.range)) {
+				range = ps.getPropertyResourceValue(RDFS.range).getURI();
+			}
+			 
+			
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(ps, RDFS.label);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(ps, RDFS.comment);
+			
+			if(titles.isEmpty()) {
+				titles.put("en", psID);
 			}
 			psProps.put("datatype", range);
-			psProps.put("description", comment);
-			psProps.put("title", label);
+			psProps.put("description", descs.get("en"));
+			psProps.put("title", titles.get("en"));
 			psProps.put("@id", psID);
 			if(model.qnameFor(psID) != null) {
 				psProps.put("qname", model.qnameFor(psID));	
@@ -971,8 +977,12 @@ public class JsonSchemaWriter {
 				
 				Map<String, Object> classDef = new HashMap<String, Object>();
 				Map<String, Object> classProps = new HashMap<String, Object>();
-				classDef.put("title", MapperUtils.propertyToString(s, RDFS.label));
-				classDef.put("description", MapperUtils.propertyToString(s, RDFS.comment));
+				
+				Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+				Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+				
+				classDef.put("title", titles.get("en"));
+				classDef.put("description", descs.get("en"));
 				classDef.put("qname", qName);
 				classDef.put("@id", className);			
 				rootProperties.put(className, classDef);
@@ -1021,8 +1031,11 @@ public class JsonSchemaWriter {
 			shapeDef.put("@id", shapeID);
 			shapeDef.put("qname", model.qnameFor(shapeID));
 			//System.out.println(shapeID);
-			shapeDef.put("title", s.getRequiredProperty(SH.name).getObject().asLiteral().getString());
-			shapeDef.put("description", s.getRequiredProperty(SH.description).getObject().asLiteral().getString());			
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, SH.name);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
+			
+			shapeDef.put("title", titles.get("en"));
+			shapeDef.put("description", descs.get("en"));			
 			rootProperties.put(shapeID, shapeDef);
 			try {
 				addSHACLProps(model, s, shapeProps, definitions);
@@ -1072,14 +1085,14 @@ public class JsonSchemaWriter {
 				psProps.put("qname", ":" + ps.getPropertyResourceValue(SH.path).getLocalName());
 			}
 						
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
 			
-			String description = MapperUtils.propertyToString(ps, SH.description);
-			String label = MapperUtils.propertyToString(ps, SH.name);
-			if(label == null) {
-				label = psID;
+			if(titles.isEmpty()) {
+				titles.put("en", psID);
 			}
-			psProps.put("description", description);
-			psProps.put("title", label);
+			psProps.put("description", descs.get("en"));
+			psProps.put("title", titles.get("en"));
 
 			String datatype = "object";			
 			if(ps.hasProperty(SH.node)) {
@@ -1096,6 +1109,66 @@ public class JsonSchemaWriter {
 			props.put(psID, psProps);
 		});
 		
+	}
+
+	public String owl(String pid, Model model, String string) throws Exception {
+		Map<String, Object> definitions = new HashMap<String, Object>();
+
+		Map<String, Object> rootDefinition = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new HashMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);		
+
+		Map<String, Object> schema = new HashMap<String, Object>();
+		schema.put("definitions", definitions);
+		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+		schema.put("type", "object");
+
+		schema.put("properties", rootProperties);
+
+		model.listObjectsOfProperty(VOID.rootResource).forEach(obj -> {
+			Resource s = (Resource)obj;
+			String className = s.getURI();
+			if(className == null) {
+				// blank node
+				
+			}
+			else {
+			
+				String qName = model.qnameFor(className);
+				
+				Map<String, Object> classDef = new HashMap<String, Object>();
+				Map<String, Object> classProps = new HashMap<String, Object>();
+				Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+				Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+				
+				classDef.put("title", titles.get("en"));
+				classDef.put("description", descs.get("en"));
+				classDef.put("qname", qName);
+				classDef.put("@id", className);			
+				rootProperties.put(className, classDef);
+				try {
+					addRDFSProps(model, s, classProps, definitions);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(classProps.keySet().size() > 0 ) {
+					classDef.put("type", "object");
+					classDef.put("@type", model.qnameFor(className));				
+					classDef.put("properties", classProps);
+				}
+				else {
+					// what happens here?
+				}
+				definitions.put(className, classDef);
+			}
+
+			
+		});
+
+		ObjectMapper mapper = new ObjectMapper();
+		
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}	
 
 }

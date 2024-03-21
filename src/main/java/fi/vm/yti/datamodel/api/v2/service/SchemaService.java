@@ -3,9 +3,12 @@ package fi.vm.yti.datamodel.api.v2.service;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
@@ -14,10 +17,16 @@ import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.VOID;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
@@ -153,6 +162,39 @@ public class SchemaService {
 		
 	}
 
+	public Model addOWL(String pid, String url, byte[] bytes) throws Exception {		
+		OWLOntologyManager manager =OWLManager.createOWLOntologyManager();
+		OWLOntology ont = null;
+		if(url != null) {
+			IRI ontologyIRI = IRI.create(url);
+			ont = manager.loadOntologyFromOntologyDocument(ontologyIRI);
+		}
+		else if(bytes != null) {
+			InputStream is = new ByteArrayInputStream(bytes);
+			ont = manager.loadOntologyFromOntologyDocument(is);
+			is.close();
+		}
+		else {
+			throw new RuntimeException("Must provide either url or bytes input");
+		}
+		
+		 
+		TurtleOntologyFormat outputFormat = new TurtleOntologyFormat();
+		Path file = Files.createTempFile("prov", ".ttl");
+		try (OutputStream outputStream = Files.newOutputStream(file)) {
+			manager.saveOntology(ont, outputFormat,				
+					outputStream);
+		}
+		Model model = ModelFactory.createDefaultModel();
+		model.read(file.toUri().toString());
+		Resource schema = model.createResource(pid);
+		model.listSubjectsWithProperty(RDF.type, OWL.Class).forEach(resource -> {
+			schema.addProperty(VOID.rootResource, resource);
+		});
+		return model;		
+	}
+	
+	
 	public Model addRDFS(String pid, byte[] fileInBytes) throws Exception {
 		Model m = ModelFactory.createDefaultModel();
 		ByteArrayInputStream input = new ByteArrayInputStream(fileInBytes);
