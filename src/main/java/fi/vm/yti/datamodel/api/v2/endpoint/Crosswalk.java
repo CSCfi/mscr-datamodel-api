@@ -42,6 +42,7 @@ import fi.vm.yti.datamodel.api.security.AuthorizationManager;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.DeleteResponseDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
@@ -429,14 +430,14 @@ public class Crosswalk extends BaseMSCRController {
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "")
     @DeleteMapping(value = "/crosswalk/{pid}")
-    public void deleteCrosswalk(@PathVariable String pid){
-    	deleteCrosswalk(pid, null);
+    public ResponseEntity<DeleteResponseDTO> deleteCrosswalk(@PathVariable String pid){
+    	return deleteCrosswalk(pid, null);
     }
     
     @Hidden
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping(value = "/crosswalk/{pid}/{suffix}")
-    public void deleteCrosswalk(
+    public ResponseEntity<DeleteResponseDTO> deleteCrosswalk(
     		@PathVariable String pid, 
     		@PathVariable(name = "suffix") String suffix){
 		// TODO: get rid of this
@@ -477,6 +478,7 @@ public class Crosswalk extends BaseMSCRController {
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
+		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid));
     }
     
     @Operation(summary = "Get original file version of the crosswalk (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
@@ -540,14 +542,14 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
-		deleteFile(pid, null, fileID);
+	public ResponseEntity<DeleteResponseDTO> deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
+		return deleteFile(pid, null, fileID);
 	}
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteFile(
+	public ResponseEntity<DeleteResponseDTO> deleteFile(
 			@PathVariable String pid, 
 			@PathVariable String suffix,
 			@PathVariable Long fileID) throws Exception {
@@ -570,7 +572,8 @@ public class Crosswalk extends BaseMSCRController {
 			throw rex;
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-		}			
+		}	
+		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid + ":" + fileID));
 	}        
     
 	@Operation(summary = "Create a mapping")
@@ -711,16 +714,19 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteMapping(@PathVariable String mappingPID) {
-		deleteMapping(mappingPID, null);
+	public ResponseEntity<DeleteResponseDTO> deleteMapping(@PathVariable String mappingPID) {
+		return deleteMapping(mappingPID, null);
 	}
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE)
-	public void deleteMapping(
+	public ResponseEntity<DeleteResponseDTO> deleteMapping(
 			@PathVariable String mappingPID,
 			@PathVariable String suffix) {
+    	if(mappingPID.indexOf("@") < 0) {
+    		return deleteCrosswalk(mappingPID, null);
+    	}		
 		if (suffix != null) {
 			mappingPID = mappingPID + "/" + suffix;
 		}
@@ -748,7 +754,8 @@ public class Crosswalk extends BaseMSCRController {
 			throw rex;
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-		}		
+		}
+		return ResponseEntity.ok(new DeleteResponseDTO("ok", mappingPID));
 	}
 		
 	@Operation(summary = "Get a mappings for a crosswalk")

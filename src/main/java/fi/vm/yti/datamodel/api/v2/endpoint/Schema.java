@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.security.AuthorizationManager;
+import fi.vm.yti.datamodel.api.v2.dto.DeleteResponseDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
@@ -545,14 +546,14 @@ public class Schema extends BaseMSCRController {
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "")
     @DeleteMapping(value = "/schema/{pid}")
-    public void deleteSchema(@PathVariable String pid){
-    	deleteSchema(pid, null);
+    public ResponseEntity<DeleteResponseDTO> deleteSchema(@PathVariable String pid){
+    	return deleteSchema(pid, null);
     }
     
     @Hidden
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping(value = "/schema/{pid}/{suffix}")
-    public void deleteSchema(
+    public ResponseEntity<DeleteResponseDTO> deleteSchema(
     		@PathVariable String pid, 
     		@PathVariable(name = "suffix") String suffix){
 		if (suffix != null) {
@@ -590,6 +591,7 @@ public class Schema extends BaseMSCRController {
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
+		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid));
     }
 
 	@Operation(summary = "Get original file version of the schema (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
@@ -655,14 +657,14 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path = "/schema/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteFile(@PathVariable String pid, @PathVariable Long fileID) {
-		deleteFile(pid, null, fileID);
+	public ResponseEntity<DeleteResponseDTO> deleteFile(@PathVariable String pid, @PathVariable Long fileID) {
+		return deleteFile(pid, null, fileID);
 	}
 
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path = "/schema/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
-	public void deleteFile(
+	public ResponseEntity<DeleteResponseDTO> deleteFile(
 			@PathVariable String pid, 
 			@PathVariable String suffix,
 			@PathVariable Long fileID) {
@@ -688,6 +690,7 @@ public class Schema extends BaseMSCRController {
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
+		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid + ":" + fileID));
 
 	}
 
