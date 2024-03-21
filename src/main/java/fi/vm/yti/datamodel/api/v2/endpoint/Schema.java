@@ -128,7 +128,7 @@ public class Schema extends BaseMSCRController {
 
 			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML || format == SchemaFormat.CSV
 					|| format == SchemaFormat.SKOSRDF || format == SchemaFormat.RDFS || format == SchemaFormat.SHACL
-					|| format == SchemaFormat.PDF) {
+					|| format == SchemaFormat.PDF || format == SchemaFormat.OWL) {
 				// do nothing for now
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -176,7 +176,8 @@ public class Schema extends BaseMSCRController {
 			} else if (format == SchemaFormat.PDF) {
 				// do nothing
 				schemaModel = ModelFactory.createDefaultModel();
-
+			} else if (format == SchemaFormat.OWL) {
+				schemaModel = schemaService.addOWL(pid, contentURL, fileInBytes);				
 			} else if (format == SchemaFormat.RDFS) {
 				schemaModel = schemaService.addRDFS(pid, fileInBytes);
 
