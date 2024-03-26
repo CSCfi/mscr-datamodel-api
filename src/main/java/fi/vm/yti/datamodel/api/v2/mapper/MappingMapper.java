@@ -144,6 +144,11 @@ public class MappingMapper {
 		if(m.getOneOf() != null && m.getOneOf().size() > 0) {
 			m.getOneOf().forEach(o -> mappingResource.addProperty(MSCR.oneOf, mapOneOfToModel(o, model)));
 		}
+		
+		if(m.getNotes() != null) {
+			mappingResource.addProperty(MSCR.notes, m.getNotes());
+		}
+		
 		return mappingResource;		
 	}	
 	
@@ -180,6 +185,8 @@ public class MappingMapper {
 		}
 		m.setPredicate(MapperUtils.propertyToString(r, MSCR.predicate));
 		m.setIsPartOf(MapperUtils.propertyToString(r, DCTerms.isPartOf));
+		
+		m.setNotes(MapperUtils.propertyToString(r, MSCR.notes));
 		return m;
 	}
 
