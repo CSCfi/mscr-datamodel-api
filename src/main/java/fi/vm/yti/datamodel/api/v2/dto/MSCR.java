@@ -87,7 +87,7 @@ public class MSCR {
     public static final Property processing = ResourceFactory.createProperty(URI, "processing");
     public static final Property oneOf = ResourceFactory.createProperty(URI, "oneOf");
     public static final Property processingParams = ResourceFactory.createProperty(URI, "processingParams");
-
+    public static final Property notes = ResourceFactory.createProperty(URI, "notes");
 
     public record Organization(String id,  Map<String, String> label) {}
 

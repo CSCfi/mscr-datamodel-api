@@ -15,6 +15,8 @@ public class MappingDTO {
 	protected String targetType;
 	protected String targetDescription;	
 	protected ProcessingInfo processing; 
+	protected String notes;
+	
 	
 	protected List<OneOfDTO> oneOf;
 
@@ -132,6 +134,14 @@ public class MappingDTO {
 
 	public void setOneOf(List<OneOfDTO> oneOf) {
 		this.oneOf = oneOf;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 
