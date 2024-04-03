@@ -48,6 +48,7 @@ import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResource;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexResourceInfo;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
 import fi.vm.yti.datamodel.api.v2.service.FrontendService;
+import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.JsonSchemaWriter;
 import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
@@ -70,6 +71,7 @@ public class FrontendController {
     private final FrontendService frontendService;
     private final AuthenticatedUserProvider userProvider;
     private final NamespaceService namespaceService;
+    private final GroupManagementService groupManagementService;
     
     private final JenaService jenaService;
     private final SchemaMapper schemaMapper;
@@ -81,6 +83,7 @@ public class FrontendController {
                               FrontendService frontendService,
                               AuthenticatedUserProvider userProvider,
                               NamespaceService namespaceService,
+                              GroupManagementService groupManagementService,
                               JenaService jenaService,
                               SchemaMapper schemaMapper,
                       		  JsonSchemaWriter schemaWriter
@@ -90,6 +93,7 @@ public class FrontendController {
         this.frontendService = frontendService;
         this.userProvider = userProvider;
         this.namespaceService = namespaceService;
+        this.groupManagementService = groupManagementService;
         
         this.jenaService = jenaService;
         this.schemaMapper = schemaMapper;
@@ -229,7 +233,8 @@ public class FrontendController {
     @GetMapping(value="/schema/{pid}", produces = APPLICATION_JSON_VALUE)
     public CrosswalkEditorSchemaDTO getSchema(@PathVariable String pid) {   
 		Model model = jenaService.getSchema(pid);
-		SchemaInfoDTO metadata = schemaMapper.mapToFrontendSchemaDTO(pid, model);
+		var ownerMapper = groupManagementService.mapOwner();
+		SchemaInfoDTO metadata = schemaMapper.mapToFrontendSchemaDTO(pid, model, ownerMapper);
 		String contentString = null;
 		if(metadata.getFormat() == SchemaFormat.SKOSRDF) {
 			try {

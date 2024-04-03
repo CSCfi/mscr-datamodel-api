@@ -38,6 +38,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
@@ -155,7 +156,7 @@ public class CrosswalkMapper {
         });
     }
 
-	public CrosswalkInfoDTO mapToFrontendCrosswalkDTO(String PID, Model model) {
+	public CrosswalkInfoDTO mapToFrontendCrosswalkDTO(String PID, Model model, Consumer<OwnerDTO> ownerMapper) {
 		var dto = new CrosswalkInfoDTO();
 		dto.setPID(PID);
 
@@ -180,17 +181,21 @@ public class CrosswalkMapper {
 		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
 		dto.setVisibility(visibility);
 		
-		dto.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
+		Set<String> ownerIds = MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner);
+		dto.setOwner(ownerIds);
+				
+		dto.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
+		
 		dto.setSourceSchema(MapperUtils.propertyToString(modelResource, MSCR.sourceSchema));
 		dto.setTargetSchema(MapperUtils.propertyToString(modelResource, MSCR.targetSchema));
 
 		return dto;
 	}
 	
-	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper) {
-		return mapToCrosswalkDTO(PID, model, false, userMapper);
+	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
+		return mapToCrosswalkDTO(PID, model, false, userMapper, ownerMapper);
 	}
-	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper) {
+	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
 		var dto = new CrosswalkInfoDTO();
 		dto.setPID(PID);
 
@@ -233,7 +238,11 @@ public class CrosswalkMapper {
 		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
 		dto.setVisibility(visibility);
 		
-		dto.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
+		Set<String> ownerIds = MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner);
+		dto.setOwner(ownerIds);
+				
+		dto.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
+		
 		dto.setSourceSchema(MapperUtils.propertyToString(modelResource, MSCR.sourceSchema));
 		dto.setTargetSchema(MapperUtils.propertyToString(modelResource, MSCR.targetSchema));
 

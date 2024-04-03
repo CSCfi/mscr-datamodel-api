@@ -150,6 +150,7 @@ public class Schema extends BaseMSCRController {
 	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {
 		var userMapper = groupManagementService.mapUser();
+		var ownerMapper = groupManagementService.mapOwner();
 		Model metadataModel = jenaService.getSchema(pid);
 		try {
 			Model schemaModel = null;
@@ -212,7 +213,7 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occured while ingesting file based schema description." + ex.getMessage(), ex);
 		}
-		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper);
+		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper, ownerMapper);
 	}
 
 	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, boolean isRevision) {
@@ -257,8 +258,8 @@ public class Schema extends BaseMSCRController {
 
 		check(hasRightsToModel);
 		var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
-
-		return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper);
+		var ownerMapper = groupManagementService.mapOwner();
+		return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper, ownerMapper);
 	}
 
 	private void validateActionParams(SchemaDTO dto, CONTENT_ACTION action, String target) {
@@ -328,8 +329,8 @@ public class Schema extends BaseMSCRController {
 			var indexModel = mapper.mapToIndexModel(PID, jenaModel);
 			openSearchIndexer.createSchemaToIndex(indexModel);
 			var userMapper = groupManagementService.mapUser();
-
-			return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			return mapper.mapToSchemaDTO(PID, jenaService.getSchema(PID), userMapper, ownerMapper);
 		} catch (Exception ex) {
 			// revert any possible changes
 			try {
@@ -381,7 +382,8 @@ public class Schema extends BaseMSCRController {
 			}
 
 			var userMapper = groupManagementService.mapUser();
-			SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model, userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			SchemaInfoDTO schemaDTO = mapper.mapToSchemaDTO(pid, model, userMapper, ownerMapper);
 
 			if (!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations().stream().map(org -> UUID.fromString(org.getId()))
@@ -479,7 +481,8 @@ public class Schema extends BaseMSCRController {
 			}
 			check(authorizationManager.hasRightToModelMSCR(pid, oldModel));
 			var userMapper = groupManagementService.mapUser();
-			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper, ownerMapper);
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);
 			checkVisibility(schemaDTO);
 			checkState(prevSchema, schemaDTO.getState());
@@ -500,7 +503,7 @@ public class Schema extends BaseMSCRController {
 
 			var indexModel = mapper.mapToIndexModel(pid, jenaModel);
 			openSearchIndexer.updateSchemaToIndex(indexModel);
-			return mapper.mapToSchemaDTO(pid, jenaModel, false, false, userMapper);
+			return mapper.mapToSchemaDTO(pid, jenaModel, false, false, userMapper, ownerMapper);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -533,9 +536,9 @@ public class Schema extends BaseMSCRController {
 			var jenaModel = jenaService.getSchema(pid);
 			var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
 			var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
-
+			var ownerMapper = groupManagementService.mapOwner();
 			return mapper.mapToSchemaDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo),
-					Boolean.parseBoolean(includeVariantInfo), userMapper);
+					Boolean.parseBoolean(includeVariantInfo), userMapper, ownerMapper);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -568,7 +571,8 @@ public class Schema extends BaseMSCRController {
 			}
 			check(authorizationManager.hasRightToModelMSCR(internalID, model));
 			var userMapper = groupManagementService.mapUser();
-			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(internalID, model, false, false, userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(internalID, model, false, false, userMapper, ownerMapper);
 			if(prevSchema.getState() == MSCRState.DRAFT) {
 				jenaService.deleteFromSchema(internalID);
 				storageService.deleteAllSchemaFiles(internalID);				

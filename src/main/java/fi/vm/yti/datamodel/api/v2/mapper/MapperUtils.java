@@ -448,5 +448,17 @@ public class MapperUtils {
     	var aggregationKey = MapperUtils.propertyToString(rev, MSCR.aggregationKey);
     	var state = MapperUtils.propertyToString(rev, MSCR.state);
     	return new Variant(pid, label, versionLabel, aggregationKey, state);
-    }      
+    }
+
+	public static Set<OwnerDTO> mapOwnerInfo(Set<String> ownerIds, Consumer<OwnerDTO> ownerMapper) {
+		// we can't distinguish between users and groups --> testing user first
+		Set<OwnerDTO> owners = new HashSet<OwnerDTO>();
+		ownerIds.forEach(uuid -> {
+			OwnerDTO dto = new OwnerDTO(uuid, null);
+			ownerMapper.accept(dto);
+			owners.add(dto);
+			
+		});
+		return owners;
+	}      
 }
