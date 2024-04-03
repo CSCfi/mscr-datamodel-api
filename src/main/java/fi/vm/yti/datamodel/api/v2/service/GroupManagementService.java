@@ -6,10 +6,14 @@ import fi.vm.yti.datamodel.api.v2.dto.GroupManagementOrganizationDTO;
 import fi.vm.yti.datamodel.api.v2.dto.GroupManagementUserDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
+import fi.vm.yti.datamodel.api.v2.mapper.OrganizationMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.security.YtiUser;
+
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +162,35 @@ public class GroupManagementService {
             }
         };
     }
-
+    
+    public Consumer<OwnerDTO> mapOwner() {
+    	return (var dto) -> {
+    		if(dto.getId() == null) {
+    			return;
+    		}
+    		var user = userCache.getIfPresent(dto.getId());
+    		if(user != null) {
+    			dto.setName(user.getFirstName() + " " + user.getLastName());
+    			
+    		} else {
+    			Model orgModel = coreRepository.getOrganizationsByIds(Set.of(UUID.fromString(dto.getId())));
+    			if(orgModel != null) {
+    				var orgDTOs = OrganizationMapper.mapToListOrganizationDTO(orgModel);
+    				if(!orgDTOs.isEmpty()) {
+    					dto.setName(orgDTOs.iterator().next().getLabel());
+    				}
+    				else {
+    					LOG.info("Could not map owner info. Owner is referring a user or an org that no longer exists");	
+    				}
+    			}
+    			else {
+    				LOG.info("Could not map owner info. Owner is referring a user or an org that no longer exists");
+    			}
+    		}
+    		
+    	};
+    }
+    
     public List<UUID> getChildOrganizations(UUID orgId) {
         var orgUrn = ModelConstants.URN_UUID + orgId.toString();
         if(!coreRepository.resourceExistsInGraph(ModelConstants.ORGANIZATION_GRAPH, orgUrn)){

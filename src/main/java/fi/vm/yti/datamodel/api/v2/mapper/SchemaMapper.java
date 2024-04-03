@@ -36,6 +36,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
@@ -224,11 +225,11 @@ public class SchemaMapper {
 		return model;
 	}
 
-	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper) {
-		return mapToSchemaDTO(PID, model, false, false, userMapper);
+	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
+		return mapToSchemaDTO(PID, model, false, false, userMapper, ownerMapper);
 	}
 	
-	public SchemaInfoDTO mapToFrontendSchemaDTO(String PID, Model model) {
+	public SchemaInfoDTO mapToFrontendSchemaDTO(String PID, Model model, Consumer<OwnerDTO> ownerMapper) {
 		var schemaInfoDTO = new SchemaInfoDTO();
 		schemaInfoDTO.setPID(PID);
 
@@ -252,15 +253,18 @@ public class SchemaMapper {
 		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
 		schemaInfoDTO.setVisibility(visibility);
 		
-		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));		
-		
+		Set<String> ownerIds = MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner);
+		schemaInfoDTO.setOwner(ownerIds);
+				
+		schemaInfoDTO.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
+				
 		schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
 				
 		return schemaInfoDTO;
 	}
 
 	
-	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, boolean includeVarientInfo, Consumer<ResourceCommonDTO> userMapper) {
+	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, boolean includeVarientInfo, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
 
 		var schemaInfoDTO = new SchemaInfoDTO();
 		schemaInfoDTO.setPID(PID);
@@ -305,7 +309,10 @@ public class SchemaMapper {
 		var visibility = MSCRVisibility.valueOf(MapperUtils.propertyToString(modelResource,  MSCR.visibility));
 		schemaInfoDTO.setVisibility(visibility);
 		
-		schemaInfoDTO.setOwner(MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner));
+		Set<String> ownerIds = MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner);
+		schemaInfoDTO.setOwner(ownerIds);
+				
+		schemaInfoDTO.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
 		
 		if(modelResource.hasProperty(MSCR.PROV_wasRevisionOf)) {
 			schemaInfoDTO.setRevisionOf(MapperUtils.propertyToString(modelResource, MSCR.PROV_wasRevisionOf));

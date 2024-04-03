@@ -119,8 +119,9 @@ public class Crosswalk extends BaseMSCRController {
         
         check(hasRightsToModel);
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
+        var ownerMapper = groupManagementService.mapOwner();
 
-        return mapper.mapToCrosswalkDTO(pid, model, includeVersionInfo, userMapper);
+        return mapper.mapToCrosswalkDTO(pid, model, includeVersionInfo, userMapper, ownerMapper);
 	}	
 	
 	private void createCrosswalkMetadata(final String PID, final String handle, CrosswalkDTO dto, String aggregationKey, String target) {
@@ -238,7 +239,8 @@ public class Crosswalk extends BaseMSCRController {
 			}
 			createCrosswalkMetadata(PID, handle, dto, aggregationKey, target);
 			var userMapper = groupManagementService.mapUser();
-			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper, ownerMapper);
 		}catch(Exception ex) {
 			// revert any possible changes
 			try { jenaService.deleteFromCrosswalk(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
@@ -283,7 +285,8 @@ public class Crosswalk extends BaseMSCRController {
 			}
 
 			var userMapper = groupManagementService.mapUser();
-			CrosswalkInfoDTO crosswalkDTO = mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			CrosswalkInfoDTO crosswalkDTO = mapper.mapToCrosswalkDTO(pid, model, userMapper, ownerMapper);
 			
 			if(!crosswalkDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = crosswalkDTO.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).toList();
@@ -291,7 +294,7 @@ public class Crosswalk extends BaseMSCRController {
 			}		
 			
 			addFileToCrosswalk(pid, crosswalkDTO.getFormat(), file);
-			return mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			return mapper.mapToCrosswalkDTO(pid, model, userMapper, ownerMapper);
 		
 		} catch (RuntimeException rex) {
 			throw rex;
@@ -323,7 +326,8 @@ public class Crosswalk extends BaseMSCRController {
 		final String PID = infoDto.getPID();
 		addFileToCrosswalk(PID, dto.getFormat(), file);
 		var userMapper = groupManagementService.mapUser();
-		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper);
+		var ownerMapper = groupManagementService.mapOwner();
+		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper, ownerMapper);
 		
 	}	
 	
@@ -357,7 +361,8 @@ public class Crosswalk extends BaseMSCRController {
 	
 	        check(authorizationManager.hasRightToModelMSCR(pid, oldModel));
 	        var userMapper = groupManagementService.mapUser();
-	        CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper);        
+	        var ownerMapper = groupManagementService.mapOwner();
+	        CrosswalkInfoDTO prev =  mapper.mapToCrosswalkDTO(pid, oldModel, false, userMapper, ownerMapper);        
 	        dto = mergeMetadata(prev, dto, false);		    
 	        checkVisibility(dto);
 	        checkState(prev, dto.getState());
@@ -380,7 +385,7 @@ public class Crosswalk extends BaseMSCRController {
 	
 	        var indexModel = mapper.mapToIndexModel(pid, jenaModel);
 	        openSearchIndexer.updateCrosswalkToIndex(indexModel);
-	        CrosswalkInfoDTO updated = mapper.mapToCrosswalkDTO(pid, jenaModel, false, userMapper);
+	        CrosswalkInfoDTO updated = mapper.mapToCrosswalkDTO(pid, jenaModel, false, userMapper, ownerMapper);
 	        return updated;
 		} catch (RuntimeException rex) {
 			throw rex;
@@ -416,8 +421,8 @@ public class Crosswalk extends BaseMSCRController {
 	    	var jenaModel = jenaService.getCrosswalk(pid);
 			var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, jenaModel);
 	        var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
-	
-	    	return ResponseEntity.ok(mapper.mapToCrosswalkDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper));
+	        var ownerMapper = groupManagementService.mapOwner();
+	    	return ResponseEntity.ok(mapper.mapToCrosswalkDTO(pid, jenaModel, Boolean.parseBoolean(includeVersionInfo), userMapper, ownerMapper));
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -455,7 +460,8 @@ public class Crosswalk extends BaseMSCRController {
 	        }
 	        check(authorizationManager.hasRightToModelMSCR(internalID, model));
 			var userMapper = groupManagementService.mapUser();
-			CrosswalkInfoDTO prev = mapper.mapToCrosswalkDTO(pid, model, userMapper);
+			var ownerMapper = groupManagementService.mapOwner();
+			CrosswalkInfoDTO prev = mapper.mapToCrosswalkDTO(pid, model, userMapper, ownerMapper);
 			if(prev.getState() == MSCRState.DRAFT) {
 				storageService.deleteAllCrosswalkFiles(internalID);
 				jenaService.deleteFromCrosswalk(internalID);	

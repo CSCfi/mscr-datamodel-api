@@ -26,7 +26,17 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 	private List<String> hasRevisions;
 	private List<Revision> revisions;
 	
+	private Set<OwnerDTO> ownerMetadata;
+	
+	
+	public Set<OwnerDTO> getOwnerMetadata() {
+		return ownerMetadata;
+	}
 
+	public void setOwnerMetadata(Set<OwnerDTO> owners) {
+		this.ownerMetadata = owners;
+	}
+	
 	public List<MappingDTO> getMappings() {
 		return mappings;
 	}
