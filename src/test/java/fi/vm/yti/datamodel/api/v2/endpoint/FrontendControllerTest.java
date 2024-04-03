@@ -5,6 +5,7 @@ import fi.vm.yti.datamodel.api.v2.opensearch.dto.CountRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ModelSearchRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ResourceSearchRequest;
 import fi.vm.yti.datamodel.api.v2.service.FrontendService;
+import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.JsonSchemaWriter;
 import fi.vm.yti.datamodel.api.v2.service.NamespaceService;
@@ -47,7 +48,9 @@ class FrontendControllerTest {
     AuthenticatedUserProvider userProvider;
     @MockBean
     NamespaceService namespaceService;
-
+    @MockBean
+    GroupManagementService groupManagementService;
+    
     @MockBean
     JenaService jenaService;
     @MockBean
