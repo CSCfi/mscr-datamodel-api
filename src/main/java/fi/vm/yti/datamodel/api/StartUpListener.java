@@ -50,7 +50,7 @@ public class StartUpListener {
         initServiceCategories();
         initOpenSearchIndices();
         initFunctions();
-        groupManagementService.initUsers();
+        groupManagementService.updateUsers();
     }
 
     @Scheduled(cron = "0 */5 * * * *")
