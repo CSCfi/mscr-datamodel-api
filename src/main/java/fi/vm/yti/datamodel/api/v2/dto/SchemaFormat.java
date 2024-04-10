@@ -9,5 +9,6 @@ public enum SchemaFormat {
 	OWL,
 	SKOSRDF,
 	PDF,
-	XML
+	XML, 
+	MSCR
 }

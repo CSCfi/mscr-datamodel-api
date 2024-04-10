@@ -23,6 +23,9 @@ public class SchemaValidator extends BaseValidator implements
 
     @Override
     public boolean isValid(SchemaDTO dto, ConstraintValidatorContext context) {
+    	if(dto == null) {
+    		return true;
+    	}
         setConstraintViolationAdded(false);
         checkStatus(context, dto.getStatus());
         checkLanguages(context, dto);

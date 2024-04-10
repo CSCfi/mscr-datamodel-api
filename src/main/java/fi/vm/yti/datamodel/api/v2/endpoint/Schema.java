@@ -147,11 +147,8 @@ public class Schema extends BaseMSCRController {
 
 	}
 
-	private SchemaInfoDTO addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
+	private void addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {
-		var userMapper = groupManagementService.mapUser();
-		var ownerMapper = groupManagementService.mapOwner();
-		Model metadataModel = jenaService.getSchema(pid);
 		try {
 			Model schemaModel = null;
 
@@ -202,8 +199,7 @@ public class Schema extends BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						String.format("Unsupported schema description format: %s not supported", format));
 			}
-			schemaModel.add(metadataModel);
-			jenaService.updateSchema(pid, schemaModel);
+			jenaService.putToSchema(pid + ":content", schemaModel);			
 			storageService.storeSchemaFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
 
 		} catch (ResponseStatusException statusex) {
@@ -213,20 +209,22 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error occured while ingesting file based schema description." + ex.getMessage(), ex);
 		}
-		return mapper.mapToSchemaDTO(pid, metadataModel, userMapper, ownerMapper);
+		
 	}
 
-	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, boolean isRevision) {
+	private SchemaDTO mergeSchemaMetadata(SchemaInfoDTO prevSchema, SchemaDTO inputSchema, CONTENT_ACTION action) {		
 		SchemaDTO s = new SchemaDTO();
 		// in case of revision the following data cannot be overridden
 		// - organization
+		// - format
+		// - versionLabel - defaults to ""
 		s.setStatus(inputSchema != null && inputSchema.getStatus() != null ? inputSchema.getStatus()
 				: prevSchema.getStatus());
 		s.setState(
 				inputSchema != null && inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
 		s.setVisibility(inputSchema != null && inputSchema.getVisibility() != null ? inputSchema.getVisibility()
 				: prevSchema.getVisibility());
-		s.setLabel(!inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
+		s.setLabel(inputSchema != null && !inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
 		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription()
 				: prevSchema.getDescription());
 		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages()
@@ -235,7 +233,7 @@ public class Schema extends BaseMSCRController {
 				: prevSchema.getNamespace());
 		s.setContact(inputSchema != null && inputSchema.getContact() != null ? inputSchema.getContact()
 				: prevSchema.getContact());
-		if (isRevision || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
+		if (action == CONTENT_ACTION.revisionOf || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
 			s.setOrganizations(prevSchema.getOrganizations().stream().map(org -> UUID.fromString(org.getId()))
 					.collect(Collectors.toSet()));
 		} else {
@@ -243,38 +241,37 @@ public class Schema extends BaseMSCRController {
 		}
 		s.setVersionLabel(
 				inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
-		s.setFormat(inputSchema != null && inputSchema.getFormat() != null ? inputSchema.getFormat()
-				: prevSchema.getFormat());
+		
+		if(action == CONTENT_ACTION.revisionOf) {
+			s.setFormat(prevSchema.getFormat());	
+		}
+		else if(action == CONTENT_ACTION.mscrCopyOf) { 
+			s.setFormat(SchemaFormat.MSCR);
+		}
+		else {
+			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
+		}
+		
 		return s;
 
 	}
 
-	private SchemaInfoDTO getSchemaDTO(String pid, boolean includeVersionInfo, boolean includeVariantInfo) {
-		var model = jenaService.getSchema(pid);
-		if (model == null) {
-			throw new ResourceNotFoundException(pid);
-		}
+	private SchemaInfoDTO getSchemaDTO(String pid, Model model, boolean includeVersionInfo, boolean includeVariantInfo) {
 		var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, model);
-
 		check(hasRightsToModel);
 		var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 		var ownerMapper = groupManagementService.mapOwner();
 		return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper, ownerMapper);
 	}
-
-	private void validateActionParams(SchemaDTO dto, CONTENT_ACTION action, String target) {
-		if (dto == null && action == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Request body must present if no action is provided.");
+	
+	private Model getSchemaModel(String pid) {
+		var model = jenaService.getSchema(pid);
+		if (model == null) {
+			throw new ResourceNotFoundException(pid);
 		}
-		if (action == null && target != null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Target parameter requires an action.");
-		}
-		if (action != null && target == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Action parameter requires a target");
-		}
-	}
-
+		return model;
+	}	
+	
 	@Operation(summary = "Create schema metadata")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
@@ -285,12 +282,14 @@ public class Schema extends BaseMSCRController {
 
 		validateActionParams(schemaDTO, action, target);
 		checkVisibility(schemaDTO);
-		checkState(null, schemaDTO.getState());
+		checkState(null, schemaDTO);
 
 		String aggregationKey = null;
+		Model contentModel = ModelFactory.createDefaultModel();
 		if (action != null) {
-			SchemaInfoDTO prevSchema = getSchemaDTO(target, true, false);
-			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action == CONTENT_ACTION.revisionOf);
+			Model prevModel = getSchemaModel(target);
+			SchemaInfoDTO prevSchema = getSchemaDTO(target, prevModel, true, false);
+			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action);
 			if (action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
 				if (prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
@@ -298,7 +297,18 @@ public class Schema extends BaseMSCRController {
 							"Revisions can only be created from the latest revision. Check your target PID.");
 				}
 				aggregationKey = prevSchema.getAggregationKey();
+				if(prevSchema.getFormat() == SchemaFormat.MSCR) {
+					contentModel = jenaService.getSchemaContent(prevSchema.getPID());					
+				}
 
+			}
+			if(action == CONTENT_ACTION.mscrCopyOf) {
+				if(!Set.of(SchemaFormat.CSV, SchemaFormat.JSONSCHEMA, SchemaFormat.MSCR, SchemaFormat.SHACL, SchemaFormat.XSD).contains(prevSchema.getFormat())) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+							"MSCR copy can only be made from a schema with a format CSV, JSONSCHEMA, MSCR, SHACL or XSD");
+					
+				}
+				contentModel = jenaService.getSchemaContent(prevSchema.getPID());				
 			}
 		}
 		logger.info("Create Schema {}", schemaDTO);
@@ -315,12 +325,15 @@ public class Schema extends BaseMSCRController {
 			}
 			var jenaModel = mapper.mapToJenaModel(PID, handle, schemaDTO, target, aggregationKey,
 					userProvider.getUser());
+			if(!contentModel.isEmpty()) {
+				jenaService.putToSchema(PID+":content", contentModel);
+			}
 			jenaService.putToSchema(PID, jenaModel);
 
 			// handle possible versioning data
 			var schemaResource = jenaModel.createResource(PID);
 			if (jenaModel.contains(schemaResource, MSCR.PROV_wasRevisionOf)) {
-				Model prevVersionModel = jenaService.getSchema(target);
+				Model prevVersionModel = jenaService.getSchema(target); // this is redundant - refactor!
 				Resource prevVersionResource = prevVersionModel.getResource(target);
 				prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
 				jenaService.updateSchema(target, prevVersionModel);
@@ -390,7 +403,8 @@ public class Schema extends BaseMSCRController {
 						.toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			return addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType());
+			addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType());
+			return schemaDTO;
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -442,8 +456,7 @@ public class Schema extends BaseMSCRController {
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
-
-		System.out.println(contentType);
+		
 		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
 		final String PID = dto.getPID();
 
@@ -451,7 +464,8 @@ public class Schema extends BaseMSCRController {
 			Collection<UUID> orgs = schemaDTO.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 		}
-		return addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);
+		addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);
+		return dto;
 
 	}
 
@@ -483,7 +497,7 @@ public class Schema extends BaseMSCRController {
 			var userMapper = groupManagementService.mapUser();
 			var ownerMapper = groupManagementService.mapOwner();
 			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(pid, oldModel, false, false, userMapper, ownerMapper);
-			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);
+			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, CONTENT_ACTION.update);
 			checkVisibility(schemaDTO);
 			checkState(prevSchema, schemaDTO.getState());
 			Model jenaModel = null;
@@ -575,6 +589,7 @@ public class Schema extends BaseMSCRController {
 			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(internalID, model, false, false, userMapper, ownerMapper);
 			if(prevSchema.getState() == MSCRState.DRAFT) {
 				jenaService.deleteFromSchema(internalID);
+				jenaService.deleteFromSchema(internalID+":content");
 				storageService.deleteAllSchemaFiles(internalID);				
 				openSearchIndexer.deleteSchemaFromIndex(internalID);
 			}
@@ -582,10 +597,11 @@ public class Schema extends BaseMSCRController {
 				checkState(prevSchema, MSCRState.REMOVED);
 				SchemaDTO schemaDTO = new SchemaDTO();
 				schemaDTO.setState(MSCRState.REMOVED);
-				schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, false);
+				schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, CONTENT_ACTION.delete);
 				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, ModelFactory.createDefaultModel(), userProvider.getUser());
 				var indexModel = mapper.mapToIndexModel(internalID, jenaModel);
 				jenaService.updateSchema(internalID, jenaModel);
+				jenaService.deleteFromSchema(internalID+":content");
 				storageService.deleteAllSchemaFiles(internalID);
 				openSearchIndexer.updateSchemaToIndex(indexModel);
 				
@@ -716,7 +732,7 @@ public class Schema extends BaseMSCRController {
 		}
 		try {
 			pid = PIDService.mapToInternal(pid);
-			var model = jenaService.getSchema(pid);
+			var model = jenaService.getSchema(pid+":content");
 			StreamingResponseBody responseBody = httpResponseOutputStream -> {
 				model.write(httpResponseOutputStream, "TURTLE");
 			};
@@ -746,6 +762,7 @@ public class Schema extends BaseMSCRController {
 		try {
 			schemaID = PIDService.mapToInternal(schemaID);
 			Model model = jenaService.getSchema(schemaID);
+			Model contentModel = jenaService.getSchema(schemaID+":content");
 			check(authorizationManager.hasRightToModelMSCR(schemaID, model));
 			if(model == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
@@ -755,7 +772,7 @@ public class Schema extends BaseMSCRController {
 			if(!Set.of(SchemaFormat.CSV.name(), SchemaFormat.JSONSCHEMA.name(), SchemaFormat.SHACL.name(), SchemaFormat.XSD.name()).contains(format)) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be CSV, JSONSCHEMA, SHAC or XSD");
 			}
-			Resource propResource = model.getResource(target);
+			Resource propResource = contentModel.getResource(target);
 			if(propResource == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);
 			}
@@ -763,8 +780,8 @@ public class Schema extends BaseMSCRController {
 			Model propModel = schemaService.fetchAndMapDTRType(datatype);
 			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
 			jenaService.putToSchema(datatypeResource.getURI(), propModel);
-			schemaService.updatePropertyDataTypeFromDTR(model, target, datatypeResource.getURI());
-			jenaService.putToSchema(schemaID, model);
+			schemaService.updatePropertyDataTypeFromDTR(contentModel, target, datatypeResource.getURI());
+			jenaService.putToSchema(schemaID, contentModel);
 			
 
 		} catch (RuntimeException rex) {
