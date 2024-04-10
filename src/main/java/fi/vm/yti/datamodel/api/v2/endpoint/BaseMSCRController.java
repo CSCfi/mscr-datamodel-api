@@ -27,7 +27,7 @@ public abstract class BaseMSCRController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseMSCRController.class);
 	@io.swagger.v3.oas.annotations.media.Schema(name = "Content actions", description = "")
-	public enum CONTENT_ACTION { create, copyOf, revisionOf }
+	public enum CONTENT_ACTION { create, copyOf, revisionOf, mscrCopyOf, update, delete }
 	
 
 	protected void validateActionParams(Object dto, CONTENT_ACTION action, String target) {
@@ -99,10 +99,18 @@ public abstract class BaseMSCRController {
 	}
 	
 	protected void checkVisibility(MSCRCommonMetadata dto) {
-		if(dto.getState() != MSCRState.DRAFT && dto.getVisibility() != MSCRVisibility.PUBLIC) {
+		if(dto != null && dto.getState() != MSCRState.DRAFT && dto.getVisibility() != MSCRVisibility.PUBLIC) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only DRAFT content can have non public visibility");
 		}
 		
+	}
+	
+	protected void checkState(MSCRCommonMetadata prev, MSCRCommonMetadata next) {
+		if(next == null) {
+			return;
+		}
+		MSCRState newState = next.getState();
+		checkState(prev, newState);
 	}
 	
 	protected void checkState(MSCRCommonMetadata prev, MSCRState newState) {

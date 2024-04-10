@@ -1,14 +1,14 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
-import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
-import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
-import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.arq.querybuilder.AskBuilder;
+import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Seq;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.vocabulary.OWL;
 import org.slf4j.Logger;
@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
+import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 
 @Service
 public class JenaService {
@@ -179,19 +183,58 @@ public class JenaService {
 	}
 
 
-
-	public Model getMappingSet(String graph) {
-		var mappingSetGraph = graph + "#mappingSet";
+	public Model getSchemaContent(String pid) {
+		final String graph = pid+":content";
         try {
-            return crosswalkRead.fetch(mappingSetGraph);
-        } catch (HttpException ex) {
+            return schemaRead.fetch(graph);
+        } catch (org.apache.jena.atlas.web.HttpException ex) {
             if (ex.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
-                logger.warn("Mapping set for Crosswalk not found with URI {}", mappingSetGraph);
+                logger.warn("Content not found for schemas  with PID {}", pid);
                 throw new ResourceNotFoundException(graph);
             } else {
                 throw new JenaQueryException();
             }
         }
+	}
+
+
+
+	public Model getCrosswalkContent(String pid) {
+		final String graph = pid+":content";
+        try {
+            return crosswalkRead.fetch(graph);
+        } catch (org.apache.jena.atlas.web.HttpException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.warn("Content not found for crosswalk  with PID {}", pid);
+                throw new ResourceNotFoundException(graph);
+            } else {
+                throw new JenaQueryException();
+            }
+        }
+	}
+
+	public void deleteMapping(String crosswalkPID, String mappingPID) {
+		// TODO Use an update instead of loading the whole graph
+		Model m = getCrosswalk(crosswalkPID+":content");
+		Resource mappingResource = m.createResource(mappingPID);
+		// first remove the source and target sequences
+		Seq s = mappingResource.getRequiredProperty(MSCR.source).getSeq();				
+		for(int i = s.size(); i >= 1; i--) {
+			s.getResource(i).removeProperties();
+			s.remove(i);
+		}				
+		s = mappingResource.getRequiredProperty(MSCR.target).getSeq();				
+		for(int i = s.size(); i >= 1; i--) {
+			s.getResource(i).removeProperties();
+			s.remove(i);
+		}	
+		Resource c = mappingResource.getPropertyResourceValue(MSCR.source);
+		m.removeAll(c, null, null);
+		Resource c2 = mappingResource.getPropertyResourceValue(MSCR.target);
+		m.removeAll(c2, null, null);
+		m.removeAll(mappingResource, null, null);
+		m.removeAll(m.createResource(crosswalkPID), MSCR.mappings, mappingResource);
+		
+		putToCrosswalk(crosswalkPID+":content", m);
 	}	
-	
 }

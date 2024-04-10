@@ -233,6 +233,7 @@ public class FrontendController {
     @GetMapping(value="/schema/{pid}", produces = APPLICATION_JSON_VALUE)
     public CrosswalkEditorSchemaDTO getSchema(@PathVariable String pid) {   
 		Model model = jenaService.getSchema(pid);
+		model.add(jenaService.getSchema(pid+":content"));
 		var ownerMapper = groupManagementService.mapOwner();
 		SchemaInfoDTO metadata = schemaMapper.mapToFrontendSchemaDTO(pid, model, ownerMapper);
 		String contentString = null;
