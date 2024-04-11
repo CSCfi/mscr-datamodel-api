@@ -337,6 +337,7 @@ public class Schema extends BaseMSCRController {
 				Resource prevVersionResource = prevVersionModel.getResource(target);
 				prevVersionResource.addProperty(MSCR.hasRevision, schemaResource);
 				jenaService.updateSchema(target, prevVersionModel);
+				openSearchIndexer.updateSchemaToIndex(mapper.mapToIndexModel(target, prevVersionModel));
 
 			}
 			var indexModel = mapper.mapToIndexModel(PID, jenaModel);
