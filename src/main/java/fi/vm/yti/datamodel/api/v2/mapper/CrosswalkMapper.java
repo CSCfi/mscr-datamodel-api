@@ -411,8 +411,15 @@ public class CrosswalkMapper {
     		List<Revision> orderedRevs = revs.stream()
     				.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
     				.collect(Collectors.toList());
-    		indexModel.setRevisions(orderedRevs); 
-    		indexModel.setNumberOfRevisions(orderedRevs.size());	
+    		//indexModel.setRevisions(orderedRevs); 
+    		Revision latestRev = orderedRevs.get(orderedRevs.size() - 1);
+    		if(latestRev.getPid().equals(pid)) {
+    			indexModel.setHasRevision(null);
+    			indexModel.setNumberOfRevisions(orderedRevs.size());
+    		}
+    		else {
+    			indexModel.setHasRevision("true");
+    		}
         }        
         indexModel.setVersionLabel(MapperUtils.propertyToString(resource, MSCR.versionLabel));
         

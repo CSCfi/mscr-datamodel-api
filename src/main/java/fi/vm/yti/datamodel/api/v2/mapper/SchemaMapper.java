@@ -219,9 +219,10 @@ public class SchemaMapper {
 		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(dto.getNamespace()));
 		
 		if(handle != null) {
-			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));
-			
+			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));			
 		}
+		
+		
 		return model;
 	}
 
@@ -432,16 +433,25 @@ public class SchemaMapper {
         if(revisionsModel == null) {
         	revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(indexModel.getAggregationKey()));
         }
+
         Resource aggregationResource = resource.getPropertyResourceValue(MSCR.aggregationKey);
         if(aggregationResource != null) {
-            revisionsModel.listSubjectsWithProperty(MSCR.aggregationKey, aggregationResource) .forEach(res -> {
+            revisionsModel.listSubjects().forEach(res -> {
     			revs.add(MapperUtils.mapToRevision(res));				
     		});
     		List<Revision> orderedRevs = revs.stream()
     				.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
     				.collect(Collectors.toList());
-    		indexModel.setRevisions(orderedRevs); 
-    		indexModel.setNumberOfRevisions(orderedRevs.size());	
+    		//indexModel.setRevisions(orderedRevs);     			
+    		Revision latestRev = orderedRevs.get(orderedRevs.size() - 1);
+    		if(latestRev.getPid().equals(pid)) {
+    			indexModel.setHasRevision(null);
+    			indexModel.setNumberOfRevisions(orderedRevs.size());
+    		}
+    		else {
+    			indexModel.setHasRevision("true");
+    		}
+    		
         }
         indexModel.setVersionLabel(resource.getProperty(MSCR.versionLabel).getString());
 
