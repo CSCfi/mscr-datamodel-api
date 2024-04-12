@@ -427,8 +427,8 @@ public class SchemaMapper {
         
         indexModel.setAggregationKey(MapperUtils.propertyToString(resource, MSCR.aggregationKey));
         indexModel.setRevisionOf(MapperUtils.propertyToString(resource, MSCR.PROV_wasRevisionOf));
-        indexModel.setHasRevision(MapperUtils.propertyToString(resource, MSCR.hasRevision));
         
+        indexModel.setHasRevision(null);
         List<Revision> revs = new ArrayList<Revision>();
         if(revisionsModel == null) {
         	revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(indexModel.getAggregationKey()));
@@ -442,14 +442,16 @@ public class SchemaMapper {
     		List<Revision> orderedRevs = revs.stream()
     				.sorted((Revision r1, Revision r2) -> r1.getCreated().compareTo(r2.getCreated()))
     				.collect(Collectors.toList());
-    		//indexModel.setRevisions(orderedRevs);     			
-    		Revision latestRev = orderedRevs.get(orderedRevs.size() - 1);
-    		if(latestRev.getPid().equals(pid)) {
-    			indexModel.setHasRevision(null);
-    			indexModel.setNumberOfRevisions(orderedRevs.size());
-    		}
-    		else {
-    			indexModel.setHasRevision("true");
+    		//indexModel.setRevisions(orderedRevs); 
+    		if(orderedRevs.size() > 0) {
+        		Revision latestRev = orderedRevs.get(orderedRevs.size() - 1);
+        		if(latestRev.getPid().equals(pid)) {
+        			indexModel.setHasRevision(null);
+        			indexModel.setNumberOfRevisions(orderedRevs.size());
+        		}
+        		else {
+        			indexModel.setHasRevision("true");
+        		}    			
     		}
     		
         }
