@@ -485,7 +485,9 @@ public class Crosswalk extends BaseMSCRController {
 			if(prev.getState() == MSCRState.DRAFT) {
 				storageService.deleteAllCrosswalkFiles(internalID);
 				jenaService.deleteFromCrosswalk(internalID);
-				jenaService.deleteFromCrosswalk(internalID+":content");
+				if(jenaService.doesCrosswalkExist(internalID+":content")) {
+					jenaService.deleteFromCrosswalk(internalID+":content");
+				}				
 				openSearchIndexer.deleteCrosswalkFromIndex(internalID);
 			}
 			else {
@@ -496,7 +498,9 @@ public class Crosswalk extends BaseMSCRController {
 				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, ModelFactory.createDefaultModel(), userProvider.getUser());
 				var indexModel = mapper.mapToIndexModel(internalID, jenaModel);								
 				jenaService.updateCrosswalk(internalID, jenaModel);
-				jenaService.deleteFromCrosswalk(internalID+":content");
+				if(jenaService.doesCrosswalkExist(internalID+":content")) {
+					jenaService.deleteFromCrosswalk(internalID+":content");
+				}				
 				storageService.deleteAllCrosswalkFiles(internalID);
 				openSearchIndexer.updateCrosswalkToIndex(indexModel);
 			}

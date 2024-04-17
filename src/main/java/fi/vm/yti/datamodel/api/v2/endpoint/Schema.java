@@ -590,7 +590,9 @@ public class Schema extends BaseMSCRController {
 			SchemaInfoDTO prevSchema = mapper.mapToSchemaDTO(internalID, model, false, false, userMapper, ownerMapper);
 			if(prevSchema.getState() == MSCRState.DRAFT) {
 				jenaService.deleteFromSchema(internalID);
-				jenaService.deleteFromSchema(internalID+":content");
+				if(jenaService.doesSchemaExist(internalID+":content")) {
+					jenaService.deleteFromSchema(internalID+":content");
+				}				
 				storageService.deleteAllSchemaFiles(internalID);				
 				openSearchIndexer.deleteSchemaFromIndex(internalID);
 			}
@@ -602,7 +604,9 @@ public class Schema extends BaseMSCRController {
 				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, ModelFactory.createDefaultModel(), userProvider.getUser());
 				var indexModel = mapper.mapToIndexModel(internalID, jenaModel);
 				jenaService.updateSchema(internalID, jenaModel);
-				jenaService.deleteFromSchema(internalID+":content");
+				if(jenaService.doesSchemaExist(internalID+":content")) {
+					jenaService.deleteFromSchema(internalID+":content");
+				}								
 				storageService.deleteAllSchemaFiles(internalID);
 				openSearchIndexer.updateSchemaToIndex(indexModel);
 				
