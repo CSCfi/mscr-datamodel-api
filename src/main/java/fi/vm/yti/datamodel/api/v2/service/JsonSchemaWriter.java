@@ -908,6 +908,15 @@ public class JsonSchemaWriter {
 	}
 	
 	private void addRDFSProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions) throws Exception {		
+		Resource parent = s.getPropertyResourceValue(RDFS.subClassOf);
+		if(parent != null) {
+			try {
+				addRDFSProps(model, parent, props, definitions);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
 		model.listSubjectsWithProperty(RDFS.domain, s).forEach(ps -> {
 			String psID = ps.getURI();
 			Map<String, Object> psProps = new HashMap<String, Object>();
@@ -933,20 +942,11 @@ public class JsonSchemaWriter {
 			}
 			else {
 				psProps.put("qname", ":" + ps.getLocalName());
-			}			
-			
-			Resource parent = s.getPropertyResourceValue(RDFS.subClassOf);
-			if(parent != null) {
-				try {
-					addRDFSProps(model, parent, props, definitions);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			}									
 			definitions.put(psID, psProps);
 			props.put(psID, psProps);
 		});
+		
 		
 	}
 
@@ -1085,8 +1085,8 @@ public class JsonSchemaWriter {
 				psProps.put("qname", ":" + ps.getPropertyResourceValue(SH.path).getLocalName());
 			}
 						
-			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
-			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(ps, SH.name);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(ps, SH.description);
 			
 			if(titles.isEmpty()) {
 				titles.put("en", psID);
@@ -1127,9 +1127,9 @@ public class JsonSchemaWriter {
 
 		model.listObjectsOfProperty(VOID.rootResource).forEach(obj -> {
 			Resource s = (Resource)obj;
-			String className = s.getURI();
+			String className = s.getURI();			
 			if(className == null) {
-				// blank node
+				// what now?
 				
 			}
 			else {
