@@ -401,11 +401,11 @@ public class CrosswalkMapper {
         indexModel.setHasRevision(null);
         List<Revision> revs = new ArrayList<Revision>();
         if(revisionsModel == null) {
-        	revisionsModel = jenaService.constructWithQuerySchemas(MapperUtils.getRevisionsQuery(indexModel.getAggregationKey()));
+        	revisionsModel = jenaService.constructWithQueryCrosswalks(MapperUtils.getRevisionsQuery(indexModel.getAggregationKey()));
         }
         Resource aggregationResource = resource.getPropertyResourceValue(MSCR.aggregationKey);
         if(aggregationResource != null) {
-            revisionsModel.listSubjectsWithProperty(MSCR.aggregationKey, aggregationResource) .forEach(res -> {
+            revisionsModel.listSubjects().forEach(res -> {
     			revs.add(MapperUtils.mapToRevision(res));				
     		});
     		List<Revision> orderedRevs = revs.stream()

@@ -320,7 +320,7 @@ public class OpenSearchIndexer {
 			constructBuilder.addSubQuery(
 					new SelectBuilder()
 						.addVar("count(?aggregationKey)", "?numberOfRevisions")
-						.addWhere("?some", "<http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>", "?aggregationKey")
+						.addWhere(GRAPH_VARIABLE, "<http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>", "?aggregationKey")
 						.addGroupBy("?aggregationKey")
 					
 					);
@@ -331,9 +331,7 @@ public class OpenSearchIndexer {
         var indexModels = jenaService.constructWithQuerySchemas(constructBuilder.build());
         var list = new ArrayList<IndexSchema>();
         indexModels.listSubjects().forEach(next -> {
-            var newModel = ModelFactory.createDefaultModel()
-                    .add(next.listProperties());
-            var indexModel = schemaMapper.mapToIndexModel(next.getURI(), newModel, indexModels);
+            var indexModel = schemaMapper.mapToIndexModel(next.getURI(),indexModels);
             list.add(indexModel);
         });
         bulkInsert(OPEN_SEARCH_INDEX_SCHEMA, list);
@@ -389,17 +387,31 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.owner, "?owner");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.versionLabel, "?versionLabel");
+        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.aggregationKey, "?aggregationKey");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.PROV_wasRevisionOf, "?revisionOf");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.hasRevision, "?hasRevision");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.numberOfRevisions, "?numberOfRevisions");
+        
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
                 .addOptional(GRAPH_VARIABLE, "dcterms:language/rdf:rest*/rdf:first", "?language")
                 .addOptional(GRAPH_VARIABLE, DCTerms.language, "?language");
+        try {
+			constructBuilder.addSubQuery(
+					new SelectBuilder()
+						.addVar("count(?aggregationKey)", "?numberOfRevisions")
+						.addWhere(GRAPH_VARIABLE, "<http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>", "?aggregationKey")
+						.addGroupBy("?aggregationKey")
+					
+					);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}        
         var indexModels = jenaService.constructWithQueryCrosswalks(constructBuilder.build());
         var list = new ArrayList<IndexCrosswalk>();
         indexModels.listSubjects().forEach(next -> {
-            var newModel = ModelFactory.createDefaultModel()
-                    .add(next.listProperties());
-            var indexModel = crosswalkMapper.mapToIndexModel(next.getURI(), newModel);
+            var indexModel = crosswalkMapper.mapToIndexModel(next.getURI(), indexModels);
             list.add(indexModel);
         });
         bulkInsert(OPEN_SEARCH_INDEX_CROSSWALK, list);
