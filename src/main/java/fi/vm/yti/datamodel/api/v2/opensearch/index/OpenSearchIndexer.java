@@ -311,6 +311,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.hasRevision, "?hasRevision");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.numberOfRevisions, "?numberOfRevisions");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.owner, "?owner");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.handle, "?handle");
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
@@ -391,6 +392,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.PROV_wasRevisionOf, "?revisionOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.hasRevision, "?hasRevision");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.numberOfRevisions, "?numberOfRevisions");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.handle, "?handle");
         
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
@@ -553,7 +555,8 @@ public class OpenSearchIndexer {
         		Map.entry("revisionOf", getKeywordProperty()),
         		Map.entry("hasRevisions", getKeywordProperty()),
         		Map.entry("numberOfRevisions", getIntProperty()),
-        		Map.entry("revisions", getNotIndexedJSONProperty())
+        		Map.entry("revisions", getNotIndexedJSONProperty()),
+        		Map.entry("handle", getKeywordProperty())
         		
         		);
         		
@@ -579,7 +582,8 @@ public class OpenSearchIndexer {
         		Map.entry("numberOfRevisions", getIntProperty()),
         		Map.entry("revisions", getNotIndexedJSONProperty()),				
 				Map.entry("sourceSchema", getKeywordProperty()),
-				Map.entry("targetSchema", getKeywordProperty())
+				Map.entry("targetSchema", getKeywordProperty()),
+				Map.entry("handle", getKeywordProperty())
         );              
     }    
 
