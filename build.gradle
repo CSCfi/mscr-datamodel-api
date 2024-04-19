@@ -159,7 +159,8 @@ dependencies {
         exclude group: 'com.jayway.jsonpath'
     }
     // https://mvnrepository.com/artifact/com.github.xmlet/xsdParser
-    implementation group: 'com.github.xmlet', name: 'xsdParser', version: '1.2.4'
+    //implementation group: 'com.github.xmlet', name: 'xsdParser', version: '1.2.4'
+    implementation files("lib/xsdParser-1.2.14-SNAPSHOT.jar")
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
