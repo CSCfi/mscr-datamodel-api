@@ -57,13 +57,13 @@ public class GroupManagementService {
     public void initOrganizations() {
     	
         var organizations = webClient.get().uri(builder -> builder
-                        .path("/organizations")
-                        .queryParam("onlyValid", "true")
-                        .build())
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
-                })
-                .block(Duration.of(10, ChronoUnit.SECONDS));
+                .pathSegment("public-api", "organizations")
+                .queryParam("onlyValid", "true")
+                .build())
+        .retrieve()
+        .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
+        })
+        .block();
         if(organizations == null || organizations.isEmpty()){
             throw new GroupManagementException("No organizations found, is group management service down?");
         }
@@ -78,14 +78,14 @@ public class GroupManagementService {
     public void updateOrganizations() {
         LOG.info("Updating organizations cache");
         var organizations = webClient.get().uri(builder -> builder
-                        .path("/organizations")
-                        .queryParam("onlyValid", "true")
-                        .build())
-                .ifModifiedSince(ZonedDateTime.now().minusMinutes(30))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
-                })
-                .block();
+                .pathSegment("public-api", "organizations")
+                .queryParam("onlyValid", "true")
+                .build())
+        .ifModifiedSince(ZonedDateTime.now().minusMinutes(30))
+        .retrieve()
+        .bodyToMono(new ParameterizedTypeReference<List<GroupManagementOrganizationDTO>>() {
+        })
+        .block();
 
         if (organizations != null && !organizations.isEmpty()) {
             var model = coreRepository.fetch(ModelConstants.ORGANIZATION_GRAPH);
@@ -102,7 +102,7 @@ public class GroupManagementService {
         LOG.info("Initializing user cache");
         var users = webClient.get()
                 .uri(builder -> builder
-                        .path("/users")
+                        .pathSegment("private-api", "users")
                         .build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<GroupManagementUserDTO>>() {
@@ -124,7 +124,7 @@ public class GroupManagementService {
         LOG.info("Updating user cache");
         var users = webClient.get()
                 .uri(builder -> builder
-                    .path("/users")
+                    .pathSegment("private-api", "users")
                 .build())
                 .ifModifiedSince(ZonedDateTime.now().minusMinutes(30))
                 .retrieve()
