@@ -110,7 +110,8 @@ public class Crosswalk extends BaseMSCRController {
 		this.groupManagementService = groupManagementService;
 	}
 	
-	private CrosswalkInfoDTO getCrosswalkDTO(String pid, boolean includeVersionInfo) {
+	private CrosswalkInfoDTO getCrosswalkDTO(String pid, boolean includeVersionInfo) throws Exception {
+		pid = PIDService.mapToInternal(pid);
         var model = jenaService.getCrosswalk(pid);
         if(model == null){
             throw new ResourceNotFoundException(pid);

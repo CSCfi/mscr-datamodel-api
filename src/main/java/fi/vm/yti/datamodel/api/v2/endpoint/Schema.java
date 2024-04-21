@@ -264,8 +264,10 @@ public class Schema extends BaseMSCRController {
 		return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper, ownerMapper);
 	}
 	
-	private Model getSchemaModel(String pid) {
-		var model = jenaService.getSchema(pid);
+	private Model getSchemaModel(String pid) throws Exception {
+		// handle possible Handle (pun intended!)
+		String internalID = PIDService.mapToInternal(pid);
+		var model = jenaService.getSchema(internalID);
 		if (model == null) {
 			throw new ResourceNotFoundException(pid);
 		}
@@ -786,7 +788,7 @@ public class Schema extends BaseMSCRController {
 			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
 			jenaService.putToSchema(datatypeResource.getURI(), propModel);
 			schemaService.updatePropertyDataTypeFromDTR(contentModel, target, datatypeResource.getURI());
-			jenaService.putToSchema(schemaID, contentModel);
+			jenaService.putToSchema(schemaID+":content", contentModel);
 			
 
 		} catch (RuntimeException rex) {
