@@ -23,7 +23,7 @@ public class DTRClient {
 			con.addRequestProperty("Content-type", "application/json");  			
 			int status = con.getResponseCode();
 			if (status != 200) {
-				throw new Exception("Could not mint PID using url " + url);
+				throw new Exception("Could fetch a DTR type using url " + url);
 			}
 			String content = RestUtils.readContent(con.getInputStream());
 			return content;
