@@ -841,7 +841,7 @@ public class Crosswalk extends BaseMSCRController {
 			}
 			if(exportFormat !=null) {
 				// TODO: check for crosswalk format == MSCR and source and target scheama format == X,Y,Z
-				if(exportFormat.equals("skos")) {
+				if(exportFormat.equalsIgnoreCase("skos")) {
 					Model model = ModelFactory.createDefaultModel();
 					mappings.forEach(mapping -> {
 						String predicate = mapping.getPredicate();
