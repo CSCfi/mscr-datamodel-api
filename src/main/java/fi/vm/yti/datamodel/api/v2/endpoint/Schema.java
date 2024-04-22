@@ -774,10 +774,10 @@ public class Schema extends BaseMSCRController {
 			if(model == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
 			}
-			// only available for certain schema formats
+			// only available when format is MSCR
 			String format = MapperUtils.propertyToString(model.getResource(schemaID), MSCR.format);
-			if(!Set.of(SchemaFormat.CSV.name(), SchemaFormat.JSONSCHEMA.name(), SchemaFormat.SHACL.name(), SchemaFormat.XSD.name()).contains(format)) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be CSV, JSONSCHEMA, SHAC or XSD");
+			if(!format.equals(SchemaFormat.MSCR.name())) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be MSCR.");
 			}
 			Resource propResource = contentModel.getResource(target);
 			if(propResource == null) {
