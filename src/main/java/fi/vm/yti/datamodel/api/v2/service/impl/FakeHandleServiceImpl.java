@@ -10,7 +10,7 @@ import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
 
 
-@Profile("local")
+@Profile("dev")
 @Service
 public class FakeHandleServiceImpl implements PIDService {
 
