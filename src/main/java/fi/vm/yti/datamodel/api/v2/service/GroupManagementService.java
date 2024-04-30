@@ -206,12 +206,12 @@ public class GroupManagementService {
     }
 
     public List<GroupManagementUserDTO> getFakeableUsers() {
-
+    	
         if (fakeLoginAllowed) {
 
             try {
                 return webClient.get().uri(builder -> builder
-                                .path("/users")
+                				.pathSegment("public-api", "users")
                                 .build())
                         .retrieve()
                         .bodyToMono(new ParameterizedTypeReference<List<GroupManagementUserDTO>>() {
