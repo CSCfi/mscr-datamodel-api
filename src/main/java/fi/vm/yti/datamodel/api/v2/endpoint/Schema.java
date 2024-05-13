@@ -240,7 +240,7 @@ public class Schema extends BaseMSCRController {
 			s.setOrganizations(inputSchema.getOrganizations());
 		}
 		s.setVersionLabel(
-				inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : "");
+				inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : prevSchema.getVersionLabel());
 		
 		if(action == CONTENT_ACTION.revisionOf) {
 			s.setFormat(prevSchema.getFormat());	
