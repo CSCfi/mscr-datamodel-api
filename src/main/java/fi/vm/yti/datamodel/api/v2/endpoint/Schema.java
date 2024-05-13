@@ -619,9 +619,13 @@ public class Schema extends BaseMSCRController {
 				openSearchIndexer.updateSchemaToIndex(indexModel);
 				
 			}	
+			// only one
+			if((prevSchema.getRevisionOf() == null || prevSchema.getRevisionOf().equals("")) && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().isEmpty()) ) {
+				// do nothing
+			}
 			// handle existing versions 
-			// case - latest version was deleted = isrevision and !hasrevision
-			if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("") && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().isEmpty())) {
+			// case - latest version was deleted = isrevision and !hasrevision			
+			else if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("") && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().isEmpty())) {
 				// update the new latest 				
 				String newLatestID = prevSchema.getRevisionOf();
 				var latestModel = jenaService.getSchema(newLatestID);				
@@ -640,7 +644,7 @@ public class Schema extends BaseMSCRController {
 				openSearchIndexer.updateSchemaToIndex(indexModel);				
 			}
 			// case - in the middle
-			{
+			else {
 				String prevRevision = prevSchema.getRevisionOf();
 				String nextRevision = prevSchema.getHasRevisions().get(0);
 				

@@ -512,7 +512,9 @@ public class Crosswalk extends BaseMSCRController {
 				storageService.deleteAllCrosswalkFiles(internalID);
 				openSearchIndexer.updateCrosswalkToIndex(indexModel);
 			}
-			// handle existing versions 
+			if((prev.getRevisionOf() == null || prev.getRevisionOf().equals("")) && (prev.getHasRevisions() == null || prev.getHasRevisions().isEmpty()) ) {
+				// do nothing
+			}			
 			// case - latest version was deleted = isrevision and !hasrevision
 			if(prev.getRevisionOf() != null && !prev.getRevisionOf().equals("") && (prev.getHasRevisions() == null || prev.getHasRevisions().isEmpty())) {
 				// update the new latest 				
@@ -533,7 +535,7 @@ public class Crosswalk extends BaseMSCRController {
 				openSearchIndexer.updateCrosswalkToIndex(indexModel);				
 			}
 			// case - in the middle
-			{
+			else {
 				String prevRevision = prev.getRevisionOf();
 				String nextRevision = prev.getHasRevisions().get(0);
 				
