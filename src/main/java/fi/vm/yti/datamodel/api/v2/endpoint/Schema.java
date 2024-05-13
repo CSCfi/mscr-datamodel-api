@@ -300,7 +300,10 @@ public class Schema extends BaseMSCRController {
 				}
 				aggregationKey = prevSchema.getAggregationKey();
 				if(prevSchema.getFormat() == SchemaFormat.MSCR) {
-					contentModel = jenaService.getSchemaContent(prevSchema.getPID());					
+					if(jenaService.doesSchemaExist(prevSchema.getPID() + ":content")) {
+						contentModel = jenaService.getSchemaContent(prevSchema.getPID());
+					}
+										
 				}
 
 			}
@@ -310,7 +313,10 @@ public class Schema extends BaseMSCRController {
 							"MSCR copy can only be made from a schema with a format CSV, JSONSCHEMA, MSCR, SHACL or XSD");
 					
 				}
-				contentModel = jenaService.getSchemaContent(prevSchema.getPID());				
+				if(jenaService.doesSchemaExist(prevSchema.getPID() + ":content")) {
+					contentModel = jenaService.getSchemaContent(prevSchema.getPID());
+				}
+				
 			}
 		}
 		logger.info("Create Schema {}", schemaDTO);
@@ -748,11 +754,17 @@ public class Schema extends BaseMSCRController {
 		}
 		try {
 			pid = PIDService.mapToInternal(pid);
-			var model = jenaService.getSchema(pid+":content");
-			StreamingResponseBody responseBody = httpResponseOutputStream -> {
-				model.write(httpResponseOutputStream, "TURTLE");
-			};
-			return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+			if(jenaService.doesSchemaExist(pid+":content")) {
+				var model = jenaService.getSchema(pid+":content");
+				StreamingResponseBody responseBody = httpResponseOutputStream -> {
+					model.write(httpResponseOutputStream, "TURTLE");
+				};
+				return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+				
+			}
+			else {
+				return ResponseEntity.noContent().build();
+			}
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
