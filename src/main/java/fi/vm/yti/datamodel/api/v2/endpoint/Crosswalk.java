@@ -239,7 +239,10 @@ public class Crosswalk extends BaseMSCRController {
 				}
 				aggregationKey = prev.getAggregationKey();
 				if(prev.getFormat() == CrosswalkFormat.MSCR) {
-					contentModel = jenaService.getCrosswalkContent(prev.getPID());					
+					if(jenaService.doesCrosswalkExist(prev.getPID() + ":content")) {
+						contentModel = jenaService.getCrosswalkContent(prev.getPID());						
+					}
+					
 				}
 			}
 			if(action == CONTENT_ACTION.mscrCopyOf) {
@@ -248,7 +251,10 @@ public class Crosswalk extends BaseMSCRController {
 							"MSCR copy can only be made from a crosswalk with a format CSV, MSCR or SSSOM");
 					
 				}
-				contentModel = jenaService.getCrosswalkContent(prev.getPID());				
+				if(jenaService.doesCrosswalkExist(prev.getPID() + ":content")) {
+					contentModel = jenaService.getCrosswalkContent(prev.getPID());					
+				}
+				
 			}			
 		}
 		final String PID = "mscr:crosswalk:" + UUID.randomUUID();
