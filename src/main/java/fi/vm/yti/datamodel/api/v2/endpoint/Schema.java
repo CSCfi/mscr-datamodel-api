@@ -613,6 +613,15 @@ public class Schema extends BaseMSCRController {
 				openSearchIndexer.updateSchemaToIndex(indexModel);
 				
 			}	
+			if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("")) {
+				// update the new latest 				
+				String newLatestID = prevSchema.getRevisionOf();
+				var latestModel = jenaService.getSchema(newLatestID);				
+				var indexModel = mapper.mapToIndexModel(newLatestID, latestModel);
+				openSearchIndexer.updateSchemaToIndex(indexModel);
+			}
+
+			
 			
 		} catch (RuntimeException rex) {
 			throw rex;
