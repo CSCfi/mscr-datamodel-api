@@ -619,16 +619,39 @@ public class Schema extends BaseMSCRController {
 				openSearchIndexer.updateSchemaToIndex(indexModel);
 				
 			}	
-			if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("")) {
+			// handle existing versions 
+			// case - latest version was deleted = isrevision and !hasrevision
+			if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("") && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().isEmpty())) {
 				// update the new latest 				
 				String newLatestID = prevSchema.getRevisionOf();
 				var latestModel = jenaService.getSchema(newLatestID);				
 				var indexModel = mapper.mapToIndexModel(newLatestID, latestModel);
 				openSearchIndexer.updateSchemaToIndex(indexModel);
 			}
-
-			
-			
+			// case - first version was deleted with revisions
+			else if(prevSchema.getRevisionOf() == null && prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
+				// remove revision of from the nextVersion
+				String nextRevision = prevSchema.getHasRevisions().get(0); // should hold always with the condition above
+				var versionModel = jenaService.getSchema(nextRevision);		
+				Resource versionResource = versionModel.getResource(nextRevision);
+				versionResource.removeAll(MSCR.PROV_wasRevisionOf);				
+				jenaService.putToSchema(nextRevision, versionModel);
+				var indexModel = mapper.mapToIndexModel(nextRevision, versionModel);
+				openSearchIndexer.updateSchemaToIndex(indexModel);				
+			}
+			// case - in the middle
+			{
+				String prevRevision = prevSchema.getRevisionOf();
+				String nextRevision = prevSchema.getHasRevisions().get(0);
+				
+				var versionModel = jenaService.getSchema(nextRevision);		
+				Resource versionResource = versionModel.getResource(nextRevision);
+				versionResource.removeAll(MSCR.PROV_wasRevisionOf);				
+				versionResource.addProperty(MSCR.PROV_wasRevisionOf, versionModel.createResource(prevRevision));
+				jenaService.putToSchema(nextRevision, versionModel);
+				var indexModel = mapper.mapToIndexModel(nextRevision, versionModel);
+				openSearchIndexer.updateSchemaToIndex(indexModel);				
+			}						
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {

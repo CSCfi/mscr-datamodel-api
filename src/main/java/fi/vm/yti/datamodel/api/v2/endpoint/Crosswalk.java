@@ -145,7 +145,7 @@ public class Crosswalk extends BaseMSCRController {
 			Resource prevVersionResource = prevVersionModel.getResource(target);
 			prevVersionResource.addProperty(MSCR.hasRevision, crosswalkResource);
 			jenaService.updateCrosswalk(target, prevVersionModel);
-			openSearchIndexer.updateSchemaToIndex(mapper.mapToIndexModel(target, prevVersionModel));
+			openSearchIndexer.updateCrosswalkToIndex(mapper.mapToIndexModel(target, prevVersionModel));
 		}
 		
 		var indexModel = mapper.mapToIndexModel(PID, jenaModel);
@@ -512,12 +512,38 @@ public class Crosswalk extends BaseMSCRController {
 				storageService.deleteAllCrosswalkFiles(internalID);
 				openSearchIndexer.updateCrosswalkToIndex(indexModel);
 			}
-			if(prev.getRevisionOf() != null && !prev.getRevisionOf().equals("")) {
+			// handle existing versions 
+			// case - latest version was deleted = isrevision and !hasrevision
+			if(prev.getRevisionOf() != null && !prev.getRevisionOf().equals("") && (prev.getHasRevisions() == null || prev.getHasRevisions().isEmpty())) {
 				// update the new latest 				
 				String newLatestID = prev.getRevisionOf();
-				var latestModel = jenaService.getSchema(newLatestID);				
+				var latestModel = jenaService.getCrosswalk(newLatestID);				
 				var indexModel = mapper.mapToIndexModel(newLatestID, latestModel);
-				openSearchIndexer.updateSchemaToIndex(indexModel);
+				openSearchIndexer.updateCrosswalkToIndex(indexModel);
+			}
+			// case - first version was deleted with revisions
+			else if(prev.getRevisionOf() == null && prev.getHasRevisions() != null && !prev.getHasRevisions().isEmpty()) {
+				// remove revision of from the nextVersion
+				String nextRevision = prev.getHasRevisions().get(0); // should hold always with the condition above
+				var versionModel = jenaService.getCrosswalk(nextRevision);		
+				Resource versionResource = versionModel.getResource(nextRevision);
+				versionResource.removeAll(MSCR.PROV_wasRevisionOf);				
+				jenaService.putToCrosswalk(nextRevision, versionModel);
+				var indexModel = mapper.mapToIndexModel(nextRevision, versionModel);
+				openSearchIndexer.updateCrosswalkToIndex(indexModel);				
+			}
+			// case - in the middle
+			{
+				String prevRevision = prev.getRevisionOf();
+				String nextRevision = prev.getHasRevisions().get(0);
+				
+				var versionModel = jenaService.getCrosswalk(nextRevision);		
+				Resource versionResource = versionModel.getResource(nextRevision);
+				versionResource.removeAll(MSCR.PROV_wasRevisionOf);				
+				versionResource.addProperty(MSCR.PROV_wasRevisionOf, versionModel.createResource(prevRevision));
+				jenaService.putToCrosswalk(nextRevision, versionModel);
+				var indexModel = mapper.mapToIndexModel(nextRevision, versionModel);
+				openSearchIndexer.updateCrosswalkToIndex(indexModel);				
 			}
 			
 			
