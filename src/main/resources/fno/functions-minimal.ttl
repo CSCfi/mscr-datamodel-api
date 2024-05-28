@@ -1,0 +1,113 @@
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#> .
+@prefix fnom:    <https://w3id.org/function/vocabulary/mapping#> .
+@prefix mscr: <http://uri.suomi.fi/datamodel/ns/mscr#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+mscr:simpleMappingProblem
+    a fno:Problem ;
+    dct:description "Handles problem of simple one to one mappings with various primitive data types" .
+
+mscr:simpleValueTranformationProblem
+    a fno:Problem ;
+    dct:description "Handles problem of simple one to one mappings with value transformations" .
+
+mscr:complexMappingTranformationProblem
+    a fno:Problem ;
+    dct:description "Handles problem of complex mappings" .
+    
+    
+mscr:stringToStringFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to copy string value as it is with one to one mapping";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:stringOutput) .
+
+mscr:stringToIntFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse integer from string input";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:intOutput) .
+
+mscr:stringToDoubleFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Function to parse double from string input";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:doubleOutput) .
+
+mscr:celsiusToFahrenheitFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "Function to transform celsius (double) to fahrenheit (double)";
+    fno:expects ( mscr:doubleInputParam );
+    fno:returns ( mscr:doubleOutput) .
+    
+    
+mscr:stringInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+mscr:doubleInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:inputDouble ;
+    fno:type xsd:double ;
+    fno:required "true"^^xsd:boolean .
+        
+mscr:stringOutput
+    a fno:Output ;
+    fno:name "string output" ;
+    fno:predicate mscr:outputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+
+mscr:intOutput
+    a fno:Output ;
+    fno:name "int output" ;
+    fno:predicate mscr:outputInt ;
+    fno:type xsd:integer ;
+    fno:required "true"^^xsd:boolean .
+    
+mscr:doubleOutput
+    a fno:Output ;
+    fno:name "double output" ;
+    fno:predicate mscr:outputDouble ;
+    fno:type xsd:double ;
+    fno:required "true"^^xsd:boolean .         
+    
+mscr:stringToStringMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToStringFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToString" ] .
+
+mscr:stringToIntMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToIntFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToInt" ] .
+
+mscr:stringToDoubleMapping
+    a fno:Mapping ;
+    fno:function mscr:stringToDoubleFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "stringToDouble" ] .
+
+
+mscr:celsiusToFahrenheitMapping
+    a fno:Mapping ;
+    fno:function mscr:celsiusToFahrenheitFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "celsiusToFahrenheit" ] .    
+    
+mscr:simpleMappingFunctions
+    a fnoi:JavaClass ;
+    fnoi:class-name "fi.vm.yti.datamodel.api.v2.transformation.functions.SimpleMappingFunctions" .    
