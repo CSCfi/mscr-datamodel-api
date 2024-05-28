@@ -126,7 +126,7 @@ public class CoreRepository extends BaseRepository{
     }
 
 	public void initFunctions() {
-        var model = RDFDataMgr.loadModel("fno/functions.ttl");
+        var model = RDFDataMgr.loadModel("fno/functions-minimal.ttl");
         put(MSCR.FUNCTIONS_GRAPH, model);
 		
 	}
