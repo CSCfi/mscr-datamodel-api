@@ -516,7 +516,7 @@ public class Crosswalk extends BaseMSCRController {
 				// do nothing
 			}			
 			// case - latest version was deleted = isrevision and !hasrevision
-			if(prev.getRevisionOf() != null && !prev.getRevisionOf().equals("") && (prev.getHasRevisions() == null || prev.getHasRevisions().isEmpty())) {
+			else if(prev.getRevisionOf() != null && !prev.getRevisionOf().equals("") && (prev.getHasRevisions() == null || prev.getHasRevisions().isEmpty())) {
 				// update the new latest 				
 				String newLatestID = prev.getRevisionOf();
 				var latestModel = jenaService.getCrosswalk(newLatestID);				
