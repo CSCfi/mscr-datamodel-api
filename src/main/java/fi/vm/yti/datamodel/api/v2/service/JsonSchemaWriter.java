@@ -223,7 +223,7 @@ public class JsonSchemaWriter {
 			ResultSet results = qexec.execSelect();
 
 			if (!results.hasNext())
-				return null;
+				return roots;
 			else {
 				while (results.hasNext()) {
 					QuerySolution soln = results.next();
