@@ -286,6 +286,7 @@ public class Schema extends BaseMSCRController {
 		checkVisibility(schemaDTO);
 		checkState(null, schemaDTO);
 
+		final String PID = "mscr:schema:" + UUID.randomUUID();
 		String aggregationKey = null;
 		Model contentModel = ModelFactory.createDefaultModel();
 		if (action != null) {
@@ -313,9 +314,10 @@ public class Schema extends BaseMSCRController {
 							"MSCR copy can only be made from a schema with a format CSV, JSONSCHEMA, MSCR, SHACL or XSD");
 					
 				}
-				if(jenaService.doesSchemaExist(prevSchema.getPID() + ":content")) {
-					contentModel = jenaService.getSchemaContent(prevSchema.getPID());
-				}
+				// copy content by redoing the registration process 
+				StoredFile schemaFile = storageService.retrieveAllSchemaFiles(target).get(0); // there is currently only one file always
+				addFileToSchema(PID, prevSchema.getFormat(), schemaFile.data(), null, schemaFile.contentType());
+				
 				
 			}
 		}
@@ -324,7 +326,7 @@ public class Schema extends BaseMSCRController {
 			check(authorizationManager.hasRightToAnyOrganization(schemaDTO.getOrganizations()));
 		}
 
-		final String PID = "mscr:schema:" + UUID.randomUUID();
+		
 		try {
 			String handle = null;
 			if (schemaDTO.getState() == MSCRState.PUBLISHED || schemaDTO.getState() == MSCRState.DEPRECATED) {
