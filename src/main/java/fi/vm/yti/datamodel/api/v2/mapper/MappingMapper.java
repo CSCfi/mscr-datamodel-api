@@ -49,7 +49,7 @@ public class MappingMapper {
 	private ProcessingInfo mapProcessingInfoToDTO(Resource r) {
 		ProcessingInfo pi = new ProcessingInfo();
 		pi.setId(MapperUtils.propertyToString(r, MSCR.id));
-		Bag bag = (Bag)r.getPropertyResourceValue(MSCR.processingParams);
+		Bag bag = (Bag)r.getProperty(MSCR.processingParams).getBag();
 		NodeIterator i = bag.iterator();
 		Map<String, Object> params = new HashMap<String, Object>();
 		while(i.hasNext()) {
