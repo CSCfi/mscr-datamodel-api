@@ -52,8 +52,7 @@ public class StartUpListener {
         initFunctions();
         groupManagementService.initUsers();
     }
-
-    @Scheduled(cron = "0 */5 * * * *")
+    
     void initOrganizations() {
         groupManagementService.initOrganizations();
     }
