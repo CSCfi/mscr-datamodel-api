@@ -3,7 +3,9 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.File;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -50,6 +53,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
@@ -203,11 +207,11 @@ public class Crosswalk extends BaseMSCRController {
 		
 	}
 	
-	private void addFileToCrosswalk(final String pid, CrosswalkFormat format, MultipartFile file) {
-		final String contentType = file.getContentType();		 
+	private void addFileToCrosswalk(final String pid, final CrosswalkFormat format, final byte[] fileInBytes, final String contentURL,
+			final String contentType) {	 
 		try {
 			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
-				storageService.storeCrosswalkFile(pid, contentType, file.getBytes(), generateFilename(pid, file.getContentType()));
+				storageService.storeCrosswalkFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
 			}
 			else {
 				throw new Exception("Unsupported crosswalk description format. Supported formats are: " + String.join(", ", Arrays.toString(CrosswalkFormat.values()) ));
@@ -218,6 +222,11 @@ public class Crosswalk extends BaseMSCRController {
 			throw new RuntimeException("Error occured while ingesting file based crosswalk description", ex);
 		}
 		
+	}
+	
+	private byte[] validateFileUpload(byte[] fileInBytes, CrosswalkFormat format) {
+		// TODO: file validation based on content
+		return fileInBytes;
 	}
 	
 	@Operation(summary = "Create crosswalk metadata record.")
@@ -320,7 +329,7 @@ public class Crosswalk extends BaseMSCRController {
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
 			}		
 			
-			addFileToCrosswalk(pid, crosswalkDTO.getFormat(), file);
+			addFileToCrosswalk(pid, crosswalkDTO.getFormat(), file.getBytes(), null, file.getContentType());
 			return mapper.mapToCrosswalkDTO(pid, model, userMapper, ownerMapper);
 		
 		} catch (RuntimeException rex) {
@@ -339,7 +348,13 @@ public class Crosswalk extends BaseMSCRController {
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO createCrosswalkFull(@RequestParam("metadata") String metadataString,
-			@RequestParam("file") MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
+			@RequestParam(name = "contentURL", required = false) String contentURL,
+			@RequestParam(name = "file", required = false) MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
+		
+		if (contentURL == null && file == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Either file or contentURL parameter must be supplied.");
+		}
 		
 		ObjectMapper objMapper = new ObjectMapper();
 		CrosswalkDTO dto = null;
@@ -348,10 +363,32 @@ public class Crosswalk extends BaseMSCRController {
 		} catch (JsonProcessingException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse CrosswalkDTO from the metadata content. " + e.getMessage(), e);
 		}
+		String contentType = "";
+		byte[] fileBytes = null;
+		try {
+			if (file == null) {
+				// try to download url to file
+				File tempFile = File.createTempFile("crosswalk", "temp");
+				FileUtils.copyURLToFile(new URL(contentURL), tempFile);
+				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), dto.getFormat());
+				contentType = "application/octet-stream"; // TODO: fix this
+			} else {
+				fileBytes = validateFileUpload(file.getBytes(), dto.getFormat());
+				contentType = file.getContentType();
+			}
+
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		}		
 		
 		CrosswalkInfoDTO infoDto = createCrosswalk(dto, action, target);
 		final String PID = infoDto.getPID();
-		addFileToCrosswalk(PID, dto.getFormat(), file);
+		if(!dto.getOrganizations().isEmpty()) {
+			Collection<UUID> orgs = dto.getOrganizations();
+			check(authorizationManager.hasRightToAnyOrganization(orgs));
+
+		}			
+		addFileToCrosswalk(PID, dto.getFormat(), fileBytes, contentURL, contentType);
 		var userMapper = groupManagementService.mapUser();
 		var ownerMapper = groupManagementService.mapOwner();
 		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper, ownerMapper);
