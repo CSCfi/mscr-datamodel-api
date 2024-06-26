@@ -740,9 +740,13 @@ public class Crosswalk extends BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
 			}
 			Model crosswalkModel = jenaService.getCrosswalkContent(crosswalkPID);
-			Resource mappingResource = crosswalkModel.createResource(mappingPID);
-			crosswalkModel.removeAll(mappingResource, null, null);			
+			if(!crosswalkModel.contains(ResourceFactory.createResource(mappingPID), RDF.type, MSCR.MAPPING)) {
+				throw new ResourceNotFoundException(mappingPID);
+			}
+			jenaService.deleteMapping(crosswalkPID, mappingPID, crosswalkModel, false);
 			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, crosswalkPID);
+			
+			crosswalkModel.add(mappingModel);
 			jenaService.putToCrosswalk(crosswalkPID+":content", crosswalkModel);
 			return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
 		} catch (RuntimeException rex) {

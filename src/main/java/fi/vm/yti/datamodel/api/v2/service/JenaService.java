@@ -4,8 +4,10 @@ import org.apache.jena.arq.querybuilder.AskBuilder;
 import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Seq;
@@ -216,25 +218,75 @@ public class JenaService {
 	public void deleteMapping(String crosswalkPID, String mappingPID) {
 		// TODO Use an update instead of loading the whole graph
 		Model m = getCrosswalk(crosswalkPID+":content");
+		deleteMapping(crosswalkPID, mappingPID, m, true);
+		putToCrosswalk(crosswalkPID+":content", m);
+	}
+	
+	
+	public void deleteMapping(String crosswalkPID, String mappingPID, Model m, boolean removeRef) {
 		Resource mappingResource = m.createResource(mappingPID);
 		// first remove the source and target sequences
 		Seq s = mappingResource.getRequiredProperty(MSCR.source).getSeq();				
 		for(int i = s.size(); i >= 1; i--) {
+			if(s.getResource(i).hasProperty(MSCR.processing)) {
+				Resource pros = s.getResource(i).getPropertyResourceValue(MSCR.processing);
+				if(pros.hasProperty(MSCR.processingParams)) {
+					Bag b = pros.getRequiredProperty(MSCR.processingParams).getBag();
+					NodeIterator ii = b.iterator();
+					while(ii.hasNext()) {
+						ii.next().asResource().removeProperties();
+					}
+					b.removeProperties();
+				}
+				
+				pros.removeProperties();
+			}
 			s.getResource(i).removeProperties();
 			s.remove(i);
 		}				
 		s = mappingResource.getRequiredProperty(MSCR.target).getSeq();				
 		for(int i = s.size(); i >= 1; i--) {
+			if(s.getResource(i).hasProperty(MSCR.processing)) {
+				Resource pros = s.getResource(i).getPropertyResourceValue(MSCR.processing);
+				if(pros.hasProperty(MSCR.processingParams)) {
+					Bag b = pros.getRequiredProperty(MSCR.processingParams).getBag();
+					NodeIterator ii = b.iterator();
+					while(ii.hasNext()) {
+						ii.next().asResource().removeProperties();
+					}
+					b.removeProperties();
+				}
+				
+				pros.removeProperties();
+			}
 			s.getResource(i).removeProperties();
 			s.remove(i);
 		}	
+				
 		Resource c = mappingResource.getPropertyResourceValue(MSCR.source);
 		m.removeAll(c, null, null);
 		Resource c2 = mappingResource.getPropertyResourceValue(MSCR.target);
 		m.removeAll(c2, null, null);
-		m.removeAll(mappingResource, null, null);
-		m.removeAll(m.createResource(crosswalkPID), MSCR.mappings, mappingResource);
 		
-		putToCrosswalk(crosswalkPID+":content", m);
+		if(mappingResource.hasProperty(MSCR.processing)) {
+			Resource pros = mappingResource.getPropertyResourceValue(MSCR.processing);
+			if(pros.hasProperty(MSCR.processingParams)) {
+				Bag b = pros.getRequiredProperty(MSCR.processingParams).getBag();
+				NodeIterator ii = b.iterator();
+				while(ii.hasNext()) {
+					ii.next().asResource().removeProperties();
+				}
+				b.removeProperties();
+			}
+			
+			pros.removeProperties();
+		}		
+		m.removeAll(mappingResource, null, null);
+		if(removeRef) {
+			m.removeAll(m.createResource(crosswalkPID), MSCR.mappings, mappingResource);	
+		}
+		
+		
+		
 	}	
 }

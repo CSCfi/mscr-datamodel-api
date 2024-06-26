@@ -138,7 +138,9 @@ public class MappingMapper {
 			mappingResource.addProperty(MSCR.target, items);
 		}
 		if(m.getProcessing() != null) {
-			mapProcessingInfoToModel(m.getProcessing(), model);
+			Resource p3 = mapProcessingInfoToModel(m.getProcessing(), model);
+			mappingResource.addProperty(MSCR.processing, p3);
+			
 		}		
 		mappingResource.addProperty(MSCR.predicate, ResourceFactory.createResource(m.getPredicate()));
 		if(m.getOneOf() != null && m.getOneOf().size() > 0) {
