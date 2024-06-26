@@ -451,6 +451,10 @@ public class SimpleMappingFunctions {
 		
 
 	}
+	
+	public static String concat(List<String> values, String delimiter) {
+		return values.stream().map(Object::toString).collect(joining(delimiter));
+	}
 		
 	
 	public static Object formatStringWithSubstitutor(Object value, Map<String, Object> params) {

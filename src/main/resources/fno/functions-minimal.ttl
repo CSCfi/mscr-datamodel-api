@@ -47,10 +47,25 @@ mscr:celsiusToFahrenheitFunc
     fno:expects ( mscr:doubleInputParam );
     fno:returns ( mscr:doubleOutput) .
     
+mscr:concatFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "Function that concatenates input values with the given delimiter";
+    fno:expects ( mscr:stringInputParam mscr:delimiterParam );
+    fno:returns ( mscr:stringOutput) .
     
+        
 mscr:stringInputParam
     a fno:Parameter ;
     fno:name "input" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+    
+            
+mscr:delimiterParam
+    a fno:Parameter ;
+    fno:name "delimiter" ;
     fno:predicate mscr:inputString ;
     fno:type xsd:string ;
     fno:required "true"^^xsd:boolean .
@@ -108,6 +123,13 @@ mscr:celsiusToFahrenheitMapping
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "celsiusToFahrenheit" ] .    
     
+mscr:concatMapping
+    a fno:Mapping ;
+    fno:function mscr:concatFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .
+ 
+ 
 mscr:simpleMappingFunctions
     a fnoi:JavaClass ;
     fnoi:class-name "fi.vm.yti.datamodel.api.v2.transformation.functions.SimpleMappingFunctions" .    
