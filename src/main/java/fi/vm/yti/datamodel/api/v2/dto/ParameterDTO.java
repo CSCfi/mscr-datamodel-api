@@ -7,6 +7,7 @@ public class ParameterDTO {
 	private String name;
 	private String datatype;
 	private boolean isRequired;
+	private String defaultValue; 
 	
 	public ParameterDTO() {}
 	public ParameterDTO(String name, String datatype, boolean isRequired) {
@@ -33,4 +34,11 @@ public class ParameterDTO {
 	public void setRequired(boolean isRequired) {
 		this.isRequired = isRequired;
 	}
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	
 }

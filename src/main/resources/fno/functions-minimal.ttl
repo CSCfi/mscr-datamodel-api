@@ -53,7 +53,14 @@ mscr:concatFunc
     fno:name "Function that concatenates input values with the given delimiter";
     fno:expects ( mscr:stringInputParam mscr:delimiterParam );
     fno:returns ( mscr:stringOutput) .
-    
+ 
+mscr:splitFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "Function that splits input values with the given delimiter";
+    fno:expects ( mscr:stringInputParam mscr:delimiterParam );
+    fno:returns ( mscr:stringOutput) .
+     
         
 mscr:stringInputParam
     a fno:Parameter ;
@@ -128,6 +135,12 @@ mscr:concatMapping
     fno:function mscr:concatFunc ;
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .
+ 
+mscr:splitMapping
+    a fno:Mapping ;
+    fno:function mscr:splitFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "split" ] .
  
  
 mscr:simpleMappingFunctions

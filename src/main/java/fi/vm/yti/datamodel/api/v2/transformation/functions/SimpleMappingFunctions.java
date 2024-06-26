@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -454,6 +455,10 @@ public class SimpleMappingFunctions {
 	
 	public static String concat(List<String> values, String delimiter) {
 		return values.stream().map(Object::toString).collect(joining(delimiter));
+	}
+	
+	public static List<String> split(List<String> values, String delimiter) {
+		return Arrays.asList(concat(values, delimiter).split(delimiter));
 	}
 		
 	

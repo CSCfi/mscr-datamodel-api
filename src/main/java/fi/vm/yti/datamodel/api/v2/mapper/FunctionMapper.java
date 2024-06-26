@@ -43,6 +43,9 @@ public class FunctionMapper {
 					String paramDatatype = MapperUtils.propertyToString(paramResource, MSCR.FnO_type);
 					boolean isRequired = paramResource.getProperty(MSCR.FnO_required).getBoolean();
 					ParameterDTO param = new ParameterDTO(paramName, paramDatatype, isRequired);
+					if(paramName.equals("input")) {
+						param.setDefaultValue("self");
+					}
 					paramList.add(param);					
 				}
 				dto.setParameters(paramList);
