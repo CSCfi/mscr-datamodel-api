@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -829,7 +830,8 @@ public class Schema extends BaseMSCRController {
 			if(!format.equals(SchemaFormat.MSCR.name())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be MSCR.");
 			}
-			Resource propResource = contentModel.getResource(target);
+			String encodedTarget = URLEncoder.encode(target);
+			Resource propResource = contentModel.getResource(encodedTarget);
 			if(propResource == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);
 			}
@@ -837,7 +839,7 @@ public class Schema extends BaseMSCRController {
 			Model propModel = schemaService.fetchAndMapDTRType(datatype);
 			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
 			jenaService.putToSchema(datatypeResource.getURI(), propModel);
-			schemaService.updatePropertyDataTypeFromDTR(contentModel, target, datatypeResource.getURI());
+			schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
 			jenaService.putToSchema(schemaID+":content", contentModel);
 			
 
