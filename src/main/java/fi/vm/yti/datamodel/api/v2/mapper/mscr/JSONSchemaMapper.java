@@ -1,5 +1,6 @@
 package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -180,7 +181,8 @@ public class JSONSchemaMapper {
 			Resource nodeShapeResource, boolean isRequired, boolean isArrayItem) {
 		
 		String entryType = entry.getValue().has("type") ? entry.getValue().get("type").asText() : "string"; 
-		Resource propertyResource = addDatatypeProperty(propID + "/" + entry.getKey(), entry.getValue(), model,
+		final String key = URLEncoder.encode(entry.getKey());
+		Resource propertyResource = addDatatypeProperty(propID + "/" + key, entry.getValue(), model,
 				schemaPID, entryType);
 		nodeShapeResource.addProperty(SH.property, propertyResource);
 		if (!isArrayItem) {
@@ -231,7 +233,7 @@ public class JSONSchemaMapper {
 	public void handleObject(String propID, JsonNode node, String schemaPID, Model model) {
 
 		String propIDCapitalised = capitaliseNodeIdentifier(propID);
-		String nameProperty = propID.substring(propID.lastIndexOf("/") + 1);
+		String nameProperty = propIDCapitalised.substring(propID.lastIndexOf("/") + 1);		
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
 		
 		nodeShapeResource.addProperty(RDF.type, (SH.NodeShape));
@@ -258,33 +260,34 @@ public class JSONSchemaMapper {
 			if (entry.getValue().get("type") != null) {
 				valueType = entry.getValue().get("type").asText();
 			}
+			final String key = URLEncoder.encode(entry.getKey());
 			if (valueType.equals("object")) {
-				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
-						schemaPID + "#" + propIDCapitalised + "/" + entry.getKey() +"/" + StringUtils.capitalise(entry.getKey()));
+				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
+						schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
 				// default max
 				propertyShape.addLiteral(SH.maxCount, 1);
 				nodeShapeResource.addProperty(SH.property, propertyShape);
-				handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), schemaPID, model);	
+				handleObject(propIDCapitalised + "/" + key, entry.getValue(), schemaPID, model);	
 			}
 			else if (valueType.equals("array")) {
 				if(isLangString(entry)) {
-					Entry<String, JsonNode> item = Map.entry(entry.getKey(), entry.getValue());
+					Entry<String, JsonNode> item = Map.entry(key, entry.getValue());
 					handleDatatypeProperty(propIDCapitalised, item, model, schemaPID, nodeShapeResource, false, true);
 				}					
 				else {
-					Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + entry.getKey(), entry.getValue(), model, schemaPID,
-							schemaPID + "#" + propIDCapitalised + "/" + entry.getKey() +"/" + StringUtils.capitalise(entry.getKey()));
+					Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
+							schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
 					nodeShapeResource.addProperty(SH.property, propertyShape);
 					
 					if (hasObjectItems(entry)) {
-						handleObject(propIDCapitalised + "/" + entry.getKey(), entry.getValue().get("items"), schemaPID, model);
+						handleObject(propIDCapitalised + "/" + key, entry.getValue().get("items"), schemaPID, model);
 					}
 					else {
 						if(!entry.getValue().has("items")) {
 							logger.warn("Array property " + entry.getKey() + " does not have any items. Skipping.");
 						}
 						else {
-							Entry<String, JsonNode> arrayItem = Map.entry(entry.getKey(), entry.getValue().get("items"));
+							Entry<String, JsonNode> arrayItem = Map.entry(key, entry.getValue().get("items"));
 							handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
 							
 						}
