@@ -57,3 +57,8 @@ pidms.url=
 pidms.prefix=
 pidms.mscrUrl=
 
+# DTR
+dtr.typeAPIEndpoint=https://typeapi.lab.pidconsortium.net/v1/types/schema/
+dtr.typesense.collectionURL=
+dtr.typesense.key=
+

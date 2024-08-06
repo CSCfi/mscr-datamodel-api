@@ -801,6 +801,20 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}
 	}
+
+	
+	@Operation(summary = "Search DTR type API")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@GetMapping(path = "/dtr/searchBasicInfoTypes", produces = "application/json")
+	public ResponseEntity<String> dtrSearch(@RequestParam(name="query") String query, @RequestParam(name="page") int page, @RequestParam(name="pageSize") int pageSize) {
+		try {
+			String json = schemaService.dtrSearchBasicInfoTypes("name", query, page, pageSize);
+			return new ResponseEntity<String>(json, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not search DTR instance." + e.getMessage());
+		}
+	}	
 	
 	@Operation(summary = "Update data type of a SHACL property")
 	@ApiResponse(responseCode = "200", description = "")
