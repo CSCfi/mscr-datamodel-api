@@ -267,4 +267,8 @@ public class SchemaService {
 		return propModel;
 		
 	}
+
+	public String dtrSearchBasicInfoTypes(String queryBy, String query, int page, int pageSize) throws Exception {
+		return dtrClient.searchTypes(queryBy, query, "type:BasicInfoType", page, pageSize);
+	}
 }
