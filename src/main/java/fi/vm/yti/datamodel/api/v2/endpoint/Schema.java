@@ -809,10 +809,13 @@ public class Schema extends BaseMSCRController {
 	@GetMapping(path = "/dtr/searchBasicInfoTypes", produces = "application/json")
 	public ResponseEntity<String> dtrSearch(@RequestParam(name="query") String query, @RequestParam(name="page") int page, @RequestParam(name="pageSize") int pageSize) {
 		try {
+			if(userProvider.getUser().isAnonymous()) {
+				throw new Exception("Authentication required.");
+			}			
 			String json = schemaService.dtrSearchBasicInfoTypes("name", query, page, pageSize);
 			return new ResponseEntity<String>(json, HttpStatus.OK);
 		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not search DTR instance." + e.getMessage());
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not search DTR instance. " + e.getMessage());
 		}
 	}	
 	
