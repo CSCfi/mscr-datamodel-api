@@ -446,7 +446,7 @@ public class SchemaMapper {
     		if(orderedRevs.size() > 0) {
         		Revision latestRev = orderedRevs.get(orderedRevs.size() - 1);
         		if(latestRev.getPid().equals(pid)) {
-        			indexModel.setHasRevision(null);
+        			indexModel.setHasRevision("false");
         			indexModel.setNumberOfRevisions(orderedRevs.size());
         		}
         		else {

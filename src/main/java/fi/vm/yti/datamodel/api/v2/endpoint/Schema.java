@@ -296,7 +296,7 @@ public class Schema extends BaseMSCRController {
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action);
 			if (action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if (prevSchema.getHasRevisions() != null && !prevSchema.getHasRevisions().isEmpty()) {
+				if (prevSchema.getHasRevisions() != null && prevSchema.getHasRevisions().size() > 1) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 							"Revisions can only be created from the latest revision. Check your target PID.");
 				}
@@ -623,12 +623,12 @@ public class Schema extends BaseMSCRController {
 				
 			}	
 			// only one
-			if((prevSchema.getRevisionOf() == null || prevSchema.getRevisionOf().equals("")) && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().isEmpty()) ) {
+			if((prevSchema.getRevisionOf() == null || prevSchema.getRevisionOf().equals("")) && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().size() == 1) ) {
 				// do nothing
 			}
 			// handle existing versions 
 			// case - latest version was deleted = isrevision and !hasrevision			
-			else if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("") && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().isEmpty())) {
+			else if(prevSchema.getRevisionOf() != null && !prevSchema.getRevisionOf().equals("") && (prevSchema.getHasRevisions() == null || prevSchema.getHasRevisions().size() == 1)) {
 				// update the new latest 				
 				String newLatestID = prevSchema.getRevisionOf();
 				var latestModel = jenaService.getSchema(newLatestID);				
