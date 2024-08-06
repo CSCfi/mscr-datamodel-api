@@ -100,8 +100,8 @@ public class MSCRQueryFactory {
         }
         
         // only return the latest version
-        // --> hasRevision is empty --> no hasRevision field 
-        finalQuery.mustNot(new ExistsQuery.Builder().field("hasRevision").build()._toQuery());
+        // --> hasRevision is empty --> hasRevision = "false" 
+        finalQuery.must((QueryFactoryUtils.termQuery("hasRevision", "false")));
         if(includeOnlyPublic) {        
         	finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name().toLowerCase()))); // Why does this only works in lowercase?
         }
