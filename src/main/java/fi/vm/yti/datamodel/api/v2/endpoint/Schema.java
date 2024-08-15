@@ -49,6 +49,7 @@ import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.UpdateResponseDTO;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
@@ -859,6 +860,61 @@ public class Schema extends BaseMSCRController {
 			schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
 			jenaService.putToSchema(schemaID+":content", contentModel);
 			
+
+		} catch (RuntimeException rex) {
+			throw rex;
+		} catch (Exception ex) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+		}		
+	}
+	
+	@Operation(summary = "Update root resource")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/schema/{schemaID}/rootResource", produces = "application/json")
+	public UpdateResponseDTO updateRootResource(@PathVariable(name = "schemaID") String schemaID, @RequestParam(required = false, name="value") String rootResource) {
+		return updateRootResource(null, schemaID, rootResource);
+	}	
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/schema/{prefix}/{schemaID}/rootResource", produces = "application/json")
+	public UpdateResponseDTO updateRootResource(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam(required = false, name="value") String rootResource) {
+		if (prefix != null) {
+			schemaID = prefix + "/" + schemaID;
+		}
+		try {
+			schemaID = PIDService.mapToInternal(schemaID);
+			Model model = jenaService.getSchema(schemaID);
+			if(model == null) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
+			}			
+			check(authorizationManager.hasRightToModelMSCR(schemaID, model));
+			Model contentModel = jenaService.getSchema(schemaID+":content");
+
+			String format = MapperUtils.propertyToString(model.getResource(schemaID), MSCR.format);
+			SchemaFormat schemaFormat = SchemaFormat.valueOf(format);
+			if(!(format.equals(SchemaFormat.JSONSCHEMA.name()) || format.equals(SchemaFormat.XSD.name()) || format.equals(SchemaFormat.SKOSRDF.name()) || format.equals(SchemaFormat.MSCR.name()) )) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Update root resource endpoint is only available for JSONSchema, XSD, SKOSRDF and MSCR formats.");
+			}
+			if(rootResource == null) {
+				schemaService.resetRootResource(schemaID, schemaFormat, contentModel);
+			}
+			else {
+				if(schemaFormat == SchemaFormat.SKOSRDF) {
+					schemaService.setRootResource(schemaID, schemaFormat, rootResource, contentModel);
+				}
+				else {
+					String resourcePrefix = schemaID+"#root/Root/";
+					String localName = rootResource.substring((resourcePrefix).length());
+					String encodedLocalName = URLEncoder.encode(localName).replaceAll("%2F", "/");
+					String newRootResource = resourcePrefix + encodedLocalName;
+					schemaService.setRootResource(schemaID, schemaFormat, newRootResource, contentModel);
+					
+				}
+			}
+			jenaService.putToSchema(schemaID+":content", contentModel);
+			return new UpdateResponseDTO("Updated root resource", schemaID);
 
 		} catch (RuntimeException rex) {
 			throw rex;

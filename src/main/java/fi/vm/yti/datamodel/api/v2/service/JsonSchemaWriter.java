@@ -1,6 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import java.io.StringWriter;
+import java.net.URLDecoder;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.SimpleDateFormat;
@@ -330,7 +331,7 @@ public class JsonSchemaWriter {
 
 							if (soln.contains("title")) {
 								String title = soln.getLiteral("title").getString();
-								predicate.add("title", title);
+								predicate.add("title", URLDecoder.decode(title));
 							}
 
 							if (soln.contains("min")) {
@@ -513,7 +514,7 @@ public class JsonSchemaWriter {
 						JsonObjectBuilder classDefinition = Json.createObjectBuilder();
 
 						if (soln.contains("classTitle")) {
-							classDefinition.add("title", soln.getLiteral("classTitle").getString());
+							classDefinition.add("title", URLDecoder.decode(soln.getLiteral("classTitle").getString()));
 						}
 						classDefinition.add("type", "object");
 						if (soln.contains("targetClass")) {
@@ -698,23 +699,33 @@ public class JsonSchemaWriter {
 		if (roots.size() == 1) {
 			schema.add("type", "object");
 			if (definitionsObj != null) {
-				JsonValue props = definitionsObj.get("Root").asJsonObject().get("properties");
+				String rootDefinition = roots.get(0);				
+				String lastPart = rootDefinition.substring(rootDefinition.lastIndexOf("/")+1);
+				if(lastPart.equals("Root")) {
+					rootDefinition = "Root";
+				}
+				else if(Character.isUpperCase(lastPart.charAt(0))) {
+					rootDefinition = rootDefinition.substring(0, rootDefinition.lastIndexOf("/"));
+				}
+				JsonObject rootObj = definitionsObj.getJsonObject(rootDefinition);
+				if(rootObj.containsKey("$ref")) {
+					rootObj = definitionsObj.getJsonObject(rootObj.getString("$ref").substring(14));
+				}
+				
+				if(rootObj.getString("type").equals("array")) {
+					// TODO: fix this
+					throw new RuntimeException("Not implemented yet! Root element of type array.");
+				}
+				
+				
+				JsonValue props = rootObj.get("properties");
 				if (props != null) {
 					schema.add("properties", props.asJsonObject());
 				}
 
 			}
 		} else {
-			schema.add("type", "array");
-			JsonObjectBuilder itemsBuilder = Json.createObjectBuilder();
-
-			itemsBuilder.add("type", "object");
-			// get one object that is
-			// itemsBuilder.add("properties",
-			// definitionsObj.get("Root").asJsonObject().get("properties"));
-
-			schema.add("items", itemsBuilder.build());
-
+			throw new RuntimeException("Jsonschemawriter requires exactly on root element identified by void:rootResource. Number of root elements detected: "+ roots.size());
 		}
 
 		// schema.add("oneOf",
@@ -880,10 +891,30 @@ public class JsonSchemaWriter {
 		// When done with adding all p's children, continue traversing up
 		traverseUp(parent, inputModel, definitions, rootProps);
 	}
+	
+	private void traverseDown(Resource r, Model inputModel, Map<String, Object> definitions,
+			Map<String, Object> rootProps) throws Exception {
+		
+		String localName = getLocalName(r);
+		Map<String, Object>	obj = handleConcept(r, inputModel, definitions);		
+		rootProps.put(localName, obj);		
+		Map<String, Object> props = new HashMap<String, Object>();
+		
+		List<Resource> children = getChildren(r, inputModel);
+		for(Resource child: children) {
+			handleConcept(child, inputModel, definitions);
+			String childlocalName = getLocalName(child);
+			Map<String, Object> ref = new HashMap<String, Object>();
+			ref.put("$ref", "#/definitions/" + childlocalName);
+			props.put(childlocalName, ref);			
+			traverseDown(child, inputModel, definitions, props);			
+		}
+		obj.put("properties", props);
+	}
 
 	public String skosSchema(String pid, Model model, String string) throws Exception {
 		Resource metadataResource = model.getResource(pid);
-		Resource scheme = metadataResource.getPropertyResourceValue(VOID.rootResource);
+		Resource rootConcept = metadataResource.getPropertyResourceValue(VOID.rootResource);
 
 		List<Resource> leafs = getLeafConcepts(model);
 		Map<String, Object> definitions = new HashMap<String, Object>();
@@ -894,8 +925,14 @@ public class JsonSchemaWriter {
 		definitions.put("Root", rootDefinition);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
-		for (Resource leaf : leafs) {
-			traverseUp(leaf, model, definitions, rootProperties);
+		if(rootConcept == null) {
+			for (Resource leaf : leafs) {
+				traverseUp(leaf, model, definitions, rootProperties);
+			}
+			
+		}
+		else {
+			traverseDown(rootConcept, model, definitions, rootProperties);
 		}
 		schema.put("definitions", definitions);
 		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
