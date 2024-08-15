@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jsonldjava.utils.JsonUtils;
 
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.CSVMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.SKOSMapper;
@@ -86,8 +87,7 @@ public class SchemaService {
 		}
 		// Adding the schema to a corresponding internal model
 		jsonSchemaMapper.handleObject("root", root, schemaPID, model);
-		
-		modelResource.addProperty(VOID.rootResource, ResourceFactory.createResource(schemaPID+"#root/Root"));
+		addDefaultRootResourceForJSONSchema(modelResource, model);		
 		return model;
 
 	}
@@ -96,8 +96,7 @@ public class SchemaService {
 		CSVMapper mapper = new CSVMapper();		
 		Model model = mapper.mapToModel(schemaPID, data, delimiter);
 		Resource modelResource = model.createResource(schemaPID);
-		Resource rootResource = model.createResource(schemaPID + "#root/Root");
-		modelResource.addProperty(VOID.rootResource, rootResource);
+		addDefaultRootResourceForCSV(modelResource, model);
 		
 		return model;
 		
@@ -188,9 +187,7 @@ public class SchemaService {
 		Model model = ModelFactory.createDefaultModel();
 		model.read(file.toUri().toString());
 		Resource schema = model.createResource(pid);
-		model.listSubjectsWithProperty(RDF.type, OWL.Class).forEach(resource -> {
-			schema.addProperty(VOID.rootResource, resource);
-		});
+		addDefaultRootResourceForOWL(schema, model);
 		return model;		
 	}
 	
@@ -203,9 +200,7 @@ public class SchemaService {
 		
 		// add all classes as root resources 
 		Resource schema = m.createResource(pid);
-		m.listSubjectsWithProperty(RDF.type, RDFS.Class).forEach(resource -> {
-			schema.addProperty(VOID.rootResource, resource);
-		});
+		addDefaultRootResourceForRDFS(schema, m);
 		return m;
 	}
 
@@ -217,9 +212,7 @@ public class SchemaService {
 		
 		// add all nodeshapes as root resources
 		Resource schema = m.createResource(pid);
-		m.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(resource -> {
-			schema.addProperty(VOID.rootResource, resource);
-		});		
+		addDefaultRootResourceForSHACL(schema, m);
 		
 		return m;
 		
@@ -270,5 +263,66 @@ public class SchemaService {
 
 	public String dtrSearchBasicInfoTypes(String queryBy, String query, int page, int pageSize) throws Exception {
 		return dtrClient.searchTypes(queryBy, query, "type:BasicInfoType", page, pageSize);
+	}
+	
+	private void addDefaultRootResourceForSHACL(Resource schema, Model m) {
+		m.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(resource -> {
+			schema.addProperty(VOID.rootResource, resource);
+		});	
+	}
+	private void addDefaultRootResourceForRDFS(Resource schema, Model m) {
+		m.listSubjectsWithProperty(RDF.type, RDFS.Class).forEach(resource -> {
+			schema.addProperty(VOID.rootResource, resource);
+		});			
+		
+	}
+	private void addDefaultRootResourceForOWL(Resource schema, Model m) {
+		m.listSubjectsWithProperty(RDF.type, OWL.Class).forEach(resource -> {
+			schema.addProperty(VOID.rootResource, resource);
+		});
+	}	
+	private void addDefaultRootResourceForJSONSchema(Resource schema, Model m) {
+		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root/Root"));
+	}	
+	private void addDefaultRootResourceForCSV(Resource schema, Model m) {
+		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root/Root"));
+	}	
+	private void addDefaultRootResourceForSKOS(Resource schema, Model m) {
+		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root/Root"));
+	}	
+		
+
+	public Model resetRootResource(String schemaInternalId, SchemaFormat format, Model model) {
+		Resource schema = model.getResource(schemaInternalId);
+		model.removeAll(schema, VOID.rootResource, null);
+		if(format == SchemaFormat.SHACL) {
+			addDefaultRootResourceForSHACL(schema, model);
+		}
+		else if(format == SchemaFormat.OWL) {
+			addDefaultRootResourceForOWL(schema, model);
+		}
+		else if(format == SchemaFormat.RDFS) {
+			addDefaultRootResourceForRDFS(schema, model);
+		}
+		else if(format == SchemaFormat.SKOSRDF) {
+			// do nothing
+		}		
+		else {
+			schema.addProperty(VOID.rootResource, model.getResource(schemaInternalId +"#root/Root"));	
+		}		
+		return model;
+	}
+	public Model setRootResource(String schemaInternalId, SchemaFormat format, String newRootResourceId, Model model) throws Exception {
+		
+		Resource newRootResource = ResourceFactory.createResource(newRootResourceId);
+		if(!model.containsResource(newRootResource)) {
+			throw new Exception("Resource " + newRootResourceId + " not found");
+		}
+		// TODO: Add check for sh:NodeShape or sh:PropertyShape OR skos:Concept
+		Resource schema = model.getResource(schemaInternalId);
+		schema.removeAll(VOID.rootResource);
+		schema.addProperty(VOID.rootResource, newRootResource);
+		
+		return model;
 	}
 }

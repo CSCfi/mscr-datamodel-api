@@ -147,7 +147,7 @@ public class JSONSchemaMapper {
 			propertyResource.addProperty(SH.datatype, typeResource);
 		}
 		
-		propertyResource.addProperty(SH.path, ResourceFactory.createResource("mscr:" + propID));
+		propertyResource.addProperty(SH.path, ResourceFactory.createResource(schemaPID + "#" + propID));
 
 		checkAndAddPropertyFeature(node, model, propertyResource, propID);
 
@@ -171,7 +171,7 @@ public class JSONSchemaMapper {
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.ObjectProperty);
 		checkAndAddPropertyFeature(node, model, propertyResource, propID);
-		propertyResource.addProperty(SH.path, ResourceFactory.createResource("mscr:" + propID));
+		propertyResource.addProperty(SH.path, ResourceFactory.createResource(schemaPID + "#" + propID));
 		propertyResource.addProperty(SH.node, model.createResource(targetShape));
 
 		return propertyResource;

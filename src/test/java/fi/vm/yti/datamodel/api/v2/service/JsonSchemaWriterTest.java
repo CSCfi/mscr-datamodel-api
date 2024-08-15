@@ -41,7 +41,7 @@ public class JsonSchemaWriterTest {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/jsonschema/simple_nested.ttl");		
 		String json = service.newModelSchema("urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571", model, "en");
-		// TODO: Add assertons
+		// TODO: Add assertons		
 	}	
 	
 	
