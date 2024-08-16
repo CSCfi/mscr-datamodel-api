@@ -131,7 +131,7 @@ public class SchemaService {
 		}
 		Resource scheme = schemes.next(); // just getting the first one
 		Resource schema = m.createResource(pid);
-		schema.addProperty(VOID.rootResource, scheme);
+		
 		
 		
 		
@@ -326,3 +326,4 @@ public class SchemaService {
 		return model;
 	}
 }
+	
