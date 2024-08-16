@@ -93,10 +93,7 @@ public class SKOSMapper {
 		rootShape.addLiteral(MSCR.localName, "root");
 		rootShape.addLiteral(SH.name, "root");
 		rootShape.addProperty(RDF.type, SH.NodeShape);		
-		
-		
-		schema.addProperty(VOID.rootResource, rootShape);
-		
+				
 		// loop through the top concepts 		
 		NodeIterator topConcepts = inputModel.listObjectsOfProperty(scheme, SKOS.hasTopConcept);
 		if(!topConcepts.hasNext()) {
