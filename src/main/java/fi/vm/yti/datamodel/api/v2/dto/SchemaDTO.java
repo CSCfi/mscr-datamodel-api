@@ -10,7 +10,17 @@ public class SchemaDTO extends DataModelDTO implements MSCRCommonMetadata {
 	private SchemaFormat format;
 	private String namespace;
 	private String versionLabel;
+	private String sourceURL;
 	
+	
+	public String getSourceURL() {
+		return sourceURL;
+	}
+
+	public void setSourceURL(String sourceURL) {
+		this.sourceURL = sourceURL;
+	}	
+		
 	public MSCRVisibility getVisibility() {
 		return visibility;
 	}

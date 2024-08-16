@@ -141,6 +141,9 @@ public class CrosswalkMapper {
 		if(handle != null) {
 			modelResource.addProperty(MSCR.handle, model.createLiteral(handle));
 		}
+		if(dto.getSourceURL() != null) {
+			modelResource.addProperty(MSCR.sourceURL, model.createResource(dto.getSourceURL()));
+		}
 		
 		return model;
 	}
@@ -269,7 +272,10 @@ public class CrosswalkMapper {
 		}	
 		if(modelResource.hasProperty(MSCR.handle)) {
 			dto.setHandle(MapperUtils.propertyToString(modelResource, MSCR.handle));	
-		}		
+		}
+		if(modelResource.hasProperty(MSCR.sourceURL)) {
+			dto.setSourceURL(MapperUtils.propertyToString(modelResource, MSCR.sourceURL));
+		}
 		return dto;
 	}
 	
