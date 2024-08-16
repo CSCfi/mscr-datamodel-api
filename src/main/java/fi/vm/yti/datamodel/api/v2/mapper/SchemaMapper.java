@@ -139,6 +139,10 @@ public class SchemaMapper {
 		if(handle != null) {
 			modelResource.addProperty(MSCR.handle, model.createLiteral(handle));
 		}
+		
+		if(schemaDTO.getSourceURL() != null) {
+			modelResource.addProperty(MSCR.sourceURL, model.createResource(schemaDTO.getSourceURL()));
+		}
 		return model;
 	}
 
@@ -355,6 +359,9 @@ public class SchemaMapper {
 		}
 		if(modelResource.hasProperty(MSCR.handle)) {
 			schemaInfoDTO.setHandle(MapperUtils.propertyToString(modelResource, MSCR.handle));	
+		}
+		if(modelResource.hasProperty(MSCR.sourceURL)) {
+			schemaInfoDTO.setSourceURL(MapperUtils.propertyToString(modelResource, MSCR.sourceURL));
 		}
 		
 		return schemaInfoDTO;

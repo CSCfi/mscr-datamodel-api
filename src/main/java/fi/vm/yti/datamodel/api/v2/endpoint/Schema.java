@@ -4,7 +4,6 @@ import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -253,6 +252,7 @@ public class Schema extends BaseMSCRController {
 		else {
 			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		}
+		s.setSourceURL(inputSchema.getSourceURL());
 		
 		return s;
 
@@ -448,6 +448,7 @@ public class Schema extends BaseMSCRController {
 		SchemaDTO schemaDTO = null;
 		try {
 			schemaDTO = objMapper.readValue(metadataString, SchemaDTO.class);
+			schemaDTO.setSourceURL(contentURL);
 		} catch (JsonProcessingException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Could not parse SchemaDTO from the metadata content. " + e.getMessage(), e);
