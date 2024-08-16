@@ -184,6 +184,7 @@ public class Crosswalk extends BaseMSCRController {
 		}
 		s.setSourceSchema(prev.getSourceSchema());
 		s.setTargetSchema(prev.getTargetSchema());
+		s.setSourceURL(input.getSourceURL());
 		return s;
 		
 	}	
@@ -360,6 +361,7 @@ public class Crosswalk extends BaseMSCRController {
 		CrosswalkDTO dto = null;
 		try {
 			dto = objMapper.readValue(metadataString, CrosswalkDTO.class);
+			dto.setSourceURL(contentURL);
 		} catch (JsonProcessingException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse CrosswalkDTO from the metadata content. " + e.getMessage(), e);
 		}
