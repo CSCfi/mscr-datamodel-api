@@ -16,7 +16,9 @@ public class MSCRSearchRequest extends BaseSearchRequest {
 	private MSCR.SOURCE_TYPE sourceType;
 	private Set<String> sourceSchemas;
 	private Set<String> targetSchemas;
-
+	private String sourceURL;
+	private String namespace;
+	
 	private boolean includeFacets = false;
 	private String prefDisplayLang;
 	
@@ -76,6 +78,18 @@ public class MSCRSearchRequest extends BaseSearchRequest {
 	}
 	public void setPrefDisplayLang(String prefDisplayLang) {
 		this.prefDisplayLang = prefDisplayLang;
+	}
+	public String getSourceURL() {
+		return sourceURL;
+	}
+	public void setSourceURL(String sourceURL) {
+		this.sourceURL = sourceURL;
+	}
+	public String getNamespace() {
+		return namespace;
+	}
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}	
 	
 	

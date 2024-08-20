@@ -92,6 +92,17 @@ public class MSCRQueryFactory {
             must.add(targetSchemasQuery);
         }  
 
+        var sourceURL = request.getSourceURL();
+        if(sourceURL != null && !"".equals(sourceURL)) {
+        	var sourceURLQuery = QueryFactoryUtils.termQuery("sourceURL", sourceURL);
+        	must.add(sourceURLQuery);
+        }
+
+        var namespace = request.getNamespace();
+        if(namespace != null && !"".equals(namespace)) {
+        	var namespaceQuery = QueryFactoryUtils.termQuery("namespace", namespace);
+        	must.add(namespaceQuery);
+        }
         
         var finalQuery = QueryBuilders.bool();
         finalQuery.must(must);

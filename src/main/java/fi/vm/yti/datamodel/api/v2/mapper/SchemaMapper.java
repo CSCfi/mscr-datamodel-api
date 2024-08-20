@@ -466,6 +466,7 @@ public class SchemaMapper {
 
         indexModel.setNamespace(MapperUtils.propertyToString(resource, MSCR.namespace));
         indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
+        indexModel.setSourceURL(MapperUtils.propertyToString(resource, MSCR.sourceURL));
         return indexModel;
     }     
 	

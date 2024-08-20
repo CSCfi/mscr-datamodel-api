@@ -440,6 +440,7 @@ public class CrosswalkMapper {
         	indexModel.setTargetSchema(resource.getPropertyResourceValue(MSCR.targetSchema).getURI());
         }
         indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
+        indexModel.setSourceURL(MapperUtils.propertyToString(resource, MSCR.sourceURL));
         
         return indexModel;
     }
