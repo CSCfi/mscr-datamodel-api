@@ -37,6 +37,7 @@ public class IndexSchema extends IndexBase {
     private String versionLabel;
     private String namespace;
     private String handle;
+    private String sourceURL;
     
     public MSCRVisibility getVisibility() {
 		return visibility;
@@ -195,6 +196,14 @@ public class IndexSchema extends IndexBase {
 
 	public void setHandle(String handle) {
 		this.handle = handle;
+	}
+
+	public String getSourceURL() {
+		return sourceURL;
+	}
+
+	public void setSourceURL(String sourceURL) {
+		this.sourceURL = sourceURL;
 	}
 	
 }
