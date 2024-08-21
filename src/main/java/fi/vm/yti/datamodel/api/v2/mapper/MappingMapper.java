@@ -174,14 +174,18 @@ public class MappingMapper {
 		
 		MappingInfoDTO m = new MappingInfoDTO();
 		m.setPID(mappingPID);
-		m.setIsPartOf(r.getProperty(DCTerms.isPartOf).getResource().getURI());
+		if(r.hasProperty(DCTerms.isPartOf))
+			m.setIsPartOf(r.getProperty(DCTerms.isPartOf).getResource().getURI());
 		m.setId(MapperUtils.propertyToString(r, MSCR.id));
 		
-		Seq sources = (Seq)r.getProperty(MSCR.source).getSeq();
-		m.setSource(mapNodeInfoToDTO(sources, model));
-		Seq targets = (Seq)r.getProperty(MSCR.target).getSeq();
-		m.setTarget(mapNodeInfoToDTO(targets, model));
-
+		if(r.hasProperty(MSCR.source)) {
+			Seq sources = (Seq)r.getProperty(MSCR.source).getSeq();
+			m.setSource(mapNodeInfoToDTO(sources, model));			
+		}
+		if(r.hasProperty(MSCR.target)) {
+			Seq targets = (Seq)r.getProperty(MSCR.target).getSeq();
+			m.setTarget(mapNodeInfoToDTO(targets, model));			
+		}
 		if(r.hasProperty(MSCR.processing)) {
 			m.setProcessing(mapProcessingInfoToDTO(r.getPropertyResourceValue(MSCR.processing)));
 		}
