@@ -825,14 +825,14 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
-	public void updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype") String datatype) {
-		updateProperty(null, schemaID, target, datatype);
+	public UpdateResponseDTO updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype") String datatype) {
+		return updateProperty(null, schemaID, target, datatype);
 	}	
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
-	public void updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
+	public UpdateResponseDTO updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
 		if (prefix != null) {
 			schemaID = prefix + "/" + schemaID;
 		}
@@ -861,7 +861,7 @@ public class Schema extends BaseMSCRController {
 			schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
 			jenaService.putToSchema(schemaID+":content", contentModel);
 			
-
+			return new UpdateResponseDTO("Property " + target + " updated with data type " + datatype , schemaID);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
