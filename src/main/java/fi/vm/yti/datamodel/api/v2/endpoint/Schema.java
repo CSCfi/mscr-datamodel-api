@@ -849,7 +849,10 @@ public class Schema extends BaseMSCRController {
 			if(!format.equals(SchemaFormat.MSCR.name())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be MSCR.");
 			}
-			String encodedTarget = URLEncoder.encode(target);
+			String resourcePrefix = schemaID+"#root/Root/";
+			String localName = target.substring((resourcePrefix).length());
+			String encodedLocalName = URLEncoder.encode(localName).replaceAll("%2F", "/");
+			String encodedTarget = resourcePrefix + encodedLocalName;
 			Resource propResource = contentModel.getResource(encodedTarget);
 			if(propResource == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);

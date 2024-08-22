@@ -218,8 +218,12 @@ public class SchemaService {
 		
 	}
 
-	public void updatePropertyDataTypeFromDTR(Model model, String propID, String datatypeURI) throws Exception {		
-		Resource prop = model.createResource(propID);
+	public void updatePropertyDataTypeFromDTR(Model model, String propID, String datatypeURI) throws Exception {
+		Resource prop = ResourceFactory.createResource(propID);
+		if(!model.containsResource(prop)) {
+			throw new Exception("Property " + prop + " not found");
+		}		
+		prop = model.getResource(propID);
 		Resource datatype = model.createResource(datatypeURI);
 		model.removeAll(prop, SH.datatype, null);
 		model.add(prop, SH.datatype, datatype);
