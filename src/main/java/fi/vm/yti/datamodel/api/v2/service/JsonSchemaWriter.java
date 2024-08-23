@@ -699,15 +699,22 @@ public class JsonSchemaWriter {
 		if (roots.size() == 1) {
 			schema.add("type", "object");
 			if (definitionsObj != null) {
-				String rootDefinition = roots.get(0);				
-				String lastPart = rootDefinition.substring(rootDefinition.lastIndexOf("/")+1);
+				String rootDefinitionCandidate = roots.get(0);
+				String rootDefinition = "";
+				String lastPart = rootDefinitionCandidate.substring(rootDefinitionCandidate.lastIndexOf("/")+1);
 				if(lastPart.equals("Root")) {
 					rootDefinition = "Root";
 				}
 				else if(Character.isUpperCase(lastPart.charAt(0))) {
-					rootDefinition = rootDefinition.substring(0, rootDefinition.lastIndexOf("/"));
+					
+					rootDefinition = rootDefinitionCandidate.substring(0, rootDefinitionCandidate.lastIndexOf("/"));
 				}
+				
 				JsonObject rootObj = definitionsObj.getJsonObject(rootDefinition);
+				if(rootObj == null) {
+					rootDefinition = rootDefinitionCandidate.substring(rootDefinitionCandidate.lastIndexOf("/") + 1);
+					rootObj = definitionsObj.getJsonObject(rootDefinition);
+				}
 				if(rootObj.containsKey("$ref")) {
 					rootObj = definitionsObj.getJsonObject(rootObj.getString("$ref").substring(14));
 				}
@@ -722,6 +729,7 @@ public class JsonSchemaWriter {
 				if (props != null) {
 					schema.add("properties", props.asJsonObject());
 				}
+				
 
 			}
 		} else {
