@@ -53,12 +53,10 @@ class TestXSLTGenerator {
 	    }
 	    return i;
 	}
-	@Test
-	void testGenerate() throws Exception {
+	private List<MappingInfoDTO> getMappings(String modelSource, String pid) {
 		MappingMapper mappingMapper = new MappingMapper();
-		Model model = RDFDataMgr.loadModel("mappings/simple-mappings-only3.ttl");
+		Model model = RDFDataMgr.loadModel(modelSource);
 
-		String pid = "mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad";
 		List<MappingInfoDTO> mappings = new ArrayList<MappingInfoDTO>();
 		NodeIterator i = model.listObjectsOfProperty(model.getResource(pid), MSCR.mappings);
 		while (i.hasNext()) {
@@ -66,10 +64,37 @@ class TestXSLTGenerator {
 			MappingInfoDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), model);
 			mappings.add(dto);
 		}
-
+		return mappings;
+	}
+	
+	@Test
+	void testGenerateSimple1() throws Exception {
+		String pid = "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77";
+		String modelSource = "mappings/simple-mappings-only.ttl";
+		
 		XSLTGenerator generator = new XSLTGenerator();
-
-		String r = generator.generate(mappings);
+		String r = generator.generate(getMappings(modelSource, pid));
+		Document doc = toDoc(r);
+		assertEquals(15, getNumberOfImmediateChildren(doc.getFirstChild()));
+	}
+	
+	@Test
+	void testGenerateSimple2() throws Exception {
+		String pid = "mscr:crosswalk:d897f3d9-5d52-42f6-98ff-0ce51bbdffc4";
+		String modelSource = "mappings/simple-mappings-only2.ttl";
+		
+		XSLTGenerator generator = new XSLTGenerator();
+		String r = generator.generate(getMappings(modelSource, pid));
+		Document doc = toDoc(r);
+		assertEquals(6, getNumberOfImmediateChildren(doc.getFirstChild()));
+	}	
+	@Test
+	void testGenerateSimple3() throws Exception {
+		String pid = "mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad";
+		String modelSource = "mappings/simple-mappings-only3.ttl";
+		
+		XSLTGenerator generator = new XSLTGenerator();
+		String r = generator.generate(getMappings(modelSource, pid));
 		Document doc = toDoc(r);
 		assertEquals(5, getNumberOfImmediateChildren(doc.getFirstChild()));
 	}

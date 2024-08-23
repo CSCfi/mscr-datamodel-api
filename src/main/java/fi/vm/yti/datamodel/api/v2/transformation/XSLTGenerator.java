@@ -1,10 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.transformation;
 
-import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,26 +15,19 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathEvaluationResult;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Attr;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.xpath.XPathResult;
 
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
-
-import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
-import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
-import net.minidev.json.JSONObject;
 
+@Service
 public class XSLTGenerator {
 
 	public static final String xslNS = "http://www.w3.org/1999/XSL/Transform";
@@ -222,12 +212,6 @@ public class XSLTGenerator {
         Transformer trans = tf.newTransformer();
         trans.setOutputProperty(OutputKeys.INDENT, "yes");
         StringWriter sw = new StringWriter();
-
-        trans.transform(new DOMSource(doc2), new StreamResult(sw));
-        System.out.println(sw.toString());
-        
-        sw = new StringWriter();
-
         trans.transform(new DOMSource(doc), new StreamResult(sw));
         
 
