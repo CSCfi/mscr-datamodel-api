@@ -131,35 +131,42 @@ public class XSLTGenerator {
 				copyOf.setAttribute("select", ".");
 				contentElement.appendChild(copyOf);
 			}
-			templateElement.setAttribute("name", getXPath(node).replaceAll("/", "_"));
+			templateElement.setAttribute("name", "t_" + getXPath(node).replaceAll("/", "_"));
 			templateElement.appendChild(contentElement);
 			stylesheet.appendChild(templateElement);
 			contentElements.add(contentElement);
 		}
 		List<Element> calls = new ArrayList<Element>();
-		NodeList children2 = node.getChildNodes();
-		for(int i = 0; i < children2.getLength(); i++) {
-			Element child = (Element)children2.item(i);
-			addTemplateFromPath(targetInfo, xpath, stylesheet, child);
-			// create call-element
-			String childNodePath = getXPath(child).substring(6);
-			boolean isChildMapped = targetInfo.containsKey(childNodePath);
-			if(isChildMapped) {				
-				for(MappingInfoDTO childMapping : targetInfo.get(childNodePath)) {
+		Node childNode = (Element)node.getFirstChild();   
+		//NodeList children2 = node.getChildNodes();
+		//for(int i = 0; i < children2.getLength(); i++) {
+		while(childNode !=null) {
+			//Element child = (Element)children2.item(i);
+			if(childNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element child = (Element)childNode;  
+				addTemplateFromPath(targetInfo, xpath, stylesheet, child);
+				// create call-element
+				String childNodePath = getXPath(child).substring(6);
+				boolean isChildMapped = targetInfo.containsKey(childNodePath);
+				if(isChildMapped) {				
+					for(MappingInfoDTO childMapping : targetInfo.get(childNodePath)) {
+						Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
+						callTemplate.setAttribute("name", "t_" + childMapping.getPID().substring(childMapping.getPID().indexOf("=")+1).replaceAll("-", ""));
+						Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
+						withParam.setAttribute("name", "node");
+						withParam.setAttribute("select", getXpathFromId(childMapping.getSource().get(0).getId()));
+						callTemplate.appendChild(withParam);
+						calls.add(callTemplate);
+					}				
+				}
+				else {
 					Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
-					callTemplate.setAttribute("name", "t_" + childMapping.getPID().substring(childMapping.getPID().indexOf("=")+1).replaceAll("-", ""));
-					Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
-					withParam.setAttribute("name", "node");
-					withParam.setAttribute("select", getXpathFromId(childMapping.getSource().get(0).getId()));
-					callTemplate.appendChild(withParam);
+					callTemplate.setAttribute("name", "t_" + getXPath(child).replaceAll("/", "_"));
 					calls.add(callTemplate);
-				}				
+				}
 			}
-			else {
-				Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
-				callTemplate.setAttribute("name", getXPath(child).replaceAll("/", "_"));
-				calls.add(callTemplate);
-			}			
+			
+			childNode = childNode.getNextSibling();
 		}
 		for(Element contentElement : contentElements) {
 			for(Element callElement : calls) {
