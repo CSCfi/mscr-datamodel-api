@@ -1,0 +1,108 @@
+<mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad>
+        <http://uri.suomi.fi/datamodel/ns/mscr#mappings>
+                <mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=15f7638d-223f-4648-8b22-6cd18b398849> , <mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=e557db92-9aca-47b7-8361-b7ba167f03b6> , <mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=39451a3a-4524-40a5-a870-be1b3116dbba> .
+
+<mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=15f7638d-223f-4648-8b22-6cd18b398849>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=15f7638d-223f-4648-8b22-6cd18b398849" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2024-08-23T09:59:27.602Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:root/Root/resource/Resource/creators/Creators/creator/Creator/creatorName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "creatorName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:root/Root/resource/Resource/creators/Creators/creator/Creator/creatorName>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:root/Root/doc/Doc/author" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "author" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:root/Root/doc/Doc/author>
+                          ]
+                ] .
+
+<mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=e557db92-9aca-47b7-8361-b7ba167f03b6>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=e557db92-9aca-47b7-8361-b7ba167f03b6" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2024-08-23T10:00:01.418Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/contributorName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "contributorName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/contributorName>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:root/Root/doc/Doc/contributor" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "contributor" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:root/Root/doc/Doc/contributor>
+                          ]
+                ] .
+
+<mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=39451a3a-4524-40a5-a870-be1b3116dbba>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad@mapping=39451a3a-4524-40a5-a870-be1b3116dbba" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:ceca0ba1-3076-4e26-94e9-2fce83a569ad> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2024-08-23T10:00:56.087Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "awardNumber" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:root/Root/doc/Doc/funding" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "funding" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:root/Root/doc/Doc/funding>
+                          ]
+                ] .

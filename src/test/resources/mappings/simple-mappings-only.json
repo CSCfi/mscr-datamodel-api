@@ -1,0 +1,405 @@
+[
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/geoLocations",
+                "label": "geoLocations",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/geoLocations"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/geoLocations",
+                "label": "geoLocations",
+                "processing": null,
+                "uri": "mscr:root/Root/geoLocations"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=d1951c86-a56a-4014-aa1b-b9399a976a80"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/fundingReferences",
+                "label": "fundingReferences",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/fundingReferences"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/fundingReferences",
+                "label": "fundingReferences",
+                "processing": null,
+                "uri": "mscr:root/Root/fundingReferences"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=c89806f7-efc3-4537-9716-ba75e60cc905"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/version",
+                "label": "version",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/version"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/version",
+                "label": "version",
+                "processing": null,
+                "uri": "mscr:root/Root/version"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=89e8426b-1937-4da6-84f7-f079de1fa5fe"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/contributors",
+                "label": "contributors",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/contributors"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/contributors",
+                "label": "contributors",
+                "processing": null,
+                "uri": "mscr:root/Root/contributors"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=c117246f-c228-4050-9b10-4f6325ba1a5e"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/creators",
+                "label": "creators",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/creators"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/creators",
+                "label": "creators",
+                "processing": null,
+                "uri": "mscr:root/Root/creators"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=7a2f773d-ee76-40ca-9156-c07b564c965d"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/dates",
+                "label": "dates",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/dates"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/dates",
+                "label": "dates",
+                "processing": null,
+                "uri": "mscr:root/Root/dates"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=a6dda29a-2121-42cc-ac48-d475ede0e002"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/rightsList",
+                "label": "rightsList",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/rightsList"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/rights",
+                "label": "rights",
+                "processing": null,
+                "uri": "mscr:root/Root/rights"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=959c47c7-0d98-4b75-9411-bd28f7551e59"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/subjects",
+                "label": "subjects",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/subjects"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/subjects",
+                "label": "subjects",
+                "processing": null,
+                "uri": "mscr:root/Root/subjects"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=e4b66803-95c3-427b-9d5f-661948021def"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/titles",
+                "label": "titles",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/titles"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/titles",
+                "label": "titles",
+                "processing": null,
+                "uri": "mscr:root/Root/titles"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=b8f09f05-b774-4fb2-80e0-e48cca4d77b6"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/relatedIdentifiers",
+                "label": "relatedIdentifiers",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/relatedIdentifiers"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/relatedIdentifiers",
+                "label": "relatedIdentifiers",
+                "processing": null,
+                "uri": "mscr:root/Root/relatedIdentifiers"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=50e678f8-b430-40d1-83f9-a8e6ec874453"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/alternateIdentifiers",
+                "label": "alternateIdentifiers",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/alternateIdentifiers"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/alternateIdentifiers",
+                "label": "alternateIdentifiers",
+                "processing": null,
+                "uri": "mscr:root/Root/alternateIdentifiers"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=e507d522-5973-4393-848b-f248b4977bef"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/identifier",
+                "label": "identifier",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/identifier"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/identifier",
+                "label": "identifier",
+                "processing": null,
+                "uri": "mscr:root/Root/identifier"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=0ea7d001-dfec-476e-8a3f-c086496722ba"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:root/Root/resource/Resource/resourceType",
+                "label": "resourceType",
+                "processing": null,
+                "uri": "mscr:root/Root/resource/Resource/resourceType"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "mscr:root/Root/resourceType",
+                "label": "resourceType",
+                "processing": null,
+                "uri": "mscr:root/Root/resourceType"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77",
+        "pid": "mscr:crosswalk:f52f0312-a214-4cc7-afea-2e0eb0e06c77@mapping=823df859-6a7b-485d-ac72-5194abb738ca"
+    }
+]

@@ -25,6 +25,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,6 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
@@ -65,6 +65,7 @@ import fi.vm.yti.datamodel.api.v2.service.PIDService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
+import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
 import fi.vm.yti.datamodel.api.v2.validator.ValidCrosswalk;
 import fi.vm.yti.datamodel.api.v2.validator.ValidMapping;
 import fi.vm.yti.security.AuthenticatedUserProvider;
@@ -90,6 +91,7 @@ public class Crosswalk extends BaseMSCRController {
     private final JenaService jenaService;
 	private final CrosswalkMapper mapper;
 	private final MappingMapper mappingMapper;
+	private final XSLTGenerator xsltGenerator;
 	private final AuthenticatedUserProvider userProvider;
     private final GroupManagementService groupManagementService;
 
@@ -101,6 +103,7 @@ public class Crosswalk extends BaseMSCRController {
             JenaService jenaService,
             CrosswalkMapper mapper,
             MappingMapper mappingMapper,
+            XSLTGenerator xsltGenerator,
             AuthenticatedUserProvider userProvider,
             GroupManagementService groupManagementService) {
 		this.openSearchIndexer = openSearchIndexer;
@@ -109,6 +112,7 @@ public class Crosswalk extends BaseMSCRController {
 		this.storageService = storageService;		
 		this.jenaService = jenaService;
 		this.mapper = mapper;
+		this.xsltGenerator = xsltGenerator;
 		this.mappingMapper = mappingMapper;
 		this.userProvider = userProvider;
 		this.groupManagementService = groupManagementService;
@@ -916,11 +920,11 @@ public class Crosswalk extends BaseMSCRController {
 				crosswalkModel = jenaService.getCrosswalk(pid+":content");
 			}
 					
-			List<MappingDTO> mappings = new ArrayList<MappingDTO>();
+			List<MappingInfoDTO> mappings = new ArrayList<MappingInfoDTO>();
 			NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
 			while(i.hasNext()) {
 				Resource mappingResource = i.next().asResource();			
-				MappingDTO dto = mappingMapper.mapToMappingDTO(
+				MappingInfoDTO dto = mappingMapper.mapToMappingDTO(
 						mappingResource.getURI(), 
 						crosswalkModel);
 				mappings.add(dto);
@@ -952,7 +956,13 @@ public class Crosswalk extends BaseMSCRController {
 					model.write(writer, "TURTLE");
 					return ResponseEntity.ok(writer.getBuffer().toString());
 				}
+				else if(exportFormat.equalsIgnoreCase("xslt")) {
+					// TODO: add checks for valid crosswalk for xslt export
+					String r = xsltGenerator.generate(mappings);
+					return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);
+				}
 			}
+			
 			return ResponseEntity.ok(mappings);
 		} catch (RuntimeException rex) {
 			throw rex;
