@@ -1,33 +1,30 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 
 @ExtendWith(SpringExtension.class)
 @Import({
-	JsonSchemaWriter.class,
-	
+	JsonSchemaWriter.class,	
 
 })
 public class JsonSchemaWriterTest {
@@ -35,6 +32,16 @@ public class JsonSchemaWriterTest {
 	@Autowired
 	private JsonSchemaWriter service;
 	
+    @MockBean
+    JenaService jenaService;
+    
+	@BeforeEach
+    void init () {
+		
+		Model dtrDatatypeModel = ModelFactory.createDefaultModel();	
+		dtrDatatypeModel.add(dtrDatatypeModel.createResource("https://hdl.handle.net/21.11104/3626040cadcac1571685"), dtrDatatypeModel.createProperty("mscr:jsonschema:type"), "string");
+		when(jenaService.getSchema(any(String.class))).thenReturn(dtrDatatypeModel);
+    }
 	
 	@Test
 	public void testSimpleNested() throws Exception {
@@ -106,6 +113,17 @@ public class JsonSchemaWriterTest {
 		
 	}
 
+	
+	@Test
+	public void testSchemaWithDTRDatatype() throws Exception {
+		Model model = ModelFactory.createDefaultModel();
+		model.read("models/mscr/mscr_schema_dtr_datatype.ttl");		
+		String json = service.newModelSchema("mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052", model, "en");
+		DocumentContext doc = JsonPath.parse(json);
+		Object r = doc.read("$.definitions['mscr:root/Root/integrationType'].type");
+		assertEquals("string", r);
+
+	}
 	
 
 }
