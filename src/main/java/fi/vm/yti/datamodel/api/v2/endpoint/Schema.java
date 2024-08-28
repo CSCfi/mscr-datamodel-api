@@ -889,7 +889,7 @@ public class Schema extends BaseMSCRController {
 		}
 		try {
 			schemaID = PIDService.mapToInternal(schemaID);
-			Model model = jenaService.getSchema(schemaID);
+			Model model = jenaService.getSchema(schemaID);			
 			if(model == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
 			}			
@@ -903,6 +903,7 @@ public class Schema extends BaseMSCRController {
 			}
 			if(rootResource == null) {
 				schemaService.resetRootResource(schemaID, schemaFormat, contentModel);
+				
 			}
 			else {
 				if(schemaFormat == SchemaFormat.SKOSRDF) {
@@ -917,7 +918,11 @@ public class Schema extends BaseMSCRController {
 					
 				}
 			}
+			// update metadata 
+			schemaService.updateRootResourceMetadata(rootResource, schemaID, model);
+			
 			jenaService.putToSchema(schemaID+":content", contentModel);
+			jenaService.putToSchema(schemaID, model);
 			return new UpdateResponseDTO("Updated root resource", schemaID);
 
 		} catch (RuntimeException rex) {

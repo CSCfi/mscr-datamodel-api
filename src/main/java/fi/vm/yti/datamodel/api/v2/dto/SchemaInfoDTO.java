@@ -29,8 +29,16 @@ public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadat
 	private Set<String> owner;
 	private Set<OwnerDTO> ownerMetadata;
 	private String sourceURL;
+	private String customRoot;
 	
-	
+	public String getCustomRoot() {
+		return customRoot;
+	}
+
+	public void setCustomRoot(String customRoot) {
+		this.customRoot = customRoot;
+	}
+
 	public String getSourceURL() {
 		return sourceURL;
 	}
