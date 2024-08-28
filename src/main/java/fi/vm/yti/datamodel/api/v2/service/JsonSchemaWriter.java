@@ -58,6 +58,8 @@ import jakarta.json.stream.JsonGenerator;
 @Service
 public class JsonSchemaWriter {
 
+	private final JenaService jenaService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(JsonSchemaWriter.class.getName());
 
 	// private JsonWriterFactory jsonWriterFactory;
@@ -68,8 +70,8 @@ public class JsonSchemaWriter {
 		return Json.createWriterFactory(config);
 	}
 
-	JsonSchemaWriter() {
-
+	public JsonSchemaWriter(JenaService jenaService) {
+		this.jenaService = jenaService;
 	}
 
 	public static final Map<String, String> PREFIX_MAP = Collections.unmodifiableMap(new HashMap<>() {
@@ -375,6 +377,11 @@ public class JsonSchemaWriter {
 								}
 
 								String jsonDatatype = DATATYPE_MAP.get(datatype);
+								if(jsonDatatype == null) {
+									jsonDatatype = getDTRDatatype(datatype);
+								}
+ 
+								
 
 								if (soln.contains("maxLength")) {
 									predicate.add("maxLength", soln.getLiteral("maxLength").getInt());
@@ -565,6 +572,11 @@ public class JsonSchemaWriter {
 			return definitions;
 
 		}
+	}
+
+	private String getDTRDatatype(String datatype) {
+		Model m = jenaService.getSchema(datatype);
+		return MapperUtils.propertyToString(m.getResource(datatype), m.getProperty("mscr:jsonschema:type"));
 	}
 
 	/**
