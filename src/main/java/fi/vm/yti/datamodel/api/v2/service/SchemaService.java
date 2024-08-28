@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jsonldjava.utils.JsonUtils;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.CSVMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
@@ -326,6 +327,16 @@ public class SchemaService {
 		Resource schema = model.getResource(schemaInternalId);
 		schema.removeAll(VOID.rootResource);
 		schema.addProperty(VOID.rootResource, newRootResource);
+		
+		return model;
+	}
+	
+	public Model updateRootResourceMetadata(String rootResource, String schemaID, Model model) {
+		Resource modelResource = model.getResource(schemaID);
+		modelResource.removeAll(MSCR.customRoot);
+		if(rootResource != null) {
+			modelResource.addProperty(MSCR.customRoot, model.createResource(rootResource));	
+		}
 		
 		return model;
 	}

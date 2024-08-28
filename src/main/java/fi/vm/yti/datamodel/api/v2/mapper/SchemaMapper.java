@@ -143,6 +143,7 @@ public class SchemaMapper {
 		if(schemaDTO.getSourceURL() != null) {
 			modelResource.addProperty(MSCR.sourceURL, model.createResource(schemaDTO.getSourceURL()));
 		}
+				
 		return model;
 	}
 
@@ -264,6 +265,10 @@ public class SchemaMapper {
 		schemaInfoDTO.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
 				
 		schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
+		
+		if(modelResource.hasProperty(MSCR.customRoot)) {
+			schemaInfoDTO.setCustomRoot(MapperUtils.propertyToString(modelResource, MSCR.customRoot));
+		}
 				
 		return schemaInfoDTO;
 	}
@@ -363,7 +368,10 @@ public class SchemaMapper {
 		if(modelResource.hasProperty(MSCR.sourceURL)) {
 			schemaInfoDTO.setSourceURL(MapperUtils.propertyToString(modelResource, MSCR.sourceURL));
 		}
-		
+		if(modelResource.hasProperty(MSCR.customRoot)) {
+			schemaInfoDTO.setCustomRoot(MapperUtils.propertyToString(modelResource, MSCR.customRoot));
+		}
+
 		return schemaInfoDTO;
 	}
 	

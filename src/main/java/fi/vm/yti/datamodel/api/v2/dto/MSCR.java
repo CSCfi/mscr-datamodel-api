@@ -13,6 +13,8 @@ public class MSCR {
 
 	
 
+	
+
 	private MSCR(){
         //property class
     }
@@ -64,6 +66,7 @@ public class MSCR {
     public static final Property visibility = ResourceFactory.createProperty(URI, "visibility");
     public static final Property owner = ResourceFactory.createProperty(URI, "owner");
     public static final Property sourceURL = ResourceFactory.createProperty(URI, "sourceURL");
+    public static final Property customRoot = ResourceFactory.createProperty(URI, "customRoot");
     
     public static final Property PROV_wasRevisionOf = ResourceFactory.createProperty("http://www.w3.org/ns/prov#wasRevisionOf");
 
