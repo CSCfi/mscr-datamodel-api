@@ -1,0 +1,1517 @@
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix :      <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                "string"@en ;
+        rdfs:label                  "test"@en ;
+        dcterms:created             "2024-06-19T12:41:41.801Z"^^xsd:dateTime ;
+        dcterms:identifier          "mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2024-06-19T12:41:41.801Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052> ;
+        dcap:preferredXMLNamespacePrefix
+                "mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052" ;
+        iow:contentModified         "2024-06-19T12:41:41.8Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "MSCR" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test3.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PUBLIC" ;
+        owl:versionInfo             "DRAFT" .
+        
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Input specs" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "inputs" ;
+        <http://www.w3.org/ns/shacl#name>
+                "inputs" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/multiple> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/id> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/optional> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/maxSize> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/name> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/mediatypes> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/languages> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/logo>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "The tool's logo file name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/logo> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/id>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "id" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/id> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/targetlang>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#defaultValue>
+                "eng" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Language Identifier, ISO 693-3" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/targetlang> ;
+        <http://www.w3.org/ns/shacl#pattern>
+                "^(.{2,3})$" .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "operatingSystem" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "operatingSystem" ;
+        <http://www.w3.org/ns/shacl#name>
+                "operatingSystem" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionTo> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionFrom> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/installationLicense>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "installationLicense" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/installationLicense/InstallationLicense> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/installationLicense> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/installURL>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "installURL" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/installURL/InstallURL> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/installURL> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/multiple>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#boolean> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "multiple" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/multiple> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/url>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "url" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/url> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionTo>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "versionTo" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionTo> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/dataTransfer>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "none" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          "local" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
+                          "cloud" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
+                          "unknown" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
+                          "other" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
+                          "N/A"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "dataTransfer" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/dataTransfer> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/creators>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Tool's creators" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/creators> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact/email>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Email" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/contact/Contact/email> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/releaseNotes>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "releaseNotes" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/releaseNotes> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/encoding>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "encoding" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/encoding> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "contact" ;
+        <http://www.w3.org/ns/shacl#name>
+                "contact" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact/email> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact/url> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact/person> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact/url>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Contact Page Link" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/contact/Contact/url> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact/person>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Person name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/contact/Contact/person> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/bind>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "bind" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/queryParameters/QueryParameters/bind> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "batchProcessing" ;
+        <http://www.w3.org/ns/shacl#name>
+                "batchProcessing" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/mode> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Batch mode query parameters" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing/BatchProcessing/queryParameters> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/mode>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "zip"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "mode" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing/BatchProcessing/mode> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "pathParameters" ;
+        <http://www.w3.org/ns/shacl#name>
+                "pathParameters" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/encoding> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/value> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/bind> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/encoding>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "encoding" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/pathParameters/PathParameters/encoding> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/value>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "value" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/pathParameters/PathParameters/value> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/bind>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "bind" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/pathParameters/PathParameters/bind> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/pathParameters/PathParameters/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions/individualUserRestrictions>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "academic" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          "public" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
+                          "regional" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
+                          "other" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
+                          "unknown" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
+                          "license only"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "individualUserRestrictions" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/usageRestrictions/UsageRestrictions/individualUserRestrictions> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "operatingSystem" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "operatingSystem" ;
+        <http://www.w3.org/ns/shacl#name>
+                "operatingSystem" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionFrom> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionTo> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/logo> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/id> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/creators> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/location> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/homepage> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/name> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/description> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/deployment> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/integrationType> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/formatVersion> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/task> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/authentication> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/keywords> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Web Application" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Usage Restrictions" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/usageRestrictions> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/location>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Geographical location" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/location> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/homepage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Homepage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/homepage> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Tool name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/description>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Tool's description" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/description> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/deployment>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#defaultValue>
+                "development" ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "production" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          "development"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Deployment type" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/deployment> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/integrationType>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <https://hdl.handle.net/21.11104/3626040cadcac1571685> ;
+        <http://www.w3.org/ns/shacl#defaultValue>
+                "Integrated" ;
+        <http://www.w3.org/ns/shacl#description>
+                "Integration level: Integrated (fully integrated), External (some parameters must be supplied by the user) and Local (download and install the application locally)" ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "Integrated" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          "External" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
+                          "Local"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Integration with Switchboard" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/integrationType> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Standalone Application" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/formatVersion>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "2"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "formatVersion" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/formatVersion> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/task>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "Constituency Parsing" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_10>
+                          "Hyphenation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_11>
+                          "Inclusion detection" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_12>
+                          "Keyword Extractor" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_13>
+                          "Lemmatization" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_14>
+                          "Lookup Tools" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_15>
+                          "Machine Translation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_16>
+                          "Metadata Processing" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_17>
+                          "Morpho-syntactic tagger" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_18>
+                          "Morphological Analysis" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_19>
+                          "N-Gramming" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          "Coreference Resolution" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_20>
+                          "Named Entity Recognition" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_21>
+                          "Named Entity Relation Detection" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_22>
+                          "NLP suite for Dutch" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_23>
+                          "Optical Character Recognition" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_24>
+                          "Part-Of-Speech Tagging" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_25>
+                          "Relation between name entities detection" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_26>
+                          "Sentiment Analysis" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_27>
+                          "Shallow Parsing" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_28>
+                          "Spatial expression detection" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_29>
+                          "Speech analysis" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
+                          "Data Conversion" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_30>
+                          "Speech Recognition" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_31>
+                          "Speech segmentation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_32>
+                          "Speech transcription" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_33>
+                          "Spelling correction" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_34>
+                          "Stylometry" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_35>
+                          "Text Analytics" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_36>
+                          "Text Enhancement" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_37>
+                          "Text Normalisation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_38>
+                          "Text Summarization" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_39>
+                          "TF, IDF, TF-IDF calculation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
+                          "Dependency Parsing" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_40>
+                          "Tokenisation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_41>
+                          "Topic Modelling" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_42>
+                          "Transliteration" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_43>
+                          "Visualisation of 3D models" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_44>
+                          "Visualisation of Geographic Data" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_45>
+                          "Word sense disambiguation" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
+                          "Distant Reading" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
+                          "Editing" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_7>
+                          "Extraction of Polish terminology" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_8>
+                          "Grapheme to Phoneme Conversion" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_9>
+                          "Handwritten Text Recognition"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Task description" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/task> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Batch processing" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/authentication>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#defaultValue>
+                "null" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Authentication mechanism description, or null" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/authentication> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/keywords>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Keywords" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/keywords/Keywords> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/keywords> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "The Contact Schema" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/contact/Contact> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/contact> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "downloadURL" ;
+        <http://www.w3.org/ns/shacl#name>
+                "downloadURL" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/targetlang> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/url> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/type> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/type>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "type" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL/type> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions/countriesNotSupported>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "countriesNotSupported" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/usageRestrictions/UsageRestrictions/countriesNotSupported> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Query parameter list" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/queryParameters> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "queryParameters" ;
+        <http://www.w3.org/ns/shacl#name>
+                "queryParameters" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/bind> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/value> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/name> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/encoding> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "downloadURL" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL/DownloadURL> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/downloadURL> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/permissions>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "permissions" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/permissions> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "runtimeInformation" ;
+        <http://www.w3.org/ns/shacl#name>
+                "runtimeInformation" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/installationLicense> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/processorRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/memoryRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/fileSize> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/storageRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/processorRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "processorRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/processorRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/memoryRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "memoryRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/memoryRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/fileSize>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fileSize" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/fileSize> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/storageRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "storageRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/storageRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "runtimeEnvironment" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment/RuntimeEnvironment> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/featureList>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "featureList" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/featureList> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionFrom>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "versionFrom" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionFrom> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionFrom>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "versionFrom" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionFrom> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/applicationSuite>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "applicationSuite" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/applicationSuite> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/id>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "id" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/id> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/processorRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "processorRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/processorRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/optional>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#boolean> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "optional" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/optional> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/maxSize>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "maxSize" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/maxSize> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/mediatypes>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#minCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Mediatype" , "Mediatype list" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/mediatypes/Mediatypes> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/mediatypes> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/inputs/Inputs/languages>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "languages" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/inputs/Inputs/languages> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "usageRestrictions" ;
+        <http://www.w3.org/ns/shacl#name>
+                "usageRestrictions" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions/individualUserRestrictions> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions/countriesNotSupported> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions/countriesSupported> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/usageRestrictions/UsageRestrictions/countriesSupported>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "countriesSupported" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/usageRestrictions/UsageRestrictions/countriesSupported> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Runtime Information" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation/RuntimeInformation> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/runtimeInformation> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "webApplication" ;
+        <http://www.w3.org/ns/shacl#name>
+                "webApplication" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/runtimeInformation> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/scalabilityType> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/browserRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/licenseInformation> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/url> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/applicationSuite> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/availableOnDevice>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "availableOnDevice" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/availableOnDevice/AvailableOnDevice> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/availableOnDevice> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/scalabilityType>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          "singleUser" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          "smallGroups" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
+                          "classroomSize" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
+                          "lectureSize" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
+                          "unlimited" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
+                          "unknown" ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_7>
+                          "other"
+                ] ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "scalabilityType" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/scalabilityType> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Runtime Information" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "runtimeInformation" ;
+        <http://www.w3.org/ns/shacl#name>
+                "runtimeInformation" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/processorRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/storageRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/installationLicense> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/fileSize> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/memoryRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/browserRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "browserRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/browserRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/licenseInformation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "licenseInformation" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/licenseInformation/LicenseInformation> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/licenseInformation> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/url>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Tool's URL" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/url> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Path parameter list" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/pathParameters/PathParameters> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/pathParameters> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/applicationSuite>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "applicationSuite" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/applicationSuite> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionTo>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "versionTo" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/versionTo> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/operatingSystem/OperatingSystem/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/storageRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "storageRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/storageRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/value>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "value" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/queryParameters/QueryParameters/value> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "queryParameters" ;
+        <http://www.w3.org/ns/shacl#name>
+                "queryParameters" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/encoding> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/name> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/value> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/bind> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/value>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "value" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/value> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/bind>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "bind" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/batchProcessing/BatchProcessing/queryParameters/QueryParameters/bind> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/queryParameters/QueryParameters/name> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/installationLicense>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "installationLicense" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/installationLicense/InstallationLicense> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/installationLicense> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "runtimeEnvironment" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment/RuntimeEnvironment> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/runtimeEnvironment> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/fileSize>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fileSize" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/fileSize> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/webApplication/WebApplication/queryParameters/QueryParameters/encoding>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "encoding" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/webApplication/WebApplication/queryParameters/QueryParameters/encoding> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/softwareRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "softwareRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/softwareRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/supportingData>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "supportingData" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/supportingData> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/licenseInformation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> , <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#name>
+                "licenseInformation" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/licenseInformation/LicenseInformation> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/licenseInformation> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/memoryRequirements>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "memoryRequirements" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/runtimeInformation/RuntimeInformation/memoryRequirements> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/softwareAddOn>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "softwareAddOn" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:root/Root/standaloneApplication/StandaloneApplication/softwareAddOn> .
+
+<mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "standaloneApplication" ;
+        <http://www.w3.org/ns/shacl#name>
+                "standaloneApplication" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/installURL> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/dataTransfer> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/releaseNotes> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/downloadURL> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/permissions> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/featureList> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/applicationSuite> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/availableOnDevice> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/runtimeInformation> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/softwareRequirements> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/supportingData> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/licenseInformation> , <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root/Root/standaloneApplication/StandaloneApplication/softwareAddOn> .
