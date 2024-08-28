@@ -130,7 +130,7 @@ public class Schema extends BaseMSCRController {
 
 			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML || format == SchemaFormat.CSV
 					|| format == SchemaFormat.SKOSRDF || format == SchemaFormat.RDFS || format == SchemaFormat.SHACL
-					|| format == SchemaFormat.PDF || format == SchemaFormat.OWL) {
+					|| format == SchemaFormat.PDF || format == SchemaFormat.OWL ||format == SchemaFormat.ENUM) {
 				// do nothing for now
 			} else {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -192,7 +192,9 @@ public class Schema extends BaseMSCRController {
 					schemaModel = schemaService.transformXSDToInternal(pid, fileInBytes);	
 				}
 				
-
+			} else if (format == SchemaFormat.ENUM) {
+				schemaModel = schemaService.transformEnumSkos(pid,fileInBytes);	
+				
 			} else if (format == SchemaFormat.XML) {
 				// do nothing
 				schemaModel = ModelFactory.createDefaultModel();

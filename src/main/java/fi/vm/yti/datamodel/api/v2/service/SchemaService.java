@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
@@ -339,6 +342,26 @@ public class SchemaService {
 		}
 		
 		return model;
+	}
+
+	public Model transformEnumSkos(String pid, byte[] fileInBytes) {
+		Model m = ModelFactory.createDefaultModel();
+		
+		Resource cc = m.createResource(pid);
+		cc.addProperty(RDF.type, SKOS.ConceptScheme);
+		
+		String lines = new String(fileInBytes, StandardCharsets.UTF_8);
+		Scanner sc = new Scanner(lines);
+		while(sc.hasNextLine()) {
+			String prefLabel = sc.nextLine();
+			Resource c = m.createResource(pid+"/"+URLEncoder.encode(prefLabel));
+			c.addProperty(RDF.type, SKOS.Concept);
+			c.addProperty(SKOS.prefLabel, prefLabel, "en");
+			c.addProperty(SKOS.inScheme, cc);
+		}
+		sc.close();
+		
+		return m;
 	}
 }
 	

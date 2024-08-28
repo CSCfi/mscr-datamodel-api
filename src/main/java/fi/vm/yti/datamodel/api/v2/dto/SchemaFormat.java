@@ -10,5 +10,6 @@ public enum SchemaFormat {
 	SKOSRDF,
 	PDF,
 	XML, 
-	MSCR
+	MSCR,
+	ENUM
 }
