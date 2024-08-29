@@ -237,7 +237,7 @@ public class FrontendController {
 		var ownerMapper = groupManagementService.mapOwner();
 		SchemaInfoDTO metadata = schemaMapper.mapToFrontendSchemaDTO(pid, model, ownerMapper);
 		String contentString = null;
-		if(metadata.getFormat() == SchemaFormat.SKOSRDF) {
+		if(metadata.getFormat() == SchemaFormat.SKOSRDF|| metadata.getFormat() == SchemaFormat.ENUM) {
 			try {
 				contentString = schemaWriter.skosSchema(pid, model, "en");
 			} catch (Exception e) {
