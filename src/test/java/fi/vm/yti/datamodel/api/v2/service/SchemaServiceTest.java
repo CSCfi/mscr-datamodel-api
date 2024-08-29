@@ -24,6 +24,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.XSD;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,13 @@ public class SchemaServiceTest {
 	@Autowired
 	private SchemaService service;
 	
-	
+
+	private byte[] getBytesFromPath(String schemaPath) throws Exception, IOException {
+		InputStream inputSchemaInputStream = getClass().getClassLoader().getResourceAsStream(schemaPath);
+		byte[] inputSchemaInByte = inputSchemaInputStream.readAllBytes();
+		return inputSchemaInByte;
+	}	
+
 	private JsonNode getJsonNodeFromPath(String schemaPath) throws Exception, IOException {
 		InputStream inputSchemaInputStream = getClass().getClassLoader().getResourceAsStream(schemaPath);
 		byte[] inputSchemaInByte = inputSchemaInputStream.readAllBytes();
@@ -371,6 +378,15 @@ public class SchemaServiceTest {
 		Model model = ModelFactory.createDefaultModel();
 		model.read(file.toUri().toString());
 		assertTrue(model.size() > 0);		
+		
+	}
+	
+	@Test
+	void testTransformEnumSkos1() throws Exception {
+		byte[] bytes = getBytesFromPath("enum/simple1.csv");
+		Model m = service.transformEnumSkos("urn:test", bytes);
+		
+		assertEquals(4, m.listSubjectsWithProperty(SKOS.prefLabel).toList().size());
 		
 	}
 }
