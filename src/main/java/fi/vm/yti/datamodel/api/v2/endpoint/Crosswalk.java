@@ -222,9 +222,9 @@ public class Crosswalk extends BaseMSCRController {
 			Model contentModel = null;
 			CrosswalkFormat format = dto.getFormat();
 			if(format == CrosswalkFormat.SSSOM) {
-				Model sourceModel = jenaService.getCrosswalkContent(dto.getSourceSchema());
-				Model targetModel = jenaService.getCrosswalkContent(dto.getTargetSchema());
-				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes, sourceModel, targetModel);
+				Model sourceModel = jenaService.getSchemaContent(dto.getSourceSchema());
+				Model targetModel = jenaService.getSchemaContent(dto.getTargetSchema());
+				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes, dto.getSourceSchema(), sourceModel, dto.getTargetSchema(), targetModel);
 			}
 			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
 				// do nothing
@@ -234,7 +234,7 @@ public class Crosswalk extends BaseMSCRController {
 				throw new Exception("Unsupported crosswalk description format. Supported formats are: " + String.join(", ", Arrays.toString(CrosswalkFormat.values()) ));
 			}
 			storageService.storeCrosswalkFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
-			jenaService.putToSchema(pid + ":content", contentModel);
+			jenaService.putToCrosswalk(pid + ":content", contentModel);
 			
 		
 		} catch (Exception ex) {

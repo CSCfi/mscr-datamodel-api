@@ -1,0 +1,7 @@
+subject_label;subject_type;object_label;object_type;predicate_id
+angstrom_exponent_of_ambient_aerosol_in_air;rdfs literal;Earth Science > Atmosphere > Aerosols > Aerosol Optical Depth/Thickness > Angstrom Exponent;rdfs literal;http://www.w3.org/2004/02/skos/core#exactMatch
+angstrom_exponent_of_ambient_aerosol_in_air;rdfs literal;Earth Science > Atmosphere > Aerosols > Aerosol Particle Properties;rdfs literal;http://www.w3.org/2004/02/skos/core#exactMatch
+angstrom_exponent_of_ambient_aerosol_in_air;rdfs literal;Earth Science > Atmosphere > Aerosols > Particulate Matter;rdfs literal;http://www.w3.org/2004/02/skos/core#exactMatch
+atmosphere_absolute_vorticity;rdfs literal;Earth Science > Atmosphere > Atmospheric Winds > Vorticity;rdfs literal;http://www.w3.org/2004/02/skos/core#exactMatch
+atmosphere_convective_mass_flux;rdfs literal;Earth Science > Atmosphere > Clouds > Cloud Liquid Water/Ice;rdfs literal;http://www.w3.org/2004/02/skos/core#exactMatch
+atmosphere_convective_mass_flux;rdfs literal;Earth Science > Atmosphere > Atmospheric Winds > Convection;rdfs literal;http://www.w3.org/2004/02/skos/core#exactMatch
