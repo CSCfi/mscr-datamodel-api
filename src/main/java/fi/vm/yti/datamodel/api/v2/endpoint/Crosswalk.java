@@ -59,6 +59,7 @@ import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
+import fi.vm.yti.datamodel.api.v2.service.CrosswalkService;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
@@ -94,6 +95,7 @@ public class Crosswalk extends BaseMSCRController {
 	private final XSLTGenerator xsltGenerator;
 	private final AuthenticatedUserProvider userProvider;
     private final GroupManagementService groupManagementService;
+    private final CrosswalkService crosswalkService;
 
 
 	public Crosswalk(AuthorizationManager authorizationManager,
@@ -105,7 +107,8 @@ public class Crosswalk extends BaseMSCRController {
             MappingMapper mappingMapper,
             XSLTGenerator xsltGenerator,
             AuthenticatedUserProvider userProvider,
-            GroupManagementService groupManagementService) {
+            GroupManagementService groupManagementService,
+            CrosswalkService crosswalkService) {
 		this.openSearchIndexer = openSearchIndexer;
 		this.authorizationManager = authorizationManager;
 		this.PIDService = PIDService;
@@ -116,6 +119,7 @@ public class Crosswalk extends BaseMSCRController {
 		this.mappingMapper = mappingMapper;
 		this.userProvider = userProvider;
 		this.groupManagementService = groupManagementService;
+		this.crosswalkService = crosswalkService;
 	}
 	
 	private CrosswalkInfoDTO getCrosswalkDTO(String pid, boolean includeVersionInfo) throws Exception {
@@ -212,16 +216,26 @@ public class Crosswalk extends BaseMSCRController {
 		
 	}
 	
-	private void addFileToCrosswalk(final String pid, final CrosswalkFormat format, final byte[] fileInBytes, final String contentURL,
+	private void addFileToCrosswalk(final String pid, final CrosswalkInfoDTO dto, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {	 
 		try {
-			if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.SSSOM, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
-				storageService.storeCrosswalkFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
+			Model contentModel = null;
+			CrosswalkFormat format = dto.getFormat();
+			if(format == CrosswalkFormat.SSSOM) {
+				Model sourceModel = jenaService.getSchemaContent(dto.getSourceSchema());
+				Model targetModel = jenaService.getSchemaContent(dto.getTargetSchema());
+				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes, dto.getSourceSchema(), sourceModel, dto.getTargetSchema(), targetModel);
+			}
+			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
+				// do nothing
+				contentModel = ModelFactory.createDefaultModel();
 			}
 			else {
 				throw new Exception("Unsupported crosswalk description format. Supported formats are: " + String.join(", ", Arrays.toString(CrosswalkFormat.values()) ));
 			}
-		
+			storageService.storeCrosswalkFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
+			jenaService.putToCrosswalk(pid + ":content", contentModel);
+			
 		
 		} catch (Exception ex) {
 			throw new RuntimeException("Error occured while ingesting file based crosswalk description", ex);
@@ -334,7 +348,7 @@ public class Crosswalk extends BaseMSCRController {
 				check(authorizationManager.hasRightToAnyOrganization(orgs));	
 			}		
 			
-			addFileToCrosswalk(pid, crosswalkDTO.getFormat(), file.getBytes(), null, file.getContentType());
+			addFileToCrosswalk(pid, crosswalkDTO, file.getBytes(), null, file.getContentType());
 			return mapper.mapToCrosswalkDTO(pid, model, userMapper, ownerMapper);
 		
 		} catch (RuntimeException rex) {
@@ -394,7 +408,7 @@ public class Crosswalk extends BaseMSCRController {
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 
 		}			
-		addFileToCrosswalk(PID, dto.getFormat(), fileBytes, contentURL, contentType);
+		addFileToCrosswalk(PID, infoDto, fileBytes, contentURL, contentType);
 		var userMapper = groupManagementService.mapUser();
 		var ownerMapper = groupManagementService.mapOwner();
 		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, userMapper, ownerMapper);
