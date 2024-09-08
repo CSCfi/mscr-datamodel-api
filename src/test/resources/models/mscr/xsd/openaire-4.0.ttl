@@ -1,0 +1,2693 @@
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix :      <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<pid:test>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                "string"@en ;
+        rdfs:label                  "test"@en ;
+        dcterms:created             "2024-06-19T12:41:41.801Z"^^xsd:dateTime ;
+        dcterms:identifier          "mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2024-06-19T12:41:41.801Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052> ;
+        dcap:preferredXMLNamespacePrefix
+                "mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052" ;
+        iow:contentModified         "2024-06-19T12:41:41.8Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "MSCR" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test3.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PUBLIC" ;
+        owl:versionInfo             "DRAFT" .
+
+<pid:test#root/Root/alternateIdentifiers>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4alternateIdentifiers> ;
+        <http://www.w3.org/ns/shacl#name>
+                "alternateIdentifiers" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/alternateIdentifiers/AlternateIdentifiers> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/alternateIdentifiers> .
+
+<pid:test#root/Root/resource/Resource/citationIssue>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationIssue> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationIssue" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationIssue> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLongitude> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocationBox" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationBox> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationBox" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/northBoundLatitude> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/southBoundLatitude> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/eastBoundLongitude> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/westBoundLongitude> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.Personal names can be further specified using givenName and familyName." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "creator" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creator> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creator" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/nameIdentifier> , <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/affiliation> , <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/givenName> , <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/creatorName> , <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/familyName> .
+
+<pid:test#root/Root/resource/Resource/creators>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creators> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creators" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/creators/Creators> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators> .
+
+<pid:test#root/Root/licenseCondition>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/licenseCondition> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "licenseCondition" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/licenseCondition> .
+
+<pid:test#root/Root/resource/Resource/licenseCondition>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/licenseCondition> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "licenseCondition" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/licenseCondition> .
+
+<pid:test#root/Root/resource>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/resource> ;
+        <http://www.w3.org/ns/shacl#description>
+                "This schema defines the xml format for OpenAIRE Guidelines for Literature Repositories v4.\n      \n      The schema represents an application profile consisting of\n      * elements from Dublin Core with optional refinement attributes xml:lang and rdf:resource\n      * elements from DataCite metadata schema v4.1 to express granular information on creator, contributor, fundingReference, relatedIdentifier, alternateIdentifier, date, subject\n      * elements from OpenAIRE to express information on bibliographic citation details, (fulltext) files,  version and license condition" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "resource" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource> .
+
+<pid:test#root/Root/creators/Creators/creator/Creator/familyName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4familyName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "familyName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators/Creators/creator/Creator/familyName> .
+
+<pid:test#root/Root/resource/Resource/citationTitle>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationTitle> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationTitle" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationTitle> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "contributors" ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributors" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4inPolygonPoint> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "inPolygonPoint" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint> .
+
+<pid:test#root/Root/dates>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4dates> ;
+        <http://www.w3.org/ns/shacl#name>
+                "dates" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/dates/Dates> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/dates> .
+
+<pid:test#root/Root/audience>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/terms/audience> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "audience" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/audience> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLatitude> .
+
+<pid:test#root/Root/resource/Resource/rights>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4rights> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "rights" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/rights> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "A point contains a single latitude-longitude pair, separated by whitespace." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocationPoint" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPoint> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPoint" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLatitude> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLongitude> .
+
+<pid:test#root/Root/version>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/version> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "version" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/version> .
+
+<pid:test#root/Root/resource/Resource/citationConferenceDate>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationConferenceDate> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationConferenceDate" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationConferenceDate> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocation> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocation" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation> .
+
+<pid:test#root/Root/relatedIdentifiers/RelatedIdentifiers>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "relatedIdentifiers" ;
+        <http://www.w3.org/ns/shacl#name>
+                "relatedIdentifiers" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/relatedIdentifiers/RelatedIdentifiers/relatedIdentifier> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "inPolygonPoint" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4inPolygonPoint> ;
+        <http://www.w3.org/ns/shacl#name>
+                "inPolygonPoint" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLatitude> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/dates/Dates/date>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4date> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Different dates relevant to the work.YYYY,YYYY-MM-DD, YYYY-MM-DDThh:mm:ssTZD or any other format or level of granularity described in W3CDTF. Use RKMS-ISO8601 standard for depicting date ranges." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "date" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/dates/Dates/date> .
+
+<pid:test#root/Root/resource/Resource/sizes/Sizes>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "sizes" ;
+        <http://www.w3.org/ns/shacl#name>
+                "sizes" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/sizes/Sizes/size> .
+
+<pid:test#root/Root/citationStartPage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationStartPage> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationStartPage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationStartPage> .
+
+<pid:test#root/Root/resource/Resource/citationConferencePlace>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationConferencePlace> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationConferencePlace" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationConferencePlace> .
+
+<pid:test#root/Root/rights>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4rights> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "rights" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/rights> .
+
+<pid:test#root/Root/contributors/Contributors/contributor/Contributor>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "contributor" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributor> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributor" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor/familyName> , <pid:test#root/Root/contributors/Contributors/contributor/Contributor/nameIdentifier> , <pid:test#root/Root/contributors/Contributors/contributor/Contributor/givenName> , <pid:test#root/Root/contributors/Contributors/contributor/Contributor/contributorName> , <pid:test#root/Root/contributors/Contributors/contributor/Contributor/affiliation> .
+
+<pid:test#root/Root/resource/Resource/geoLocations>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocations> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocations" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/eastBoundLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4eastBoundLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "eastBoundLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/eastBoundLongitude> .
+
+<pid:test#root/Root/geoLocations>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocations> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocations" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations> .
+
+<pid:test#root/Root/resource/Resource/alternateIdentifiers/AlternateIdentifiers/alternateIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4alternateIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "An identifier or identifiers other than the primary Identifier applied to the resource being registered. This may be any alphanumeric string which is unique within its domain of issue. May be used for local identifiers. AlternateIdentifier should be used for another identifier of the same instance (same location, same file)." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "alternateIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/alternateIdentifiers/AlternateIdentifiers/alternateIdentifier> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/northBoundLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4northBoundLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "northBoundLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/northBoundLatitude> .
+
+<pid:test#root/Root/resource/Resource/titles/Titles/title>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4title> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A name or title by which a resource is known." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "title" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/titles/Titles/title> .
+
+<pid:test#root/Root/resource/Resource/relatedIdentifiers/RelatedIdentifiers/relatedIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4relatedIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Identifiers of related resources. Use this property to indicate subsets of properties, as appropriate." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "relatedIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/relatedIdentifiers/RelatedIdentifiers/relatedIdentifier> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributor> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributor" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor> .
+
+<pid:test#root/Root/fundingStream>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingStream> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingStream" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingStream> .
+
+<pid:test#root/Root/citationConferencePlace>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationConferencePlace> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationConferencePlace" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationConferencePlace> .
+
+<pid:test#root/Root/resourceType>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/resourceType> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "resourceType" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resourceType> .
+
+<pid:test#root/Root/resource/Resource>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "This schema defines the xml format for OpenAIRE Guidelines for Literature Repositories v4.\n      \n      The schema represents an application profile consisting of\n      * elements from Dublin Core with optional refinement attributes xml:lang and rdf:resource\n      * elements from DataCite metadata schema v4.1 to express granular information on creator, contributor, fundingReference, relatedIdentifier, alternateIdentifier, date, subject\n      * elements from OpenAIRE to express information on bibliographic citation details, (fulltext) files,  version and license condition" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "resource" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/resource> ;
+        <http://www.w3.org/ns/shacl#name>
+                "resource" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/description> , <pid:test#root/Root/resource/Resource/citationEndPage> , <pid:test#root/Root/resource/Resource/citationConferenceDate> , <pid:test#root/Root/resource/Resource/fundingReferences> , <pid:test#root/Root/resource/Resource/citationEdition> , <pid:test#root/Root/resource/Resource/subjects> , <pid:test#root/Root/resource/Resource/audience> , <pid:test#root/Root/resource/Resource/licenseCondition> , <pid:test#root/Root/resource/Resource/citationConferencePlace> , <pid:test#root/Root/resource/Resource/rights> , <pid:test#root/Root/resource/Resource/format> , <pid:test#root/Root/resource/Resource/resourceType> , <pid:test#root/Root/resource/Resource/language> , <pid:test#root/Root/resource/Resource/citationTitle> , <pid:test#root/Root/resource/Resource/geoLocations> , <pid:test#root/Root/resource/Resource/identifier> , <pid:test#root/Root/resource/Resource/creators> , <pid:test#root/Root/resource/Resource/source> , <pid:test#root/Root/resource/Resource/citationIssue> , <pid:test#root/Root/resource/Resource/file> , <pid:test#root/Root/resource/Resource/dates> , <pid:test#root/Root/resource/Resource/relatedIdentifiers> , <pid:test#root/Root/resource/Resource/coverage> , <pid:test#root/Root/resource/Resource/sizes> , <pid:test#root/Root/resource/Resource/citationStartPage> , <pid:test#root/Root/resource/Resource/titles> , <pid:test#root/Root/resource/Resource/alternateIdentifiers> , <pid:test#root/Root/resource/Resource/publisher> , <pid:test#root/Root/resource/Resource/citationVolume> , <pid:test#root/Root/resource/Resource/contributors> .
+
+<pid:test#root/Root/resource/Resource/dates>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4dates> ;
+        <http://www.w3.org/ns/shacl#name>
+                "dates" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/dates/Dates> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/dates> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/westBoundLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4westBoundLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "westBoundLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/westBoundLongitude> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationBox> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationBox" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4inPolygonPoint> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "inPolygonPoint" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint> .
+
+<pid:test#root/Root/contributors/Contributors/contributor/Contributor/affiliation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4affiliation> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "affiliation" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor/affiliation> .
+
+<pid:test#root/Root/resource/Resource/subjects/Subjects/subject>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4subject> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Subject, keywords, classification codes, or key phrases describing the resource." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "subject" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/subjects/Subjects/subject> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/southBoundLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4southBoundLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "southBoundLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/southBoundLatitude> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/creatorName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creatorName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creatorName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/creatorName> .
+
+<pid:test#root/Root/resource/Resource/coverage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/coverage> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "coverage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/coverage> .
+
+<pid:test#root/Root/resource/Resource/contributors>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributors> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributors" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors> .
+
+<pid:test#root/Root/creators/Creators/creator/Creator/creatorName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creatorName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creatorName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators/Creators/creator/Creator/creatorName> .
+
+<pid:test#root/Root/citationConferenceDate>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationConferenceDate> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationConferenceDate" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationConferenceDate> .
+
+<pid:test#root/Root/resource/Resource/sizes/Sizes/size>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4size> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Unstructures size information about the resource." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "size" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/sizes/Sizes/size> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4polygonPoint> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "polygonPoint" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint> .
+
+<pid:test#root/Root/language>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/language> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "language" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/language> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLatitude> .
+
+<pid:test#root/Root/resource/Resource/relatedIdentifiers/RelatedIdentifiers>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "relatedIdentifiers" ;
+        <http://www.w3.org/ns/shacl#name>
+                "relatedIdentifiers" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/relatedIdentifiers/RelatedIdentifiers/relatedIdentifier> .
+
+<pid:test#root/Root/resource/Resource/alternateIdentifiers>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4alternateIdentifiers> ;
+        <http://www.w3.org/ns/shacl#name>
+                "alternateIdentifiers" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/alternateIdentifiers/AlternateIdentifiers> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/alternateIdentifiers> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/northBoundLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4northBoundLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "northBoundLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/northBoundLatitude> .
+
+<pid:test#root/Root/source>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/source> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "source" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/source> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "inPolygonPoint" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4inPolygonPoint> ;
+        <http://www.w3.org/ns/shacl#name>
+                "inPolygonPoint" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLatitude> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/alternateIdentifiers/AlternateIdentifiers/alternateIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4alternateIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "An identifier or identifiers other than the primary Identifier applied to the resource being registered. This may be any alphanumeric string which is unique within its domain of issue. May be used for local identifiers. AlternateIdentifier should be used for another identifier of the same instance (same location, same file)." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "alternateIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/alternateIdentifiers/AlternateIdentifiers/alternateIdentifier> .
+
+<pid:test#root/Root/sizes>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4sizes> ;
+        <http://www.w3.org/ns/shacl#name>
+                "sizes" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/sizes/Sizes> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/sizes> .
+
+<pid:test#root/Root/contributors/Contributors>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "contributors" ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributors" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/contributors/Contributors/contributor> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocationPolygon" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPolygon> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPolygon" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/familyName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4familyName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "familyName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/familyName> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLatitude> .
+
+<pid:test#root/Root/creators>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creators> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creators" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/creators/Creators> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators> .
+
+<pid:test#root/Root/resource/Resource/language>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/language> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "language" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/language> .
+
+<pid:test#root/Root/resource/Resource/dates/Dates>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "dates" ;
+        <http://www.w3.org/ns/shacl#name>
+                "dates" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/dates/Dates/date> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLongitude> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "contributor" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributor> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributor" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/affiliation> , <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/givenName> , <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/nameIdentifier> , <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/contributorName> , <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/familyName> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "creators" ;
+        <http://www.w3.org/ns/shacl#name>
+                "creators" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingReference> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Information about financial support (funding) for the resource being registered." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReference" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference> .
+
+<pid:test#root/Root/alternateIdentifiers/AlternateIdentifiers>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "alternateIdentifiers" ;
+        <http://www.w3.org/ns/shacl#name>
+                "alternateIdentifiers" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/alternateIdentifiers/AlternateIdentifiers/alternateIdentifier> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPoint> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A point contains a single latitude-longitude pair, separated by whitespace." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPoint" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint> .
+
+<pid:test#root/Root/creators/Creators>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "creators" ;
+        <http://www.w3.org/ns/shacl#name>
+                "creators" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/creators/Creators/creator> .
+
+<pid:test#root/Root/creators/Creators/creator/Creator/givenName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4givenName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "givenName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators/Creators/creator/Creator/givenName> .
+
+<pid:test#root/Root/contributors/Contributors/contributor/Contributor/familyName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4familyName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "familyName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor/familyName> .
+
+<pid:test#root/Root/citationVolume>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationVolume> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationVolume" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationVolume> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/fundingStream>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingStream> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingStream" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/fundingStream> .
+
+<pid:test#root/Root/description>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/description> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "description" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/description> .
+
+<pid:test#root/Root/contributors/Contributors/contributor/Contributor/nameIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4nameIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "nameIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor/nameIdentifier> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creator> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.Personal names can be further specified using givenName and familyName." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creator" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/funderName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/funderName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Name of the funding provider." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "funderName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/funderName> .
+
+<pid:test#root/Root/contributors/Contributors/contributor/Contributor/contributorName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributorName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributorName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor/contributorName> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/givenName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4givenName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "givenName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/givenName> .
+
+<pid:test#root/Root/subjects/Subjects>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "subjects" ;
+        <http://www.w3.org/ns/shacl#name>
+                "subjects" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/subjects/Subjects/subject> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "polygonPoint" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4polygonPoint> ;
+        <http://www.w3.org/ns/shacl#name>
+                "polygonPoint" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLatitude> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/resource/Resource/titles>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4titles> ;
+        <http://www.w3.org/ns/shacl#name>
+                "titles" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/titles/Titles> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/titles> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/funderIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/funderIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Uniquely identifies a funding entity, according to various types." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "funderIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/funderIdentifier> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPolygon> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPolygon" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon> .
+
+<pid:test#root/Root/resource/Resource/citationStartPage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationStartPage> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationStartPage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationStartPage> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPolygon> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPolygon" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/givenName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4givenName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "givenName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/givenName> .
+
+<pid:test#root/Root>  a  <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/citationEdition> , <pid:test#root/Root/dates> , <pid:test#root/Root/subjects> , <pid:test#root/Root/creators> , <pid:test#root/Root/identifier> , <pid:test#root/Root/language> , <pid:test#root/Root/fundingReferences> , <pid:test#root/Root/publisher> , <pid:test#root/Root/coverage> , <pid:test#root/Root/licenseCondition> , <pid:test#root/Root/titles> , <pid:test#root/Root/sizes> , <pid:test#root/Root/audience> , <pid:test#root/Root/relatedIdentifiers> , <pid:test#root/Root/citationEndPage> , <pid:test#root/Root/citationConferencePlace> , <pid:test#root/Root/citationIssue> , <pid:test#root/Root/format> , <pid:test#root/Root/version> , <pid:test#root/Root/resourceType> , <pid:test#root/Root/any> , <pid:test#root/Root/alternateIdentifiers> , <pid:test#root/Root/geoLocations> , <pid:test#root/Root/source> , <pid:test#root/Root/resource> , <pid:test#root/Root/file> , <pid:test#root/Root/citationStartPage> , <pid:test#root/Root/fundingStream> , <pid:test#root/Root/citationTitle> , <pid:test#root/Root/rights> , <pid:test#root/Root/contributors> , <pid:test#root/Root/description> , <pid:test#root/Root/citationConferenceDate> , <pid:test#root/Root/citationVolume> .
+
+<pid:test#root/Root/citationEdition>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationEdition> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationEdition" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationEdition> .
+
+<pid:test#root/Root/subjects/Subjects/subject>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4subject> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Subject, keywords, classification codes, or key phrases describing the resource." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "subject" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/subjects/Subjects/subject> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocationPolygon" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPolygon> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPolygon" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/eastBoundLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4eastBoundLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "eastBoundLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/eastBoundLongitude> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocationBox" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationBox> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationBox" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/northBoundLatitude> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/southBoundLatitude> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/eastBoundLongitude> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/westBoundLongitude> .
+
+<pid:test#root/Root/resource/Resource/dates/Dates/date>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4date> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Different dates relevant to the work.YYYY,YYYY-MM-DD, YYYY-MM-DDThh:mm:ssTZD or any other format or level of granularity described in W3CDTF. Use RKMS-ISO8601 standard for depicting date ranges." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "date" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/dates/Dates/date> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocations" ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocations" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation> .
+
+<pid:test#root/Root/titles>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4titles> ;
+        <http://www.w3.org/ns/shacl#name>
+                "titles" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/titles/Titles> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/titles> .
+
+<pid:test#root/Root/creators/Creators/creator/Creator/nameIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4nameIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "nameIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators/Creators/creator/Creator/nameIdentifier> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/affiliation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4affiliation> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "affiliation" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/affiliation> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardTitle>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/awardTitle> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The human readable title of the award (grant)." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "awardTitle" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardTitle> .
+
+<pid:test#root/Root/resource/Resource/subjects>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4subjects> ;
+        <http://www.w3.org/ns/shacl#name>
+                "subjects" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/subjects/Subjects> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/subjects> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLatitude> .
+
+<pid:test#root/Root/sizes/Sizes>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "sizes" ;
+        <http://www.w3.org/ns/shacl#name>
+                "sizes" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/sizes/Sizes/size> .
+
+<pid:test#root/Root/file>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/file> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "file" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/file> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/awardNumber> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The code assigned by the funder to a sponsored award (grant)." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "awardNumber" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber> .
+
+<pid:test#root/Root/identifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4identifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A persistent identifier that identifies a resource." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "identifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/identifier> .
+
+<pid:test#root/Root/resource/Resource/publisher>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/publisher> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "publisher" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/publisher> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "polygonPoint" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4polygonPoint> ;
+        <http://www.w3.org/ns/shacl#name>
+                "polygonPoint" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLatitude> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/southBoundLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4southBoundLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "southBoundLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/southBoundLatitude> .
+
+<pid:test#root/Root/resource/Resource/citationEdition>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationEdition> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationEdition" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationEdition> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "Information about financial support (funding) for the resource being registered." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "fundingReference" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingReference> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReference" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/funderIdentifier> , <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/funderName> , <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/awardTitle> , <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/fundingStream> , <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber> .
+
+<pid:test#root/Root/citationIssue>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationIssue> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationIssue" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationIssue> .
+
+<pid:test#root/Root/publisher>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/publisher> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "publisher" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/publisher> .
+
+<pid:test#root/Root/titles/Titles/title>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4title> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A name or title by which a resource is known." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "title" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/titles/Titles/title> .
+
+<pid:test#root/Root/coverage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/coverage> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "coverage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/coverage> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLongitude> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/funderIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/funderIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Uniquely identifies a funding entity, according to various types." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "funderIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/funderIdentifier> .
+
+<pid:test#root/Root/resource/Resource/identifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4identifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A persistent identifier that identifies a resource." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "identifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/identifier> .
+
+<pid:test#root/Root/any/Any>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "any" ;
+        <http://www.w3.org/ns/shacl#name>
+                "any" .
+
+<pid:test#root/Root/any>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "any" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/any/Any> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/any> .
+
+<pid:test#root/Root/citationTitle>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationTitle> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationTitle" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationTitle> .
+
+<pid:test#root/Root/contributors/Contributors/contributor/Contributor/givenName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4givenName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "givenName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor/givenName> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/familyName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4familyName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "familyName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/familyName> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPoint> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A point contains a single latitude-longitude pair, separated by whitespace." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPoint" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint> .
+
+<pid:test#root/Root/resource/Resource/audience>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/terms/audience> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "audience" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/audience> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "Information about financial support (funding) for the resource being registered." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "fundingReference" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingReference> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReference" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber> , <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/fundingStream> , <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/funderName> , <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardTitle> , <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/funderIdentifier> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPlace>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPlace> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPlace" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPlace> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocation" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocation> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocation" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPlace> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationBox> ;
+        <http://www.w3.org/ns/shacl#description>
+                "A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationBox" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/contributorName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributorName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributorName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/contributorName> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/nameIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4nameIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "nameIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/nameIdentifier> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLatitude> .
+
+<pid:test#root/Root/resource/Resource/resourceType>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/resourceType> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "resourceType" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/resourceType> .
+
+<pid:test#root/Root/resource/Resource/alternateIdentifiers/AlternateIdentifiers>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "alternateIdentifiers" ;
+        <http://www.w3.org/ns/shacl#name>
+                "alternateIdentifiers" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/alternateIdentifiers/AlternateIdentifiers/alternateIdentifier> .
+
+<pid:test#root/Root/relatedIdentifiers/RelatedIdentifiers/relatedIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4relatedIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Identifiers of related resources. Use this property to indicate subsets of properties, as appropriate." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "relatedIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/relatedIdentifiers/RelatedIdentifiers/relatedIdentifier> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/funderName>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/funderName> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Name of the funding provider." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "funderName" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/funderName> .
+
+<pid:test#root/Root/contributors>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributors> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributors" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/contributors/Contributors> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/fundingStream>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingStream> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingStream" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/fundingStream> .
+
+<pid:test#root/Root/resource/Resource/format>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/format> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "format" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/format> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "A point contains a single latitude-longitude pair, separated by whitespace." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocationPoint" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPoint> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPoint" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLatitude> , <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint/GeoLocationPoint/pointLongitude> .
+
+<pid:test#root/Root/creators/Creators/creator>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creator> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.Personal names can be further specified using givenName and familyName." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creator" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/creators/Creators/creator/Creator> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators/Creators/creator> .
+
+<pid:test#root/Root/resource/Resource/titles/Titles>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "titles" ;
+        <http://www.w3.org/ns/shacl#name>
+                "titles" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/titles/Titles/title> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/awardNumber> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The code assigned by the funder to a sponsored award (grant)." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "awardNumber" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference/awardNumber> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLatitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLatitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLatitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint/pointLatitude> .
+
+<pid:test#root/Root/resource/Resource/citationVolume>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationVolume> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationVolume" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationVolume> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/westBoundLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4westBoundLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "westBoundLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox/GeoLocationBox/westBoundLongitude> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "fundingReferences" ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReferences" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference> .
+
+<pid:test#root/Root/format>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/format> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "format" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/format> .
+
+<pid:test#root/Root/citationEndPage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationEndPage> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationEndPage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/citationEndPage> .
+
+<pid:test#root/Root/resource/Resource/source>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/source> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "source" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/source> .
+
+<pid:test#root/Root/sizes/Sizes/size>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4size> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Unstructures size information about the resource." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "size" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/sizes/Sizes/size> .
+
+<pid:test#root/Root/titles/Titles>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "titles" ;
+        <http://www.w3.org/ns/shacl#name>
+                "titles" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/titles/Titles/title> .
+
+<pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/awardTitle>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/awardTitle> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The human readable title of the award (grant)." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "awardTitle" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences/FundingReferences/fundingReference/FundingReference/awardTitle> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocation> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocation" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation> .
+
+<pid:test#root/Root/geoLocations/GeoLocations>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocations" ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocations" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingReferences> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReferences" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences> .
+
+<pid:test#root/Root/dates/Dates>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "dates" ;
+        <http://www.w3.org/ns/shacl#name>
+                "dates" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/dates/Dates/date> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "fundingReferences" ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReferences" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference> .
+
+<pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/affiliation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4affiliation> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "affiliation" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/creators/Creators/creator/Creator/affiliation> .
+
+<pid:test#root/Root/resource/Resource/citationEndPage>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/citationEndPage> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "citationEndPage" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/citationEndPage> .
+
+<pid:test>  <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                <pid:test#root/Root> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4polygonPoint> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "polygonPoint" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint> .
+
+<pid:test#root/Root/fundingReferences>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingReferences> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReferences" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/fundingReferences/FundingReferences> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/fundingReferences> .
+
+<pid:test#root/Root/resource/Resource/file>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/file> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "file" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/file> .
+
+<pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://namespace.openaire.eu/schema/oaire/fundingReference> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Information about financial support (funding) for the resource being registered." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fundingReference" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference/FundingReference> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/fundingReferences/FundingReferences/fundingReference> .
+
+<pid:test#root/Root/creators/Creators/creator/Creator>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://purl.org/dc/terms/description>
+                "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.Personal names can be further specified using givenName and familyName." ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "creator" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4creator> ;
+        <http://www.w3.org/ns/shacl#name>
+                "creator" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/creators/Creators/creator/Creator/nameIdentifier> , <pid:test#root/Root/creators/Creators/creator/Creator/affiliation> , <pid:test#root/Root/creators/Creators/creator/Creator/creatorName> , <pid:test#root/Root/creators/Creators/creator/Creator/givenName> , <pid:test#root/Root/creators/Creators/creator/Creator/familyName> .
+
+<pid:test#root/Root/resource/Resource/subjects/Subjects>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "subjects" ;
+        <http://www.w3.org/ns/shacl#name>
+                "subjects" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/subjects/Subjects/subject> .
+
+<pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/nameIdentifier>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4nameIdentifier> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "nameIdentifier" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/contributors/Contributors/contributor/Contributor/nameIdentifier> .
+
+<pid:test#root/Root/relatedIdentifiers>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4relatedIdentifiers> ;
+        <http://www.w3.org/ns/shacl#name>
+                "relatedIdentifiers" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/relatedIdentifiers/RelatedIdentifiers> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/relatedIdentifiers> .
+
+<pid:test#root/Root/creators/Creators/creator/Creator/affiliation>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4affiliation> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "affiliation" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/creators/Creators/creator/Creator/affiliation> .
+
+<pid:test#root/Root/resource/Resource/sizes>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4sizes> ;
+        <http://www.w3.org/ns/shacl#name>
+                "sizes" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/sizes/Sizes> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/sizes> .
+
+<pid:test#root/Root/resource/Resource/description>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://purl.org/dc/elements/1.1/description> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "description" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/description> .
+
+<pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "geoLocation" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocation> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocation" ;
+        <http://www.w3.org/ns/shacl#property>
+                <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationBox> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPoint> , <pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPlace> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPlace>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4geoLocationPlace> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "geoLocationPlace" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPlace> .
+
+<pid:test#root/Root/contributors/Contributors/contributor>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4contributor> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#long> ;
+        <http://www.w3.org/ns/shacl#name>
+                "contributor" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/contributors/Contributors/contributor/Contributor> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/contributors/Contributors/contributor> .
+
+<pid:test#root/Root/resource/Resource/relatedIdentifiers>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4relatedIdentifiers> ;
+        <http://www.w3.org/ns/shacl#name>
+                "relatedIdentifiers" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/resource/Resource/relatedIdentifiers/RelatedIdentifiers> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/resource/Resource/relatedIdentifiers> .
+
+<pid:test#root/Root/subjects>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4subjects> ;
+        <http://www.w3.org/ns/shacl#name>
+                "subjects" ;
+        <http://www.w3.org/ns/shacl#node>
+                <pid:test#root/Root/subjects/Subjects> ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/subjects> .
+
+<pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLongitude>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#qname>
+                <http://datacite.org/schema/kernel-4pointLongitude> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "pointLongitude" ;
+        <http://www.w3.org/ns/shacl#path>
+                <pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/inPolygonPoint/InPolygonPoint/pointLongitude> .

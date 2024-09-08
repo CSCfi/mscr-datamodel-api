@@ -1,0 +1,909 @@
+{
+    "type": "object",
+    "properties": {
+        "resource": {
+            "type": "object",
+            "properties": {
+                "coverage": {
+                    "@id": "http://purl.org/dc/elements/1.1/coverage",
+                    "type": "string",
+                    "title": "coverage"
+                },
+                "creators": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "creator": {
+                                "type": "object",
+                                "properties": {
+                                    "creatorName": {
+                                        "type": "string",
+                                        "title": "creatorName",
+                                        "@id": "http://datacite.org/schema/kernel-4creatorName"
+                                    },
+                                    "givenName": {
+                                        "@id": "http://datacite.org/schema/kernel-4givenName",
+                                        "type": "string",
+                                        "title": "givenName"
+                                    },
+                                    "familyName": {
+                                        "@id": "http://datacite.org/schema/kernel-4familyName",
+                                        "type": "string",
+                                        "title": "familyName"
+                                    },
+                                    "nameIdentifier": {
+                                        "type": "string",
+                                        "title": "nameIdentifier",
+                                        "@id": "http://datacite.org/schema/kernel-4nameIdentifier"
+                                    },
+                                    "affiliation": {
+                                        "@id": "http://datacite.org/schema/kernel-4affiliation",
+                                        "type": "string",
+                                        "title": "affiliation"
+                                    }
+                                },
+                                "description": "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.Personal names can be further specified using givenName and familyName.",
+                                "title": "creator",
+                                "@id": "http://datacite.org/schema/kernel-4creator"
+                            }
+                        }
+                    },
+                    "title": "creators",
+                    "@id": "http://datacite.org/schema/kernel-4creators"
+                },
+                "contributors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "contributor": {
+                                "type": "object",
+                                "properties": {
+                                    "contributorName": {
+                                        "type": "string",
+                                        "title": "contributorName",
+                                        "@id": "http://datacite.org/schema/kernel-4contributorName"
+                                    },
+                                    "givenName": {
+                                        "@id": "http://datacite.org/schema/kernel-4givenName",
+                                        "type": "string",
+                                        "title": "givenName"
+                                    },
+                                    "familyName": {
+                                        "@id": "http://datacite.org/schema/kernel-4familyName",
+                                        "type": "string",
+                                        "title": "familyName"
+                                    },
+                                    "nameIdentifier": {
+                                        "type": "string",
+                                        "title": "nameIdentifier",
+                                        "@id": "http://datacite.org/schema/kernel-4nameIdentifier"
+                                    },
+                                    "affiliation": {
+                                        "@id": "http://datacite.org/schema/kernel-4affiliation",
+                                        "type": "string",
+                                        "title": "affiliation"
+                                    }
+                                },
+                                "description": "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given.",
+                                "title": "contributor",
+                                "@id": "http://datacite.org/schema/kernel-4contributor"
+                            }
+                        }
+                    },
+                    "title": "contributors",
+                    "@id": "http://datacite.org/schema/kernel-4contributors"
+                },
+                "fundingReferences": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "fundingReference": {
+                                "type": "object",
+                                "properties": {
+                                    "funderName": {
+                                        "type": "string",
+                                        "description": "Name of the funding provider.",
+                                        "title": "funderName",
+                                        "@id": "http://namespace.openaire.eu/schema/oaire/funderName"
+                                    },
+                                    "funderIdentifier": {
+                                        "type": "string",
+                                        "description": "Uniquely identifies a funding entity, according to various types.",
+                                        "title": "funderIdentifier",
+                                        "@id": "http://namespace.openaire.eu/schema/oaire/funderIdentifier"
+                                    },
+                                    "fundingStream": {
+                                        "type": "string",
+                                        "title": "fundingStream",
+                                        "@id": "http://namespace.openaire.eu/schema/oaire/fundingStream"
+                                    },
+                                    "awardNumber": {
+                                        "type": "string",
+                                        "description": "The code assigned by the funder to a sponsored award (grant).",
+                                        "title": "awardNumber",
+                                        "@id": "http://namespace.openaire.eu/schema/oaire/awardNumber"
+                                    },
+                                    "awardTitle": {
+                                        "type": "string",
+                                        "description": "The human readable title of the award (grant).",
+                                        "title": "awardTitle",
+                                        "@id": "http://namespace.openaire.eu/schema/oaire/awardTitle"
+                                    }
+                                },
+                                "description": "Information about financial support (funding) for the resource being registered.",
+                                "title": "fundingReference",
+                                "@id": "http://namespace.openaire.eu/schema/oaire/fundingReference"
+                            }
+                        }
+                    },
+                    "title": "fundingReferences",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/fundingReferences"
+                },
+                "alternateIdentifiers": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "alternateIdentifier": {
+                                "type": "string",
+                                "description": "An identifier or identifiers other than the primary Identifier applied to the resource being registered. This may be any alphanumeric string which is unique within its domain of issue. May be used for local identifiers. AlternateIdentifier should be used for another identifier of the same instance (same location, same file).",
+                                "title": "alternateIdentifier",
+                                "@id": "http://datacite.org/schema/kernel-4alternateIdentifier"
+                            }
+                        }
+                    },
+                    "title": "alternateIdentifiers",
+                    "@id": "http://datacite.org/schema/kernel-4alternateIdentifiers"
+                },
+                "relatedIdentifiers": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "relatedIdentifier": {
+                                "type": "string",
+                                "description": "Identifiers of related resources. Use this property to indicate subsets of properties, as appropriate.",
+                                "title": "relatedIdentifier",
+                                "@id": "http://datacite.org/schema/kernel-4relatedIdentifier"
+                            }
+                        }
+                    },
+                    "title": "relatedIdentifiers",
+                    "@id": "http://datacite.org/schema/kernel-4relatedIdentifiers"
+                },
+                "dates": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "date": {
+                                "type": "string",
+                                "description": "Different dates relevant to the work.YYYY,YYYY-MM-DD, YYYY-MM-DDThh:mm:ssTZD or any other format or level of granularity described in W3CDTF. Use RKMS-ISO8601 standard for depicting date ranges.",
+                                "title": "date",
+                                "@id": "http://datacite.org/schema/kernel-4date"
+                            }
+                        }
+                    },
+                    "title": "dates",
+                    "@id": "http://datacite.org/schema/kernel-4dates"
+                },
+                "titles": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "type": "string",
+                                "description": "A name or title by which a resource is known.",
+                                "title": "title",
+                                "@id": "http://datacite.org/schema/kernel-4title"
+                            }
+                        }
+                    },
+                    "title": "titles",
+                    "@id": "http://datacite.org/schema/kernel-4titles"
+                },
+                "language": {
+                    "@id": "http://purl.org/dc/elements/1.1/language",
+                    "type": "string",
+                    "title": "language"
+                },
+                "publisher": {
+                    "@id": "http://purl.org/dc/elements/1.1/publisher",
+                    "type": "string",
+                    "title": "publisher"
+                },
+                "resourceType": {
+                    "type": "string",
+                    "title": "resourceType",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/resourceType"
+                },
+                "description": {
+                    "@id": "http://purl.org/dc/elements/1.1/description",
+                    "type": "string",
+                    "title": "description"
+                },
+                "format": {
+                    "@id": "http://purl.org/dc/elements/1.1/format",
+                    "type": "string",
+                    "title": "format"
+                },
+                "identifier": {
+                    "type": "string",
+                    "description": "A persistent identifier that identifies a resource.",
+                    "title": "identifier",
+                    "@id": "http://datacite.org/schema/kernel-4identifier"
+                },
+                "rights": {
+                    "type": "string",
+                    "title": "rights",
+                    "@id": "http://datacite.org/schema/kernel-4rights"
+                },
+                "source": {
+                    "@id": "http://purl.org/dc/elements/1.1/source",
+                    "type": "string",
+                    "title": "source"
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "subject": {
+                                "type": "string",
+                                "description": "Subject, keywords, classification codes, or key phrases describing the resource.",
+                                "title": "subject",
+                                "@id": "http://datacite.org/schema/kernel-4subject"
+                            }
+                        }
+                    },
+                    "title": "subjects",
+                    "@id": "http://datacite.org/schema/kernel-4subjects"
+                },
+                "geoLocations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "geoLocation": {
+                                "type": "object",
+                                "properties": {
+                                    "geoLocationPlace": {
+                                        "@id": "http://datacite.org/schema/kernel-4geoLocationPlace",
+                                        "type": "string",
+                                        "title": "geoLocationPlace"
+                                    },
+                                    "geoLocationPoint": {
+                                        "type": "object",
+                                        "properties": {
+                                            "pointLongitude": {
+                                                "type": "number",
+                                                "title": "pointLongitude",
+                                                "@id": "http://datacite.org/schema/kernel-4pointLongitude"
+                                            },
+                                            "pointLatitude": {
+                                                "type": "number",
+                                                "title": "pointLatitude",
+                                                "@id": "http://datacite.org/schema/kernel-4pointLatitude"
+                                            }
+                                        },
+                                        "description": "A point contains a single latitude-longitude pair, separated by whitespace.",
+                                        "title": "geoLocationPoint",
+                                        "@id": "http://datacite.org/schema/kernel-4geoLocationPoint"
+                                    },
+                                    "geoLocationBox": {
+                                        "type": "object",
+                                        "properties": {
+                                            "westBoundLongitude": {
+                                                "type": "number",
+                                                "title": "westBoundLongitude",
+                                                "@id": "http://datacite.org/schema/kernel-4westBoundLongitude"
+                                            },
+                                            "eastBoundLongitude": {
+                                                "type": "number",
+                                                "title": "eastBoundLongitude",
+                                                "@id": "http://datacite.org/schema/kernel-4eastBoundLongitude"
+                                            },
+                                            "southBoundLatitude": {
+                                                "type": "number",
+                                                "title": "southBoundLatitude",
+                                                "@id": "http://datacite.org/schema/kernel-4southBoundLatitude"
+                                            },
+                                            "northBoundLatitude": {
+                                                "type": "number",
+                                                "title": "northBoundLatitude",
+                                                "@id": "http://datacite.org/schema/kernel-4northBoundLatitude"
+                                            }
+                                        },
+                                        "description": "A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner.",
+                                        "title": "geoLocationBox",
+                                        "@id": "http://datacite.org/schema/kernel-4geoLocationBox"
+                                    },
+                                    "geoLocationPolygon": {
+                                        "type": "object",
+                                        "properties": {
+                                            "polygonPoint": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "pointLongitude": {
+                                                        "type": "number",
+                                                        "title": "pointLongitude",
+                                                        "@id": "http://datacite.org/schema/kernel-4pointLongitude"
+                                                    },
+                                                    "pointLatitude": {
+                                                        "type": "number",
+                                                        "title": "pointLatitude",
+                                                        "@id": "http://datacite.org/schema/kernel-4pointLatitude"
+                                                    }
+                                                },
+                                                "title": "polygonPoint",
+                                                "@id": "http://datacite.org/schema/kernel-4polygonPoint"
+                                            },
+                                            "inPolygonPoint": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "pointLongitude": {
+                                                        "type": "number",
+                                                        "title": "pointLongitude",
+                                                        "@id": "http://datacite.org/schema/kernel-4pointLongitude"
+                                                    },
+                                                    "pointLatitude": {
+                                                        "type": "number",
+                                                        "title": "pointLatitude",
+                                                        "@id": "http://datacite.org/schema/kernel-4pointLatitude"
+                                                    }
+                                                },
+                                                "title": "inPolygonPoint",
+                                                "@id": "http://datacite.org/schema/kernel-4inPolygonPoint"
+                                            }
+                                        },
+                                        "description": "A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain.",
+                                        "title": "geoLocationPolygon",
+                                        "@id": "http://datacite.org/schema/kernel-4geoLocationPolygon"
+                                    }
+                                },
+                                "title": "geoLocation",
+                                "@id": "http://datacite.org/schema/kernel-4geoLocation"
+                            }
+                        }
+                    },
+                    "title": "geoLocations",
+                    "@id": "http://datacite.org/schema/kernel-4geoLocations"
+                },
+                "sizes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "size": {
+                                "type": "string",
+                                "description": "Unstructures size information about the resource.",
+                                "title": "size",
+                                "@id": "http://datacite.org/schema/kernel-4size"
+                            }
+                        }
+                    },
+                    "title": "sizes",
+                    "@id": "http://datacite.org/schema/kernel-4sizes"
+                },
+                "citationTitle": {
+                    "type": "string",
+                    "title": "citationTitle",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationTitle"
+                },
+                "citationVolume": {
+                    "type": "string",
+                    "title": "citationVolume",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationVolume"
+                },
+                "citationIssue": {
+                    "type": "string",
+                    "title": "citationIssue",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationIssue"
+                },
+                "citationStartPage": {
+                    "type": "string",
+                    "title": "citationStartPage",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationStartPage"
+                },
+                "citationEndPage": {
+                    "type": "string",
+                    "title": "citationEndPage",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationEndPage"
+                },
+                "citationEdition": {
+                    "type": "string",
+                    "title": "citationEdition",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationEdition"
+                },
+                "citationConferencePlace": {
+                    "type": "string",
+                    "title": "citationConferencePlace",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationConferencePlace"
+                },
+                "citationConferenceDate": {
+                    "type": "string",
+                    "title": "citationConferenceDate",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/citationConferenceDate"
+                },
+                "file": {
+                    "type": "string",
+                    "title": "file",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/file"
+                },
+                "licenseCondition": {
+                    "type": "string",
+                    "title": "licenseCondition",
+                    "@id": "http://namespace.openaire.eu/schema/oaire/licenseCondition"
+                },
+                "audience": {
+                    "@id": "http://purl.org/dc/terms/audience",
+                    "type": "string",
+                    "title": "audience"
+                }
+            },
+            "description": "This schema defines the xml format for OpenAIRE Guidelines for Literature Repositories v4.\n      \n      The schema represents an application profile consisting of\n      * elements from Dublin Core with optional refinement attributes xml:lang and rdf:resource\n      * elements from DataCite metadata schema v4.1 to express granular information on creator, contributor, fundingReference, relatedIdentifier, alternateIdentifier, date, subject\n      * elements from OpenAIRE to express information on bibliographic citation details, (fulltext) files,  version and license condition",
+            "title": "resource",
+            "@id": "http://namespace.openaire.eu/schema/oaire/resource"
+        },
+        "audience": {
+            "@id": "http://purl.org/dc/terms/audience",
+            "type": "string",
+            "title": "audience"
+        },
+        "citationTitle": {
+            "type": "string",
+            "title": "citationTitle",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationTitle"
+        },
+        "citationVolume": {
+            "type": "string",
+            "title": "citationVolume",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationVolume"
+        },
+        "citationIssue": {
+            "type": "string",
+            "title": "citationIssue",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationIssue"
+        },
+        "citationStartPage": {
+            "type": "string",
+            "title": "citationStartPage",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationStartPage"
+        },
+        "citationEndPage": {
+            "type": "string",
+            "title": "citationEndPage",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationEndPage"
+        },
+        "citationEdition": {
+            "type": "string",
+            "title": "citationEdition",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationEdition"
+        },
+        "citationConferencePlace": {
+            "type": "string",
+            "title": "citationConferencePlace",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationConferencePlace"
+        },
+        "citationConferenceDate": {
+            "type": "string",
+            "title": "citationConferenceDate",
+            "@id": "http://namespace.openaire.eu/schema/oaire/citationConferenceDate"
+        },
+        "licenseCondition": {
+            "type": "string",
+            "title": "licenseCondition",
+            "@id": "http://namespace.openaire.eu/schema/oaire/licenseCondition"
+        },
+        "file": {
+            "type": "string",
+            "title": "file",
+            "@id": "http://namespace.openaire.eu/schema/oaire/file"
+        },
+        "version": {
+            "type": "string",
+            "title": "version",
+            "@id": "http://namespace.openaire.eu/schema/oaire/version"
+        },
+        "resourceType": {
+            "type": "string",
+            "title": "resourceType",
+            "@id": "http://namespace.openaire.eu/schema/oaire/resourceType"
+        },
+        "fundingReferences": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "fundingReference": {
+                        "type": "object",
+                        "properties": {
+                            "funderName": {
+                                "type": "string",
+                                "description": "Name of the funding provider.",
+                                "title": "funderName",
+                                "@id": "http://namespace.openaire.eu/schema/oaire/funderName"
+                            },
+                            "funderIdentifier": {
+                                "type": "string",
+                                "description": "Uniquely identifies a funding entity, according to various types.",
+                                "title": "funderIdentifier",
+                                "@id": "http://namespace.openaire.eu/schema/oaire/funderIdentifier"
+                            },
+                            "fundingStream": {
+                                "type": "string",
+                                "title": "fundingStream",
+                                "@id": "http://namespace.openaire.eu/schema/oaire/fundingStream"
+                            },
+                            "awardNumber": {
+                                "type": "string",
+                                "description": "The code assigned by the funder to a sponsored award (grant).",
+                                "title": "awardNumber",
+                                "@id": "http://namespace.openaire.eu/schema/oaire/awardNumber"
+                            },
+                            "awardTitle": {
+                                "type": "string",
+                                "description": "The human readable title of the award (grant).",
+                                "title": "awardTitle",
+                                "@id": "http://namespace.openaire.eu/schema/oaire/awardTitle"
+                            }
+                        },
+                        "description": "Information about financial support (funding) for the resource being registered.",
+                        "title": "fundingReference",
+                        "@id": "http://namespace.openaire.eu/schema/oaire/fundingReference"
+                    }
+                }
+            },
+            "title": "fundingReferences",
+            "@id": "http://namespace.openaire.eu/schema/oaire/fundingReferences"
+        },
+        "fundingStream": {
+            "type": "string",
+            "title": "fundingStream",
+            "@id": "http://namespace.openaire.eu/schema/oaire/fundingStream"
+        },
+        "any": {
+            "type": "object",
+            "properties": {},
+            "title": "any"
+        },
+        "description": {
+            "@id": "http://purl.org/dc/elements/1.1/description",
+            "type": "string",
+            "title": "description"
+        },
+        "publisher": {
+            "@id": "http://purl.org/dc/elements/1.1/publisher",
+            "type": "string",
+            "title": "publisher"
+        },
+        "format": {
+            "@id": "http://purl.org/dc/elements/1.1/format",
+            "type": "string",
+            "title": "format"
+        },
+        "source": {
+            "@id": "http://purl.org/dc/elements/1.1/source",
+            "type": "string",
+            "title": "source"
+        },
+        "language": {
+            "@id": "http://purl.org/dc/elements/1.1/language",
+            "type": "string",
+            "title": "language"
+        },
+        "coverage": {
+            "@id": "http://purl.org/dc/elements/1.1/coverage",
+            "type": "string",
+            "title": "coverage"
+        },
+        "identifier": {
+            "type": "string",
+            "description": "A persistent identifier that identifies a resource.",
+            "title": "identifier",
+            "@id": "http://datacite.org/schema/kernel-4identifier"
+        },
+        "titles": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "A name or title by which a resource is known.",
+                        "title": "title",
+                        "@id": "http://datacite.org/schema/kernel-4title"
+                    }
+                }
+            },
+            "title": "titles",
+            "@id": "http://datacite.org/schema/kernel-4titles"
+        },
+        "creators": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "creator": {
+                        "type": "object",
+                        "properties": {
+                            "creatorName": {
+                                "type": "string",
+                                "title": "creatorName",
+                                "@id": "http://datacite.org/schema/kernel-4creatorName"
+                            },
+                            "givenName": {
+                                "@id": "http://datacite.org/schema/kernel-4givenName",
+                                "type": "string",
+                                "title": "givenName"
+                            },
+                            "familyName": {
+                                "@id": "http://datacite.org/schema/kernel-4familyName",
+                                "type": "string",
+                                "title": "familyName"
+                            },
+                            "nameIdentifier": {
+                                "type": "string",
+                                "title": "nameIdentifier",
+                                "@id": "http://datacite.org/schema/kernel-4nameIdentifier"
+                            },
+                            "affiliation": {
+                                "@id": "http://datacite.org/schema/kernel-4affiliation",
+                                "type": "string",
+                                "title": "affiliation"
+                            }
+                        },
+                        "description": "The main researchers involved working on the data, or the authors of the publication in priority order. May be a corporate/institutional or personal name.Format: Family, Given.Personal names can be further specified using givenName and familyName.",
+                        "title": "creator",
+                        "@id": "http://datacite.org/schema/kernel-4creator"
+                    }
+                }
+            },
+            "title": "creators",
+            "@id": "http://datacite.org/schema/kernel-4creators"
+        },
+        "contributors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "contributor": {
+                        "type": "object",
+                        "properties": {
+                            "contributorName": {
+                                "type": "string",
+                                "title": "contributorName",
+                                "@id": "http://datacite.org/schema/kernel-4contributorName"
+                            },
+                            "givenName": {
+                                "@id": "http://datacite.org/schema/kernel-4givenName",
+                                "type": "string",
+                                "title": "givenName"
+                            },
+                            "familyName": {
+                                "@id": "http://datacite.org/schema/kernel-4familyName",
+                                "type": "string",
+                                "title": "familyName"
+                            },
+                            "nameIdentifier": {
+                                "type": "string",
+                                "title": "nameIdentifier",
+                                "@id": "http://datacite.org/schema/kernel-4nameIdentifier"
+                            },
+                            "affiliation": {
+                                "@id": "http://datacite.org/schema/kernel-4affiliation",
+                                "type": "string",
+                                "title": "affiliation"
+                            }
+                        },
+                        "description": "The institution or person responsible for collecting, creating, or otherwise contributing to the developement of the dataset.The personal name format should be: Family, Given.",
+                        "title": "contributor",
+                        "@id": "http://datacite.org/schema/kernel-4contributor"
+                    }
+                }
+            },
+            "title": "contributors",
+            "@id": "http://datacite.org/schema/kernel-4contributors"
+        },
+        "alternateIdentifiers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "alternateIdentifier": {
+                        "type": "string",
+                        "description": "An identifier or identifiers other than the primary Identifier applied to the resource being registered. This may be any alphanumeric string which is unique within its domain of issue. May be used for local identifiers. AlternateIdentifier should be used for another identifier of the same instance (same location, same file).",
+                        "title": "alternateIdentifier",
+                        "@id": "http://datacite.org/schema/kernel-4alternateIdentifier"
+                    }
+                }
+            },
+            "title": "alternateIdentifiers",
+            "@id": "http://datacite.org/schema/kernel-4alternateIdentifiers"
+        },
+        "relatedIdentifiers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "relatedIdentifier": {
+                        "type": "string",
+                        "description": "Identifiers of related resources. Use this property to indicate subsets of properties, as appropriate.",
+                        "title": "relatedIdentifier",
+                        "@id": "http://datacite.org/schema/kernel-4relatedIdentifier"
+                    }
+                }
+            },
+            "title": "relatedIdentifiers",
+            "@id": "http://datacite.org/schema/kernel-4relatedIdentifiers"
+        },
+        "dates": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "description": "Different dates relevant to the work.YYYY,YYYY-MM-DD, YYYY-MM-DDThh:mm:ssTZD or any other format or level of granularity described in W3CDTF. Use RKMS-ISO8601 standard for depicting date ranges.",
+                        "title": "date",
+                        "@id": "http://datacite.org/schema/kernel-4date"
+                    }
+                }
+            },
+            "title": "dates",
+            "@id": "http://datacite.org/schema/kernel-4dates"
+        },
+        "sizes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "size": {
+                        "type": "string",
+                        "description": "Unstructures size information about the resource.",
+                        "title": "size",
+                        "@id": "http://datacite.org/schema/kernel-4size"
+                    }
+                }
+            },
+            "title": "sizes",
+            "@id": "http://datacite.org/schema/kernel-4sizes"
+        },
+        "rights": {
+            "type": "string",
+            "title": "rights",
+            "@id": "http://datacite.org/schema/kernel-4rights"
+        },
+        "geoLocations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "geoLocation": {
+                        "type": "object",
+                        "properties": {
+                            "geoLocationPlace": {
+                                "@id": "http://datacite.org/schema/kernel-4geoLocationPlace",
+                                "type": "string",
+                                "title": "geoLocationPlace"
+                            },
+                            "geoLocationPoint": {
+                                "type": "object",
+                                "properties": {
+                                    "pointLongitude": {
+                                        "type": "number",
+                                        "title": "pointLongitude",
+                                        "@id": "http://datacite.org/schema/kernel-4pointLongitude"
+                                    },
+                                    "pointLatitude": {
+                                        "type": "number",
+                                        "title": "pointLatitude",
+                                        "@id": "http://datacite.org/schema/kernel-4pointLatitude"
+                                    }
+                                },
+                                "description": "A point contains a single latitude-longitude pair, separated by whitespace.",
+                                "title": "geoLocationPoint",
+                                "@id": "http://datacite.org/schema/kernel-4geoLocationPoint"
+                            },
+                            "geoLocationBox": {
+                                "type": "object",
+                                "properties": {
+                                    "westBoundLongitude": {
+                                        "type": "number",
+                                        "title": "westBoundLongitude",
+                                        "@id": "http://datacite.org/schema/kernel-4westBoundLongitude"
+                                    },
+                                    "eastBoundLongitude": {
+                                        "type": "number",
+                                        "title": "eastBoundLongitude",
+                                        "@id": "http://datacite.org/schema/kernel-4eastBoundLongitude"
+                                    },
+                                    "southBoundLatitude": {
+                                        "type": "number",
+                                        "title": "southBoundLatitude",
+                                        "@id": "http://datacite.org/schema/kernel-4southBoundLatitude"
+                                    },
+                                    "northBoundLatitude": {
+                                        "type": "number",
+                                        "title": "northBoundLatitude",
+                                        "@id": "http://datacite.org/schema/kernel-4northBoundLatitude"
+                                    }
+                                },
+                                "description": "A box contains two white space separated latitude-longitude pairs, with each pair separated by whitespace. The first pair is the lower corner, the second is the upper corner.",
+                                "title": "geoLocationBox",
+                                "@id": "http://datacite.org/schema/kernel-4geoLocationBox"
+                            },
+                            "geoLocationPolygon": {
+                                "type": "object",
+                                "properties": {
+                                    "polygonPoint": {
+                                        "type": "object",
+                                        "properties": {
+                                            "pointLongitude": {
+                                                "type": "number",
+                                                "title": "pointLongitude",
+                                                "@id": "http://datacite.org/schema/kernel-4pointLongitude"
+                                            },
+                                            "pointLatitude": {
+                                                "type": "number",
+                                                "title": "pointLatitude",
+                                                "@id": "http://datacite.org/schema/kernel-4pointLatitude"
+                                            }
+                                        },
+                                        "title": "polygonPoint",
+                                        "@id": "http://datacite.org/schema/kernel-4polygonPoint"
+                                    },
+                                    "inPolygonPoint": {
+                                        "type": "object",
+                                        "properties": {
+                                            "pointLongitude": {
+                                                "type": "number",
+                                                "title": "pointLongitude",
+                                                "@id": "http://datacite.org/schema/kernel-4pointLongitude"
+                                            },
+                                            "pointLatitude": {
+                                                "type": "number",
+                                                "title": "pointLatitude",
+                                                "@id": "http://datacite.org/schema/kernel-4pointLatitude"
+                                            }
+                                        },
+                                        "title": "inPolygonPoint",
+                                        "@id": "http://datacite.org/schema/kernel-4inPolygonPoint"
+                                    }
+                                },
+                                "description": "A drawn polygon area, defined by a set of points and lines connecting the points in a closed chain.",
+                                "title": "geoLocationPolygon",
+                                "@id": "http://datacite.org/schema/kernel-4geoLocationPolygon"
+                            }
+                        },
+                        "title": "geoLocation",
+                        "@id": "http://datacite.org/schema/kernel-4geoLocation"
+                    }
+                }
+            },
+            "title": "geoLocations",
+            "@id": "http://datacite.org/schema/kernel-4geoLocations"
+        },
+        "subjects": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "subject": {
+                        "type": "string",
+                        "description": "Subject, keywords, classification codes, or key phrases describing the resource.",
+                        "title": "subject",
+                        "@id": "http://datacite.org/schema/kernel-4subject"
+                    }
+                }
+            },
+            "title": "subjects",
+            "@id": "http://datacite.org/schema/kernel-4subjects"
+        }
+    },
+    "$schema": "http://json-schema.org/draft-04/schema#"
+}

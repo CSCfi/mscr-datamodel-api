@@ -125,5 +125,13 @@ public class JsonSchemaWriterTest {
 
 	}
 	
+	@Test
+	public void testOpenaire40() throws Exception {
+		Model model = ModelFactory.createDefaultModel();
+		model.read("models/mscr/xsd/openaire-4.0.ttl");		
+		String json = service.newModelSchema("pid:test", model, "en");
+		System.out.println(json);
+		
+	}
 
 }

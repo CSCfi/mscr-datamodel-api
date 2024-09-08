@@ -81,6 +81,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
+import com.jayway.jsonpath.JsonPath;
 
 import fi.vm.yti.datamodel.api.v2.dto.SchemaParserResultDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaPart;
@@ -217,8 +218,22 @@ public class XSDMapperTest {
 		
 
 	}	
-		
 	
+	@Test
+	void testImportOpenaireToInternalJSON() throws Exception {
+		String url = "https://raw.githubusercontent.com/openaire/guidelines-literature-repositories/master/schemas/4.0/openaire.xsd";
+		ObjectNode obj = mapper.mapToInternalJson(url);
+		
+		ObjectMapper m = new ObjectMapper();
+		System.out.println(m.writeValueAsString(obj));
+
+		ObjectNode r = (ObjectNode) obj.at("/properties/format");
+		assertEquals("http://purl.org/dc/elements/1.1/format", r.get("@id").asText());
+		ObjectNode r2 = (ObjectNode) obj.at("/properties/identifier");
+		assertEquals("http://datacite.org/schema/kernel-4identifier", r2.get("@id").asText());
+	}
+		
+
 	
 	
 }
