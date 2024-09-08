@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +22,7 @@ import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -41,6 +43,7 @@ import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
@@ -389,5 +392,23 @@ public class SchemaServiceTest {
 		assertEquals(4, m.listSubjectsWithProperty(SKOS.prefLabel).toList().size());
 		
 	}
+	
+	@Test 
+	void testImportOpenaireToInternal() throws Exception {
+		JsonNode json = getJsonNodeFromPath("jsonschema/generated/openaire-4.0.json");
+		Model m = service.transformJSONSchemaToInternal("pid:test", json);
+		m.write(new FileWriter(new File("openaire-4.0.ttl")), "TURTLE");
+		
+		Resource r1 = ResourceFactory.createResource("pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint");
+		Resource r2 = ResourceFactory.createResource("pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint");
+		
+		ResIterator i = m.listSubjectsWithProperty(MSCR.qname, ResourceFactory.createResource("http://datacite.org/schema/kernel-4polygonPoint"));
+		List<Resource> resources = i.toList();
+		assertEquals(4, resources.size());
+		assertTrue(resources.contains(r1));
+		assertTrue(resources.contains(r2));
+		
+	}
+	
 }
 

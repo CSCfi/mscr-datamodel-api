@@ -133,6 +133,9 @@ public class JSONSchemaMapper {
 	 */
 	private Resource addDatatypeProperty(String propID, JsonNode node, Model model, String schemaPID, String type) {
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
+		if(node.has("@id")) {
+			propertyResource.addProperty(MSCR.qname, model.createResource(node.get("@id").asText()));			
+		}
 		
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.DatatypeProperty);
@@ -233,7 +236,7 @@ public class JSONSchemaMapper {
 	public void handleObject(String propID, JsonNode node, String schemaPID, Model model) {
 
 		String propIDCapitalised = capitaliseNodeIdentifier(propID);
-		String nameProperty = propIDCapitalised.substring(propID.lastIndexOf("/") + 1);		
+		String nameProperty = propID.substring(propID.lastIndexOf("/") + 1);		
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
 		
 		nodeShapeResource.addProperty(RDF.type, (SH.NodeShape));
@@ -246,6 +249,10 @@ public class JSONSchemaMapper {
 			nodeShapeResource.addProperty(DCTerms.description, node.get("description").asText());
 		if (node.has("additionalProperties"))
 			nodeShapeResource.addProperty(SH.closed, model.createTypedLiteral(!node.get("additionalProperties").asBoolean()));
+		if(node.has("@id")) {
+			nodeShapeResource.addProperty(MSCR.qname, model.createResource(node.get("@id").asText()));			
+		}
+		
 		/*
 		 * Iterate over properties If a property is an array or object – add and
 		 * recursively iterate over them. If a property is a datatype or literal – it's just added.
@@ -264,6 +271,10 @@ public class JSONSchemaMapper {
 			if (valueType.equals("object")) {
 				Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
 						schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
+				if(entry.getValue().has("@id")) {
+					propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
+				}
+
 				// default max
 				propertyShape.addLiteral(SH.maxCount, 1);
 				nodeShapeResource.addProperty(SH.property, propertyShape);
@@ -277,6 +288,10 @@ public class JSONSchemaMapper {
 				else {
 					Resource propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
 							schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
+					if(entry.getValue().has("@id")) {
+						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
+					}
+					
 					nodeShapeResource.addProperty(SH.property, propertyShape);
 					
 					if (hasObjectItems(entry)) {

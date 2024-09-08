@@ -110,7 +110,7 @@ public class XSDMapper {
 		systemProperties.remove("javax.xml.parsers.DocumentBuilderFactory");
 		System.setProperties(systemProperties);
 		XsdParser p = new XsdParser(filePath);
-
+		
 		ObjectNode jroot = m.createObjectNode();
 		ObjectNode rootProperties = m.createObjectNode();
 		ObjectNode props = m.createObjectNode();
@@ -129,7 +129,8 @@ public class XSDMapper {
 		 */
 		List<XsdElement> list = p.getResultXsdElements().toList();
 		list.forEach(e -> {
-			handleElement(e, jroot, rootProperties);
+			
+			handleElement(e, findSchema(e), jroot, rootProperties);
 		});
 
 		return jroot;
@@ -149,14 +150,26 @@ public class XSDMapper {
 		}
 	}
 
-	void handleElement(XsdElement e, ObjectNode props, ObjectNode newProps) {
-
+	void handleElement(XsdElement e, XsdSchema schema, ObjectNode props, ObjectNode newProps) {
+		
 		String elementId = null;
 		String elementName = e.getName();
-		if (e.getXsdSchema() != null) {
-			elementId = e.getXsdSchema().getTargetNamespace() + e.getName();
+		if (schema != null) {
+			if(schema.getTargetNamespace().endsWith("#") || 
+					schema.getTargetNamespace().endsWith("/")
+					) {
+				elementId = schema.getTargetNamespace() + e.getName();
+			}
+			else {
+				elementId = schema.getTargetNamespace() + "#" + e.getName();
+			}
+				
+		
 		}
-
+		/*
+			*/
+		
+		
 		//System.out.println(elementId);
 		if (e.getTypeAsBuiltInDataType() != null) {
 			//System.out.println("Builtin type");
@@ -210,6 +223,8 @@ public class XSDMapper {
 
 			// newProps.set(elementName, prop);
 		} else if (e.getXsdSimpleType() != null) {
+			
+
 			//System.out.println("Simple type");
 			//System.out.println(e.getXsdSimpleType().getName());
 			ObjectNode prop = handleSimpleType(e.getXsdSimpleType(), newProps);
@@ -227,7 +242,7 @@ public class XSDMapper {
 			//}
 
 			// special handling of repeatable element with the same name
-			handleComplexType(e.getXsdComplexType(), newObj, null);
+			handleComplexType(schema, e.getXsdComplexType(), newObj, null);
 			handleDesc(e, newObj);
 			newObj.put("title", elementName);
 			// additional conditions - multiple element the e belongs to only has one
@@ -276,7 +291,10 @@ public class XSDMapper {
 
 		else {
 			// just an element
-			ObjectNode prop = m.createObjectNode();
+			ObjectNode prop = m.createObjectNode();	
+			if (elementId != null) {
+				prop.put("@id", elementId);
+			}			
 			prop.put("type", "string");
 			prop.put("title", e.getName());
 			newProps.set(elementName, prop);
@@ -605,6 +623,32 @@ public class XSDMapper {
 		return props;
 	}
 
+	XsdSchema findSchema(XsdAbstractElement e) {
+		
+		XsdAbstractElement parent = e.getParent();
+		if(parent == null) {
+			if(e.getCloneOf() != null) {
+				parent = e.getCloneOf().getParent();	
+			}			
+		}
+		if(parent == null) {
+			try {
+				parent = e.getParent(true);
+			}catch(Exception ex) {}
+		}
+		
+		if(parent != null) {
+			if((parent instanceof XsdSchema)) {
+				return (XsdSchema)parent;
+			}
+			return findSchema(parent);
+		}
+		else {
+			return null;
+		}
+	}
+
+	
 	XsdElement findNextParentElement(XsdAbstractElement e) {
 		XsdAbstractElement p = e.getParent();
 		if (p != null && !(p instanceof XsdSchema)) {
@@ -618,7 +662,7 @@ public class XSDMapper {
 		}
 	}
 
-	void handleComplexType(XsdComplexType e, ObjectNode props, ObjectNode newProps) {
+	void handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode props, ObjectNode newProps) {
 		props.put("type", "object");
 		if (newProps == null) {
 			newProps = m.createObjectNode();
@@ -638,7 +682,7 @@ public class XSDMapper {
 					props.set("type", prop.get("type"));
 					props.remove("properties");
 				} else if (ext.getBaseAsComplexType() != null) {
-					handleComplexType(ext.getBaseAsComplexType(), props, newProps);
+					handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps);
 				}
 			}
 
@@ -649,36 +693,36 @@ public class XSDMapper {
 			if (c.getXsdExtension() != null) {
 				XsdExtension ext = c.getXsdExtension();
 				if (ext.getBaseAsComplexType() != null) {
-					handleComplexType(ext.getBaseAsComplexType(), props, newProps);
+					handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps);
 				}
 				if (ext.getChildAsSequence() != null) {
 
-					handleMultipleElements(ext.getChildAsSequence(), props, newProps);
+					handleMultipleElements(schema, ext.getChildAsSequence(), props, newProps);
 				}
 			}
 
 		}
 		try {
 			XsdChoice c = e.getChildAsChoice();
-			handleMultipleElements(c, props, newProps);
+			handleMultipleElements(schema, c, props, newProps);
 		} catch (Exception ex) {
 
 		}
 		try {
 			XsdAll a = e.getChildAsAll();
-			handleMultipleElements(a, props, newProps);
+			handleMultipleElements(schema, a, props, newProps);
 		} catch (Exception ex) {
 
 		}
 		try {
 			XsdChoice c = e.getChildAsChoice();
-			handleMultipleElements(c, props, newProps);
+			handleMultipleElements(schema, c, props, newProps);
 		} catch (Exception ex) {
 
 		}
 		try {
 			XsdSequence seq = e.getChildAsSequence();
-			handleMultipleElements(seq, props, newProps);
+			handleMultipleElements(schema, seq, props, newProps);
 		} catch (Exception ex) {
 
 		}
@@ -705,16 +749,23 @@ public class XSDMapper {
 		// }
 	}
 
-	private void handleMultipleElements(XsdMultipleElements c, ObjectNode props, ObjectNode newProps) {
+	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode props, ObjectNode newProps) {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
 
 		for (XsdAbstractElement ae : aes) {
 
 			if (ae instanceof XsdElement) {
-				handleElement((XsdElement) ae, props, newProps);
+				XsdSchema newSchema = findSchema(ae);
+				if(newSchema != null) {
+					handleElement((XsdElement) ae, newSchema, props, newProps);
+				}
+				else {
+					handleElement((XsdElement) ae, schema, props, newProps);	
+				}
+				
 			}
 			if (ae instanceof XsdMultipleElements) {
-				handleMultipleElements((XsdMultipleElements) ae, props, newProps);
+				handleMultipleElements(schema, (XsdMultipleElements) ae, props, newProps);
 			}
 		}
 
