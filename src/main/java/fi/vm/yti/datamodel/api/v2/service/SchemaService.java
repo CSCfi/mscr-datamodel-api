@@ -10,6 +10,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -48,6 +50,8 @@ import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
 import io.zenwave360.jsonrefparser.$RefParser;
 import io.zenwave360.jsonrefparser.$Refs;
+import io.zenwave360.jsonrefparser.$RefParserOptions.OnCircular;
+import io.zenwave360.jsonrefparser.$RefParserOptions;
 
 
 @Service
@@ -87,10 +91,24 @@ public class SchemaService {
 		// TODO: make this general
 		// Handling of oneOf in the root element with single value - research.fi case 
 		if(root.get("oneOf") != null && root.get("oneOf").size() == 1) {
-			root = root.get("oneOf").get(0);
+			root = root.get("oneOf").get(0);		
 		}
+		JsonNode defs = root.get("definitions");
+		
+		Map<String, JsonNode> definitions = new HashMap<String, JsonNode>();
+		if(defs != null) {
+			Iterator<String> fi = defs.fieldNames();
+			while(fi.hasNext()) {
+				String fiName = fi.next();
+				definitions.put(fiName, defs.get(fiName));
+			}
+			
+		}
+		
+		jsonSchemaMapper.handleDefinitions(definitions, schemaPID, model);
 		// Adding the schema to a corresponding internal model
-		jsonSchemaMapper.handleObject("root", root, schemaPID, model);
+		
+		jsonSchemaMapper.handleObject("root", root, schemaPID, model, definitions);
 		addDefaultRootResourceForJSONSchema(modelResource, model);		
 		return model;
 
@@ -108,7 +126,7 @@ public class SchemaService {
 	
 	public JsonNode parseSchema(String data) throws Exception {
 		// TODO: change this hacky way of utilizing the $RefParser		
-		$RefParser parser = new $RefParser(data);
+		$RefParser parser = new $RefParser(data).withOptions(new $RefParserOptions().withOnCircular(OnCircular.SKIP));
 		$Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
 		Object resultMapOrList = refs.schema();
 		System.out.println(((Map)resultMapOrList).keySet().size());
