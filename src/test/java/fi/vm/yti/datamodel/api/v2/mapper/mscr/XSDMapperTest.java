@@ -177,7 +177,7 @@ public class XSDMapperTest {
 		//String filePath = "https://raw.githubusercontent.com/OpenEdition/tei.openedition/master/xsd/tei.openedition.1.6.3/document.xsd";
 		ObjectNode jroot = mapper.mapToInternalJson(filePath);
         ObjectWriter writer = m.writer(new DefaultPrettyPrinter());
-        writer.writeValue(new File("xmlschema-to-jsonschema.json"), jroot);
+        //writer.writeValue(new File("xmlschema-to-jsonschema.json"), jroot);
 	}
 	
 	
