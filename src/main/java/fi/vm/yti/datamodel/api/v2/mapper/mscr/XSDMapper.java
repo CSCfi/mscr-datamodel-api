@@ -682,9 +682,11 @@ public class XSDMapper {
 		String ctypeName = e.getName();
 		
 		if(!"".equals(ctypeName)  && !handledTypes.contains(ctypeName)) {
+			/*
 			if(ctypeName != null) {
 				handledTypes.add(e.getName());	
 			}
+			*/
 			
 			props.put("type", "object");
 			if (newProps == null) {
@@ -787,9 +789,11 @@ public class XSDMapper {
 				XsdSchema newSchema = findSchema(ae);
 				if(newSchema != null) {
 					handleElement((XsdElement) ae, newSchema, props, newProps, handledTypes);
+					handledTypes.remove(ae.toString());
 				}
 				else {
-					handleElement((XsdElement) ae, schema, props, newProps, handledTypes);	
+					handleElement((XsdElement) ae, schema, props, newProps, handledTypes);
+					handledTypes.remove(ae.toString());
 				}
 				
 			}
