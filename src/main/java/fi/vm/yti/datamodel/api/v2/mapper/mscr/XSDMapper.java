@@ -127,10 +127,11 @@ public class XSDMapper {
 		 * List<XsdElement> list = p.getResultXsdElements().toList(); list.forEach(e ->
 		 * { handleElement(e, jroot, rootProperties); }); }
 		 */
+		
 		List<XsdElement> list = p.getResultXsdElements().toList();
 		list.forEach(e -> {
-			
-			handleElement(e, findSchema(e), jroot, rootProperties);
+			Set<String> handledTypes = new HashSet<String>();
+			handleElement(e, findSchema(e), jroot, rootProperties, handledTypes);
 		});
 
 		return jroot;
@@ -150,19 +151,27 @@ public class XSDMapper {
 		}
 	}
 
-	void handleElement(XsdElement e, XsdSchema schema, ObjectNode props, ObjectNode newProps) {
-		
+	void handleElement(XsdElement e, XsdSchema schema, ObjectNode props, ObjectNode newProps, Set<String> handledTypes) {
+		if(!handledTypes.contains(e.toString())) {
+			handledTypes.add(e.toString());
 		String elementId = null;
 		String elementName = e.getName();
-		if (schema != null) {
+		if (schema != null ) {
+			/*
 			if(schema.getTargetNamespace().endsWith("#") || 
 					schema.getTargetNamespace().endsWith("/")
 					) {
 				elementId = schema.getTargetNamespace() + e.getName();
 			}
 			else {
-				elementId = schema.getTargetNamespace() + "#" + e.getName();
+			*/
+			if(schema.getTargetNamespace() != null) {
+				elementId = schema.getTargetNamespace() + e.getName();
 			}
+			else {
+				elementId = e.getName();
+			}
+			
 				
 		
 		}
@@ -235,57 +244,63 @@ public class XSDMapper {
 			}
 			newProps.set(elementName, prop);
 		} else if (e.getXsdComplexType() != null) {
+			
+			
 			//System.out.println("Complex type: " + e.getXsdComplexType().getName());
-			ObjectNode newObj = m.createObjectNode();
-			//if (elementName.equals("FieldtripMethod")) {
-			//	System.out.println("test");
-			//}
-
-			// special handling of repeatable element with the same name
-			handleComplexType(schema, e.getXsdComplexType(), newObj, null);
-			handleDesc(e, newObj);
-			newObj.put("title", elementName);
-			// additional conditions - multiple element the e belongs to only has one
-			// element (this one)
-			if (elementId != null) {
-				newObj.put("@id", elementId);
-			}
-			if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
-				// newObj.put("mscr_repeatable", true);
-				if (e.getParent() instanceof XsdMultipleElements
-						&& ((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
-					// array of these elements
-					ObjectNode newObj2 = m.createObjectNode();
-					ObjectNode newProps2 = m.createObjectNode();
-					ObjectNode newProps3 = m.createObjectNode();
-					/*
-					 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
-					 * System.out.println(arrayParent.getName());
-					 * newProps.set(arrayParent.getName(), newObj); props.put("type", "array");
-					 * props.set("items", newObj2); props.remove("properties");
-					 * 
-					 * newObj2.put("type", "object"); newObj2.set("properties", newProps2);
-					 * 
-					 * newProps2.set(e.getName(), newObj);
-					 * 
-					 * }
-					 */
-					props.put("type", "array");
-					props.set("items", newObj2);
-					props.remove("properties");
-
-					newObj2.put("type", "object");
-					newObj2.set("properties", newProps2);
-
-					newProps2.set(e.getName(), newObj);
-
-				} else {
-					newProps.set(elementName, newObj);
+				ObjectNode newObj = m.createObjectNode();
+				//if (elementName.equals("FieldtripMethod")) {
+				//	System.out.println("test");
+				//}
+	
+				// special handling of repeatable element with the same name
+				if(handleComplexType(schema, e.getXsdComplexType(), newObj, null, handledTypes)) {
+					handleDesc(e, newObj);
+					newObj.put("title", elementName);
+					// additional conditions - multiple element the e belongs to only has one
+					// element (this one)
+					if (elementId != null) {
+						newObj.put("@id", elementId);
+					}
+					if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
+						// newObj.put("mscr_repeatable", true);
+						if (e.getParent() instanceof XsdMultipleElements
+								&& ((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
+							// array of these elements
+							ObjectNode newObj2 = m.createObjectNode();
+							ObjectNode newProps2 = m.createObjectNode();
+							ObjectNode newProps3 = m.createObjectNode();
+							/*
+							 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
+							 * System.out.println(arrayParent.getName());
+							 * newProps.set(arrayParent.getName(), newObj); props.put("type", "array");
+							 * props.set("items", newObj2); props.remove("properties");
+							 * 
+							 * newObj2.put("type", "object"); newObj2.set("properties", newProps2);
+							 * 
+							 * newProps2.set(e.getName(), newObj);
+							 * 
+							 * }
+							 */
+							props.put("type", "array");
+							props.set("items", newObj2);
+							props.remove("properties");
+		
+							newObj2.put("type", "object");
+							newObj2.set("properties", newProps2);
+		
+							newProps2.set(e.getName(), newObj);
+		
+						} else {
+							newProps.set(elementName, newObj);
+						}
+		
+					} else {
+						newProps.set(elementName, newObj);
+					}	
 				}
-
-			} else {
-				newProps.set(elementName, newObj);
-			}
+				
+				
+			
 
 		}
 
@@ -298,6 +313,7 @@ public class XSDMapper {
 			prop.put("type", "string");
 			prop.put("title", e.getName());
 			newProps.set(elementName, prop);
+		}
 		}
 
 	}
@@ -662,70 +678,83 @@ public class XSDMapper {
 		}
 	}
 
-	void handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode props, ObjectNode newProps) {
-		props.put("type", "object");
-		if (newProps == null) {
-			newProps = m.createObjectNode();
-			props.set("properties", newProps);
-		}
-
-		if (e.getSimpleContent() != null) {
-
-			XsdSimpleContent c = e.getSimpleContent();
-			// TODO - also requires handling of attributes
-			if (c.getXsdExtension() != null) {
-				XsdExtension ext = c.getXsdExtension();
-				if (ext.getBaseAsBuiltInDataType() != null) {
-					handleBuiltInType(ext.getBaseAsBuiltInDataType(), props);
-				} else if (ext.getBaseAsSimpleType() != null) {
-					ObjectNode prop = handleSimpleType(ext.getBaseAsSimpleType(), null);
-					props.set("type", prop.get("type"));
-					props.remove("properties");
-				} else if (ext.getBaseAsComplexType() != null) {
-					handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps);
-				}
+	boolean handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode props, ObjectNode newProps, Set<String> handledTypes) {
+		String ctypeName = e.getName();
+		
+		if(!"".equals(ctypeName)  && !handledTypes.contains(ctypeName)) {
+			if(ctypeName != null) {
+				handledTypes.add(e.getName());	
 			}
-
-		} else if (e.getComplexContent() != null) {
-			XsdComplexContent c = e.getComplexContent();
-			// TODO
-			// Child elements xs:annotation, xs:extension, xs:restriction
-			if (c.getXsdExtension() != null) {
-				XsdExtension ext = c.getXsdExtension();
-				if (ext.getBaseAsComplexType() != null) {
-					handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps);
-				}
-				if (ext.getChildAsSequence() != null) {
-
-					handleMultipleElements(schema, ext.getChildAsSequence(), props, newProps);
-				}
+			
+			props.put("type", "object");
+			if (newProps == null) {
+				newProps = m.createObjectNode();
+				props.set("properties", newProps);
 			}
-
+	
+			if (e.getSimpleContent() != null) {
+	
+				XsdSimpleContent c = e.getSimpleContent();
+				// TODO - also requires handling of attributes
+				if (c.getXsdExtension() != null) {
+					XsdExtension ext = c.getXsdExtension();
+					if (ext.getBaseAsBuiltInDataType() != null) {
+						handleBuiltInType(ext.getBaseAsBuiltInDataType(), props);
+					} else if (ext.getBaseAsSimpleType() != null) {
+						ObjectNode prop = handleSimpleType(ext.getBaseAsSimpleType(), null);
+						props.set("type", prop.get("type"));
+						props.remove("properties");
+					} else if (ext.getBaseAsComplexType() != null) {
+						handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps, handledTypes);
+					}
+				}
+	
+			} else if (e.getComplexContent() != null) {
+				XsdComplexContent c = e.getComplexContent();
+				// TODO
+				// Child elements xs:annotation, xs:extension, xs:restriction
+				if (c.getXsdExtension() != null) {
+					XsdExtension ext = c.getXsdExtension();
+					if (ext.getBaseAsComplexType() != null) {
+						handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps, handledTypes);
+					}
+					if (ext.getChildAsSequence() != null) {
+	
+						handleMultipleElements(schema, ext.getChildAsSequence(), props, newProps, handledTypes);
+					}
+				}
+	
+			}
+			try {
+				XsdChoice c = e.getChildAsChoice();
+				handleMultipleElements(schema, c, props, newProps, handledTypes);
+			} catch (Exception ex) {
+	
+			}
+			try {
+				XsdAll a = e.getChildAsAll();
+				handleMultipleElements(schema, a, props, newProps, handledTypes);
+			} catch (Exception ex) {
+	
+			}
+			try {
+				XsdChoice c = e.getChildAsChoice();
+				handleMultipleElements(schema, c, props, newProps, handledTypes);
+			} catch (Exception ex) {
+	
+			}
+			try {
+				XsdSequence seq = e.getChildAsSequence();
+				handleMultipleElements(schema, seq, props, newProps, handledTypes);
+			} catch (Exception ex) {
+	
+			}
+			return true;
 		}
-		try {
-			XsdChoice c = e.getChildAsChoice();
-			handleMultipleElements(schema, c, props, newProps);
-		} catch (Exception ex) {
-
+		else {
+			return false;
 		}
-		try {
-			XsdAll a = e.getChildAsAll();
-			handleMultipleElements(schema, a, props, newProps);
-		} catch (Exception ex) {
-
-		}
-		try {
-			XsdChoice c = e.getChildAsChoice();
-			handleMultipleElements(schema, c, props, newProps);
-		} catch (Exception ex) {
-
-		}
-		try {
-			XsdSequence seq = e.getChildAsSequence();
-			handleMultipleElements(schema, seq, props, newProps);
-		} catch (Exception ex) {
-
-		}
+			
 
 		/*
 		 * if(e.getChildAsAll() != null) { }
@@ -749,7 +778,7 @@ public class XSDMapper {
 		// }
 	}
 
-	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode props, ObjectNode newProps) {
+	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode props, ObjectNode newProps, Set<String> handledTypes) {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
 
 		for (XsdAbstractElement ae : aes) {
@@ -757,15 +786,15 @@ public class XSDMapper {
 			if (ae instanceof XsdElement) {
 				XsdSchema newSchema = findSchema(ae);
 				if(newSchema != null) {
-					handleElement((XsdElement) ae, newSchema, props, newProps);
+					handleElement((XsdElement) ae, newSchema, props, newProps, handledTypes);
 				}
 				else {
-					handleElement((XsdElement) ae, schema, props, newProps);	
+					handleElement((XsdElement) ae, schema, props, newProps, handledTypes);	
 				}
 				
 			}
 			if (ae instanceof XsdMultipleElements) {
-				handleMultipleElements(schema, (XsdMultipleElements) ae, props, newProps);
+				handleMultipleElements(schema, (XsdMultipleElements) ae, props, newProps, handledTypes);
 			}
 		}
 

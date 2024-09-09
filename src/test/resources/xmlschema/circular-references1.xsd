@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns="http://tempuri.org/po.xsd#" 
+elementFormDefault="qualified"
+targetNamespace="http://tempuri.org/po.xsd#">
+
+	<xs:element name="root" type="Test"></xs:element>
+    <xs:complexType name="Test">
+		<xs:sequence>
+			<xs:element name="Name2" type="xs:string" />
+			<xs:element name="Name3" type="Test1" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Test1">
+		<xs:sequence>
+			<xs:element name="Name1" type="Test2" />
+			<xs:element name="Name2" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Test2">
+		<xs:sequence>
+			<xs:element name="Name1" type="Test" />
+			<xs:element name="Name2" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

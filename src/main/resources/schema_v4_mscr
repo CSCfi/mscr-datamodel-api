@@ -134,5 +134,5 @@
         "exclusiveMinimum": [ "minimum" ]
     },
     "default": {},
-    "additionalProperties": false
+    "additionalProperties": true
 }

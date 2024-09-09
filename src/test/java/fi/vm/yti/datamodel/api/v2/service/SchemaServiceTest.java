@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.jena.rdf.model.Bag;
@@ -42,6 +43,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
@@ -50,6 +52,8 @@ import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
+import io.zenwave360.jsonrefparser.$RefParser;
+import io.zenwave360.jsonrefparser.$Refs;
 @ExtendWith(SpringExtension.class)
 @Import({
 	SchemaService.class,
@@ -408,6 +412,15 @@ public class SchemaServiceTest {
 		assertTrue(resources.contains(r1));
 		assertTrue(resources.contains(r2));
 		
+	}
+	
+	@Test
+	void testRecursiveSchema1() throws Exception {
+		JsonNode json = getJsonNodeFromPath("jsonschema/test_jsonschema_recursive1.json");
+		ObjectMapper m2 = new ObjectMapper();
+		//System.out.println(m2.writeValueAsString(json));
+		Model m = service.transformJSONSchemaToInternal("pid:test", json);
+		m.write(System.out, "TURTLE");
 	}
 	
 }

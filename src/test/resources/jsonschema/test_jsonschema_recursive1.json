@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "LocationInput": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "string"
+                },
+                "longitude": {
+                    "type": "string"
+                },
+                "factory": {
+                    "$ref": "#/definitions/LocationInput"
+                }
+            }
+        },
+        "FactoryInput": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/LocationInput"
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "enterprise": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/LocationInput"
+                },
+                "factories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/FactoryInput"
+                    }
+                }
+            }
+        }
+    }
+}
