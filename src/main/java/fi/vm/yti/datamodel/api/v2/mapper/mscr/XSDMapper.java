@@ -130,7 +130,7 @@ public class XSDMapper {
 		
 		List<XsdElement> list = p.getResultXsdElements().toList();
 		list.forEach(e -> {
-			Set<String> handledTypes = new HashSet<String>();
+			Set<Object> handledTypes = new HashSet<Object>();
 			handleElement(e, findSchema(e), jroot, rootProperties, handledTypes);
 		});
 
@@ -151,9 +151,9 @@ public class XSDMapper {
 		}
 	}
 
-	void handleElement(XsdElement e, XsdSchema schema, ObjectNode props, ObjectNode newProps, Set<String> handledTypes) {
-		if(!handledTypes.contains(e.toString())) {
-			handledTypes.add(e.toString());
+	void handleElement(XsdElement e, XsdSchema schema, ObjectNode props, ObjectNode newProps, Set<Object> handledTypes) {
+		if(!handledTypes.contains(e)) {
+			handledTypes.add(e);
 		String elementId = null;
 		String elementName = e.getName();
 		if (schema != null ) {
@@ -194,34 +194,45 @@ public class XSDMapper {
 
 			if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
 				// newObj.put("mscr_repeatable", true);
-				if (e.getParent() instanceof XsdMultipleElements
-						&& ((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
-					// array of these elements
-					/*
-					 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
-					 * System.out.println(arrayParent.getName()); ObjectNode newObj =
-					 * m.createObjectNode(); ObjectNode newProps2 = m.createObjectNode(); ObjectNode
-					 * newProps3 = m.createObjectNode();
-					 * 
-					 * 
-					 * newProps.set(arrayParent.getName(), newObj); newObj.put("type", "array");
-					 * newObj.set("items", newProps2);
-					 * 
-					 * newProps2.put("type", "object"); newProps2.put("title", e.getName());
-					 * newProps2.set("properties", newProps3); newProps3.set(e.getName(), prop); }
-					 */
-					ObjectNode newObj = m.createObjectNode();
-					ObjectNode newProps2 = m.createObjectNode();
-					ObjectNode newProps3 = m.createObjectNode();
-
-					props.put("type", "array");
-					props.set("items", newObj);
-					props.remove("properties");
-
-					newObj.put("type", "object");
-					newObj.set("properties", newProps2);
-
-					newProps2.set(e.getName(), prop);
+				if (e.getParent() instanceof XsdMultipleElements) {
+					if(((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
+						// array of these elements
+						/*
+						 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
+						 * System.out.println(arrayParent.getName()); ObjectNode newObj =
+						 * m.createObjectNode(); ObjectNode newProps2 = m.createObjectNode(); ObjectNode
+						 * newProps3 = m.createObjectNode();
+						 * 
+						 * 
+						 * newProps.set(arrayParent.getName(), newObj); newObj.put("type", "array");
+						 * newObj.set("items", newProps2);
+						 * 
+						 * newProps2.put("type", "object"); newProps2.put("title", e.getName());
+						 * newProps2.set("properties", newProps3); newProps3.set(e.getName(), prop); }
+						 */
+						ObjectNode newObj = m.createObjectNode();
+						ObjectNode newProps2 = m.createObjectNode();
+						ObjectNode newProps3 = m.createObjectNode();
+	
+						props.put("type", "array");
+						props.set("items", newObj);
+						props.remove("properties");
+	
+						newObj.put("type", "object");
+						newObj.set("properties", newProps2);
+	
+						newProps2.set(e.getName(), prop);
+					}
+					else {
+						
+						
+						
+						ObjectNode newItems = m.createObjectNode();
+						newItems.set("type", prop.get("type"));
+						prop.put("type", "array");
+						prop.set("items", newItems);
+						newProps.set(e.getName(), prop);
+					}
 
 				} else {
 					newProps.set(elementName, prop);
@@ -263,32 +274,43 @@ public class XSDMapper {
 					}
 					if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
 						// newObj.put("mscr_repeatable", true);
-						if (e.getParent() instanceof XsdMultipleElements
-								&& ((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
-							// array of these elements
-							ObjectNode newObj2 = m.createObjectNode();
-							ObjectNode newProps2 = m.createObjectNode();
-							ObjectNode newProps3 = m.createObjectNode();
-							/*
-							 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
-							 * System.out.println(arrayParent.getName());
-							 * newProps.set(arrayParent.getName(), newObj); props.put("type", "array");
-							 * props.set("items", newObj2); props.remove("properties");
-							 * 
-							 * newObj2.put("type", "object"); newObj2.set("properties", newProps2);
-							 * 
-							 * newProps2.set(e.getName(), newObj);
-							 * 
-							 * }
-							 */
-							props.put("type", "array");
-							props.set("items", newObj2);
-							props.remove("properties");
-		
-							newObj2.put("type", "object");
-							newObj2.set("properties", newProps2);
-		
-							newProps2.set(e.getName(), newObj);
+						if (e.getParent() instanceof XsdMultipleElements) {
+							if(((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
+								// has an collection element - is this a special case at all?
+								// TODO: make repeatable instead of array!
+								// array of these elements
+								ObjectNode newObj2 = m.createObjectNode();
+								ObjectNode newProps2 = m.createObjectNode();
+								ObjectNode newProps3 = m.createObjectNode();
+								/*
+								 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
+								 * System.out.println(arrayParent.getName());
+								 * newProps.set(arrayParent.getName(), newObj); props.put("type", "array");
+								 * props.set("items", newObj2); props.remove("properties");
+								 * 
+								 * newObj2.put("type", "object"); newObj2.set("properties", newProps2);
+								 * 
+								 * newProps2.set(e.getName(), newObj);
+								 * 
+								 * }
+								 */
+								props.put("type", "array");
+								props.set("items", newObj2);
+								props.remove("properties");
+			
+								newObj2.put("type", "object");
+								newObj2.set("properties", newProps2);
+			
+								newProps2.set(e.getName(), newObj);
+							}
+							else {
+								ObjectNode newObj2 = m.createObjectNode();
+								newObj2.put("type", "array");
+								newObj2.set("items", newObj);
+								newProps.set(e.getName(), newObj2);
+								
+							}
+							
 		
 						} else {
 							newProps.set(elementName, newObj);
@@ -309,8 +331,20 @@ public class XSDMapper {
 			ObjectNode prop = m.createObjectNode();	
 			if (elementId != null) {
 				prop.put("@id", elementId);
-			}			
-			prop.put("type", "string");
+			}
+			if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
+				
+				ObjectNode newItems = m.createObjectNode();
+				newItems.put("type", "string");
+				prop.put("type", "array");
+				prop.set("items", newItems);
+				
+
+			}
+			else {
+				prop.put("type", "string");				
+				
+			}
 			prop.put("title", e.getName());
 			newProps.set(elementName, prop);
 		}
@@ -678,7 +712,7 @@ public class XSDMapper {
 		}
 	}
 
-	boolean handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode props, ObjectNode newProps, Set<String> handledTypes) {
+	boolean handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode props, ObjectNode newProps, Set<Object> handledTypes) {
 		String ctypeName = e.getName();
 		
 		if(!"".equals(ctypeName)  && !handledTypes.contains(ctypeName)) {
@@ -780,7 +814,7 @@ public class XSDMapper {
 		// }
 	}
 
-	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode props, ObjectNode newProps, Set<String> handledTypes) {
+	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode props, ObjectNode newProps, Set<Object> handledTypes) {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
 
 		for (XsdAbstractElement ae : aes) {
@@ -789,11 +823,11 @@ public class XSDMapper {
 				XsdSchema newSchema = findSchema(ae);
 				if(newSchema != null) {
 					handleElement((XsdElement) ae, newSchema, props, newProps, handledTypes);
-					handledTypes.remove(ae.toString());
+					handledTypes.remove(ae);
 				}
 				else {
 					handleElement((XsdElement) ae, schema, props, newProps, handledTypes);
-					handledTypes.remove(ae.toString());
+					handledTypes.remove(ae);
 				}
 				
 			}
