@@ -592,13 +592,11 @@ public class XSDMapper {
 				XsdSchema newSchema = findSchema(ae);				
 				if (newSchema != null) {
 					handleElement((XsdElement) ae, newSchema, obj, handledTypes);
-					handledTypes.remove(ae);
 				} else {
 					handleElement((XsdElement) ae, schema, obj, handledTypes);
-					handledTypes.remove(ae);
 				}
 			}
-			if (ae instanceof XsdMultipleElements) {
+			else if (ae instanceof XsdMultipleElements) {
 				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes);
 			}
 		}
