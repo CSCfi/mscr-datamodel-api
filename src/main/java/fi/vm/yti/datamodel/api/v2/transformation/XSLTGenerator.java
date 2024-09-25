@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.transformation;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.w3c.dom.NodeList;
 
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
+import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 
 @Service
 public class XSLTGenerator {
@@ -109,12 +111,55 @@ public class XSLTGenerator {
 					forEach.setAttribute("select", "$node");
 					Element paramElement = xsltDoc.createElementNS(xslNS, "xsl:param");
 					paramElement.setAttribute("name", "node");
-					
-					Element copyOf = xsltDoc.createElementNS(xslNS, "xsl:copy-of");				
-					copyOf.setAttribute("select", "node()");
+					if(targetNode.mappings.get(0).getProcessing() != null) {
+						ProcessingInfo pi = targetNode.mappings.get(0).getProcessing();
+						if(pi.getId().equals("http://uri.suomi.fi/datamodel/ns/mscr#splitFunc")) {
+							String delimiter = pi.getParams().get("delimiter").toString();
+							//Element forEachToken = xsltDoc.createElementNS(xslNS, "xsl:for-each");
+							List<NodeInfo> splitTargets = targetNode.mappings.get(0).getTarget();
+							templateElement.removeChild(contentElement);
+							for(int i = 1; i < splitTargets.size()+1; i++) {
+								Element t = xsltDoc.createElement(splitTargets.get(i-1).getLabel());
+								Element seq = xsltDoc.createElementNS(xslNS, "sequence");
+								seq.setAttribute("select" , "tokenize(.,'" + delimiter + "')["+ i + "]");
+								t.appendChild(seq);
+								forEach.appendChild(t);
+							}
+						}
+						else if(pi.getId().equals("http://uri.suomi.fi/datamodel/ns/mscr#concatFunc")) {
+							String delimiter = pi.getParams().get("delimiter").toString();
+							List<NodeInfo> sources = targetNode.mappings.get(0).getSource();
+							String s = "";							
+							for(int i = 0; i < sources.size(); i++) {
+								String sourcePath = getXpathFromId(sources.get(i).getUri());
 
-					contentElement.appendChild(copyOf);						
-					forEach.appendChild(contentElement);
+								s = s + sourcePath;
+								if( i < sources.size()-1) {
+									s = s  + ",'" + delimiter + "',";
+								}
+								
+							}
+							Element valueOf = xsltDoc.createElementNS(xslNS, "xsl:value-of");
+							valueOf.setAttribute("select", "concat(" + s + ")");
+							contentElement.appendChild(valueOf);
+							forEach.appendChild(contentElement);
+						}						
+						else if(pi.getId().equals("http://uri.suomi.fi/datamodel/ns/mscr#constantFunc")) {
+							String value = pi.getParams().get("value").toString();
+							contentElement.setTextContent(value);
+							forEach.appendChild(contentElement);
+
+						}						
+					}
+					
+					else {
+						Element copyOf = xsltDoc.createElementNS(xslNS, "xsl:copy-of");				
+						copyOf.setAttribute("select", "node()");
+						contentElement.appendChild(copyOf);
+						forEach.appendChild(contentElement);
+
+					}
+					
 					templateElement.appendChild(paramElement);
 					templateElement.appendChild(forEach);
 				}
@@ -124,15 +169,28 @@ public class XSLTGenerator {
 					forEach.setAttribute("select", "$node");				
 					for(TreeNode child : targetNode.children) {
 						addTemplates(targetInfo, stylesheet, child);
+						
 						Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
 						callTemplate.setAttribute("name", "t_" + child.targetXPath.replaceAll("/", "-"));
-						Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
-						String childSourceUri = child.mappings.get(0).getSource().get(0).getUri();
-						String childSourceXPath = getXpathFromId(childSourceUri);
-						withParam.setAttribute("name", "node");
-						withParam.setAttribute("select", childSourceXPath.substring(sourceXPath.length()+1));
-						callTemplate.appendChild(withParam);
+						
+						if(child.mappings != null) {
+							Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
+							String childSourceUri = child.mappings.get(0).getSource().get(0).getUri();
+							
+							String childSourceXPath = getXpathFromId(childSourceUri);
+							if(childSourceXPath.equals(sourceXPath)) {
+								childSourceXPath = ".";
+							}
+							else {
+								childSourceXPath = childSourceXPath.substring(sourceXPath.length()+1);
+							}
+							withParam.setAttribute("name", "node");
+							withParam.setAttribute("select", childSourceXPath);
+							callTemplate.appendChild(withParam);
+						}
+						
 						calls.add(callTemplate);
+						
 					}
 					Element paramElement = xsltDoc.createElementNS(xslNS, "xsl:param");
 					paramElement.setAttribute("name", "node");
