@@ -5,7 +5,7 @@ xmlns="http://tempuri.org/po.xsd#"
 elementFormDefault="qualified"
 targetNamespace="http://tempuri.org/po.xsd#">
 
-	<xs:element name="root" type="Test"></xs:element>
+	<xs:element name="rootElement" type="Test"></xs:element>
     <xs:complexType name="Test">
 		<xs:sequence>
 			<xs:element name="Name2" type="xs:string" />

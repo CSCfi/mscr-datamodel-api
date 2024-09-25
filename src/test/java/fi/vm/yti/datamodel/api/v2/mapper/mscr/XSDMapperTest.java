@@ -165,7 +165,7 @@ public class XSDMapperTest {
 	void testTraverseTree() throws Exception {
 		//String filePath = "src/test/resources/xmlschema/sample.xsd";
 		//String filePath = "src/test/resources/xmlschema/eml1/eml.xsd";
-		String filePath = "src/test/resources/xmlschema/clarin/LinguisticFieldtrip.xsd";
+		//String filePath = "src/test/resources/xmlschema/clarin/LinguisticFieldtrip.xsd";
 		//String filePath = "https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1407745712081/xsd";
 		//String filePath = "src/test/resources/xmlschema/datacite/4.4/metadata.xsd";
 		//String filePath = "https://schema.datacite.org/meta/kernel-4.4/metadata.xsd";
@@ -175,9 +175,10 @@ public class XSDMapperTest {
 		//String filePath = "https://schema.datacite.org/meta/kernel-3.1/metadata.xsd";
 		//String filePath = "src/test/resources/xmlschema/eudat-core/eudat-core.xsd";
 		//String filePath = "https://raw.githubusercontent.com/OpenEdition/tei.openedition/master/xsd/tei.openedition.1.6.3/document.xsd";
+		String filePath = "src/test/resources/xmlschema/math/plain.xsd";
 		ObjectNode jroot = mapper.mapToInternalJson(filePath);
         ObjectWriter writer = m.writer(new DefaultPrettyPrinter());
-        //writer.writeValue(new File("xmlschema-to-jsonschema.json"), jroot);
+        writer.writeValue(new File("xmlschema-to-jsonschema.json"), jroot);
 	}
 	
 	
