@@ -1,8 +1,10 @@
 package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -32,6 +34,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 @Service
 public class JSONSchemaMapper {
 	
+
 	private static final Logger logger = LoggerFactory.getLogger(JSONSchemaMapper.class);
 	
 	private final Map<String, Resource> XSDTypesMap = Map.ofEntries(Map.entry("string", XSD.xstring),
@@ -45,7 +48,7 @@ public class JSONSchemaMapper {
 //			Map.entry("format", SHACL.format, -- no SHACL type - look into it
 			Map.entry("maximum", SH.maxInclusive), Map.entry("minimum", SH.minInclusive),
 			Map.entry("exclusiveMaximum", SH.maxExclusive),
-			Map.entry("exclusiveMinimum", SH.minExclusive), Map.entry("maxItems", SH.maxCount),
+			Map.entry("exclusiveMinimum", SH.minExclusive),
 			Map.entry("minItems", SH.minCount), Map.entry("maxLength", SH.maxLength),
 			Map.entry("minLength", SH.minLength), Map.entry("not", SH.not),
 			Map.entry("pattern", SH.pattern )
@@ -53,7 +56,7 @@ public class JSONSchemaMapper {
 	);
 
 	private final Set<String> JSONSchemaNumericalProperties = Set.of("maximum", "minimum", "exclusiveMaximum",
-			"exclusiveMinimum", "maxItems", "minItems", "minLength", "maxLength");
+			"exclusiveMinimum", "minItems", "minLength", "maxLength");
 	
 	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties");
 
@@ -118,8 +121,7 @@ public class JSONSchemaMapper {
 		
 	}
 
-	private void handleRequiredProperty(JsonNode node, Model model, Resource propertyResource, boolean isRequired) {
-		propertyResource.addProperty(SH.maxCount, model.createTypedLiteral(1));
+	private void handleRequiredProperty(JsonNode node, Model model, Resource propertyResource, boolean isRequired) {		//
 		if (isRequired) {
 			propertyResource.addProperty(SH.minCount, model.createTypedLiteral(1));
 		}
@@ -141,7 +143,10 @@ public class JSONSchemaMapper {
 		}
 		
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
-		propertyResource.addProperty(DCTerms.type, OWL.DatatypeProperty);
+		if(!model.contains(propertyResource, DCTerms.type, OWL.ObjectProperty)) {
+			propertyResource.addProperty(DCTerms.type, OWL.DatatypeProperty);
+		}
+		
 		if(node.has("@type") && node.get("@type").asText().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")) {
 			propertyResource.addProperty(SH.datatype, RDF.langString);	
 		}
@@ -285,7 +290,16 @@ public class JSONSchemaMapper {
 				}
 
 				// default max
-				propertyShape.addLiteral(SH.maxCount, 1);
+				if(!entry.getValue().has("maxItems")) {
+					propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
+				}
+				else {
+					if(entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
+						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
+					}
+					
+				}
+				
 				nodeShapeResource.addProperty(SH.property, propertyShape);
 				handleObject(propIDCapitalised + "/" + key, entry.getValue(), schemaPID, model,definitions);	
 			}
@@ -316,13 +330,27 @@ public class JSONSchemaMapper {
 							
 						}
 					}
+									
+					if(entry.getValue().get("maxItems") != null && entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
+						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
+					}					
 					
 				}
 				
 			}
 			else {
-				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));
+				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));								
 				propertyShape = handleDatatypeProperty(propIDCapitalised, entry, model, schemaPID, nodeShapeResource, isRequired, false);
+				// default max
+				if(!entry.getValue().has("maxItems")) {
+					propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
+				}
+				else {					
+					if(entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
+						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
+					}					
+				}
+				
 			}
 
 			if (entry.getValue().get("$ref") != null) {
@@ -354,10 +382,6 @@ public class JSONSchemaMapper {
 	
 	}
 	
-	public void addDatatype(String uri, JsonNode propertyNode, Model model) {
-		
-	}
-
 	public void handleDefinitions(Map<String, JsonNode> defs, String schemaPID, Model model) {
 		if(defs.size() == 0) {
 			return;
