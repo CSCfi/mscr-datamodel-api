@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="rootElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="articles_count" type="xs:unsignedByte" />
+        <xs:element maxOccurs="unbounded" name="authors" type="xs:string" />
+        <xs:element maxOccurs="unbounded" name="classification" type="xs:unsignedByte" />
+        <xs:element name="dependencies" />
+        <xs:element name="description" type="xs:string" />
+        <xs:element name="homepage" type="xs:string" />
+        <xs:element name="id" type="xs:unsignedByte" />
+        <xs:element maxOccurs="unbounded" name="keywords" type="xs:string" />
+        <xs:element name="license_terms" />
+        <xs:element name="name" type="xs:string" />
+        <xs:element maxOccurs="unbounded" name="operating_systems" />
+        <xs:element name="orms_id" type="xs:unsignedShort" />
+        <xs:element maxOccurs="unbounded" name="programming_languages" />
+        <xs:element maxOccurs="unbounded" name="related_software">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="id" type="xs:unsignedShort" />
+              <xs:element name="name" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="source_code" />
+        <xs:element maxOccurs="unbounded" name="standard_articles">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="authors" />
+              <xs:element name="id" type="xs:unsignedInt" />
+              <xs:element name="source" type="xs:string" />
+              <xs:element name="title" type="xs:string" />
+              <xs:element name="year" type="xs:unsignedShort" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="zbmath_url" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
