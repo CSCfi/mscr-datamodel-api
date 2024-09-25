@@ -5,6 +5,7 @@ import static fi.vm.yti.datamodel.api.v2.dto.ModelConstants.DEFAULT_LANGUAGE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +97,7 @@ public class FrontendService {
 			Iterator<String> i = props.keySet().iterator();
 			while(i.hasNext()) {				
 				String prop = i.next();
-				Map map = new HashMap();
+				Map map = new LinkedHashMap();
 				subTrees.add(map);
 				subTree.put(prop, map);			
 				Map<String, Object> obj = (Map<String, Object>) props.get(prop);
@@ -106,7 +107,7 @@ public class FrontendService {
     }
     
 	private Map<String, Object> createTree(Map<String, Object> resultMapOrList) {
-		Map<String, Object> tree = new HashMap<String, Object>();	
+		Map<String, Object> tree = new LinkedHashMap<String, Object>();	
 		Queue<Map<String, Object>> queue = new LinkedList<Map<String, Object>>();
 		Queue<Map> subTrees = new LinkedList<Map>();
 		subTrees.add(tree);
