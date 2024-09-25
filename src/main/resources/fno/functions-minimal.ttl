@@ -22,46 +22,54 @@ mscr:complexMappingTranformationProblem
 mscr:stringToStringFunc
     a   fno:Function ;
     fno:solves mscr:simpleMappingProblem ;
-    fno:name "Function to copy string value as it is with one to one mapping";
+    fno:name "String passthrough";
     fno:expects ( mscr:stringInputParam );
     fno:returns ( mscr:stringOutput) .
 
 mscr:stringToIntFunc
     a   fno:Function ;
     fno:solves mscr:simpleMappingProblem ;
-    fno:name "Function to parse integer from string input";
+    fno:name "String to integer";
     fno:expects ( mscr:stringInputParam );
     fno:returns ( mscr:intOutput) .
 
 mscr:stringToDoubleFunc
     a   fno:Function ;
     fno:solves mscr:simpleMappingProblem ;
-    fno:name "Function to parse double from string input";
+    fno:name "stringToDouble";
     fno:expects ( mscr:stringInputParam );
     fno:returns ( mscr:doubleOutput) .
 
 mscr:celsiusToFahrenheitFunc
     a   fno:Function ;
     fno:solves mscr:simpleValueTranformationProblem ;
-    fno:name "Function to transform celsius (double) to fahrenheit (double)";
+    fno:name "Celsius (double) to Fahrenheit (double)";
     fno:expects ( mscr:doubleInputParam );
     fno:returns ( mscr:doubleOutput) .
     
 mscr:concatFunc
     a   fno:Function ;
     fno:solves mscr:simpleValueTranformationProblem ;
-    fno:name "Function that concatenates input values with the given delimiter";
+    fno:name "concat";
     fno:expects ( mscr:stringInputParam mscr:delimiterParam );
     fno:returns ( mscr:stringOutput) .
  
 mscr:splitFunc
     a   fno:Function ;
     fno:solves mscr:simpleValueTranformationProblem ;
-    fno:name "Function that splits input values with the given delimiter";
+    fno:name "split";
     fno:expects ( mscr:stringInputParam mscr:delimiterParam );
     fno:returns ( mscr:stringOutput) .
      
-        
+mscr:constantFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "constant";
+    fno:expects ( mscr:stringInputParam mscr:constantStringParam);
+    fno:returns ( mscr:stringOutput) .
+     
+   
+           
 mscr:stringInputParam
     a fno:Parameter ;
     fno:name "input" ;
@@ -69,6 +77,12 @@ mscr:stringInputParam
     fno:type xsd:string ;
     fno:required "true"^^xsd:boolean .
     
+mscr:constantStringParam
+    a fno:Parameter ;
+    fno:name "value" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean . 
             
 mscr:delimiterParam
     a fno:Parameter ;
@@ -142,6 +156,12 @@ mscr:splitMapping
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "split" ] .
  
+mscr:constantMapping
+    a fno:Mapping ;
+    fno:function mscr:constantFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "constant" ] .
+  
  
 mscr:simpleMappingFunctions
     a fnoi:JavaClass ;
