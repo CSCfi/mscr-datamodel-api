@@ -640,9 +640,13 @@ public class Crosswalk extends BaseMSCRController {
 			pid = pid + "/" + suffix;
 		}
 		try {
-			pid = PIDService.mapToInternal(pid);    	
+			pid = PIDService.mapToInternal(pid);  
+			var ownerMapper = groupManagementService.mapOwner();
+			CrosswalkInfoDTO crosswalkInfo = mapper.mapToCrosswalkDTO(pid, jenaService.getCrosswalk(pid), null, ownerMapper);
+			
 	    	List<StoredFile> files = storageService.retrieveAllCrosswalkFiles(pid);
-	    	return handleFileDownload(files);
+	    	return handleFileDownload(files, crosswalkInfo.getLabel().get("en") + "-" + crosswalkInfo.getVersionLabel(), crosswalkInfo.getFormat().name());
+
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -668,12 +672,16 @@ public class Crosswalk extends BaseMSCRController {
 			pid = pid + "/" + suffix;
 		}
 		try {
-			pid = PIDService.mapToInternal(pid);    	
+			pid = PIDService.mapToInternal(pid);    
+			var ownerMapper = groupManagementService.mapOwner();
+			CrosswalkInfoDTO crosswalkInfo = mapper.mapToCrosswalkDTO(pid, jenaService.getCrosswalk(pid), null, ownerMapper);
+			
 	    	StoredFile file = storageService.retrieveFile(pid, Long.parseLong(fileID), MSCRType.CROSSWALK);
 	    	if(file == null) {
 	    		throw new ResourceNotFoundException(pid + "@file=" + fileID); 
 	    	}
-	    	return handleFileDownload(List.of(file), download);
+	    	return handleFileDownload(List.of(file), download, crosswalkInfo.getLabel().get("en") + "-" + crosswalkInfo.getVersionLabel(), crosswalkInfo.getFormat().name());
+		
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
