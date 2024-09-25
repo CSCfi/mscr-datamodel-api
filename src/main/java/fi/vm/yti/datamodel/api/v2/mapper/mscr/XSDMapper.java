@@ -83,12 +83,8 @@ public class XSDMapper {
 			SchemaPart root = new SchemaPart(filePath, true);
 			Map<String, XsdSchema> schemaMap = new HashMap<String, XsdSchema>();
 			p.getResultXsdSchemas().forEach(schema -> schemaMap.put(schema.getFilePath(), schema));
-			//schemaMap.keySet().stream().forEach(key -> System.out.println(key));
-			//System.out.println("***");
 			XsdSchema rootSchema = p.getResultXsdSchemas().filter(e -> e.getFilePath().equals(filePath)).findFirst()
 					.get(); // since parsing was successful this should work
-			//System.out.println(rootSchema.getTargetNamespace());
-			//System.out.println("***");
 			Set<String> added = new HashSet<String>();
 			traverseSchemaTree(root, rootSchema, schemaMap, added);
 			r.setTree(root);
@@ -110,28 +106,16 @@ public class XSDMapper {
 		systemProperties.remove("javax.xml.parsers.DocumentBuilderFactory");
 		System.setProperties(systemProperties);
 		XsdParser p = new XsdParser(filePath);
-		
+
 		ObjectNode jroot = m.createObjectNode();
 		ObjectNode rootProperties = m.createObjectNode();
-		ObjectNode props = m.createObjectNode();
 		jroot.put("type", "object");
 		jroot.set("properties", rootProperties);
-		jroot.put("$schema", "http://json-schema.org/draft-04/schema#");
-		/*
-		 * XsdElement root = getRootElement(p, filePath); if(root != null) {
-		 * System.out.println("Root element: " + root.getName());
-		 * rootProperties.set(root.getName(), props);
-		 * 
-		 * if(root.getXsdComplexType() != null) {
-		 * handleComplexType(root.getXsdComplexType(), props, null); } } else {
-		 * List<XsdElement> list = p.getResultXsdElements().toList(); list.forEach(e ->
-		 * { handleElement(e, jroot, rootProperties); }); }
-		 */
-		
+		jroot.put("$schema", "http://json-schema.org/draft-04/schema#");	
 		List<XsdElement> list = p.getResultXsdElements().toList();
 		list.forEach(e -> {
 			Set<Object> handledTypes = new HashSet<Object>();
-			handleElement(e, findSchema(e), jroot, rootProperties, handledTypes);
+			handleElement(e, findSchema(e), jroot, handledTypes);
 		});
 
 		return jroot;
@@ -151,203 +135,38 @@ public class XSDMapper {
 		}
 	}
 
-	void handleElement(XsdElement e, XsdSchema schema, ObjectNode props, ObjectNode newProps, Set<Object> handledTypes) {
-		if(!handledTypes.contains(e)) {
+	void handleElement(XsdElement e, XsdSchema schema, ObjectNode parentObj, Set<Object> handledTypes) {
+		if (!handledTypes.contains(e)) {
+			ObjectNode obj = m.createObjectNode();
 			handledTypes.add(e);
-		String elementId = null;
-		String elementName = e.getName();
-		if (schema != null ) {
-			/*
-			if(schema.getTargetNamespace().endsWith("#") || 
-					schema.getTargetNamespace().endsWith("/")
-					) {
-				elementId = schema.getTargetNamespace() + e.getName();
-			}
-			else {
-			*/
-			if(schema.getTargetNamespace() != null) {
-				elementId = schema.getTargetNamespace() + e.getName();
-			}
-			else {
-				elementId = e.getName();
-			}
-			
-				
-		
-		}
-		/*
-			*/
-		
-		
-		//System.out.println(elementId);
-		if (e.getTypeAsBuiltInDataType() != null) {
-			//System.out.println("Builtin type");
-			//System.out.println(e.getTypeAsBuiltInDataType().getName());
-			ObjectNode prop = m.createObjectNode();
-			// prop.put("type", e.getTypeAsBuiltInDataType().getName());
-			handleBuiltInType(e.getTypeAsBuiltInDataType(), prop);
-			handleDesc(e, prop);
-			prop.put("title", elementName);
-			if (elementId != null) {
-				prop.put("@id", elementId);
-			}
-
-			if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
-				// newObj.put("mscr_repeatable", true);
-				if (e.getParent() instanceof XsdMultipleElements) {
-					if(((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
-						// array of these elements
-						/*
-						 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
-						 * System.out.println(arrayParent.getName()); ObjectNode newObj =
-						 * m.createObjectNode(); ObjectNode newProps2 = m.createObjectNode(); ObjectNode
-						 * newProps3 = m.createObjectNode();
-						 * 
-						 * 
-						 * newProps.set(arrayParent.getName(), newObj); newObj.put("type", "array");
-						 * newObj.set("items", newProps2);
-						 * 
-						 * newProps2.put("type", "object"); newProps2.put("title", e.getName());
-						 * newProps2.set("properties", newProps3); newProps3.set(e.getName(), prop); }
-						 */
-						ObjectNode newObj = m.createObjectNode();
-						ObjectNode newProps2 = m.createObjectNode();
-						ObjectNode newProps3 = m.createObjectNode();
-	
-						props.put("type", "array");
-						props.set("items", newObj);
-						props.remove("properties");
-	
-						newObj.put("type", "object");
-						newObj.set("properties", newProps2);
-	
-						newProps2.set(e.getName(), prop);
-					}
-					else {
-						
-						
-						
-						ObjectNode newItems = m.createObjectNode();
-						newItems.set("type", prop.get("type"));
-						prop.put("type", "array");
-						prop.set("items", newItems);
-						newProps.set(e.getName(), prop);
-					}
-
+			String elementId = null;
+			String elementName = e.getName();
+			if (schema != null) {
+				if (schema.getTargetNamespace() != null) {
+					elementId = schema.getTargetNamespace() + e.getName();
 				} else {
-					newProps.set(elementName, prop);
+					elementId = e.getName();
 				}
+			}
+			if (e.getTypeAsBuiltInDataType() != null) {
+				handleBuiltInType(e.getTypeAsBuiltInDataType(), obj);		
+			} else if (e.getXsdSimpleType() != null) {
+				handleSimpleType(e.getXsdSimpleType(), obj);				
+			} else if (e.getXsdComplexType() != null) {
+				handleComplexType(schema, e.getXsdComplexType(), obj, handledTypes);
 			} else {
-				newProps.set(elementName, prop);
+				// just an element
+				obj.put("type", "string");
 			}
-
-			// newProps.set(elementName, prop);
-		} else if (e.getXsdSimpleType() != null) {
-			
-
-			//System.out.println("Simple type");
-			//System.out.println(e.getXsdSimpleType().getName());
-			ObjectNode prop = handleSimpleType(e.getXsdSimpleType(), newProps);
-			handleDesc(e, prop);
-			prop.put("title", elementName);
+			handleDesc(e, obj);
 			if (elementId != null) {
-				prop.put("@id", elementId);
-			}
-			newProps.set(elementName, prop);
-		} else if (e.getXsdComplexType() != null) {
+				obj.put("@id", elementId);
+			}			
+			obj.put("title", e.getName());
+			handleCardinalities(e, obj);
+			ObjectNode properties = (ObjectNode)parentObj.get("properties");
+			properties.set(elementName, obj);
 			
-			
-			//System.out.println("Complex type: " + e.getXsdComplexType().getName());
-				ObjectNode newObj = m.createObjectNode();
-				//if (elementName.equals("FieldtripMethod")) {
-				//	System.out.println("test");
-				//}
-	
-				// special handling of repeatable element with the same name
-				if(handleComplexType(schema, e.getXsdComplexType(), newObj, null, handledTypes)) {
-					handleDesc(e, newObj);
-					newObj.put("title", elementName);
-					// additional conditions - multiple element the e belongs to only has one
-					// element (this one)
-					if (elementId != null) {
-						newObj.put("@id", elementId);
-					}
-					if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
-						// newObj.put("mscr_repeatable", true);
-						if (e.getParent() instanceof XsdMultipleElements) {
-							if(((XsdMultipleElements) e.getParent()).getXsdElements().count() == 1) {
-								// has an collection element - is this a special case at all?
-								// TODO: make repeatable instead of array!
-								// array of these elements
-								ObjectNode newObj2 = m.createObjectNode();
-								ObjectNode newProps2 = m.createObjectNode();
-								ObjectNode newProps3 = m.createObjectNode();
-								/*
-								 * XsdElement arrayParent = findNextParentElement(e); if(arrayParent != null) {
-								 * System.out.println(arrayParent.getName());
-								 * newProps.set(arrayParent.getName(), newObj); props.put("type", "array");
-								 * props.set("items", newObj2); props.remove("properties");
-								 * 
-								 * newObj2.put("type", "object"); newObj2.set("properties", newProps2);
-								 * 
-								 * newProps2.set(e.getName(), newObj);
-								 * 
-								 * }
-								 */
-								props.put("type", "array");
-								props.set("items", newObj2);
-								props.remove("properties");
-			
-								newObj2.put("type", "object");
-								newObj2.set("properties", newProps2);
-			
-								newProps2.set(e.getName(), newObj);
-							}
-							else {
-								ObjectNode newObj2 = m.createObjectNode();
-								newObj2.put("type", "array");
-								newObj2.set("items", newObj);
-								newProps.set(e.getName(), newObj2);
-								
-							}
-							
-		
-						} else {
-							newProps.set(elementName, newObj);
-						}
-		
-					} else {
-						newProps.set(elementName, newObj);
-					}	
-				}
-				
-				
-			
-
-		}
-
-		else {
-			// just an element
-			ObjectNode prop = m.createObjectNode();	
-			if (elementId != null) {
-				prop.put("@id", elementId);
-			}
-			if (e.getMaxOccurs() != null && e.getMaxOccurs().equals("unbounded")) {
-				
-				ObjectNode newItems = m.createObjectNode();
-				newItems.put("type", "string");
-				prop.put("type", "array");
-				prop.set("items", newItems);
-				
-
-			}
-			else {
-				prop.put("type", "string");				
-				
-			}
-			prop.put("title", e.getName());
-			newProps.set(elementName, prop);
-		}
 		}
 
 	}
@@ -356,8 +175,8 @@ public class XSDMapper {
 		if (datatype != null) {
 
 			String rawName = datatype.getRawName();
-			if(rawName.indexOf(":") > 0) {
-				rawName = rawName.substring(rawName.indexOf(":")+1);
+			if (rawName.indexOf(":") > 0) {
+				rawName = rawName.substring(rawName.indexOf(":") + 1);
 			}
 			switch (rawName) {
 			case "string": {
@@ -427,209 +246,208 @@ public class XSDMapper {
 		}
 	}
 
-	private void handleBuiltInType(XsdBuiltInDataType datatype, ObjectNode props) {
-		//System.out.println(datatype.getRawName());
+	private void handleBuiltInType(XsdBuiltInDataType datatype, ObjectNode obj) {
+		// System.out.println(datatype.getRawName());		
 		String rawName = datatype.getRawName();
 		if (rawName.indexOf(":") >= 0) {
 			rawName = rawName.substring(rawName.indexOf(":") + 1);
 		}
-		//System.out.println(rawName);
-		props.remove("properties"); // TODO: Do not add this in the first place
+		// System.out.println(rawName);
 		switch (rawName) {
 		case "string": {
-			props.put("type", "string");
+			obj.put("type", "string");
 			break;
 		}
 		case "normalizedString": {
-			props.put("type", "string");
+			obj.put("type", "string");
 			break;
 		}
 		case "token": {
-			props.put("type", "string");
+			obj.put("type", "string");
 			break;
 		}
 		case "base64Binary": {
-			props.put("type", "string");
+			obj.put("type", "string");
 			// 'pattern': '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
 			break;
 		}
 		case "hexBinary": {
-			props.put("type", "string");
+			obj.put("type", "string");
 			// 'pattern': '^([0-9a-fA-F]{2})*$'
 			break;
 		}
 		case "integer": {
-			props.put("type", "integer");
+			obj.put("type", "integer");
 			break;
 		}
 		case "positiveInteger": {
-			props.put("type", "integer");
-			props.put("minimum", 0);
-			props.put("exclusiveMinimum", true);
+			obj.put("type", "integer");
+			obj.put("minimum", 0);
+			obj.put("exclusiveMinimum", true);
 			break;
 		}
 		case "negativeInteger": {
-			props.put("type", "integer");
-			props.put("maximum", 0);
-			props.put("exclusiveMaximum", true);
+			obj.put("type", "integer");
+			obj.put("maximum", 0);
+			obj.put("exclusiveMaximum", true);
 			break;
 		}
 		case "nonNegativeInteger": {
-			props.put("type", "integer");
-			props.put("minimum", 0);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 0);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "nonPositiveInteger": {
-			props.put("type", "integer");
-			props.put("maximum", 0);
-			props.put("exclusiveMaximum", false);
+			obj.put("type", "integer");
+			obj.put("maximum", 0);
+			obj.put("exclusiveMaximum", false);
 			break;
 		}
 		case "long": {
-			props.put("type", "integer");
-			props.put("minimum", Long.MIN_VALUE);
-			props.put("maximum", Long.MAX_VALUE);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", Long.MIN_VALUE);
+			obj.put("maximum", Long.MAX_VALUE);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "unsignedLong": {
-			props.put("type", "integer");
-			props.put("minimum", 0);
-			props.put("maximum", UnsignedLong.MAX_VALUE.longValue());
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 0);
+			obj.put("maximum", UnsignedLong.MAX_VALUE.longValue());
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "int": {
-			props.put("type", "integer");
-			props.put("minimum", Integer.MIN_VALUE);
-			props.put("maximum", Integer.MAX_VALUE);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", Integer.MIN_VALUE);
+			obj.put("maximum", Integer.MAX_VALUE);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "unsignedInt": {
-			props.put("type", "integer");
-			props.put("minimum", 0);
-			props.put("maximum", UnsignedInteger.MAX_VALUE.intValue());
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 0);
+			obj.put("maximum", UnsignedInteger.MAX_VALUE.intValue());
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "short": {
-			props.put("type", "integer");
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "unsignedShort": {
-			props.put("type", "integer");
-			props.put("minimum", 0);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 0);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "byte": {
-			props.put("type", "integer");
-			props.put("minimum", -128);
-			props.put("maximum", 127);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", -128);
+			obj.put("maximum", 127);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "unsignedByte": {
-			props.put("type", "integer");
-			props.put("minimum", 0);
-			props.put("maximum", 255);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 0);
+			obj.put("maximum", 255);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 		}
 		case "decimal": {
-			props.put("type", "number");
+			obj.put("type", "number");
 			break;
 		}
 		case "float": {
-			props.put("type", "number");
+			obj.put("type", "number");
 			break;
 		}
 		case "double": {
-			props.put("type", "number");
+			obj.put("type", "number");
 			break;
 		}
 		case "duration": {
-			props.put("type", "string");
-			props.put("pattern", "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$");
+			obj.put("type", "string");
+			obj.put("pattern", "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?=\\d+[HMS])(\\d+H)?(\\d+M)?(\\d+S)?)?$");
 			break;
 		}
 		case "dateTime": {
-			props.put("type", "string");
-			props.put("pattern",
+			obj.put("type", "string");
+			obj.put("pattern",
 					"^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))(T((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$");
 			break;
 		}
 		case "date": {
-			props.put("type", "string");
-			props.put("pattern", "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$");
+			obj.put("type", "string");
+			obj.put("pattern", "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$");
 			break;
 		}
 		case "time": {
-			props.put("type", "string");
-			props.put("pattern", "^([01]\\d|2[0-3]):([0-5]\\d)(?::([0-5]\\d)(.(\\d{3}))?)?$");
+			obj.put("type", "string");
+			obj.put("pattern", "^([01]\\d|2[0-3]):([0-5]\\d)(?::([0-5]\\d)(.(\\d{3}))?)?$");
 			break;
 		}
 		case "gYear": {
-			props.put("type", "integer");
-			props.put("minimum", 1);
-			props.put("maximum", 9999);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 1);
+			obj.put("maximum", 9999);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 
 		}
 		case "gYearMonth": {
-			props.put("type", "string");
-			props.put("pattern", "^(19|20)\\d\\d-(0[1-9]|1[012])$");
+			obj.put("type", "string");
+			obj.put("pattern", "^(19|20)\\d\\d-(0[1-9]|1[012])$");
 			break;
 
 		}
 		case "gMonth": {
-			props.put("type", "integer");
-			props.put("minimum", 1);
-			props.put("maximum", 12);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 1);
+			obj.put("maximum", 12);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 
 		}
 		case "gMonthDay": {
-			props.put("type", "string");
-			props.put("pattern", "^(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$");
+			obj.put("type", "string");
+			obj.put("pattern", "^(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$");
 			break;
 
 		}
 		case "gDay": {
-			props.put("type", "integer");
-			props.put("minimum", 1);
-			props.put("maximum", 31);
-			props.put("exclusiveMaximum", false);
-			props.put("exclusiveMinimum", false);
+			obj.put("type", "integer");
+			obj.put("minimum", 1);
+			obj.put("maximum", 31);
+			obj.put("exclusiveMaximum", false);
+			obj.put("exclusiveMinimum", false);
 			break;
 
 		}
 		case "Name": {
-			props.put("type", "string");
+			obj.put("type", "string");
 		}
 		case "QName": {
-			props.put("type", "string");
+			obj.put("type", "string");
 		}
 		case "NCName": {
-			props.put("type", "string");
+			obj.put("type", "string");
 		}
 		case "anyURI": {
-			props.put("type", "string");
+			obj.put("type", "string");
 			// props.put("pattern",
 			// "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?");
 			break;
@@ -641,110 +459,93 @@ public class XSDMapper {
 			a.add(m.createObjectNode().put("type", "number"));
 			a.add(m.createObjectNode().put("type", "boolean"));
 			a.add(m.createObjectNode().put("type", "null"));
-			props.set("oneOf", a);
+			obj.set("oneOf", a);
 		}
 		case "boolean": {
-			props.put("type", "boolean");
+			obj.put("type", "boolean");
 		}
 		default:
-			props.put("type", "unknown");
+			obj.put("type", "unknown");
 		}
 		// TODO: missing data types
 
 	}
 
-	ObjectNode handleMaxOccurs(String maxOccurs, ObjectNode props) {
-		if (maxOccurs.equals("unbounded")) {
-			ObjectNode newObj = m.createObjectNode();
-			ObjectNode newProps = m.createObjectNode();
-			if (props.get("type") != null) {
-				newObj.set("type", props.get("type"));
-			} else {
-				newObj.put("type", "object");
+	void handleCardinalities(XsdElement e, ObjectNode props) {				
+		if (e.getMaxOccurs() != null) {
+			if (!"unbounded".equals(e.getMaxOccurs())) {
+				props.put("maxItems", Integer.parseInt(e.getMaxOccurs()));
 			}
-
-			newObj.set("properties", newProps);
-			props.remove("properties");
-			props.set("items", newObj);
-			props.put("type", "array");
-
-			return newProps;
-		}
-		return props;
-	}
-
-	XsdSchema findSchema(XsdAbstractElement e) {
-		
-		XsdAbstractElement parent = e.getParent();
-		if(parent == null) {
-			if(e.getCloneOf() != null) {
-				parent = e.getCloneOf().getParent();	
-			}			
-		}
-		if(parent == null) {
-			try {
-				parent = e.getParent(true);
-			}catch(Exception ex) {}
-		}
-		
-		if(parent != null) {
-			if((parent instanceof XsdSchema)) {
-				return (XsdSchema)parent;
+			else {
+				props.put("maxItems", "unbounded");
 			}
-			return findSchema(parent);
 		}
 		else {
-			return null;
+			props.put("maxItems", 1);
 		}
+		if (e.getMinOccurs() != null) {
+			props.put("minItems", e.getMinOccurs());			
+		}
+		else {
+			props.put("minItems", 1);
+		}
+
 	}
 
-	
-	XsdElement findNextParentElement(XsdAbstractElement e) {
-		XsdAbstractElement p = e.getParent();
-		if (p != null && !(p instanceof XsdSchema)) {
-			if (p instanceof XsdElement) {
-				return (XsdElement) p;
-			} else {
-				return findNextParentElement(p.getParent());
+	private XsdSchema findSchema(XsdAbstractElement e) {
+
+		XsdAbstractElement parent = e.getParent();
+		if (parent == null) {
+			if (e.getCloneOf() != null) {
+				parent = e.getCloneOf().getParent();
 			}
+		}
+		if (parent == null) {
+			try {
+				parent = e.getParent(true);
+			} catch (Exception ex) {
+			}
+		}
+
+		if (parent != null) {
+			if ((parent instanceof XsdSchema)) {
+				return (XsdSchema) parent;
+			}
+			return findSchema(parent);
 		} else {
 			return null;
 		}
 	}
 
-	boolean handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode props, ObjectNode newProps, Set<Object> handledTypes) {
+	void handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode obj,
+			Set<Object> handledTypes) {
 		String ctypeName = e.getName();
-		
-		if(!"".equals(ctypeName)  && !handledTypes.contains(ctypeName)) {
-			/*
-			if(ctypeName != null) {
-				handledTypes.add(e.getName());	
+		if (!"".equals(ctypeName) && !handledTypes.contains(ctypeName)) {
+			obj.put("type", "object");
+			ObjectNode properties = (ObjectNode)obj.get("properties");
+			if(properties == null) {
+				properties = m.createObjectNode();
 			}
-			*/
 			
-			props.put("type", "object");
-			if (newProps == null) {
-				newProps = m.createObjectNode();
-				props.set("properties", newProps);
-			}
-	
+			obj.set("properties", properties);
+
 			if (e.getSimpleContent() != null) {
-	
+				
 				XsdSimpleContent c = e.getSimpleContent();
 				// TODO - also requires handling of attributes
 				if (c.getXsdExtension() != null) {
 					XsdExtension ext = c.getXsdExtension();
 					if (ext.getBaseAsBuiltInDataType() != null) {
-						handleBuiltInType(ext.getBaseAsBuiltInDataType(), props);
+						obj.remove("properties");
+						handleBuiltInType(ext.getBaseAsBuiltInDataType(), obj);
 					} else if (ext.getBaseAsSimpleType() != null) {
-						ObjectNode prop = handleSimpleType(ext.getBaseAsSimpleType(), null);
-						props.set("type", prop.get("type"));
-						props.remove("properties");
+						obj.remove("properties");
+						handleSimpleType(ext.getBaseAsSimpleType(), obj);
 					} else if (ext.getBaseAsComplexType() != null) {
-						handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps, handledTypes);
+						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes);
 					}
 				}
-	
+
 			} else if (e.getComplexContent() != null) {
 				XsdComplexContent c = e.getComplexContent();
 				// TODO
@@ -752,124 +553,85 @@ public class XSDMapper {
 				if (c.getXsdExtension() != null) {
 					XsdExtension ext = c.getXsdExtension();
 					if (ext.getBaseAsComplexType() != null) {
-						handleComplexType(schema, ext.getBaseAsComplexType(), props, newProps, handledTypes);
+						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes);
 					}
 					if (ext.getChildAsSequence() != null) {
-	
-						handleMultipleElements(schema, ext.getChildAsSequence(), props, newProps, handledTypes);
+
+						handleMultipleElements(schema, ext.getChildAsSequence(), obj, handledTypes);
 					}
 				}
-	
-			}
-			try {
-				XsdChoice c = e.getChildAsChoice();
-				handleMultipleElements(schema, c, props, newProps, handledTypes);
-			} catch (Exception ex) {
-	
-			}
-			try {
-				XsdAll a = e.getChildAsAll();
-				handleMultipleElements(schema, a, props, newProps, handledTypes);
-			} catch (Exception ex) {
-	
-			}
-			try {
-				XsdChoice c = e.getChildAsChoice();
-				handleMultipleElements(schema, c, props, newProps, handledTypes);
-			} catch (Exception ex) {
-	
+
 			}
 			try {
 				XsdSequence seq = e.getChildAsSequence();
-				handleMultipleElements(schema, seq, props, newProps, handledTypes);
+				handleMultipleElements(schema, seq, obj, handledTypes);
 			} catch (Exception ex) {
-	
-			}
-			return true;
-		}
-		else {
-			return false;
-		}
-			
 
-		/*
-		 * if(e.getChildAsAll() != null) { }
-		 */
-		/*
-		 * if(e.getChildAsSequence() != null) { XsdSequence seq =
-		 * e.getChildAsSequence();
-		 */
-		/*
-		 * if(seq.getMaxOccurs() != null) { newProps =
-		 * handleMaxOccurs(seq.getMaxOccurs(), newProps); }
-		 */
-		/*
-		 * if(e.getParent() instanceof XsdElement) { ObjectNode newObj =
-		 * m.createObjectNode(); ObjectNode newProps2 = m.createObjectNode();
-		 * newObj.set("properties", newProps2);
-		 * newProps.set(((XsdElement)e.getParent()).getName(), newObj);
-		 * handleMultipleElements(seq, newObj, newProps2); }
-		 */
-		// handleMultipleElements(seq, props, newProps);
-		// }
+			}
+			try {
+				XsdAll a = e.getChildAsAll();
+				handleMultipleElements(schema, a, obj, handledTypes);
+			} catch (Exception ex) {
+
+			}
+			try {
+				XsdChoice c = e.getChildAsChoice();
+				handleMultipleElements(schema, c, obj, handledTypes);
+			} catch (Exception ex) {
+
+			}
+		}
 	}
 
-	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode props, ObjectNode newProps, Set<Object> handledTypes) {
+	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode obj,
+			Set<Object> handledTypes) {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
 
 		for (XsdAbstractElement ae : aes) {
-
 			if (ae instanceof XsdElement) {
-				XsdSchema newSchema = findSchema(ae);
-				if(newSchema != null) {
-					handleElement((XsdElement) ae, newSchema, props, newProps, handledTypes);
+				XsdSchema newSchema = findSchema(ae);				
+				if (newSchema != null) {
+					handleElement((XsdElement) ae, newSchema, obj, handledTypes);
+					handledTypes.remove(ae);
+				} else {
+					handleElement((XsdElement) ae, schema, obj, handledTypes);
 					handledTypes.remove(ae);
 				}
-				else {
-					handleElement((XsdElement) ae, schema, props, newProps, handledTypes);
-					handledTypes.remove(ae);
-				}
-				
 			}
 			if (ae instanceof XsdMultipleElements) {
-				handleMultipleElements(schema, (XsdMultipleElements) ae, props, newProps, handledTypes);
+				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes);
 			}
 		}
-
 	}
 
-
-	ObjectNode handleSimpleType(XsdSimpleType e, ObjectNode props) {
-		ObjectNode prop = m.createObjectNode();
-		prop.put("type", "string"); // TODO: fix this default
+	void handleSimpleType(XsdSimpleType e, ObjectNode obj) {		
+		obj.put("type", "string"); // TODO: fix this default
 		// (annotation?,(restriction|list|union))
-		// TODO: handle multiple restrctions
+		// TODO: handle multiple restrictions
 		if (e.getUnion() != null) {
 			// TODO: handle unions
 		} else if (e.getRestriction() != null) {
 			XsdRestriction r = e.getRestriction();
 
 			if (r.getBaseAsBuiltInDataType() != null) {
-				handleBuiltInType(r.getBaseAsBuiltInDataType(), prop);
+				handleBuiltInType(r.getBaseAsBuiltInDataType(), obj);
 			} // TODO: other types
 			if (r.getPattern() != null) {
 				XsdPattern p = r.getPattern();
-				prop.put("pattern", p.getValue());
+				obj.put("pattern", p.getValue());
 			}
 			if (r.getEnumeration() != null && r.getEnumeration().size() > 0) {
-				ArrayNode a = m.createArrayNode();				
+				ArrayNode a = m.createArrayNode();
 				XsdBuiltInDataType datatype = r.getBaseAsBuiltInDataType();
-				if(datatype != null) {
+				if (datatype != null) {
 					r.getEnumeration().forEach(en -> {
 						convertAndAddBuiltInType(datatype, a, en.getValue());
 					});
-					prop.set("enum", a);					
+					obj.set("enum", a);
 				}
 
 			}
 		}
-
-		return prop;
 	}
 
 	private String getAnnotationStr(XsdElement e) {
