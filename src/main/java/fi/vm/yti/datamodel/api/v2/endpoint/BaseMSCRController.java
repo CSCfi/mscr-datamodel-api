@@ -18,6 +18,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRCommonMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
@@ -41,10 +42,10 @@ public abstract class BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Action parameter requires a target");
 		}		
 	}	
-	protected ResponseEntity<byte[]> handleFileDownload(List<StoredFile> files) {
-		return handleFileDownload(files, "false");
+	protected ResponseEntity<byte[]> handleFileDownload(List<StoredFile> files, String pid, String format) {
+		return handleFileDownload(files, "true", pid, format);
 	}
-	protected ResponseEntity<byte[]> handleFileDownload(List<StoredFile> files, String download) {
+	protected ResponseEntity<byte[]> handleFileDownload(List<StoredFile> files, String download, String pid, String format) {
     	if (files.isEmpty()) {
     		return ResponseEntity.notFound().build();   				
     	}
@@ -58,7 +59,7 @@ public abstract class BaseMSCRController {
     		}
     		else {
         		return ResponseEntity.ok()    				
-        				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.filename())
+        				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + pid + getFileExtensionFromFormat(format))
         				.contentType(MediaType.parseMediaTypes(file.contentType()).get(0))
         				.body(file.data());		    	
     			
@@ -89,6 +90,53 @@ public abstract class BaseMSCRController {
     			return ResponseEntity.internalServerError().build();    		
     		}    		
     	}		
+	}
+	
+	private String getFileExtensionFromFormat(String format) {
+		
+		switch (format) {
+		case "CSV": {			
+			return ".csv";
+		}
+		case "XSD": {			
+			return ".xsd";
+		}
+		case "JSONSCHEMA": {			
+			return ".json";
+		}
+		case "RDFS": {			
+			return ".ttl";
+		}
+		case "SHACL": {			
+			return ".ttl";
+		}
+		case "OWL": {			
+			return ".ttl";
+		}
+		case "SKOSRDF": {			
+			return ".ttl";
+		}
+		case "PDF": {			
+			return ".pdf";
+		}
+		case "XML": {			
+			return ".xml";
+		}
+		case "MSCR": {			
+			return ".ttl";
+		}
+		case "ENUM": {			
+			return ".json";
+		}
+		case "XSLT": {			
+			return ".xslt";
+		}
+		case "SSSOM": {			
+			return ".csv";
+		}		
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + format);
+		}
 	}
 	
 	protected String generateFilename(String PID, String contentType) {		
