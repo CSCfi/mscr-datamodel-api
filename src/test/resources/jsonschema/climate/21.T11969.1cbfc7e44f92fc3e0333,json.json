@@ -1,0 +1,79 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
+    "description": "CMIP6 Handle record definition",
+    "properties": {
+        "Data": {
+            "additionalProperties": false,
+            "properties": {
+                "Format": {
+                    "description": "format of Handle data label, e.g. string, number ....",
+                    "title": "format of Handle data label",
+                    "type": "string"
+                },
+                "Value": {
+                    "title": "value of Handle data label",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Format",
+                "Value"
+            ],
+            "title": "CMIP6 Handle data",
+            "type": "object"
+        },
+        "Index": {
+            "description": "sequence number",
+            "title": "sequence number",
+            "type": "integer"
+        },
+        "Timestamp": {
+            "type": "string"
+        },
+        "Type": {
+            "enum": [
+                "URL",
+                "AGGREGATION_LEVEL",
+                "FIXED_CONTENT",
+                "DRS_ID",
+                "HAS_PARTS",
+                "VERSION_NUMBER",
+                "REPLACES",
+                "REPLACED_BY",
+                "ERRATA_IDS",
+                "_REMOVED_ERRATA_IDS",
+                "_ADDED_ERRATA_IDS",
+                "REPLICA_NODE",
+                "HOSTING_NODE",
+                "UNPUBLISHED_REPLICAS",
+                "_REMOVED_HOSTS",
+                "HS_ADMIN",
+                "FILE_NAME",
+                "FILE_SIZE",
+                "IS_PART_OF",
+                "FILE_VERSION",
+                "CHECKSUM",
+                "CHECKSUM_METHOD",
+                "URL_ORIGINAL_DATA",
+                "PROBLEM"
+            ],
+            "title": "CMIP6 Handle key",
+            "type": "string"
+        },
+        "ttl": {
+            "const": 86400,
+            "description": "Handle time to live",
+            "title": "Handle time to live",
+            "type": "integer"
+        }
+    },
+    "required": [
+        "Index",
+        "Type",
+        "Data",
+        "ttl",
+        "Timestamp"
+    ],
+    "type": "object"
+}

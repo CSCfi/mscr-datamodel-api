@@ -1,0 +1,478 @@
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/is_oa>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#boolean> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "is_oa" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/is_oa> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/id>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "id" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/id> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/publication_date>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "publication_date" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/publication_date> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author_position>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "author_position" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author_position> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/score>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "score" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/score> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/display_name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "display_name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/display_name> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "article" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/display_name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "display_name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/display_name> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "concepts" ;
+        <http://www.w3.org/ns/shacl#name>
+                "concepts" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/score> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/display_name> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/level> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/wikidata> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/id> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/level>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "level" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/level> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/wikidata>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "wikidata" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/wikidata> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/id>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "id" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts/id> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/ror>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "ror" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/ror> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/id>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "id" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/id> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/title>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "title" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/title> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "institutions" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "institutions" ;
+        <http://www.w3.org/ns/shacl#name>
+                "institutions" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/ror> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/id> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/country_code> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/display_name> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/type> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/doi>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "doi" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/doi> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/display_name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "display_name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/display_name> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "concepts" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts/Concepts> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/country_code>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "country_code" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/country_code> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/display_name>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "display_name" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/display_name> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/publication_year>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "publication_year" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/publication_year> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "article" ;
+        <http://www.w3.org/ns/shacl#name>
+                "article" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/id> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/publication_date> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/display_name> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/title> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/doi> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/concepts> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/publication_year> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/relevance_score> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/type> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/oa_status>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "oa_status" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/oa_status> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/orcid>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "orcid" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/orcid> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/relevance_score>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "relevance_score" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/relevance_score> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "open_access" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "open_access" ;
+        <http://www.w3.org/ns/shacl#name>
+                "open_access" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/is_oa> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/oa_status> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/oa_url> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "authorships" ;
+        <http://www.w3.org/ns/shacl#name>
+                "authorships" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author_position> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/raw_affiliation_string> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/raw_affiliation_string>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "raw_affiliation_string" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/raw_affiliation_string> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "author" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/oa_url>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "oa_url" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/open_access/Open_access/oa_url> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/type>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "type" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/institutions/Institutions/type> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/type>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "type" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/type> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://www.w3.org/ns/shacl#name>
+                "authorships" ;
+        <http://www.w3.org/ns/shacl#node>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships> ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/id>
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "id" ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/id> .
+
+<mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author>
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "author" ;
+        <http://www.w3.org/ns/shacl#name>
+                "author" ;
+        <http://www.w3.org/ns/shacl#property>
+                <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/display_name> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/orcid> , <mscr:schema:cceed684-dab9-48f8-8464-f414e30f40e3#root/Root/article/Article/authorships/Authorships/author/Author/id> .

@@ -1,0 +1,25 @@
+@prefix :      <http://example.org/mscr#> .
+@prefix schema: <http://schema.org/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+schema:author  a     owl:ObjectProperty ;
+        rdfs:domain  schema:Book ;
+        rdfs:label   "author" ;
+        rdfs:range   schema:Person .
+
+schema:name  a       owl:DatatypeProperty ;
+        rdfs:domain  schema:Person ;
+        rdfs:label   "name" ;
+        rdfs:range   xsd:string .
+
+schema:Book  a      rdfs:Class ;
+        rdfs:label  "Book" .
+
+schema:Person  a    rdfs:Class ;
+        rdfs:label  "Person" .
+
+<mscr:schema:bfc4eb63-195e-435e-951e-5177f53ae832>
+        <http://rdfs.org/ns/void#rootResource>
+                schema:Book , schema:Person .
