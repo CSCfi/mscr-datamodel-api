@@ -1154,7 +1154,7 @@ public class JsonSchemaWriter {
 			else {
 				// what happens here?
 			}
-			definitions.put(shapeID, shapeDef);			
+			definitions.put(shapeID, shapeDef);	
 
 		});
 		
@@ -1167,6 +1167,9 @@ public class JsonSchemaWriter {
 		model.listObjectsOfProperty(s, SH.property).forEach(_ps -> {
 			Resource ps = _ps.asResource();
 			String psID = ps.getURI();
+			if(psID == null) { // Anon node
+				psID = ps.getId().toString();
+			}
 			
 			Map<String, Object> psProps = new HashMap<String, Object>();
 			//System.out.println(ps.getPropertyResourceValue(SH.path).getLocalName());
