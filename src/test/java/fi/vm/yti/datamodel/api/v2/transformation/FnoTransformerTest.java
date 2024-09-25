@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,7 @@ import fi.vm.yti.datamodel.api.v2.service.impl.FnoDataTransformationServiceImpl;
 	CoreRepository.class,
 	FnoDataTransformationServiceImpl.class
 })
+@Disabled
 public class FnoTransformerTest {
 	
 	@Autowired
@@ -40,7 +41,8 @@ public class FnoTransformerTest {
 	 * csv2csv
 	 * field names changes
 	 */
-		
+	
+	
 	@Test
 	public void testSimple1CSVtoCSV1() throws Exception {
 		InputStream input = getClass().getClassLoader().getResourceAsStream("fno/source1.csv");

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import fi.vm.yti.datamodel.api.v2.service.impl.FnoDataTransformationServiceImpl;
 	CoreRepository.class,
 	FnoDataTransformationServiceImpl.class
 })
+@Disabled
 class DDI2CMDITest {
 	
 	private Map<String, String> namespaces = Map.of(

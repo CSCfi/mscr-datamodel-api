@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -119,8 +122,9 @@ public class JsonSchemaWriterTest {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/mscr_schema_dtr_datatype.ttl");		
 		String json = service.newModelSchema("mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052", model, "en");
+		System.out.println(json);
 		DocumentContext doc = JsonPath.parse(json);
-		Object r = doc.read("$.definitions['mscr:root/Root/integrationType'].type");
+		Object r = doc.read("$.definitions['mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root-Root-integrationType'].type");
 		assertEquals("string", r);
 
 	}
@@ -134,4 +138,22 @@ public class JsonSchemaWriterTest {
 		
 	}
 
+	
+	@Test
+	public void testLinguisticTrip() throws Exception {
+		Model model = ModelFactory.createDefaultModel();
+		model.read("models/mscr/xsd/fieldtrip.ttl");		
+		String json = service.newModelSchema("mscr:schema:afd463ba-386b-4468-a786-c17e0edf99e5", model, "en");
+		//System.out.println(json);
+		FileUtils.write(new File("ui-schema.json"), json);
+		
+	}
+	
+	@Test
+	public void testOpenAlexToInternal() throws Exception {
+		Model model = ModelFactory.createDefaultModel();
+		model.read("shacl/openalex-ontology.ttl");	
+		String json = service.shacl("test", model, null);
+		FileUtils.write(new File("openalex-schema.json"), json);
+	}
 }
