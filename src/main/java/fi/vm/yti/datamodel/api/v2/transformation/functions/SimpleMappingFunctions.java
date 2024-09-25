@@ -596,6 +596,10 @@ public class SimpleMappingFunctions {
 		
 	}
 	
+	public static String constant(List<String> values, String  value) {
+		return value;
+	}
+	
 	/* CLARIN */
 	public static String clarinToFullDate(Object node) {
 		return "2010-05-01";
