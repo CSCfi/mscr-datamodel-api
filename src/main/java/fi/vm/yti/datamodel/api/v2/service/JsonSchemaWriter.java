@@ -11,10 +11,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -26,10 +28,14 @@ import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.resultset.ResultSetPeekable;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
@@ -41,6 +47,7 @@ import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import jakarta.annotation.Nonnull;
 
@@ -61,7 +68,7 @@ import jakarta.json.stream.JsonGenerator;
 public class JsonSchemaWriter {
 
 	private final JenaService jenaService;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(JsonSchemaWriter.class.getName());
 
 	// private JsonWriterFactory jsonWriterFactory;
@@ -242,373 +249,96 @@ public class JsonSchemaWriter {
 		return roots;
 	}
 
+	private void handleProperties(Resource node, Model model, JsonObjectBuilder properties, JsonObjectBuilder definitions) {
+		NodeIterator propi = model.listObjectsOfProperty(node, SH.property);
+		while (propi.hasNext()) {				
+			Resource propRes = propi.next().asResource();
+			String refKey = propRes.getURI().replace("/", "-");
+			String propName = propRes.getProperty(SH.name).getString();
+			if (propRes.getPropertyResourceValue(DCTerms.type).equals(OWL.ObjectProperty)) {
+				// add ref
+				String targetDef = propRes.getPropertyResourceValue(SH.path).getURI().replace("/", "-");
+				properties.add(refKey, Json.createObjectBuilder().add("$ref", "#/definitions/" + targetDef).build());
+			} else {
+				// add property
+				JsonObjectBuilder prop = Json.createObjectBuilder();
+				prop.add("@id", propRes.getURI());
+				prop.add("title", propName);				
+				String pqname = propRes.getProperty(MSCR.qname) != null ? propRes.getRequiredProperty(MSCR.qname).getResource().getURI(): propRes.getURI().substring(propRes.getURI().lastIndexOf("/")+1);
+				Integer pmaxCount = propRes.getProperty(SH.maxCount) != null && !propRes.getProperty(SH.maxCount).getLiteral().getDatatypeURI().equals("http://www.w3.org/2001/XMLSchema#string") ? propRes.getProperty(SH.maxCount).getInt() : null;
+				Integer pminCount = propRes.getProperty(SH.minCount) != null ? propRes.getProperty(SH.minCount).getInt() : null;
+				String datatype = propRes.getProperty(SH.datatype).getResource().getURI();
+				prop.add("qname", pqname);
+				if (pmaxCount != null) {
+					prop.add("maxCount", ""+pmaxCount);
+				}
+				if (pminCount != null) {
+					prop.add("minCount", ""+pminCount);
+				}
+				prop.add("@type", datatype);
+				String jsonDatatype = DATATYPE_MAP.get(datatype);
+				if (jsonDatatype == null) {
+					jsonDatatype = getDTRDatatype(datatype);
+				}
+				prop.add("type", jsonDatatype);
+
+				// enum
+				// pattern
+				// maxLength
+				// minLength
+				
+				JsonObject propObj = prop.build();
+				properties.add(refKey, propObj);
+				definitions.add(refKey, propObj);
+			}				
+		}
+	}
 	public JsonObjectBuilder getClassDefinitions(String modelID, Model model, String lang) {
+		// generate definitions for each propertyShape/NodeShape pair
+		JsonObjectBuilder definitions = Json.createObjectBuilder();
 
-		ParameterizedSparqlString pss = new ParameterizedSparqlString();
+		ResIterator pi = model.listSubjectsWithProperty(DCTerms.type, OWL.ObjectProperty);
+		while (pi.hasNext()) {
+			Resource objectPropRes = pi.next();
 
-		String selectResources = "SELECT ?refpropertyname ?resource ?targetClass ?className ?localClassName ?classTitle ?classDeactivated ?classDescription ?minProperties ?maxProperties ?property ?propertyDeactivated ?valueList ?schemeList ?predicate ?id ?title ?description ?predicateName ?datatype ?shapeRef ?shapeRefName ?min ?max ?minLength ?maxLength ?pattern ?idBoolean ?example ?classQname ?qname \n"
-				+ "WHERE {\n" + "?resource a sh:NodeShape . " 
-				+ "OPTIONAL { ?resource sh:name ?classTitle . }"
-				+ "OPTIONAL { ?resource sh:description ?classDescription } "
-				+ "OPTIONAL { ?resource <http://uri.suomi.fi/datamodel/ns/mscr#qname> ?classQname } "				
-				+ "BIND(afn:localname(?resource) as ?className) . "
-				+ "OPTIONAL { ?resource iow:localName ?localClassName . } "
-				+ "OPTIONAL { ?refproperty sh:node ?resource . ?refproperty sh:name ?refpropertyname } "
-				+ "OPTIONAL	{ ?resource sh:property ?property . " 
-					+ "OPTIONAL {   ?property sh:path ?predicate . }"
-					+ "OPTIONAL {?property sh:name ?title . }\n" 
-					+ "OPTIONAL { ?property sh:description ?description . }\n"
-					+ "OPTIONAL { ?property <http://uri.suomi.fi/datamodel/ns/mscr#qname> ?qname } "
-					+ "OPTIONAL { ?property sh:datatype ?datatype . }"
-					+ "OPTIONAL { ?property sh:node ?shapeRef . BIND(afn:localname(?shapeRef) as ?shapeRefName) }"
-					+ "OPTIONAL { ?property sh:maxCount ?max . }" + "OPTIONAL { ?property sh:minCount ?min . }"
-					+ "OPTIONAL { ?property sh:pattern ?pattern . }" + "OPTIONAL { ?property sh:minLength ?minLength . }"
-					+ "OPTIONAL { ?property sh:maxLength ?maxLength . }" + "OPTIONAL { ?property skos:example ?example . }"
-					+ "OPTIONAL { ?property sh:in ?valueList . } " + "BIND(STR(?predicate) as ?predicateName)"				
-				+ "} }";
+			JsonObjectBuilder def = Json.createObjectBuilder();
+			
 
-		pss.setIri("modelPartGraph", modelID + "#HasPartGraph");
+			String qname = objectPropRes.getProperty(MSCR.qname) != null ? objectPropRes.getProperty(MSCR.qname).getObject().asResource().getURI() : objectPropRes.getURI().substring(objectPropRes.getURI().lastIndexOf("/")+1);
+			Integer maxCount = objectPropRes.getProperty(SH.maxCount) != null && !objectPropRes.getProperty(SH.maxCount).getLiteral().getDatatypeURI().equals("http://www.w3.org/2001/XMLSchema#string") ? objectPropRes.getProperty(SH.maxCount).getInt() : null;
+			Integer minCount = objectPropRes.getProperty(SH.minCount) != null ? objectPropRes.getProperty(SH.minCount).getInt() : null;
+			String name = objectPropRes.getProperty(SH.name).getString();
 
-		if (lang != null) {
-			pss.setLiteral("lang", lang);
-		}
-
-		pss.setCommandText(selectResources);
-		pss.setNsPrefixes(PREFIX_MAP);
-
-		try (QueryExecution qexec = QueryExecutionFactory.create(pss.toString(), model)) {
-
-			ResultSet results = qexec.execSelect();
-			ResultSetPeekable pResults = ResultSetFactory.makePeekable(results);
-
-			if (!pResults.hasNext()) {
-				return null;
+			def.add("@id", objectPropRes.getURI());
+			def.add("type", "object");
+			def.add("title", name);
+			def.add("qname", qname);
+			if (maxCount != null) {
+				def.add("maxCount", ""+maxCount);
 			}
-
-			JsonObjectBuilder definitions = Json.createObjectBuilder();
+			if (minCount != null) {
+				def.add("minCount", ""+minCount);
+			}
+			
 			JsonObjectBuilder properties = Json.createObjectBuilder();
-
-			JsonObjectBuilder predicate = Json.createObjectBuilder();
-
-			HashSet<String> exampleSet = new HashSet<>();
-			HashSet<String> requiredPredicates = new HashSet<>();
-
-			JsonArrayBuilder exampleList = Json.createArrayBuilder();
-			JsonObjectBuilder typeObject = Json.createObjectBuilder();
-
-			boolean arrayType = false;
-
-			int pIndex = 1;
-			String predicateName = null;
-			String predicateID = null;
-			String className;
-
-			while (pResults.hasNext()) {
-				QuerySolution soln = pResults.nextSolution();
-
-				if (!soln.contains("className")) {
-					return null;
-				}
-
-				String localClassName = soln.contains("localClassName") ? soln.getLiteral("localClassName").getString()
-						: null;
-
-				if (!soln.contains("classDeactivated")
-						|| (soln.contains("classDeactivated") && !soln.getLiteral("classDeactivated").getBoolean())) {
-
-					className = soln.getLiteral("className").getString();
-
-					if (soln.contains("property")
-							&& (!soln.contains("propertyDeactivated") || (soln.contains("propertyDeactivated")
-									&& !soln.getLiteral("propertyDeactivated").getBoolean()))) {
-
-						/* First run per predicate */
-
-						if (pIndex == 1) {
-
-							predicateID = soln.getResource("predicate").toString();
-
-							predicate.add("@id", predicateID);
-
-							predicateName = soln.getLiteral("predicateName").getString();
-
-							if (soln.contains("id")) {
-								predicateName = soln.getLiteral("id").getString();
-							}							
-
-							if (soln.contains("title")) {								
-								String title = soln.getLiteral("title").getString();
-								predicate.add("title", URLDecoder.decode(title));
-							}
-								
-
-							if (soln.contains("min")) {
-								int min = soln.getLiteral("min").getInt();
-								if (min > 0) {
-									requiredPredicates.add(predicateName);
-								}
-							}
-
-							if (soln.contains("description")) {
-								String description = soln.getLiteral("description").getString();
-								predicate.add("description", description);
-							}
-							
-							if(soln.contains("qname")) {
-								predicate.add("qname", soln.getResource("qname").getURI());
-							}
-							else {
-								predicate.add("qname", predicateID.substring(predicateID.lastIndexOf("/")+1));
-							}
-
-							if (soln.contains("valueList")) {
-								JsonArray valueList = getValueList(model, soln.getResource("resource").toString(),
-										soln.getResource("property").toString());
-								if (valueList != null) {
-									predicate.add("enum", valueList);
-								}
-							} else if (soln.contains("schemeList")) {
-								JsonArray schemeList = getSchemeValueList(soln.getResource("schemeList").toString(),
-										model);
-								if (schemeList != null) {
-									predicate.add("enum", schemeList);
-								}
-							}
-
-							if (soln.contains("datatype")) {
-
-								String datatype = soln.getResource("datatype").toString();
-
-								if (soln.contains("idBoolean")) {
-									Boolean isId = soln.getLiteral("idBoolean").getBoolean();
-									if (isId) {
-										predicate.add("@type", "@id");
-									} else
-										predicate.add("@type", datatype);
-								} else {
-									predicate.add("@type", datatype);
-								}
-
-								String jsonDatatype = DATATYPE_MAP.get(datatype);
-								if(jsonDatatype == null) {
-									jsonDatatype = getDTRDatatype(datatype);
-								}
- 
-								
-
-								if (soln.contains("maxLength")) {
-									predicate.add("maxLength", soln.getLiteral("maxLength").getInt());
-								}
-
-								if (soln.contains("minLength")) {
-									predicate.add("minLength", soln.getLiteral("minLength").getInt());
-								}
-
-								if (soln.contains("pattern")) {
-									predicate.add("pattern", soln.getLiteral("pattern").getString());
-								}
-
-								if (soln.contains("max") && soln.getLiteral("max").getInt() <= 1) {
-
-									// predicate.add("maxItems",1);
-
-									if (jsonDatatype != null) {
-										if (jsonDatatype.equals("langString")) {
-											predicate.add("type", "object");
-											predicate.add("$ref", "#/definitions/langString");
-										} else {
-											predicate.add("type", jsonDatatype);
-										}
-									}
-
-								} else {
-
-									if (soln.contains("max") && soln.getLiteral("max").getInt() > 1) {
-										predicate.add("maxItems", soln.getLiteral("max").getInt());
-									}
-
-									if (soln.contains("min") && soln.getLiteral("min").getInt() > 0) {
-										predicate.add("minItems", soln.getLiteral("min").getInt());
-									}
-
-									predicate.add("type", "array");
-
-									arrayType = true;
-
-									if (jsonDatatype != null) {
-
-										if (jsonDatatype.equals("langString")) {
-											typeObject.add("type", "object");
-											typeObject.add("$ref", "#/definitions/langString");
-										} else {
-											typeObject.add("type", jsonDatatype);
-										}
-
-									}
-
-								}
-
-								if (FORMAT_MAP.containsKey(datatype)) {
-									predicate.add("format", FORMAT_MAP.get(datatype));
-								}
-
-							} else {
-
-								if (soln.contains("shapeRefName")) {
-									predicate.add("@type", "@id");
-
-									String shapeRefName = soln.getLiteral("shapeRefName").getString();
-
-									if (!soln.contains("max") || soln.getLiteral("max").getInt() > 1) {
-										if (soln.contains("min")) {
-											predicate.add("minItems", soln.getLiteral("min").getInt());
-										}
-										if (soln.contains("max")) {
-											predicate.add("maxItems", soln.getLiteral("max").getInt());
-
-										}
-										predicate.add("type", "array");
-
-										predicate.add("items", Json.createObjectBuilder().add("type", "object")
-												.add("$ref", "#/definitions/" + shapeRefName).build());
-									} else {
-										predicate.add("type", "object");
-										predicate.add("$ref", "#/definitions/" + shapeRefName);
-									}
-								}
-							}
-
-						}
-
-						/* Every run per predicate */
-
-						if (soln.contains("example")) {
-							String example = soln.getLiteral("example").getString();
-							exampleSet.add(example);
-						}
-
-						if (pResults.hasNext() && className.equals(pResults.peek().getLiteral("className").getString())
-								&& (pResults.peek().contains("predicate")
-										&& predicateID.equals(pResults.peek().getResource("predicate").toString()))) {
-
-							pIndex += 1;
-
-						} else {
-
-							/* Last run per class */
-
-							if (!exampleSet.isEmpty()) {
-
-								Iterator<String> i = exampleSet.iterator();
-
-								while (i.hasNext()) {
-									String ex = i.next();
-									exampleList.add(ex);
-								}
-
-								predicate.add("example", exampleList.build());
-
-							}
-
-							if (arrayType) {
-								predicate.add("items", typeObject.build());
-							}
-							JsonObject predicateObject = predicate.build();
-							properties.add(predicateName, predicateObject);
-							definitions.add(predicateName, predicateObject);
-							
-							predicate = Json.createObjectBuilder();
-							typeObject = Json.createObjectBuilder();
-							arrayType = false;
-							pIndex = 1;
-							exampleSet = new HashSet<>();
-							exampleList = Json.createArrayBuilder();
-							
-							
-						}
-					}
-
-					/* If not build props and requires */
-					if (!pResults.hasNext() || !className.equals(pResults.peek().getLiteral("className").getString())) {
-						predicate = Json.createObjectBuilder();
-						JsonObjectBuilder classDefinition = Json.createObjectBuilder();
-						if (soln.contains("classTitle")) {
-							classDefinition.add("title", URLDecoder.decode(soln.getLiteral("classTitle").getString()));	
-						}
-						else {
-							Literal temp = soln.getLiteral("refpropertyname");
-							if(temp != null) {
-								classDefinition.add("title", temp.toString());		
-							}
-							else {
-								classDefinition.add("title", "test");	
-							}
-							
-						}
-						classDefinition.add("type", "object");
-						if (soln.contains("targetClass")) {
-							classDefinition.add("@id", soln.getResource("targetClass").toString());
-						} else {
-							classDefinition.add("@id", soln.getResource("resource").toString());
-						}
-						if (soln.contains("classDescription")) {
-							classDefinition.add("description", soln.getLiteral("classDescription").getString());
-						}
-						if (soln.contains("minProperties")) {
-							classDefinition.add("minProperties", soln.getLiteral("minProperties").getInt());
-						}
-
-						if (soln.contains("maxProperties")) {
-							classDefinition.add("maxProperties", soln.getLiteral("maxProperties").getInt());
-						}
-						if (soln.contains("classQname")) {
-							classDefinition.add("qname", soln.getResource("classQname").getURI());
-						}
-						else {
-							if (soln.contains("classTitle")) {
-								classDefinition.add("qname", soln.getLiteral("classTitle").getString());	
-							}
-							else {
-								Literal temp = soln.getLiteral("refpropertyname");
-								if(temp != null) {
-									classDefinition.add("qname", temp.toString());		
-								}
-								
-							}
-						}
-												
-						JsonObject classProps = properties.build();
-						if (!classProps.isEmpty())
-							classDefinition.add("properties", classProps);
-
-						JsonArrayBuilder required = Json.createArrayBuilder();
-
-						Iterator<String> ri = requiredPredicates.iterator();
-
-						while (ri.hasNext()) {
-							String ex = ri.next();
-							required.add(ex);
-						}
-
-						JsonArray reqArray = required.build();
-
-						if (!reqArray.isEmpty()) {
-							classDefinition.add("required", reqArray);
-						}
-
-						definitions.add(localClassName != null && localClassName.length() > 0
-								? removeInvalidCharacters(localClassName)
-								: className, classDefinition.build());
-
-						properties = Json.createObjectBuilder();
-						requiredPredicates = new HashSet<>();
-					}
-				}
-			}
-
-			return definitions;
-
+			Resource node = objectPropRes.getPropertyResourceValue(SH.node);
+			handleProperties(node, model, properties, definitions);
+			
+			def.add("properties", properties.build());
+			definitions.add(objectPropRes.getURI().replace("/", "-"), def);
 		}
+		// add root last
+		
+		Resource rootResource = model.getResource(modelID + "#root/Root");
+		JsonObjectBuilder rootProperties = Json.createObjectBuilder();
+		JsonObjectBuilder rootDef = Json.createObjectBuilder();
+		rootDef.add("type", "object");
+		rootDef.add("title", "root");	
+		handleProperties(rootResource, model, rootProperties, definitions);
+		rootDef.add("properties", rootProperties);
+		definitions.add(modelID + "#root-Root", rootDef.build());
+		return definitions;
+
 	}
 
 	private String getDTRDatatype(String datatype) {
@@ -749,40 +479,42 @@ public class JsonSchemaWriter {
 			schema.add("type", "object");
 			if (definitionsObj != null) {
 				String rootDefinitionCandidate = roots.get(0);
-				String rootDefinition = "";
-				String lastPart = rootDefinitionCandidate.substring(rootDefinitionCandidate.lastIndexOf("/")+1);
-				if(lastPart.equals("Root")) {
-					rootDefinition = "Root";
-				}
-				else if(Character.isUpperCase(lastPart.charAt(0))) {
-					
-					rootDefinition = rootDefinitionCandidate.substring(0, rootDefinitionCandidate.lastIndexOf("/"));
-				}
-				
+				String rootDefinition = rootDefinitionCandidate.replace("/", "-");
+				// String lastPart =
+				// rootDefinitionCandidate.substring(rootDefinitionCandidate.lastIndexOf("/")+1);
+				// if(lastPart.equals("Root")) {
+				// rootDefinition = "Root";
+				// }
+				/*
+				 * if(Character.isUpperCase(rootDefinition.charAt(0))) {
+				 * 
+				 * rootDefinition = rootDefinitionCandidate.substring(0,
+				 * rootDefinitionCandidate.lastIndexOf("/")); }
+				 */
 				JsonObject rootObj = definitionsObj.getJsonObject(rootDefinition);
-				if(rootObj == null) {
+				if (rootObj == null) {
 					rootDefinition = rootDefinitionCandidate.substring(rootDefinitionCandidate.lastIndexOf("/") + 1);
 					rootObj = definitionsObj.getJsonObject(rootDefinition);
 				}
-				if(rootObj.containsKey("$ref")) {
+				if (rootObj.containsKey("$ref")) {
 					rootObj = definitionsObj.getJsonObject(rootObj.getString("$ref").substring(14));
 				}
-				
-				if(rootObj.getString("type").equals("array")) {
+
+				if (rootObj.getString("type").equals("array")) {
 					// TODO: fix this
 					throw new RuntimeException("Not implemented yet! Root element of type array.");
 				}
-				
-				
+
 				JsonValue props = rootObj.get("properties");
 				if (props != null) {
 					schema.add("properties", props.asJsonObject());
 				}
-				
 
 			}
 		} else {
-			throw new RuntimeException("Jsonschemawriter requires exactly on root element identified by void:rootResource. Number of root elements detected: "+ roots.size());
+			throw new RuntimeException(
+					"Jsonschemawriter requires exactly on root element identified by void:rootResource. Number of root elements detected: "
+							+ roots.size());
 		}
 
 		// schema.add("oneOf",
@@ -891,14 +623,13 @@ public class JsonSchemaWriter {
 		}
 
 		o.put("@type", "http://www.w3.org/2001/XMLSchema#anyURI");
-		
-		if(model.qnameFor(uri) != null) {
-			o.put("qname", model.qnameFor(uri));	
-		}
-		else {
+
+		if (model.qnameFor(uri) != null) {
+			o.put("qname", model.qnameFor(uri));
+		} else {
 			o.put("qname", ":" + concept.getLocalName());
 		}
-		
+
 		if (!definitions.containsKey(localName)) {
 			definitions.put(localName, o);
 		}
@@ -948,23 +679,23 @@ public class JsonSchemaWriter {
 		// When done with adding all p's children, continue traversing up
 		traverseUp(parent, inputModel, definitions, rootProps);
 	}
-	
+
 	private void traverseDown(Resource r, Model inputModel, Map<String, Object> definitions,
 			Map<String, Object> rootProps) throws Exception {
-		
+
 		String localName = getLocalName(r);
-		Map<String, Object>	obj = handleConcept(r, inputModel, definitions);		
-		rootProps.put(localName, obj);		
+		Map<String, Object> obj = handleConcept(r, inputModel, definitions);
+		rootProps.put(localName, obj);
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		List<Resource> children = getChildren(r, inputModel);
-		for(Resource child: children) {
+		for (Resource child : children) {
 			handleConcept(child, inputModel, definitions);
 			String childlocalName = getLocalName(child);
 			Map<String, Object> ref = new HashMap<String, Object>();
 			ref.put("$ref", "#/definitions/" + childlocalName);
-			props.put(childlocalName, ref);			
-			traverseDown(child, inputModel, definitions, props);			
+			props.put(childlocalName, ref);
+			traverseDown(child, inputModel, definitions, props);
 		}
 		obj.put("properties", props);
 	}
@@ -982,13 +713,12 @@ public class JsonSchemaWriter {
 		definitions.put("Root", rootDefinition);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
-		if(rootConcept == null) {
+		if (rootConcept == null) {
 			for (Resource leaf : leafs) {
 				traverseUp(leaf, model, definitions, rootProperties);
 			}
-			
-		}
-		else {
+
+		} else {
 			traverseDown(rootConcept, model, definitions, rootProperties);
 		}
 		schema.put("definitions", definitions);
@@ -1000,56 +730,74 @@ public class JsonSchemaWriter {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(schema);
 	}
-	
-	private void addRDFSProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions) throws Exception {		
+
+	private void addRDFSProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions)
+			throws Exception {
 		Resource parent = s.getPropertyResourceValue(RDFS.subClassOf);
-		if(parent != null) {
+		if (parent != null) {
 			try {
 				addRDFSProps(model, parent, props, definitions);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}		
+		}
 		model.listSubjectsWithProperty(RDFS.domain, s).forEach(ps -> {
 			String psID = ps.getURI();
-			Map<String, Object> psProps = new HashMap<String, Object>();
-			
+			Map<String, Object> psProps = new LinkedHashMap<String, Object>();
+
 			String range = RDFS.Literal.getURI(); // default range
-			if(ps.hasProperty(RDFS.range)) {
+			if (ps.hasProperty(RDFS.range)) {
 				range = ps.getPropertyResourceValue(RDFS.range).getURI();
 			}
-			 
-			
+
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(ps, RDFS.label);
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(ps, RDFS.comment);
-			
-			if(titles.isEmpty()) {
+
+			if (titles.isEmpty()) {
 				titles.put("en", psID);
 			}
 			psProps.put("datatype", range);
 			psProps.put("description", descs.get("en"));
 			psProps.put("title", titles.get("en"));
 			psProps.put("@id", psID);
-			if(model.qnameFor(psID) != null) {
-				psProps.put("qname", model.qnameFor(psID));	
-			}
-			else {
+			if (model.qnameFor(psID) != null) {
+				psProps.put("qname", model.qnameFor(psID));
+			} else {
 				psProps.put("qname", ":" + ps.getLocalName());
-			}									
+			}
 			definitions.put(psID, psProps);
 			props.put(psID, psProps);
 		});
-		
-		
+
+	}
+	
+	private void addClassMappingSourceProps(String classURI, Map<String, Object> classProps, Map<String, Object> definitions) {
+		Map<String, Object> iteratorProp = new LinkedHashMap();
+		iteratorProp.put("title", "iterator source");
+		iteratorProp.put("type", "string");	
+		String iteratorPropID = "iterator:" + classURI;
+		iteratorProp.put("qname", iteratorPropID);
+		iteratorProp.put("@id", iteratorPropID);
+		classProps.put(iteratorPropID, iteratorProp);
+		definitions.put(iteratorPropID, iteratorProp);
+
+		Map<String, Object> subjectProp = new LinkedHashMap();
+		subjectProp.put("title", "subject source");
+		subjectProp.put("type", "string");
+		String subjectPropID = "subject:" + classURI;
+		subjectProp.put("qname", subjectPropID);
+		subjectProp.put("@id", subjectPropID);
+		classProps.put(subjectPropID, subjectProp);
+		definitions.put(subjectPropID, subjectProp);		
 	}
 
 	public String rdfs(String pid, Model model, String string) throws Exception {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
-		Map<String, Object> rootProperties = new HashMap<String, Object>();
-		rootDefinition.put("properties", rootProperties);		
+		Map<String, Object> rootProperties = new LinkedHashMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
 		schema.put("definitions", definitions);
@@ -1058,27 +806,27 @@ public class JsonSchemaWriter {
 
 		schema.put("properties", rootProperties);
 
-		
 		model.listSubjectsWithProperty(RDF.type, RDFS.Class).forEach(s -> {
 			String className = s.getURI();
-			if(className == null) {
+			if (className == null) {
 				// blank node
-				
-			}
-			else {
-			
+
+			} else {
+
 				String qName = model.qnameFor(className);
-				
+
 				Map<String, Object> classDef = new HashMap<String, Object>();
-				Map<String, Object> classProps = new HashMap<String, Object>();
+				Map<String, Object> classProps = new LinkedHashMap<String, Object>();			
+
+				addClassMappingSourceProps(className, classProps, definitions);
 				
 				Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
 				Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
-				
+
 				classDef.put("title", titles.get("en"));
 				classDef.put("description", descs.get("en"));
 				classDef.put("qname", qName);
-				classDef.put("@id", className);			
+				classDef.put("@id", className);
 				rootProperties.put(className, classDef);
 				try {
 					addRDFSProps(model, s, classProps, definitions);
@@ -1086,80 +834,95 @@ public class JsonSchemaWriter {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(classProps.keySet().size() > 0 ) {
+				if (classProps.keySet().size() > 0) {
 					classDef.put("type", "object");
-					classDef.put("@type", model.qnameFor(className));				
+					classDef.put("@type", model.qnameFor(className));
 					classDef.put("properties", classProps);
-				}
-				else {
+				} else {
 					// what happens here?
 				}
 				definitions.put(className, classDef);
 			}
 
-			
 		});
 
 		ObjectMapper mapper = new ObjectMapper();
-		
+
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
-	
+
 	public String shacl(String pid, Model model, String string) throws Exception {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
 		Map<String, Object> rootProperties = new HashMap<String, Object>();
-		rootDefinition.put("properties", rootProperties);		
+		rootDefinition.put("properties", rootProperties);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
 		schema.put("definitions", definitions);
 		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
 		schema.put("type", "object");
-
+		schema.put("title", "root");
+		schema.put("description", "");
 		schema.put("properties", rootProperties);
 		model.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(s -> {
 			String shapeID = s.getURI();
-			Map<String, Object> shapeDef = new HashMap<String, Object>();
-			Map<String, Object> shapeProps = new HashMap<String, Object>();
+			String qname = model.qnameFor(shapeID);
+			//shapeID = shapeID.replace("/", "-");
+			Map<String, Object> shapeDef = new LinkedHashMap<String, Object>();
+			Map<String, Object> shapeProps = new LinkedHashMap<String, Object>();
+			
+			
 			shapeDef.put("@id", shapeID);
-			shapeDef.put("qname", model.qnameFor(shapeID));
-			//System.out.println(shapeID);
+			shapeDef.put("qname", qname);
+			// System.out.println(shapeID);
+			// TODO: if sh:desc not found check sh:class and sh:node
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, SH.name);
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
+
+			if (titles.isEmpty()) {
+				if(shapeDef.get("qname") != null) {
+					titles.put("en", shapeDef.get("qname").toString());
+				}
+				else {
+					titles.put("en", shapeID);
+				}
+				
+			}
+			addClassMappingSourceProps(shapeID, shapeProps, definitions);
+
 			
-			shapeDef.put("title", titles.get("en"));
-			shapeDef.put("description", descs.get("en"));			
+			shapeDef.put("title", titles.get("en"));			
+			shapeDef.put("description", descs.get("en"));
 			rootProperties.put(shapeID, shapeDef);
 			try {
 				addSHACLProps(model, s, shapeProps, definitions);
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			if(shapeProps.keySet().size() > 0 ) {
+			if (shapeProps.keySet().size() > 0) {
 				shapeDef.put("type", "object");
-				if(s.hasProperty(SH.targetClass)) {
+				
+				if (s.hasProperty(SH.targetClass)) {
 					RDFNode typeNode = s.getProperty(SH.targetClass).getObject();
-					if(typeNode.isLiteral()) {
-						shapeDef.put("@type", typeNode.asLiteral().getString());	
-					}
-					else if(typeNode.isResource()) {
+					if (typeNode.isLiteral()) {
+						shapeDef.put("@type", typeNode.asLiteral().getString());
+					} else if (typeNode.isResource()) {
 						shapeDef.put("@type", model.qnameFor(typeNode.asResource().getURI()));
 					}
-					
+
 				}
 				//
 				shapeDef.put("properties", shapeProps);
-			}
-			else {
+			} else {
 				// what happens here?
 			}
-			definitions.put(shapeID, shapeDef);	
-
+			definitions.put(shapeID, shapeDef);
+			
 		});
-		
+
 		ObjectMapper mapper = new ObjectMapper();
-		
+
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
 
@@ -1167,53 +930,66 @@ public class JsonSchemaWriter {
 		model.listObjectsOfProperty(s, SH.property).forEach(_ps -> {
 			Resource ps = _ps.asResource();
 			String psID = ps.getURI();
-			if(psID == null) { // Anon node
+			if(ps.isAnon()) {
 				psID = ps.getId().toString();
 			}
+			//psID = psID.replace("/", "-");
 			
-			Map<String, Object> psProps = new HashMap<String, Object>();
-			//System.out.println(ps.getPropertyResourceValue(SH.path).getLocalName());
-			//System.out.println(model.getNsURIPrefix(ps.getPropertyResourceValue(SH.path).getNameSpace()));
+			
 
-			if(model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()) != null) {
-				psProps.put("qname", model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()));	
-			}
-			else {
-				psProps.put("qname", ":" + ps.getPropertyResourceValue(SH.path).getLocalName());
-			}
-						
+			Map<String, Object> psProps = new LinkedHashMap<String, Object>();
+			// System.out.println(ps.getPropertyResourceValue(SH.path).getLocalName());
+			// System.out.println(model.getNsURIPrefix(ps.getPropertyResourceValue(SH.path).getNameSpace()));
+
+			psProps.put("qname", ps.getPropertyResourceValue(SH.path).getURI());
+
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(ps, SH.name);
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(ps, SH.description);
-			
-			if(titles.isEmpty()) {
-				titles.put("en", psID);
+
+			if (titles.isEmpty()) {
+				if (model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()) != null) {
+					psProps.put("title", model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()));
+				} else {
+					psProps.put("title", ps.getPropertyResourceValue(SH.path).getLocalName());
+				}
+			}
+			else {
+				psProps.put("title", titles.get("en"));
 			}
 			psProps.put("description", descs.get("en"));
-			psProps.put("title", titles.get("en"));
+			
 
-			String datatype = "object";			
-			if(ps.hasProperty(SH.node)) {
-				
-				datatype = model.qnameFor(ps.getPropertyResourceValue(SH.node).getURI());				
-			}
-			else if(ps.hasProperty(SH.datatype)) {
+			String datatype = "object";
+			if (ps.hasProperty(SH.node)) {
+
+				datatype = model.qnameFor(ps.getPropertyResourceValue(SH.node).getURI());
+			}else if(ps.hasProperty(SH.class_)) { 
+				// see if node shape with a proper target class exists
+				ResIterator ti = model.listResourcesWithProperty(SH.targetClass, ps.getPropertyResourceValue(SH.class_));
+				if(ti.hasNext()) {
+					psProps.put("shape", model.qnameFor(ti.next().getURI()));
+				}
+				else {
+				}
+			
+			}else if (ps.hasProperty(SH.datatype)) {
 				datatype = ps.getPropertyResourceValue(SH.datatype).getLocalName();
 			}
-			
-			psProps.put("datatype", datatype);
-			
+
+			psProps.put("datatype", datatype);			
+			psProps.put("@id", psID);
 			definitions.put(psID, psProps);
 			props.put(psID, psProps);
 		});
-		
+
 	}
 
 	public String owl(String pid, Model model, String string) throws Exception {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
-		Map<String, Object> rootProperties = new HashMap<String, Object>();
-		rootDefinition.put("properties", rootProperties);		
+		Map<String, Object> rootProperties = new LinkedHashMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
 		schema.put("definitions", definitions);
@@ -1223,25 +999,28 @@ public class JsonSchemaWriter {
 		schema.put("properties", rootProperties);
 
 		model.listObjectsOfProperty(VOID.rootResource).forEach(obj -> {
-			Resource s = (Resource)obj;
-			String className = s.getURI();			
-			if(className == null) {
+			Resource s = (Resource) obj;
+			String className = s.getURI();
+			if (className == null) {
 				// what now?
-				
-			}
-			else {
-			
+
+			} else {
+
 				String qName = model.qnameFor(className);
-				
+
 				Map<String, Object> classDef = new HashMap<String, Object>();
-				Map<String, Object> classProps = new HashMap<String, Object>();
+				Map<String, Object> classProps = new LinkedHashMap<String, Object>();
+				
+				addClassMappingSourceProps(className, classProps, definitions);
+				
 				Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
 				Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+
 				
 				classDef.put("title", titles.get("en"));
 				classDef.put("description", descs.get("en"));
 				classDef.put("qname", qName);
-				classDef.put("@id", className);			
+				classDef.put("@id", className);
 				rootProperties.put(className, classDef);
 				try {
 					addRDFSProps(model, s, classProps, definitions);
@@ -1249,23 +1028,21 @@ public class JsonSchemaWriter {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(classProps.keySet().size() > 0 ) {
+				if (classProps.keySet().size() > 0) {
 					classDef.put("type", "object");
-					classDef.put("@type", model.qnameFor(className));				
+					classDef.put("@type", model.qnameFor(className));
 					classDef.put("properties", classProps);
-				}
-				else {
+				} else {
 					// what happens here?
 				}
 				definitions.put(className, classDef);
 			}
 
-			
 		});
 
 		ObjectMapper mapper = new ObjectMapper();
-		
+
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
-	}	
+	}
 
 }
