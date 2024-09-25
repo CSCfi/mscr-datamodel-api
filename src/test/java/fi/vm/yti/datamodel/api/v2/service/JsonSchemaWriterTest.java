@@ -124,7 +124,7 @@ public class JsonSchemaWriterTest {
 		String json = service.newModelSchema("mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052", model, "en");
 		System.out.println(json);
 		DocumentContext doc = JsonPath.parse(json);
-		Object r = doc.read("$.definitions['mscr:schema:a4b6d497-aa7e-41c2-aa81-79152d243052#root-Root-integrationType'].type");
+		Object r = doc.read("$.definitions['mscr:root/Root/integrationType'].type");
 		assertEquals("string", r);
 
 	}
