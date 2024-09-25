@@ -33,7 +33,9 @@ import fi.vm.yti.datamodel.api.v2.mapper.ServiceCategoryMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import io.zenwave360.jsonrefparser.$RefParser;
+import io.zenwave360.jsonrefparser.$RefParserOptions;
 import io.zenwave360.jsonrefparser.$Refs;
+import io.zenwave360.jsonrefparser.$RefParserOptions.OnCircular;
 
 @Service
 public class FrontendService {
@@ -132,8 +134,9 @@ public class FrontendService {
 	
 	public CrosswalkEditorSchemaDTO getSchema(String contentString, SchemaInfoDTO metadata) throws Exception {
 		ObjectMapper mapper = new ObjectMapper(); // turn into a bean
-		$RefParser parser = new $RefParser(contentString);
-			
+		//$RefParser parser = new $RefParser(contentString);
+		$RefParser parser = new $RefParser(contentString).withOptions(new $RefParserOptions().withOnCircular(OnCircular.SKIP));
+
 		$Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
 		Map<String, Object> resultMapOrList = refs.schema();
 		 

@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
@@ -22,6 +23,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.RDFNode;
@@ -244,16 +246,19 @@ public class JsonSchemaWriter {
 
 		ParameterizedSparqlString pss = new ParameterizedSparqlString();
 
-		String selectResources = "SELECT ?resource ?targetClass ?className ?localClassName ?classTitle ?classDeactivated ?classDescription ?minProperties ?maxProperties ?property ?propertyDeactivated ?valueList ?schemeList ?predicate ?id ?title ?description ?predicateName ?datatype ?shapeRef ?shapeRefName ?min ?max ?minLength ?maxLength ?pattern ?idBoolean ?example \n"
+		String selectResources = "SELECT ?refpropertyname ?resource ?targetClass ?className ?localClassName ?classTitle ?classDeactivated ?classDescription ?minProperties ?maxProperties ?property ?propertyDeactivated ?valueList ?schemeList ?predicate ?id ?title ?description ?predicateName ?datatype ?shapeRef ?shapeRefName ?min ?max ?minLength ?maxLength ?pattern ?idBoolean ?example ?classQname ?qname \n"
 				+ "WHERE {\n" + "?resource a sh:NodeShape . " 
 				+ "OPTIONAL { ?resource sh:name ?classTitle . }"
 				+ "OPTIONAL { ?resource sh:description ?classDescription } "
+				+ "OPTIONAL { ?resource <http://uri.suomi.fi/datamodel/ns/mscr#qname> ?classQname } "				
 				+ "BIND(afn:localname(?resource) as ?className) . "
 				+ "OPTIONAL { ?resource iow:localName ?localClassName . } "
+				+ "OPTIONAL { ?refproperty sh:node ?resource . ?refproperty sh:name ?refpropertyname } "
 				+ "OPTIONAL	{ ?resource sh:property ?property . " 
 					+ "OPTIONAL {   ?property sh:path ?predicate . }"
 					+ "OPTIONAL {?property sh:name ?title . }\n" 
 					+ "OPTIONAL { ?property sh:description ?description . }\n"
+					+ "OPTIONAL { ?property <http://uri.suomi.fi/datamodel/ns/mscr#qname> ?qname } "
 					+ "OPTIONAL { ?property sh:datatype ?datatype . }"
 					+ "OPTIONAL { ?property sh:node ?shapeRef . BIND(afn:localname(?shapeRef) as ?shapeRefName) }"
 					+ "OPTIONAL { ?property sh:maxCount ?max . }" + "OPTIONAL { ?property sh:minCount ?min . }"
@@ -329,12 +334,13 @@ public class JsonSchemaWriter {
 
 							if (soln.contains("id")) {
 								predicateName = soln.getLiteral("id").getString();
-							}
+							}							
 
-							if (soln.contains("title")) {
+							if (soln.contains("title")) {								
 								String title = soln.getLiteral("title").getString();
 								predicate.add("title", URLDecoder.decode(title));
 							}
+								
 
 							if (soln.contains("min")) {
 								int min = soln.getLiteral("min").getInt();
@@ -346,6 +352,13 @@ public class JsonSchemaWriter {
 							if (soln.contains("description")) {
 								String description = soln.getLiteral("description").getString();
 								predicate.add("description", description);
+							}
+							
+							if(soln.contains("qname")) {
+								predicate.add("qname", soln.getResource("qname").getURI());
+							}
+							else {
+								predicate.add("qname", predicateID.substring(predicateID.lastIndexOf("/")+1));
 							}
 
 							if (soln.contains("valueList")) {
@@ -519,9 +532,18 @@ public class JsonSchemaWriter {
 					if (!pResults.hasNext() || !className.equals(pResults.peek().getLiteral("className").getString())) {
 						predicate = Json.createObjectBuilder();
 						JsonObjectBuilder classDefinition = Json.createObjectBuilder();
-
 						if (soln.contains("classTitle")) {
-							classDefinition.add("title", URLDecoder.decode(soln.getLiteral("classTitle").getString()));
+							classDefinition.add("title", URLDecoder.decode(soln.getLiteral("classTitle").getString()));	
+						}
+						else {
+							Literal temp = soln.getLiteral("refpropertyname");
+							if(temp != null) {
+								classDefinition.add("title", temp.toString());		
+							}
+							else {
+								classDefinition.add("title", "test");	
+							}
+							
 						}
 						classDefinition.add("type", "object");
 						if (soln.contains("targetClass")) {
@@ -539,7 +561,22 @@ public class JsonSchemaWriter {
 						if (soln.contains("maxProperties")) {
 							classDefinition.add("maxProperties", soln.getLiteral("maxProperties").getInt());
 						}
-
+						if (soln.contains("classQname")) {
+							classDefinition.add("qname", soln.getResource("classQname").getURI());
+						}
+						else {
+							if (soln.contains("classTitle")) {
+								classDefinition.add("qname", soln.getLiteral("classTitle").getString());	
+							}
+							else {
+								Literal temp = soln.getLiteral("refpropertyname");
+								if(temp != null) {
+									classDefinition.add("qname", temp.toString());		
+								}
+								
+							}
+						}
+												
 						JsonObject classProps = properties.build();
 						if (!classProps.isEmpty())
 							classDefinition.add("properties", classProps);

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,12 +16,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -40,13 +43,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.mapper.ClassMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.ResourceMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.JSONSchemaMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
+import io.zenwave360.jsonrefparser.$RefParser;
+import io.zenwave360.jsonrefparser.$Refs;
 @ExtendWith(SpringExtension.class)
 @Import({
 	SchemaService.class,
@@ -389,5 +396,32 @@ public class SchemaServiceTest {
 		assertEquals(4, m.listSubjectsWithProperty(SKOS.prefLabel).toList().size());
 		
 	}
+	
+	@Test 
+	void testImportOpenaireToInternal() throws Exception {
+		JsonNode json = getJsonNodeFromPath("jsonschema/generated/openaire-4.0.json");
+		Model m = service.transformJSONSchemaToInternal("pid:test", json);
+		m.write(new FileWriter(new File("openaire-4.0.ttl")), "TURTLE");
+		
+		Resource r1 = ResourceFactory.createResource("pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint");
+		Resource r2 = ResourceFactory.createResource("pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint");
+		
+		ResIterator i = m.listSubjectsWithProperty(MSCR.qname, ResourceFactory.createResource("http://datacite.org/schema/kernel-4polygonPoint"));
+		List<Resource> resources = i.toList();
+		assertEquals(4, resources.size());
+		assertTrue(resources.contains(r1));
+		assertTrue(resources.contains(r2));
+		
+	}
+	
+	@Test
+	void testRecursiveSchema1() throws Exception {
+		JsonNode json = getJsonNodeFromPath("jsonschema/test_jsonschema_recursive1.json");
+		ObjectMapper m2 = new ObjectMapper();
+		//System.out.println(m2.writeValueAsString(json));
+		Model m = service.transformJSONSchemaToInternal("pid:test", json);
+		m.write(System.out, "TURTLE");
+	}
+	
 }
 

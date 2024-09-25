@@ -26,6 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 
 @Service
 public class XSLTGenerator {
@@ -78,94 +79,105 @@ public class XSLTGenerator {
 	}
 	
 	
-	private void addTemplateFromPath(Map<String, List<MappingInfoDTO>> targetInfo, XPath xpath, Element stylesheet, Element node) throws Exception {
+	private void addTemplates(Map<String, List<MappingInfoDTO>> targetInfo, Element stylesheet, TreeNode targetNode) {
 		var xsltDoc = stylesheet.getOwnerDocument();
-
-		String currentNodePath = getXPath(node).substring(6);
-		boolean isLeafNode = !node.hasChildNodes();
-		
-		boolean isMapped = targetInfo.containsKey(currentNodePath);
+		boolean isLeafNode = targetNode.children.isEmpty();
+		boolean hasMappings = targetNode.mappings != null;
 		List<Element> contentElements = new ArrayList<Element>();
-		if(node.getNodeName().equals("root2")) {
-			Element templateElement = xsltDoc.createElementNS(xslNS, "xsl:template");
-			templateElement.setAttribute("match", "/");
-			stylesheet.appendChild(templateElement);
-			contentElements.add(templateElement);
-		}
-		else if(isMapped) {
-			// create one template per mapping
-			for(MappingInfoDTO mapping: targetInfo.get(currentNodePath)) {
-				Element templateElement = xsltDoc.createElementNS(xslNS, "xsl:template");
-				Element contentElement = xsltDoc.createElement(node.getNodeName());
-				templateElement.setAttribute("name", "t_" + mapping.getPID().substring(mapping.getPID().indexOf("=")+1).replaceAll("-", ""));
-				if(isLeafNode) {
-					Element copyOf = xsltDoc.createElementNS(xslNS, "xsl:copy-of");				
-					copyOf.setAttribute("select", "$node/node()");
-					contentElement.appendChild(copyOf);		
-				}
-				Element paramElement = xsltDoc.createElementNS(xslNS, "xsl:param");
-				paramElement.setAttribute("name", "node");
-				templateElement.appendChild(paramElement);				
-				templateElement.appendChild(contentElement);
-				stylesheet.appendChild(templateElement);
-				contentElements.add(contentElement);
-			}
-		}
-		else {
-			// create one template
-			Element templateElement = xsltDoc.createElementNS(xslNS, "xsl:template");
-			Element contentElement = xsltDoc.createElement(node.getNodeName());
-
-			if(isLeafNode) {
-				Element copyOf = xsltDoc.createElementNS(xslNS, "xsl:copy-of");				
-				copyOf.setAttribute("select", ".");
-				contentElement.appendChild(copyOf);
-			}
-			templateElement.setAttribute("name", "t_" + getXPath(node).replaceAll("/", "_"));
-			templateElement.appendChild(contentElement);
-			stylesheet.appendChild(templateElement);
-			contentElements.add(contentElement);
-		}
 		List<Element> calls = new ArrayList<Element>();
-		Node childNode = (Element)node.getFirstChild();   
-		//NodeList children2 = node.getChildNodes();
-		//for(int i = 0; i < children2.getLength(); i++) {
-		while(childNode !=null) {
-			//Element child = (Element)children2.item(i);
-			if(childNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element child = (Element)childNode;  
-				addTemplateFromPath(targetInfo, xpath, stylesheet, child);
-				// create call-element
-				String childNodePath = getXPath(child).substring(6);
-				boolean isChildMapped = targetInfo.containsKey(childNodePath);
-				if(isChildMapped) {				
-					for(MappingInfoDTO childMapping : targetInfo.get(childNodePath)) {
-						Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
-						callTemplate.setAttribute("name", "t_" + childMapping.getPID().substring(childMapping.getPID().indexOf("=")+1).replaceAll("-", ""));
-						Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
-						withParam.setAttribute("name", "node");
-						withParam.setAttribute("select", getXpathFromId(childMapping.getSource().get(0).getId()));
-						callTemplate.appendChild(withParam);
-						calls.add(callTemplate);
-					}				
+		
+		Element templateElement = xsltDoc.createElementNS(xslNS, "xsl:template");
+		if(targetNode.targetElementName.equals("root2")) {
+			templateElement.setAttribute("match", "/");					
+			contentElements.add(templateElement);	
+			for(TreeNode child : targetNode.children) {
+				addTemplates(targetInfo, stylesheet, child);
+				Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
+				callTemplate.setAttribute("name", "t_" + child.targetXPath.replaceAll("/", "-"));
+				calls.add(callTemplate);
+			}			
+		}		
+		else {
+			
+			templateElement.setAttribute("name", "t_" + targetNode.targetXPath.replaceAll("/", "-"));
+			Element contentElement = xsltDoc.createElement(targetNode.targetElementName);
+			contentElements.add(contentElement);
+			templateElement.appendChild(contentElement);
+			if(hasMappings) {
+				Element forEach = xsltDoc.createElementNS(xslNS, "xsl:for-each");
+				if(isLeafNode) {
+					forEach.setAttribute("select", "$node");
+					Element paramElement = xsltDoc.createElementNS(xslNS, "xsl:param");
+					paramElement.setAttribute("name", "node");
+					
+					Element copyOf = xsltDoc.createElementNS(xslNS, "xsl:copy-of");				
+					copyOf.setAttribute("select", "node()");
+
+					contentElement.appendChild(copyOf);						
+					forEach.appendChild(contentElement);
+					templateElement.appendChild(paramElement);
+					templateElement.appendChild(forEach);
 				}
 				else {
+					String sourceUri = targetNode.mappings.get(0).getSource().get(0).getUri();
+					String sourceXPath = getXpathFromId(sourceUri);
+					forEach.setAttribute("select", "$node");				
+					for(TreeNode child : targetNode.children) {
+						addTemplates(targetInfo, stylesheet, child);
+						Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
+						callTemplate.setAttribute("name", "t_" + child.targetXPath.replaceAll("/", "-"));
+						Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
+						String childSourceUri = child.mappings.get(0).getSource().get(0).getUri();
+						String childSourceXPath = getXpathFromId(childSourceUri);
+						withParam.setAttribute("name", "node");
+						withParam.setAttribute("select", childSourceXPath.substring(sourceXPath.length()+1));
+						callTemplate.appendChild(withParam);
+						calls.add(callTemplate);
+					}
+					Element paramElement = xsltDoc.createElementNS(xslNS, "xsl:param");
+					paramElement.setAttribute("name", "node");
+					
+					forEach.appendChild(contentElement);
+					templateElement.appendChild(paramElement);
+					templateElement.appendChild(forEach);
+				}
+			}
+			else {
+				for(TreeNode child : targetNode.children) {
+					addTemplates(targetInfo, stylesheet, child);
 					Element callTemplate = xsltDoc.createElementNS(xslNS, "xsl:call-template");
-					callTemplate.setAttribute("name", "t_" + getXPath(child).replaceAll("/", "_"));
+					callTemplate.setAttribute("name", "t_" + child.targetXPath.replaceAll("/", "-"));
+					if(child.mappings != null) {
+						Element withParam = xsltDoc.createElementNS(xslNS, "xsl:with-param");
+						String childSourceUri = child.mappings.get(0).getSource().get(0).getUri();
+						String childSourceXPath = getXpathFromId(childSourceUri);
+						withParam.setAttribute("name", "node");
+						withParam.setAttribute("select", childSourceXPath);
+						callTemplate.appendChild(withParam);
+					}
 					calls.add(callTemplate);
 				}
 			}
-			
-			childNode = childNode.getNextSibling();
-		}
+		}		
 		for(Element contentElement : contentElements) {
 			for(Element callElement : calls) {
 				contentElement.appendChild(callElement);
 			}			
-		}		
+		}			
+		stylesheet.appendChild(templateElement);		
 	}
 
-		
+	public void handleTree(TreeNode targetTree, Node node, Map<String, List<MappingInfoDTO>> infos) {
+        NodeList _list = node.getChildNodes();
+        for(int i = 0; i < _list.getLength(); i++) {
+        	Node _node = _list.item(i);
+        	String cxpath = getXPath(_node).substring(6);        	
+    		TreeNode child = new TreeNode(new ArrayList<TreeNode>(), cxpath, _node.getNodeName(), infos.get(cxpath));
+    		targetTree.children.add(child);
+    		handleTree(child, _node, infos);
+        	
+        }		
+	}
 
 	public String generate(List<MappingInfoDTO> mappings) throws Exception {
 		
@@ -179,13 +191,12 @@ public class XSLTGenerator {
         // generate helper data structures: targetxpath -> mappings and list of target
         Map<String, List<MappingInfoDTO>> targetInfo = new HashMap<String, List<MappingInfoDTO>>();
         for(MappingInfoDTO mapping : mappings) {
-        	String targetId = mapping.getTarget().get(0).getId();
+        	String targetId = mapping.getTarget().get(0).getUri();
         	String targetXpath = getXpathFromId(targetId);
         	if(!targetInfo.containsKey(targetXpath)) {
         		targetInfo.put(targetXpath, new ArrayList<MappingInfoDTO>());
         	}
         	targetInfo.get(targetXpath).add(mapping);
-        	
         }
         
         // root elements
@@ -201,11 +212,16 @@ public class XSLTGenerator {
         Document doc2 = docBuilder.newDocument();
 		Element root2 = doc2.createElement("root2");
 		doc2.appendChild(root2);
+		
         for(String t: targetInfo.keySet()) {
         	addElementByPath(xpath, root2, t);        	
         } 
+        // Create another tree with extra info
+		TreeNode _root = new TreeNode(new ArrayList<TreeNode>(), "/", root2.getNodeName(), null);
+		handleTree(_root, root2, targetInfo);
+        
         // generate XSLT templates.
-        addTemplateFromPath(targetInfo, xpath, root, root2);
+        addTemplates(targetInfo, root, _root);
 
         
         TransformerFactory tf = TransformerFactory.newInstance();
@@ -214,8 +230,10 @@ public class XSLTGenerator {
         StringWriter sw = new StringWriter();
         trans.transform(new DOMSource(doc), new StreamResult(sw));
         
-
         return sw.toString();
         
 	}
+	
+
+	record TreeNode(List<TreeNode> children, String targetXPath, String targetElementName, List<MappingInfoDTO> mappings) {}
 }
