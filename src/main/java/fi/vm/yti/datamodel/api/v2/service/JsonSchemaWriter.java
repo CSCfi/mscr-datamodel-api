@@ -931,7 +931,8 @@ public class JsonSchemaWriter {
 			Resource ps = _ps.asResource();
 			String psID = ps.getURI();
 			if(ps.isAnon()) {
-				psID = ps.getId().toString();
+				psID = s.getURI() + "#" + ps.getId().toString(); //  ps.getPropertyResourceValue(SH.path).getURI();
+				//psID = ps.getPropertyResourceValue(SH.path).getURI();
 			}
 			//psID = psID.replace("/", "-");
 			
@@ -940,7 +941,6 @@ public class JsonSchemaWriter {
 			Map<String, Object> psProps = new LinkedHashMap<String, Object>();
 			// System.out.println(ps.getPropertyResourceValue(SH.path).getLocalName());
 			// System.out.println(model.getNsURIPrefix(ps.getPropertyResourceValue(SH.path).getNameSpace()));
-
 			psProps.put("qname", ps.getPropertyResourceValue(SH.path).getURI());
 
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(ps, SH.name);
