@@ -177,13 +177,12 @@ public class RMLGenerator {
 				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + "PREFIX dcterms: <http://purl.org/dc/terms/>\n"
 				+ "PREFIX sh: <http://www.w3.org/ns/shacl#>\n"
 				+ "select distinct ?source ?type ?property ?classRef ?path \n" + "where {\n"
-				+ "?mappings rdf:type mscr:Mapping . \n" 
-				+ "?mapping mscr:target/rdf:_1/mscr:uri ?property .\n" 
-				+ "?mapping mscr:source/rdf:_1/mscr:uri ?source.\n"
-				+ "<" + targetClass + "> sh:property ?property.OPTIONAL {?property sh:class ?classRef}.\n" // type of class
+				+ "?mapping rdf:type mscr:Mapping . \n" + "?mapping mscr:target/rdf:_1/mscr:uri ?property .\n"
+				+ "?mapping mscr:source/rdf:_1/mscr:uri ?source.\n" + "<" + targetClass
+				+ "> sh:property ?property.OPTIONAL {?property sh:class ?classRef}.\n" // type of class
 
 				+ "FILTER(!strstarts( STR(?property), \"iterator:\") && !strstarts( STR(?property), \"subject:\"))\n"
-				+ "  FILTER(strstarts( STR(?source), \"" + iteratorPropertyUri + "\"))\n" 
+				+ "  FILTER(strstarts( STR(?source), \"" + iteratorPropertyUri + "\"))\n"
 				+ "?property sh:path ?path .\n"
 
 //				+ "OPTIONAL {?property rdfs:domain <" + targetClass + ">.?property rdf:type ?type.}\n" // type of class
@@ -193,7 +192,7 @@ public class RMLGenerator {
 		System.out.println(q);
 		QueryExecution qe = QueryExecutionFactory.create(q, sourceModel);
 		ResultSet results = qe.execSelect();
-		if(!results.hasNext()) {
+		if (!results.hasNext()) {
 			System.out.println("No predicateobject for " + iteratorPropertyUri);
 		}
 		while (results.hasNext()) {
@@ -210,39 +209,45 @@ public class RMLGenerator {
 				ref.addProperty(m.createProperty(nsRR + "termType"), m.createResource(nsRR + "IRI"));
 			}
 
-			// isAnon = does not exists <https://semopenalex.org/ontology/WorkShape> <http://uri.suomi.fi/datamodel/ns/mscr#uri>  <subject:https://semopenalex.org/ontology/WorkShape>
-			System.out.println("anon: "+ "subject:" + targetClass);
+			// isAnon = does not exists <https://semopenalex.org/ontology/WorkShape>
+			// <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+			// <subject:https://semopenalex.org/ontology/WorkShape>
+			System.out.println("anon: " + "subject:" + targetClass);
 			if (true) {
+				String xpath = getXpathFromId(sourceResource.getURI());
+				String reference = getJsonPathFromXPath(sourceModel, xpath, sourceLookup);
 				if (classRef != null) {
 					// need to find the shape that has the property that points to this shape
 					// workShape property [ sh:class <https://semopenalex.org/ontology/Authorship> ]
 					// authorshipShape sh:targetClass <https://semopenalex.org/ontology/Authorship>
 					ResIterator ri = sourceModel.listResourcesWithProperty(SH.targetClass, classRef);
-					if(ri.hasNext()) {
+					if (ri.hasNext()) {
 
 						Resource parentTripleMap = ri.next();
-						boolean isAnon = !sourceModel.containsResource(ResourceFactory.createResource("subject:" + parentTripleMap.getURI()));
-						if(isAnon) {
-							ref.addProperty(m.createProperty(nsRR+"parentTriplesMap"), m.createResource(parentTripleMap.getURI() + ":triplesMap"));	
+						boolean isAnon = !sourceModel.containsResource(
+								ResourceFactory.createResource("subject:" + parentTripleMap.getURI()));
+						if (isAnon) {
+							ref.addProperty(m.createProperty(nsRR + "parentTriplesMap"),
+									m.createResource(parentTripleMap.getURI() + ":triplesMap"));
+							Resource join = m.createResource();
+							join.addLiteral(m.createProperty(nsRR + "child"), reference.length() > iteratorReference.length()
+									? reference.substring(iteratorReference.length() + 1)
+											: reference);
+							join.addLiteral(m.createProperty(nsRR + "parent"), "$");
+							ref.addProperty(m.createProperty(nsRR + "joinCondition"), join);							
 						}
-						
-						
+
 					}
 				}
-					String xpath = getXpathFromId(sourceResource.getURI());
-					String reference = getJsonPathFromXPath(sourceModel, xpath, sourceLookup);
-					ref.addProperty(m.createProperty(nsRML + "reference"),
-							reference.length() > iteratorReference.length()
-									? reference.substring(iteratorReference.length() + 1)
-									: reference);
-					
+				
+				
+				ref.addProperty(m.createProperty(nsRML + "reference"),
+						reference.length() > iteratorReference.length()
+								? reference.substring(iteratorReference.length() + 1)
+								: reference);
 
 			}
 
-				
-
-				
-			
 			pom.addProperty(m.createProperty(nsRR + "objectMap"), ref);
 			if (path == null) {
 				pom.addProperty(m.createProperty(nsRR + "predicate"), property);
