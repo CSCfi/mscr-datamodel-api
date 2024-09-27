@@ -14,13 +14,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.sparql.util.ModelUtils;
+import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -231,7 +236,46 @@ public class SchemaService {
 		ByteArrayInputStream input = new ByteArrayInputStream(fileInBytes);
 		m.read(input, null, "TTL");
 		input.close();
+		// check for any blank shapes and add named resources 
+		m.listObjectsOfProperty(null, SH.property).forEach(new Consumer<RDFNode>() {
+			
+			@Override
+			public void accept(RDFNode t) {
+				Resource r = t.asResource();
+				if(r.isAnon()) {					
+					ResourceUtils.renameResource(r, pid + "#" + r.getId().toString());
+				}
+				
+			}
+		});
 		
+		// check for reused properties an make a copy
+		// TODO: this implementation leave one extra prop / unique prop in the model
+		// TODO: Copy more properties
+		m.listObjectsOfProperty(null, SH.property).forEach(new Consumer<RDFNode>() {
+
+			@Override
+			public void accept(RDFNode t) {
+				Resource r = t.asResource();
+				ResIterator ri = m.listSubjectsWithProperty(SH.property, r);
+				ri.next();
+				while(ri.hasNext()) {
+					Resource p = ri.next();
+
+					Resource np = m.createResource(r.getURI() + "#" + UUID.randomUUID().toString());
+					if(r.getPropertyResourceValue(SH.datatype) != null) {
+						np.addProperty(SH.datatype, r.getPropertyResourceValue(SH.datatype));
+						
+					}
+					np.addProperty(SH.path, r.getPropertyResourceValue(SH.path));
+					m.remove(p, SH.property, r);
+					p.addProperty(SH.property, np);
+				}
+				
+				
+			}
+			
+		});
 		// add all nodeshapes as root resources
 		Resource schema = m.createResource(pid);
 		addDefaultRootResourceForSHACL(schema, m);
