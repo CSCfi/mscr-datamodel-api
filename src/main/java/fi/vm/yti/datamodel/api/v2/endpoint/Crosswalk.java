@@ -997,8 +997,8 @@ public class Crosswalk extends BaseMSCRController {
 					Model crosswalkMetadataModel = jenaService.getCrosswalk(pid);
 			        var ownerMapper = groupManagementService.mapOwner();			        
 					CrosswalkInfoDTO crosswalk = mapper.mapToCrosswalkDTO(pid, crosswalkMetadataModel, null, ownerMapper);
-					SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(pid, jenaService.getSchema(crosswalk.getTargetSchema()), null, ownerMapper);
-					SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(pid, jenaService.getSchema(crosswalk.getSourceSchema()), null, ownerMapper);
+					SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(crosswalk.getTargetSchema(), jenaService.getSchema(crosswalk.getTargetSchema()), null, ownerMapper);
+					SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(crosswalk.getSourceSchema(), jenaService.getSchema(crosswalk.getSourceSchema()), null, ownerMapper);
 					if(
 						!List.of(SchemaFormat.RDFS, SchemaFormat.SHACL, SchemaFormat.OWL).contains(targetSchemaInfo.getFormat())
 						||
