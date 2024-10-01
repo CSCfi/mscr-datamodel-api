@@ -473,14 +473,33 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
 		
-		SchemaInfoDTO dto = createSchema(schemaDTO, action, target);
-		final String PID = dto.getPID();
+		SchemaInfoDTO dto = null;
+		try {
+			dto = createSchema(schemaDTO, action, target);
+			final String PID = dto.getPID();
 
-		if (!schemaDTO.getOrganizations().isEmpty()) {
-			Collection<UUID> orgs = schemaDTO.getOrganizations();
-			check(authorizationManager.hasRightToAnyOrganization(orgs));
-		}
-		addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);
+			if (!schemaDTO.getOrganizations().isEmpty()) {
+				Collection<UUID> orgs = schemaDTO.getOrganizations();
+				check(authorizationManager.hasRightToAnyOrganization(orgs));
+			}
+			addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);	
+		}catch(Exception ex) {
+			// revert any possible metadata changes
+			if(dto != null) {
+				try {
+					jenaService.deleteFromSchema(dto.getPID());
+				} catch (Exception _ex) {
+					//logger.error(_ex.getMessage(), _ex);
+				}
+				try {
+					openSearchIndexer.deleteSchemaFromIndex(dto.getPID());
+				} catch (Exception _ex) {
+					//logger.error(_ex.getMessage(), _ex);
+				}				
+			}
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+			
+		}		
 		return dto;
 
 	}
