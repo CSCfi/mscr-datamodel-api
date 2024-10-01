@@ -318,9 +318,24 @@ public class Schema extends BaseMSCRController {
 							"MSCR copy can only be made from a schema with a format CSV, JSONSCHEMA, MSCR, SHACL or XSD");
 					
 				}
-				// copy content by redoing the registration process 
-				StoredFile schemaFile = storageService.retrieveAllSchemaFiles(target).get(0); // there is currently only one file always
-				addFileToSchema(PID, prevSchema.getFormat(), schemaFile.data(), null, schemaFile.contentType());
+				String contentType = "";
+				byte[] fileBytes = null;
+				// copy content by redoing the registration process
+				if(prevSchema.getSourceURL() != null && !"".equals(prevSchema.getSourceURL())) {
+					// try to download url to file
+					File tempFile = File.createTempFile("schema", "temp");
+					FileUtils.copyURLToFile(new URL(prevSchema.getSourceURL()), tempFile);
+					fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), prevSchema.getFormat());
+					contentType = "application/octet-stream"; // TODO: fix this
+				}
+				else {
+					StoredFile schemaFile = storageService.retrieveAllSchemaFiles(target).get(0); // there is currently only one file always
+					fileBytes = schemaFile.data();
+					contentType = schemaFile.contentType();
+				}
+				addFileToSchema(PID, prevSchema.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType);	
+				
+				
 				
 				
 			}
