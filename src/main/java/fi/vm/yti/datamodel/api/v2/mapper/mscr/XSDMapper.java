@@ -139,13 +139,17 @@ public class XSDMapper {
 		if (!handledTypes.contains(e)) {
 			ObjectNode obj = m.createObjectNode();
 			handledTypes.add(e);
-			String elementId = null;
+			String elementNamespace = null;
 			String elementName = e.getName();
-			if (schema != null) {
-				if (schema.getTargetNamespace() != null) {
-					elementId = schema.getTargetNamespace() + e.getName();
-				} else {
-					elementId = e.getName();
+			if (schema != null) {				
+				if (e.getXsdSchema() != null && e.getXsdSchema().getTargetNamespace() != null) {
+					elementNamespace = e.getXsdSchema().getTargetNamespace();
+				}				
+				else if  (findSchema(e) != null && findSchema(e).getTargetNamespace() != null) {
+					elementNamespace = findSchema(e).getTargetNamespace();
+				}
+				else if(schema.getTargetNamespace() != null) {
+					elementNamespace = schema.getTargetNamespace();					
 				}
 			}
 			if (e.getTypeAsBuiltInDataType() != null) {
@@ -159,8 +163,8 @@ public class XSDMapper {
 				obj.put("type", "string");
 			}
 			handleDesc(e, obj);
-			if (elementId != null) {
-				obj.put("@id", elementId);
+			if (elementNamespace != null) {
+				obj.put("namespace", elementNamespace);
 			}			
 			obj.put("title", e.getName());
 			handleCardinalities(e, obj);

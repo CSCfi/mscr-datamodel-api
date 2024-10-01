@@ -265,6 +265,7 @@ public class JsonSchemaWriter {
 				prop.add("@id", propRes.getURI());
 				prop.add("title", propName);				
 				String pqname = propRes.getProperty(MSCR.qname) != null ? propRes.getRequiredProperty(MSCR.qname).getResource().getURI(): propRes.getURI().substring(propRes.getURI().lastIndexOf("/")+1);
+				String pnamespace = propRes.getProperty(MSCR.namespace) != null ? propRes.getProperty(MSCR.namespace).getObject().asResource().getURI(): null;
 				Integer pmaxCount = propRes.getProperty(SH.maxCount) != null && !propRes.getProperty(SH.maxCount).getLiteral().getDatatypeURI().equals("http://www.w3.org/2001/XMLSchema#string") ? propRes.getProperty(SH.maxCount).getInt() : null;
 				Integer pminCount = propRes.getProperty(SH.minCount) != null ? propRes.getProperty(SH.minCount).getInt() : null;
 				String datatype = propRes.getProperty(SH.datatype).getResource().getURI();
@@ -274,6 +275,9 @@ public class JsonSchemaWriter {
 				}
 				if (pminCount != null) {
 					prop.add("minCount", ""+pminCount);
+				}
+				if(pnamespace != null) {
+					prop.add("namespace", pnamespace);
 				}
 				prop.add("@type", datatype);
 				String jsonDatatype = DATATYPE_MAP.get(datatype);
@@ -305,6 +309,7 @@ public class JsonSchemaWriter {
 			
 
 			String qname = objectPropRes.getProperty(MSCR.qname) != null ? objectPropRes.getProperty(MSCR.qname).getObject().asResource().getURI() : objectPropRes.getURI().substring(objectPropRes.getURI().lastIndexOf("/")+1);
+			String namespace = objectPropRes.getProperty(MSCR.namespace) != null ? objectPropRes.getProperty(MSCR.namespace).getObject().asResource().getURI(): null;
 			Integer maxCount = objectPropRes.getProperty(SH.maxCount) != null && !objectPropRes.getProperty(SH.maxCount).getLiteral().getDatatypeURI().equals("http://www.w3.org/2001/XMLSchema#string") ? objectPropRes.getProperty(SH.maxCount).getInt() : null;
 			Integer minCount = objectPropRes.getProperty(SH.minCount) != null ? objectPropRes.getProperty(SH.minCount).getInt() : null;
 			String name = objectPropRes.getProperty(SH.name).getString();
@@ -318,6 +323,9 @@ public class JsonSchemaWriter {
 			}
 			if (minCount != null) {
 				def.add("minCount", ""+minCount);
+			}
+			if(namespace != null) {
+				def.add("namespace", namespace);
 			}
 			
 			JsonObjectBuilder properties = Json.createObjectBuilder();

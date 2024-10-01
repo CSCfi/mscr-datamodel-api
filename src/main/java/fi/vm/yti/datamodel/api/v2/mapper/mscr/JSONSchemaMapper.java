@@ -262,8 +262,8 @@ public class JSONSchemaMapper {
 			nodeShapeResource.addProperty(DCTerms.description, node.get("description").asText());
 		if (node.has("additionalProperties"))
 			nodeShapeResource.addProperty(SH.closed, model.createTypedLiteral(!node.get("additionalProperties").asBoolean()));
-		if(node.has("@id")) {
-			nodeShapeResource.addProperty(MSCR.qname, model.createResource(node.get("@id").asText()));			
+		if(node.has("namespace")) {
+			nodeShapeResource.addProperty(MSCR.namespace, model.createResource(node.get("namespace").asText()));			
 		}
 		
 		/*
@@ -288,7 +288,9 @@ public class JSONSchemaMapper {
 				if(entry.getValue().has("@id")) {
 					propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
 				}
-
+				if(entry.getValue().has("namespace")) {
+					propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
+				}
 				// default max
 				if(!entry.getValue().has("maxItems")) {
 					propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
@@ -314,7 +316,10 @@ public class JSONSchemaMapper {
 					if(entry.getValue().has("@id")) {
 						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
 					}
-					
+					if(entry.getValue().has("namespace")) {
+						propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
+					}
+
 					nodeShapeResource.addProperty(SH.property, propertyShape);
 					
 					if (hasObjectItems(entry)) {
@@ -350,6 +355,13 @@ public class JSONSchemaMapper {
 						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
 					}					
 				}
+				if(entry.getValue().has("@id")) {
+					propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
+				}
+				if(entry.getValue().has("namespace")) {
+					propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
+				}
+
 				
 			}
 
