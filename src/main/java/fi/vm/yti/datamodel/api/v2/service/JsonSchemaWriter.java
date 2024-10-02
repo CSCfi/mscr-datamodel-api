@@ -875,32 +875,48 @@ public class JsonSchemaWriter {
 		schema.put("properties", rootProperties);
 		model.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(s -> {
 			String shapeID = s.getURI();
-			String qname = model.qnameFor(shapeID);
+			
 			//shapeID = shapeID.replace("/", "-");
 			Map<String, Object> shapeDef = new LinkedHashMap<String, Object>();
 			Map<String, Object> shapeProps = new LinkedHashMap<String, Object>();
 			
 			
 			shapeDef.put("@id", shapeID);
-			shapeDef.put("qname", qname);
+			
 			// System.out.println(shapeID);
 			// TODO: if sh:desc not found check sh:class and sh:node
-			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, SH.name);
-			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
-
-			if (titles.isEmpty()) {
-				if(shapeDef.get("qname") != null) {
-					titles.put("en", shapeDef.get("qname").toString());
+			
+			// we need to get the name (and qname) of the target class 
+			String qname = model.qnameFor(shapeID);
+			String title = model.qnameFor(shapeID); // default name
+			if(s.hasProperty(SH.targetClass)) {
+				Resource targetClass = s.getPropertyResourceValue(SH.targetClass);
+				if(targetClass.hasProperty(RDFS.label)) {
+					title = targetClass.getProperty(RDFS.label).getLiteral().getString();
+				}
+				else if (model.qnameFor(targetClass.getURI()) != null) {
+					title = model.qnameFor(targetClass.getURI());
+				}
+				else if (targetClass.getLocalName() != null){
+					title = targetClass.getLocalName();
 				}
 				else {
-					titles.put("en", shapeID);
+					title = targetClass.getURI();
 				}
+
+				qname = targetClass.getURI();
+			}
+			else {
+				logger.warn("No target class found for node shape " + s.getURI());
 				
 			}
 			addClassMappingSourceProps(shapeID, shapeProps, definitions);
 
 			
-			shapeDef.put("title", titles.get("en"));			
+			shapeDef.put("qname", qname);
+			shapeDef.put("title", title);	
+			
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
 			shapeDef.put("description", descs.get("en"));
 			rootProperties.put(shapeID, shapeDef);
 			try {
