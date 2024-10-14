@@ -28,6 +28,7 @@ import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import org.w3c.dom.NodeList;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 
 @Service
 public class RMLGenerator {
@@ -50,7 +52,10 @@ public class RMLGenerator {
 	String nsRML = "http://semweb.mmlab.be/ns/rml#";
 	String nsQL = "http://semweb.mmlab.be/ns/ql#";
 	String nsRR = "http://www.w3.org/ns/r2rml#";
-
+	String nsFNO = "https://w3id.org/function/ontology#";
+	String nsFNML = "http://semweb.mmlab.be/ns/fnml#";
+	String nsGREL = "http://users.ugent.be/~bjdmeest/function/grel.ttl#";
+	
 	private String getXpathFromId(String id) {
 
 		String temp = id.substring(id.indexOf("Root") + 4);
@@ -169,6 +174,8 @@ public class RMLGenerator {
 		return logicalSource;
 	}
 
+	
+	
 	private void createPredicateObjectMap(Model m, Model sourceModel, String iteratorPropertyUri,
 			String iteratorReference, String targetClass, Resource triplesMap, Map<String, TreeNode> sourceLookup) {
 		String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
@@ -176,16 +183,18 @@ public class RMLGenerator {
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
 				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + "PREFIX dcterms: <http://purl.org/dc/terms/>\n"
 				+ "PREFIX sh: <http://www.w3.org/ns/shacl#>\n"
-				+ "select distinct ?source ?type ?property ?classRef ?path \n" + "where {\n"
+				+ "select distinct ?processing ?source ?type ?property ?classRef ?path ?datatype \n" + "where {\n"
 				+ "?mapping rdf:type mscr:Mapping . \n" + "?mapping mscr:target/rdf:_1/mscr:uri ?property .\n"
+				+ "OPTIONAL {?property sh:datatype ?datatype }  \n"
+				+ "OPTIONAL {?mapping mscr:processing ?processing }  \n"
 				+ "?mapping mscr:source/rdf:_1/mscr:uri ?source.\n" + "<" + targetClass
 				+ "> sh:property ?property.OPTIONAL {?property sh:class ?classRef}.\n" // type of class
 
 				+ "FILTER(!strstarts( STR(?property), \"iterator:\") && !strstarts( STR(?property), \"subject:\"))\n"
 				+ "  FILTER(strstarts( STR(?source), \"" + iteratorPropertyUri + "\"))\n"
 				+ "?property sh:path ?path .\n"
-
-//				+ "OPTIONAL {?property rdfs:domain <" + targetClass + ">.?property rdf:type ?type.}\n" // type of class
+				+ "OPTIONAL {?property rdfs:domain <" + targetClass + ">.?property rdf:type ?type.}\n" // type of class
+				+ "OPTIONAL {?property sh:path ?ontProp .?ontProp rdf:type ?type.}\n" // type of class
 
 				+ "}";
 
@@ -198,14 +207,17 @@ public class RMLGenerator {
 		while (results.hasNext()) {
 			QuerySolution soln = results.next();
 			Resource sourceResource = soln.getResource("source");
-			Resource datatype = soln.getResource("type");
+			Resource type = soln.getResource("type");
+			Resource datatype = soln.getResource("datatype");
 			Resource property = soln.getResource("?property");
 			Resource path = soln.getResource("?path");
 			Resource classRef = soln.getResource("classRef");
+			Resource processing = soln.getResource("processing");
 			Resource pom = m.createResource();
+			
 
 			Resource ref = m.createResource();
-			if (classRef != null || (datatype != null && !datatype.getURI().equals(OWL.DatatypeProperty.getURI()))) {
+			if (classRef != null || (type != null && !type.getURI().equals(OWL.DatatypeProperty.getURI()))) {
 				ref.addProperty(m.createProperty(nsRR + "termType"), m.createResource(nsRR + "IRI"));
 			}
 
@@ -213,39 +225,151 @@ public class RMLGenerator {
 			// <http://uri.suomi.fi/datamodel/ns/mscr#uri>
 			// <subject:https://semopenalex.org/ontology/WorkShape>
 			System.out.println("anon: " + "subject:" + targetClass);
-			if (true) {
-				String xpath = getXpathFromId(sourceResource.getURI());
-				String reference = getJsonPathFromXPath(sourceModel, xpath, sourceLookup);
-				if (classRef != null) {
-					// need to find the shape that has the property that points to this shape
-					// workShape property [ sh:class <https://semopenalex.org/ontology/Authorship> ]
-					// authorshipShape sh:targetClass <https://semopenalex.org/ontology/Authorship>
-					ResIterator ri = sourceModel.listResourcesWithProperty(SH.targetClass, classRef);
-					if (ri.hasNext()) {
+			String xpath = getXpathFromId(sourceResource.getURI());
+			String reference = getJsonPathFromXPath(sourceModel, xpath, sourceLookup);
+			if (classRef != null) {
+				System.out.println(sourceResource.getPropertyResourceValue(DCTerms.type).getURI());
+				if(sourceResource.getPropertyResourceValue(DCTerms.type).getURI().equals(OWL.ObjectProperty.getURI())) {
+					if(processing == null) {
+						Resource functionValue = m.createResource();
+						ref.addProperty(m.createProperty(nsFNML + "functionValue"), functionValue);
+						
+						// execute
+						Resource funcPom1 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom1);							
+						funcPom1.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsFNO+"executes"));
+						Resource funcPom1ObjectMap = m.createResource();
+						funcPom1ObjectMap.addProperty(m.createProperty(nsRR+"constant"), m.createResource(nsGREL+"putParent"));
+						funcPom1.addProperty(m.createProperty(nsRR+"objectMap"), funcPom1ObjectMap);
+						
+						
+						// mode
+						Resource funcPom4 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom4);							
+						funcPom4.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"modeParameter"));
+						Resource funcPom4ObjectMap = m.createResource();
+						funcPom4ObjectMap.addProperty(m.createProperty(nsRR+"constant"), m.createLiteral("hash"));
+						funcPom4.addProperty(m.createProperty(nsRR+"objectMap"), funcPom4ObjectMap);						
 
-						Resource parentTripleMap = ri.next();
-						boolean isAnon = !sourceModel.containsResource(
-								ResourceFactory.createResource("subject:" + parentTripleMap.getURI()));
-						if (isAnon) {
-							ref.addProperty(m.createProperty(nsRR + "parentTriplesMap"),
-									m.createResource(parentTripleMap.getURI() + ":triplesMap"));
-							Resource join = m.createResource();
-							join.addLiteral(m.createProperty(nsRR + "child"), reference.length() > iteratorReference.length()
-									? reference.substring(iteratorReference.length() + 1)
-											: reference);
-							join.addLiteral(m.createProperty(nsRR + "parent"), "$");
-							ref.addProperty(m.createProperty(nsRR + "joinCondition"), join);							
+						// parent
+						Resource funcPom3 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom3);							
+						funcPom3.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"valueParameter2"));
+						Resource funcPom3ObjectMap = m.createResource();
+						funcPom3ObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral("$"));
+						funcPom3.addProperty(m.createProperty(nsRR+"objectMap"), funcPom3ObjectMap);	
+						
+						// child
+						Resource funcPom2 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom2);							
+						funcPom2.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"p_param_a2"));
+						Resource funcPom2ObjectMap = m.createResource();
+						funcPom2ObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral(reference.length() > iteratorReference.length()
+								? reference.substring(iteratorReference.length() + 1)
+										: reference));
+						funcPom2.addProperty(m.createProperty(nsRR+"objectMap"), funcPom2ObjectMap);	
+						
+						
+					}
+					else {
+						System.out.println("Getting processing with " + xpath);
+						// just choose the first mapping with PI for now
+						List<MappingInfoDTO> mappings = sourceLookup.get(xpath).mappings;
+						ProcessingInfo pi = null;
+						for(MappingInfoDTO _m : mappings ) {
+							if(pi == null && _m.getProcessing() != null) {
+								pi = _m.getProcessing();
+							}
 						}
+						 
+						Resource functionValue = m.createResource();
+						ref.addProperty(m.createProperty(nsFNML + "functionValue"), functionValue);
+						
+						// execute
+						Resource funcPom1 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom1);							
+						funcPom1.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsFNO+"executes"));
+						Resource funcPom1ObjectMap = m.createResource();
+						funcPom1ObjectMap.addProperty(m.createProperty(nsRR+"constant"), m.createResource(nsGREL+"putParent"));
+						funcPom1.addProperty(m.createProperty(nsRR+"objectMap"), funcPom1ObjectMap);
+						
+						if(pi.getParams().get("templateData2") != null) {
+							for(String _path : pi.getParams().get("templateData2").toString().split(",")) {
+								if(!"".equals(_path)) {
+									Resource funcPom = m.createResource();
+									functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom);							
+									funcPom.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"p_param_a_data_level2"));
+									Resource funcPomObjectMap = m.createResource();
+									funcPomObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral(_path));
+									funcPom.addProperty(m.createProperty(nsRR+"objectMap"), funcPomObjectMap);														
+								}							
+							}							
+						}
+						
+						// parent source paths 
+						if(pi.getParams().get("templateData") != null) {
+							for(String _path : pi.getParams().get("templateData").toString().split(",")) {
+								if(!"".equals(_path)) {
+									Resource funcPom = m.createResource();
+									functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom);							
+									funcPom.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"p_param_a_data"));
+									Resource funcPomObjectMap = m.createResource();
+									funcPomObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral(_path));
+									funcPom.addProperty(m.createProperty(nsRR+"objectMap"), funcPomObjectMap);						
+									
+								}							
+							}							
+						}						
+						// template
+						Resource funcPom5 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom5);							
+						funcPom5.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"templateParameter"));
+						Resource funcPom5ObjectMap = m.createResource();
+						funcPom5ObjectMap.addProperty(m.createProperty(nsRR+"constant"), m.createLiteral(pi.getParams().get("template").toString()));
+						funcPom5.addProperty(m.createProperty(nsRR+"objectMap"), funcPom5ObjectMap);						
 
+						
+						// mode
+						Resource funcPom4 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom4);							
+						funcPom4.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"modeParameter"));
+						Resource funcPom4ObjectMap = m.createResource();
+						funcPom4ObjectMap.addProperty(m.createProperty(nsRR+"constant"), m.createLiteral("custom"));
+						funcPom4.addProperty(m.createProperty(nsRR+"objectMap"), funcPom4ObjectMap);						
+
+						// parent
+						Resource funcPom3 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom3);							
+						funcPom3.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"valueParameter2"));
+						Resource funcPom3ObjectMap = m.createResource();
+						funcPom3ObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral("$"));
+						funcPom3.addProperty(m.createProperty(nsRR+"objectMap"), funcPom3ObjectMap);	
+						
+						// child
+						Resource funcPom2 = m.createResource();
+						functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom2);							
+						funcPom2.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"p_param_a2"));
+						Resource funcPom2ObjectMap = m.createResource();
+						funcPom2ObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral(reference.length() > iteratorReference.length()
+								? reference.substring(iteratorReference.length() + 1)
+										: reference));
+						funcPom2.addProperty(m.createProperty(nsRR+"objectMap"), funcPom2ObjectMap);	
+												
 					}
 				}
+				else {
+					ref.addProperty(m.createProperty(nsRML + "reference"),
+							reference.length() > iteratorReference.length()
+									? reference.substring(iteratorReference.length() + 1)
+									: reference);
+				}
 				
-				
+			}
+			else {
 				ref.addProperty(m.createProperty(nsRML + "reference"),
 						reference.length() > iteratorReference.length()
 								? reference.substring(iteratorReference.length() + 1)
-								: reference);
-
+								: reference);			
 			}
 
 			pom.addProperty(m.createProperty(nsRR + "objectMap"), ref);
@@ -254,11 +378,20 @@ public class RMLGenerator {
 			} else {
 				pom.addProperty(m.createProperty(nsRR + "predicate"), path);
 			}
-			//
+			
+			addDatatype(m, ref, datatype, type);
 
 			triplesMap.addProperty(m.createProperty(nsRR + "predicateObjectMap"), pom);
 
 		}
+	}
+
+	private void addDatatype(Model m, Resource ref, Resource datatype, Resource type) {
+		if(type != null && type.getURI().equals(OWL.DatatypeProperty.getURI())) {
+			ref.addProperty(m.createProperty(nsRR+"datatype") , datatype);	
+		}
+		
+		
 	}
 
 	public Model generate(List<MappingInfoDTO> mappings, Model mappingsModel, Model sourceModel, String sourcePID,
@@ -305,7 +438,7 @@ public class RMLGenerator {
 				+ " ?mapping mscr:target/rdf:_1/mscr:uri ?target .\n"
 				+ " ?mapping mscr:target/rdf:_1/mscr:label ?targetLabel .\n"
 				+ " ?mapping mscr:source/rdf:_1/mscr:uri ?source .\n" + " FILTER(?targetLabel=\"iterator source\") \n"
-				+ "}";
+				+ "} order by desc(STR(?source))";
 		System.out.println(q1);
 		QueryExecution qe = QueryExecutionFactory.create(q1, tm);
 		ResultSet it = qe.execSelect();
@@ -319,8 +452,6 @@ public class RMLGenerator {
 			System.out.println(target);
 
 			targetClass = tm.createResource(target.substring(9));
-			Resource triplesMap = m.createResource(targetClass.getURI() + ":triplesMap");
-			triplesMap.addProperty(RDF.type, m.createResource(nsRR + "TriplesMap"));
 
 			System.out.println("TargetClass: " + targetClass);
 			Resource sourcePropertyShape = soln1.getResource("source");
@@ -328,6 +459,11 @@ public class RMLGenerator {
 			System.out.println("Source property shape: " + sourcePropertyShape);
 			String iteratorURI = sourcePropertyShape.getURI();
 			String iteratorPath = getXpathFromId(iteratorURI);
+
+			String triplesMapPrefix = targetClass.getURI();
+			triplesMapPrefix = triplesMapPrefix.replaceAll("#", "");
+			Resource triplesMap = m.createResource(triplesMapPrefix + ":triplesMap:" + sourcePropertyShape.getURI() );
+			triplesMap.addProperty(RDF.type, m.createResource(nsRR + "TriplesMap"));
 
 			// add logical source
 			// Resource logicalSource = createLogicalSourceJSON(tm, m, iteratorPath,
@@ -385,11 +521,34 @@ public class RMLGenerator {
 			blank.addProperty(m.createProperty(nsRR + "class"), targetOntologyClass);
 			return blank;
 		} else {
-			Resource blank = m.createResource();
+			Resource ref = m.createResource();
+			/*
+			
 
 			blank.addProperty(m.createProperty(nsRR + "termType"), m.createResource(nsRR + "BlankNode"));
 			blank.addProperty(m.createProperty(nsRR + "class"), targetOntologyClass);
 			return blank;
+			*/
+			Resource functionValue = m.createResource();
+			ref.addProperty(m.createProperty(nsFNML + "functionValue"), functionValue);
+			
+			Resource funcPom1 = m.createResource();
+			functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom1);							
+			funcPom1.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsFNO+"executes"));
+			Resource funcPom1ObjectMap = m.createResource();
+			funcPom1ObjectMap.addProperty(m.createProperty(nsRR+"constant"), m.createResource(nsGREL+"getGeneratedURI"));
+			funcPom1.addProperty(m.createProperty(nsRR+"objectMap"), funcPom1ObjectMap);
+			
+			Resource funcPom2 = m.createResource();
+			functionValue.addProperty(m.createProperty(nsRR+"predicateObjectMap"), funcPom2);							
+			funcPom2.addProperty(m.createProperty(nsRR+"predicate"), m.createResource(nsGREL+"valueParameter"));
+			Resource funcPom2ObjectMap = m.createResource();
+			funcPom2ObjectMap.addProperty(m.createProperty(nsRML+"reference"), m.createLiteral("$"));
+			funcPom2.addProperty(m.createProperty(nsRR+"objectMap"), funcPom2ObjectMap);
+			
+			ref.addProperty(m.createProperty(nsRR + "class"), targetOntologyClass);
+			ref.addProperty(m.createProperty(nsRR + "termType"), m.createResource(nsRR + "IRI"));
+			return ref;
 		}
 	}
 

@@ -600,10 +600,18 @@ public class SimpleMappingFunctions {
 		return value;
 	}
 	
+	public static String customSourceResource(String template, String templateData, String templateData2) {
+		return "";
+	}
+	
 	/* CLARIN */
 	public static String clarinToFullDate(Object node) {
 		return "2010-05-01";
 		
+	}
+	
+	public static String filter(List<String> values, String property, String value) {
+		return "";
 	}
 }
 
