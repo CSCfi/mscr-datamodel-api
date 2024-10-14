@@ -331,6 +331,8 @@ public class JSONSchemaMapper {
 						}
 						else {
 							Entry<String, JsonNode> arrayItem = Map.entry(key, entry.getValue().get("items"));
+							propertyShape.removeAll(DCTerms.type); // TODO: remove this hack
+							propertyShape.removeAll(SH.node);
 							propertyShape = handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
 							
 						}
@@ -363,6 +365,12 @@ public class JSONSchemaMapper {
 				}
 
 				
+			}
+			if(entry.getValue().get("order") != null) {
+				propertyShape.addLiteral(SH.order, ResourceFactory.createTypedLiteral(entry.getValue().get("order").asInt()));
+			}
+			if(entry.getValue().get("depth") != null) {
+				propertyShape.addLiteral(MSCR.depth, ResourceFactory.createTypedLiteral(entry.getValue().get("depth").asInt()));
 			}
 
 			if (entry.getValue().get("$ref") != null) {
