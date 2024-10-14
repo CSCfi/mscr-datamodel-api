@@ -501,7 +501,7 @@ public class RMLGenerator {
 			// predicateObjectMap
 			createPredicateObjectMap(m, tm, iteratorURI, iteratorJsonPath, targetClass.getURI(), triplesMap,
 					sourceLookup);
-			tm.write(new FileOutputStream(new File("model.ttl")), "TURTLE");
+			
 		}
 
 		return m;
