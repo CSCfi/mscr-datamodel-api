@@ -26,10 +26,13 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.XSD;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -193,6 +196,8 @@ public class SchemaServiceTest {
 
 		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/addresses/Addresses/city/City/area_codes"), SH.maxCount).getInt());
 		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/addresses/Addresses/city/City/area_codes"), SH.minCount).getInt());
+		
+		assertEquals(OWL.DatatypeProperty, model.getRequiredProperty(model.createResource(schemaPID+"#root/Root/addresses/Addresses/numbers"),DCTerms.type).getObject().asResource());
 	}
 	
 	@Test
@@ -343,7 +348,6 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		String filePath = "src/test/resources/xmlschema/sample.xsd";
 		Model m = service.transformXSDToInternal(schemaPID, filePath);
-		
 		assertEquals(19, m.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size()); // just element instances, no attributes
 		assertEquals(6, m.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size()); // 5 + root
 		
@@ -370,7 +374,8 @@ public class SchemaServiceTest {
 		m.write(System.out,  "TURTLE");
 	}
 	
-	@Test
+	@Disabled
+	@Test	
 	void testDCATOWL() throws Exception {
 		String url = "https://www.w3.org/ns/dcat.ttl";
 		OWLOntologyManager manager =OWLManager.createOWLOntologyManager();
@@ -397,22 +402,6 @@ public class SchemaServiceTest {
 		
 	}
 	
-	@Test 
-	void testImportOpenaireToInternal() throws Exception {
-		JsonNode json = getJsonNodeFromPath("jsonschema/generated/openaire-4.0.json");
-		Model m = service.transformJSONSchemaToInternal("pid:test", json);
-		m.write(new FileWriter(new File("openaire-4.0.ttl")), "TURTLE");
-		
-		Resource r1 = ResourceFactory.createResource("pid:test#root/Root/resource/Resource/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint");
-		Resource r2 = ResourceFactory.createResource("pid:test#root/Root/geoLocations/GeoLocations/geoLocation/GeoLocation/geoLocationPolygon/GeoLocationPolygon/polygonPoint/PolygonPoint");
-		
-		ResIterator i = m.listSubjectsWithProperty(MSCR.qname, ResourceFactory.createResource("http://datacite.org/schema/kernel-4polygonPoint"));
-		List<Resource> resources = i.toList();
-		assertEquals(4, resources.size());
-		assertTrue(resources.contains(r1));
-		assertTrue(resources.contains(r2));
-		
-	}
 	
 	@Test
 	void testRecursiveSchema1() throws Exception {

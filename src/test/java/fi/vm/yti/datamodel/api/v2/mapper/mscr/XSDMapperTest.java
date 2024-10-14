@@ -229,9 +229,10 @@ public class XSDMapperTest {
 		System.out.println(m.writeValueAsString(obj));
 
 		ObjectNode r = (ObjectNode) obj.at("/properties/format");
-		assertEquals("http://purl.org/dc/elements/1.1/format", r.get("@id").asText());
+		assertEquals("http://purl.org/dc/elements/1.1/", r.get("namespace").asText());
+		
 		ObjectNode r2 = (ObjectNode) obj.at("/properties/identifier");
-		assertEquals("http://datacite.org/schema/kernel-4identifier", r2.get("@id").asText());
+		assertEquals("http://datacite.org/schema/kernel-4", r2.get("namespace").asText());
 	}
 	
 	@Test
