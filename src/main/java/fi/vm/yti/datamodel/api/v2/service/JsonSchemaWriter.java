@@ -1,7 +1,6 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import java.io.StringWriter;
-import java.net.URLDecoder;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.SimpleDateFormat;
@@ -9,15 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -25,16 +20,13 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
-import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Alt;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.resultset.ResultSetPeekable;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -52,7 +44,6 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import jakarta.annotation.Nonnull;
-
 /*
  * Licensed under the European Union Public Licence (EUPL) V.1.1
  */
@@ -814,14 +805,14 @@ public class JsonSchemaWriter {
 
 	}
 	
-	private void addClassMappingSourceProps(String classURI, Map<String, Object> classProps, Map<String, Object> definitions) {
+	private void addClassMappingSourceProps(String classURI, Map<String, Map<String, Object>> shapeProps, Map<String, Object> definitions) {
 		Map<String, Object> iteratorProp = new LinkedHashMap();
 		iteratorProp.put("title", "iterator source");
 		iteratorProp.put("type", "string");	
 		String iteratorPropID = "iterator:" + classURI;
 		iteratorProp.put("qname", iteratorPropID);
 		iteratorProp.put("@id", iteratorPropID);
-		classProps.put(iteratorPropID, iteratorProp);
+		shapeProps.put("_1", Map.of(iteratorPropID, iteratorProp));		
 		definitions.put(iteratorPropID, iteratorProp);
 
 		Map<String, Object> subjectProp = new LinkedHashMap();
@@ -830,7 +821,28 @@ public class JsonSchemaWriter {
 		String subjectPropID = "subject:" + classURI;
 		subjectProp.put("qname", subjectPropID);
 		subjectProp.put("@id", subjectPropID);
-		classProps.put(subjectPropID, subjectProp);
+		shapeProps.put("_2", Map.of(subjectPropID, subjectProp));
+		definitions.put(subjectPropID, subjectProp);		
+	}
+
+	
+	private void addClassMappingSourceProps2(String classURI, Map<String, Object> shapeProps, Map<String, Object> definitions) {
+		Map<String, Object> iteratorProp = new LinkedHashMap();
+		iteratorProp.put("title", "iterator source");
+		iteratorProp.put("type", "string");	
+		String iteratorPropID = "iterator:" + classURI;
+		iteratorProp.put("qname", iteratorPropID);
+		iteratorProp.put("@id", iteratorPropID);
+		shapeProps.put(iteratorPropID, iteratorProp);		
+		definitions.put(iteratorPropID, iteratorProp);
+
+		Map<String, Object> subjectProp = new LinkedHashMap();
+		subjectProp.put("title", "subject source");
+		subjectProp.put("type", "string");
+		String subjectPropID = "subject:" + classURI;
+		subjectProp.put("qname", subjectPropID);
+		subjectProp.put("@id", subjectPropID);
+		shapeProps.put(subjectPropID, subjectProp);
 		definitions.put(subjectPropID, subjectProp);		
 	}
 
@@ -861,7 +873,7 @@ public class JsonSchemaWriter {
 				Map<String, Object> classDef = new HashMap<String, Object>();
 				Map<String, Object> classProps = new LinkedHashMap<String, Object>();			
 
-				addClassMappingSourceProps(className, classProps, definitions);
+				addClassMappingSourceProps2(className, classProps, definitions);
 				
 				Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
 				Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
@@ -913,12 +925,13 @@ public class JsonSchemaWriter {
 			String qname = model.qnameFor(shapeID);
 			//shapeID = shapeID.replace("/", "-");
 			Map<String, Object> shapeDef = new LinkedHashMap<String, Object>();
+			Map<String, Map<String, Object>> shapePropsOrdered = new TreeMap<String, Map<String, Object>>();
 			Map<String, Object> shapeProps = new LinkedHashMap<String, Object>();
 			
 			
 			shapeDef.put("@id", shapeID);
 
-			addClassMappingSourceProps(shapeID, shapeProps, definitions);
+			addClassMappingSourceProps(shapeID, shapePropsOrdered, definitions);
 
 			String title = s.getLocalName(); // default value
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, SH.name);
@@ -932,10 +945,18 @@ public class JsonSchemaWriter {
 			shapeDef.put("description", descs.get("en"));
 			rootProperties.put(shapeID, shapeDef);
 			try {
-				addSHACLProps(model, s, shapeProps, definitions);
+				addSHACLProps(model, s, shapePropsOrdered, definitions);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			
+			for(Map<String, Object> temp : shapePropsOrdered.values()) {
+				for(String key : temp.keySet()) {
+					shapeProps.put(key, temp.get(key));
+				}
+				
+			}
+			
 			if (shapeProps.keySet().size() > 0) {
 				shapeDef.put("type", "object");
 				
@@ -948,7 +969,7 @@ public class JsonSchemaWriter {
 						shapeDef.put("@type", typeURI);
 						String typeQName = model.qnameFor(typeURI);
 						if(typeQName != null) {
-							title = title + " (" + typeQName + ")";
+							title = typeQName;
 						}
 						
 					}
@@ -970,7 +991,7 @@ public class JsonSchemaWriter {
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
 
-	private void addSHACLProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions) {
+	private void addSHACLProps(Model model, Resource s, Map<String, Map<String, Object>> shapeProps, Map<String, Object> definitions) {
 		model.listObjectsOfProperty(s, SH.property).forEach(_ps -> {
 			Resource ps = _ps.asResource();
 			String psID = ps.getURI();
@@ -991,11 +1012,7 @@ public class JsonSchemaWriter {
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(ps, SH.description);
 
 			if (titles.isEmpty()) {
-				if (model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()) != null) {
-					psProps.put("title", model.qnameFor(ps.getPropertyResourceValue(SH.path).getURI()));
-				} else {
-					psProps.put("title", ps.getPropertyResourceValue(SH.path).getLocalName());
-				}
+				psProps.put("title", ps.getPropertyResourceValue(SH.path).getLocalName());
 			}
 			else {
 				psProps.put("title", titles.get("en"));
@@ -1003,27 +1020,72 @@ public class JsonSchemaWriter {
 			psProps.put("description", descs.get("en"));
 			
 
-			String datatype = "object";
+			Object datatype = "object";
 			if (ps.hasProperty(SH.node)) {
 
 				datatype = model.qnameFor(ps.getPropertyResourceValue(SH.node).getURI());
-			}else if(ps.hasProperty(SH.class_)) { 
+			}
+			else if(ps.hasProperty(SH.class_)) { 
 				// see if node shape with a proper target class exists
 				ResIterator ti = model.listResourcesWithProperty(SH.targetClass, ps.getPropertyResourceValue(SH.class_));
 				if(ti.hasNext()) {
 					psProps.put("shape", model.qnameFor(ti.next().getURI()));
 				}
 				else {
+					// just get classes 
+					psProps.put("class", ps.getProperty(SH.class_).getResource().getURI());
 				}
 			
-			}else if (ps.hasProperty(SH.datatype)) {
+			}
+			else if (ps.hasProperty(SH.datatype)) {
 				datatype = ps.getPropertyResourceValue(SH.datatype).getLocalName();
 			}
+			else if(ps.hasProperty(SH.or)) {
+				datatype = "string"; 
+				// assuming that sh:OR is about node/datatype
+				Alt alt = ps.getProperty(SH.or).getAlt();
+				
+				List<String> types = new ArrayList<String>();
+				// cases: sh:class, sh:datatype
+				Resource member = ps.getProperty(SH.or).getResource();				
+				Resource rest = member.getPropertyResourceValue(RDF.rest);
+				// traverse first last 
+				while(rest != null) {
+					Resource first = member.getPropertyResourceValue(RDF.first);
+					StmtIterator si = first.listProperties(SH.datatype);
+		            while(si.hasNext()) {
+						Resource dt = si.next().getResource();
+						types.add(dt.getLocalName());						
+
+					};
+					si = first.listProperties(SH.class_);
+		            while(si.hasNext()) {
+						Resource dt = si.next().getResource();
+						ResIterator ti = model.listResourcesWithProperty(SH.targetClass, dt.getPropertyResourceValue(SH.class_));
+						if(ti.hasNext()) {
+							types.add(dt.getURI());							
+						}
+						else {
+							// just get classes 
+							types.add(dt.getProperty(SH.class_).getResource().getURI());
+							
+						}					
+
+					};		
+					member = rest;
+					rest = member.getPropertyResourceValue(RDF.rest);
+				}
+								
+		        
+		        //psProps.put("types", String.join(",",types));
+				psProps.put("types", types);
+			}
+			
 
 			psProps.put("datatype", datatype);			
 			psProps.put("@id", psID);
 			definitions.put(psID, psProps);
-			props.put(psID, psProps);
+			shapeProps.put(psProps.get("title").toString(), Map.of(psID, psProps));
 		});
 
 	}
@@ -1055,7 +1117,7 @@ public class JsonSchemaWriter {
 				Map<String, Object> classDef = new HashMap<String, Object>();
 				Map<String, Object> classProps = new LinkedHashMap<String, Object>();
 				
-				addClassMappingSourceProps(className, classProps, definitions);
+				addClassMappingSourceProps2(className, classProps, definitions);
 				
 				Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
 				Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
