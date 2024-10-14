@@ -16,6 +16,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -28,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -951,17 +956,47 @@ public class Crosswalk extends BaseMSCRController {
 			else {
 				crosswalkModel = jenaService.getCrosswalk(pid+":content");
 			}
-					
+			Model crosswalkMetadataModel = jenaService.getCrosswalk(pid);
+	        var ownerMapper = groupManagementService.mapOwner();			        
+			CrosswalkInfoDTO crosswalk = mapper.mapToCrosswalkDTO(pid, crosswalkMetadataModel, null, ownerMapper);
+			Model targetSchemaContent = jenaService.getSchemaContent(crosswalk.getTargetSchema());
 			List<MappingInfoDTO> mappings = new ArrayList<MappingInfoDTO>();
-			NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
-			while(i.hasNext()) {
-				Resource mappingResource = i.next().asResource();			
+			String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+					+ "PREFIX mscr: <http://uri.suomi.fi/datamodel/ns/mscr#>\n"
+					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+					+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+					+ "PREFIX dcterms: <http://purl.org/dc/terms/>\n"
+					+ "PREFIX sh: <http://www.w3.org/ns/shacl#>\n"
+					+ "select ?mapping\n"
+					+ "where {\n"
+					+ "  <" + pid + "> mscr:mappings ?mapping .\n"
+					+ "  ?mapping mscr:target/rdf:_1/mscr:uri ?prop .\n"
+					+ "  OPTIONAL { ?prop sh:order ?order } .\n"
+					+ "  OPTIONAL { ?prop mscr:depth ?depth } .\n"
+					+ "  OPTIONAL {?prop sh:name ?name }\n"
+					+ "} order by ASC(?depth) ASC(?order) ASC(?name)";
+			Model queryModel = ModelFactory.createDefaultModel();
+			queryModel.add(crosswalkModel);
+			queryModel.add(targetSchemaContent);
+			QueryExecution qexec = QueryExecutionFactory.create(q, queryModel);
+			ResultSet mapi = qexec.execSelect();
+			while(mapi.hasNext()) {
+//			NodeIterator i = crosswalkModel.listObjectsOfProperty(crosswalkModel.getResource(pid), MSCR.mappings);
+//			while(i.hasNext()) {
+				QuerySolution soln = mapi.next();
+				Resource mappingResource = soln.getResource("mapping");			
 				MappingInfoDTO dto = mappingMapper.mapToMappingDTO(
 						mappingResource.getURI(), 
 						crosswalkModel);
 				mappings.add(dto);
 			}
 			if(exportFormat !=null) {
+				Model sourceSchemaModel = jenaService.getSchema(crosswalk.getSourceSchema());
+				Model targetSchemaModel = jenaService.getSchema(crosswalk.getTargetSchema());
+
+				SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(crosswalk.getTargetSchema(), targetSchemaModel, null, ownerMapper);
+				SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(crosswalk.getSourceSchema(), sourceSchemaModel, null, ownerMapper);
+				
 				// TODO: check for crosswalk format == MSCR and source and target scheama format == X,Y,Z
 				if(exportFormat.equalsIgnoreCase("skos")) {
 					Model model = ModelFactory.createDefaultModel();
@@ -989,16 +1024,35 @@ public class Crosswalk extends BaseMSCRController {
 					return ResponseEntity.ok(writer.getBuffer().toString());
 				}
 				else if(exportFormat.equalsIgnoreCase("xslt")) {
-					// TODO: add checks for valid crosswalk for xslt export
-					String r = xsltGenerator.generate(mappings);
-					return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);
+					
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.XSD) {
+						String r = xsltGenerator.generate(mappings,jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalk.getSourceSchema(), jenaService.getSchemaContent(crosswalk.getTargetSchema()), crosswalk.getTargetSchema());
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.XSD) {
+						String r = xsltGenerator.generateJSONtoXML(mappings, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA) {
+						String r = xsltGenerator.generateXMLtoJSON(mappings, jenaService.getSchemaContent(crosswalk.getSourceSchema()), targetSchemaContent, crosswalk.getTargetSchema());
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.CSV) {
+						String r = xsltGenerator.generateXMLtoCSV(mappings, crosswalkModel);
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.CSV) {
+						
+						String r = xsltGenerator.generateJSONtoCSV(mappings, crosswalkModel, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "XSLT export is not supported between " + sourceSchemaInfo.getFormat() + " and " + targetSchemaInfo.getFormat());
+							
+					
 				}
 				else if(exportFormat.equalsIgnoreCase("rml")) {
-					Model crosswalkMetadataModel = jenaService.getCrosswalk(pid);
-			        var ownerMapper = groupManagementService.mapOwner();			        
-					CrosswalkInfoDTO crosswalk = mapper.mapToCrosswalkDTO(pid, crosswalkMetadataModel, null, ownerMapper);
-					SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(crosswalk.getTargetSchema(), jenaService.getSchema(crosswalk.getTargetSchema()), null, ownerMapper);
-					SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(crosswalk.getSourceSchema(), jenaService.getSchema(crosswalk.getSourceSchema()), null, ownerMapper);
 					if(
 						!List.of(SchemaFormat.RDFS, SchemaFormat.SHACL, SchemaFormat.OWL).contains(targetSchemaInfo.getFormat())
 						||
