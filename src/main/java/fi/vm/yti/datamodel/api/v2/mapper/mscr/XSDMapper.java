@@ -9,6 +9,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.TransformerConfigurationException;
+
 import org.springframework.stereotype.Service;
 import org.xmlet.xsdparser.core.XsdParser;
 import org.xmlet.xsdparser.xsdelements.XsdAbstractElement;
@@ -75,8 +78,11 @@ public class XSDMapper {
 	public SchemaParserResultDTO loadSchema(String filePath) {
 		SchemaParserResultDTO r = new SchemaParserResultDTO();
 
+		//System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+//		        "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");		
 		Properties systemProperties = System.getProperties();
 		systemProperties.remove("javax.xml.parsers.DocumentBuilderFactory");
+//		systemProperties.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.xsltc.trax.TransformerFactoryImpl");
 		System.setProperties(systemProperties);
 		try {
 			XsdParser p = new XsdParser(filePath);
@@ -113,10 +119,12 @@ public class XSDMapper {
 		jroot.set("properties", rootProperties);
 		jroot.put("$schema", "http://json-schema.org/draft-04/schema#");	
 		List<XsdElement> list = p.getResultXsdElements().toList();
-		list.forEach(e -> {
+		int index = 0;
+		for(XsdElement e: list) {
 			Set<Object> handledTypes = new HashSet<Object>();
-			handleElement(e, findSchema(e), jroot, handledTypes);
-		});
+			handleElement(e, findSchema(e), jroot, handledTypes, index, 0);
+			index++;
+		};
 
 		return jroot;
 	}
@@ -135,10 +143,12 @@ public class XSDMapper {
 		}
 	}
 
-	void handleElement(XsdElement e, XsdSchema schema, ObjectNode parentObj, Set<Object> handledTypes) {
+	void handleElement(XsdElement e, XsdSchema schema, ObjectNode parentObj, Set<Object> handledTypes, int index, int depth) {
 		if (!handledTypes.contains(e)) {
 			ObjectNode obj = m.createObjectNode();
-			handledTypes.add(e);
+			obj.put("order", index);
+			obj.put("depth", depth);
+			
 			String elementNamespace = null;
 			String elementName = e.getName();
 			if (schema != null) {				
@@ -157,7 +167,8 @@ public class XSDMapper {
 			} else if (e.getXsdSimpleType() != null) {
 				handleSimpleType(e.getXsdSimpleType(), obj);				
 			} else if (e.getXsdComplexType() != null) {
-				handleComplexType(schema, e.getXsdComplexType(), obj, handledTypes);
+				handledTypes.add(e);
+				handleComplexType(schema, e.getXsdComplexType(), obj, handledTypes, depth);
 			} else {
 				// just an element
 				obj.put("type", "string");
@@ -522,7 +533,7 @@ public class XSDMapper {
 	}
 
 	void handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode obj,
-			Set<Object> handledTypes) {
+			Set<Object> handledTypes, int depth) {
 		String ctypeName = e.getName();
 		if (!"".equals(ctypeName) && !handledTypes.contains(ctypeName)) {
 			obj.put("type", "object");
@@ -546,7 +557,7 @@ public class XSDMapper {
 						obj.remove("properties");
 						handleSimpleType(ext.getBaseAsSimpleType(), obj);
 					} else if (ext.getBaseAsComplexType() != null) {
-						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes);
+						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth);
 					}
 				}
 
@@ -557,30 +568,30 @@ public class XSDMapper {
 				if (c.getXsdExtension() != null) {
 					XsdExtension ext = c.getXsdExtension();
 					if (ext.getBaseAsComplexType() != null) {
-						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes);
+						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth);
 					}
 					if (ext.getChildAsSequence() != null) {
 
-						handleMultipleElements(schema, ext.getChildAsSequence(), obj, handledTypes);
+						handleMultipleElements(schema, ext.getChildAsSequence(), obj, handledTypes, depth);
 					}
 				}
 
 			}
 			try {
 				XsdSequence seq = e.getChildAsSequence();
-				handleMultipleElements(schema, seq, obj, handledTypes);
+				handleMultipleElements(schema, seq, obj, handledTypes, depth);
 			} catch (Exception ex) {
 
 			}
 			try {
 				XsdAll a = e.getChildAsAll();
-				handleMultipleElements(schema, a, obj, handledTypes);
+				handleMultipleElements(schema, a, obj, handledTypes, depth);
 			} catch (Exception ex) {
 
 			}
 			try {
 				XsdChoice c = e.getChildAsChoice();
-				handleMultipleElements(schema, c, obj, handledTypes);
+				handleMultipleElements(schema, c, obj, handledTypes, depth);
 			} catch (Exception ex) {
 
 			}
@@ -588,21 +599,23 @@ public class XSDMapper {
 	}
 
 	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode obj,
-			Set<Object> handledTypes) {
+			Set<Object> handledTypes, int depth) {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
-
+		int index = 0;
 		for (XsdAbstractElement ae : aes) {
 			if (ae instanceof XsdElement) {
-				XsdSchema newSchema = findSchema(ae);				
+				XsdSchema newSchema = findSchema(ae);	
+				
 				if (newSchema != null) {
-					handleElement((XsdElement) ae, newSchema, obj, handledTypes);
+					handleElement((XsdElement) ae, newSchema, obj, handledTypes, index, depth + 1);
 				} else {
-					handleElement((XsdElement) ae, schema, obj, handledTypes);
+					handleElement((XsdElement) ae, schema, obj, handledTypes, index, depth + 1);
 				}
 			}
 			else if (ae instanceof XsdMultipleElements) {
-				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes);
+				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes, depth);
 			}
+			index++;
 		}
 	}
 
