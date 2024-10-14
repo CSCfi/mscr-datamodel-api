@@ -67,8 +67,42 @@ mscr:constantFunc
     fno:name "constant";
     fno:expects ( mscr:stringInputParam mscr:constantStringParam);
     fno:returns ( mscr:stringOutput) .
-     
-   
+  
+mscr:filterFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "filter";
+    fno:expects ( mscr:stringInputParam mscr:propertyNameParam mscr:propertyValueParam);
+    fno:returns ( mscr:stringOutput) .
+          
+ 
+mscr:customSourceResourceFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "custom source resource";
+    fno:expects ( mscr:stringInputParam mscr:templateParam mscr:templateDataParam mscr:templateData2Param );
+    fno:returns ( mscr:stringOutput) .
+          
+mscr:templateParam
+    a fno:Parameter ;
+    fno:name "template" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .     
+    
+mscr:templateDataParam
+    a fno:Parameter ;
+    fno:name "templateData" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "false"^^xsd:boolean .  
+    
+mscr:templateData2Param
+    a fno:Parameter ;
+    fno:name "templateData2" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "false"^^xsd:boolean .  
            
 mscr:stringInputParam
     a fno:Parameter ;
@@ -83,6 +117,20 @@ mscr:constantStringParam
     fno:predicate mscr:inputString ;
     fno:type xsd:string ;
     fno:required "true"^^xsd:boolean . 
+    
+mscr:propertyNameParam
+    a fno:Parameter ;
+    fno:name "property" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .  
+    
+mscr:propertyValueParam
+    a fno:Parameter ;
+    fno:name "value" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .       
             
 mscr:delimiterParam
     a fno:Parameter ;
@@ -163,6 +211,20 @@ mscr:constantMapping
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "constant" ] .
   
  
+mscr:filterMapping
+    a fno:Mapping ;
+    fno:function mscr:filterFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "filter" ] .
+  
+mscr:customSourceResourceMapping
+    a fno:Mapping ;
+    fno:function mscr:customSourceResourceFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "customSourceResource" ] .
+  
+ 
+  
 mscr:simpleMappingFunctions
     a fnoi:JavaClass ;
     fnoi:class-name "fi.vm.yti.datamodel.api.v2.transformation.functions.SimpleMappingFunctions" .    
