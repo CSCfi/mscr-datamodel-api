@@ -82,6 +82,7 @@ public class MSCR {
     public static final Property value = ResourceFactory.createProperty(URI, "value");
     public static final Property filter = ResourceFactory.createProperty(URI, "filter");
     public static final Property mappings = ResourceFactory.createProperty(URI, "mappings");
+    public static final Property depth = ResourceFactory.createProperty(URI, "depth");
 
     
     public static final Property source = ResourceFactory.createProperty(URI, "source");
