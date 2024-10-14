@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.ParameterizedSparqlString;
@@ -48,6 +49,7 @@ import org.topbraid.shacl.vocabulary.SH;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import jakarta.annotation.Nonnull;
 
@@ -250,9 +252,25 @@ public class JsonSchemaWriter {
 	}
 
 	private void handleProperties(Resource node, Model model, JsonObjectBuilder properties, JsonObjectBuilder definitions) {
-		NodeIterator propi = model.listObjectsOfProperty(node, SH.property);
-		while (propi.hasNext()) {				
-			Resource propRes = propi.next().asResource();
+		String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+				+ "PREFIX mscr: <http://uri.suomi.fi/datamodel/ns/mscr#>\n"
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+				+ "PREFIX dcterms: <http://purl.org/dc/terms/>\n"
+				+ "PREFIX sh: <http://www.w3.org/ns/shacl#>\n"
+				+ "select ?prop\n"
+				+ "where {\n"
+				+ " <" + node.getURI() + "> sh:property ?prop .\n"
+				+ "  OPTIONAL { ?prop sh:order ?order } .\n"
+				+ "  ?prop sh:name ?name\n"
+				+ "} order by ASC(?order) ASC(?name)";
+		QueryExecution qexec = QueryExecutionFactory.create(q, model);
+		ResultSet propi = qexec.execSelect();
+		while(propi.hasNext()) {
+//		NodeIterator propi = model.listObjectsOfProperty(node, SH.property);
+//		while (propi.hasNext()) {	
+			QuerySolution soln = propi.next();
+			Resource propRes = soln.getResource("prop");
 			String refKey = propRes.getURI().replace("/", "-");
 			String propName = propRes.getProperty(SH.name).getString();
 			if (propRes.getPropertyResourceValue(DCTerms.type).equals(OWL.ObjectProperty)) {
@@ -297,7 +315,7 @@ public class JsonSchemaWriter {
 			}				
 		}
 	}
-	public JsonObjectBuilder getClassDefinitions(String modelID, Model model, String lang) {
+	public JsonObjectBuilder getClassDefinitions(String modelID, Model model, String lang, SchemaFormat schemaFormat) {
 		// generate definitions for each propertyShape/NodeShape pair
 		JsonObjectBuilder definitions = Json.createObjectBuilder();
 
@@ -339,6 +357,20 @@ public class JsonSchemaWriter {
 		
 		Resource rootResource = model.getResource(modelID + "#root/Root");
 		JsonObjectBuilder rootProperties = Json.createObjectBuilder();
+		
+		if(schemaFormat == SchemaFormat.CSV) {
+			JsonObjectBuilder iteratorProp = Json.createObjectBuilder();
+			iteratorProp.add("title", "row iterator");
+			iteratorProp.add("type", "string");	
+			String iteratorPropID = "iterator";
+			iteratorProp.add("qname", iteratorPropID);
+			iteratorProp.add("@id", iteratorPropID);
+			JsonObject _obj = iteratorProp.build();
+			rootProperties.add(iteratorPropID, _obj);
+			definitions.add(iteratorPropID, _obj);
+		}
+
+		
 		JsonObjectBuilder rootDef = Json.createObjectBuilder();
 		rootDef.add("type", "object");
 		rootDef.add("title", "root");	
@@ -376,7 +408,7 @@ public class JsonSchemaWriter {
 		return Normalizer.normalize(text, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
-	public String newModelSchema(String modelID, Model model, String lang) {
+	public String newModelSchema(String modelID, Model model, String lang, SchemaFormat schemaFormat) {
 
 		JsonObjectBuilder schema = Json.createObjectBuilder();
 
@@ -431,7 +463,7 @@ public class JsonSchemaWriter {
 
 			}
 
-			JsonObjectBuilder definitions = getClassDefinitions(modelID, model, lang);
+			JsonObjectBuilder definitions = getClassDefinitions(modelID, model, lang, schemaFormat);
 
 			List<String> modelRoots = getModelRoots(modelID, model);
 
@@ -442,7 +474,7 @@ public class JsonSchemaWriter {
 			JsonObjectBuilder modelProperties = Json.createObjectBuilder();
 //                modelProperties.add("$ref", "#/definitions/" + SplitIRI.localname(modelRoot));
 			modelProperties.add("$ref", "#/definitions/Root");
-
+			
 			String r = createModelSchemaWithRoot(schema, modelProperties, definitions, modelRoots);
 			return r;
 
@@ -517,6 +549,8 @@ public class JsonSchemaWriter {
 				if (props != null) {
 					schema.add("properties", props.asJsonObject());
 				}
+				
+
 
 			}
 		} else {
@@ -800,6 +834,7 @@ public class JsonSchemaWriter {
 		definitions.put(subjectPropID, subjectProp);		
 	}
 
+	
 	public String rdfs(String pid, Model model, String string) throws Exception {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
@@ -863,7 +898,7 @@ public class JsonSchemaWriter {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
-		Map<String, Object> rootProperties = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new TreeMap<String, Object>();
 		rootDefinition.put("properties", rootProperties);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
@@ -875,46 +910,23 @@ public class JsonSchemaWriter {
 		schema.put("properties", rootProperties);
 		model.listSubjectsWithProperty(RDF.type, SH.NodeShape).forEach(s -> {
 			String shapeID = s.getURI();
-			
+			String qname = model.qnameFor(shapeID);
 			//shapeID = shapeID.replace("/", "-");
 			Map<String, Object> shapeDef = new LinkedHashMap<String, Object>();
 			Map<String, Object> shapeProps = new LinkedHashMap<String, Object>();
 			
 			
 			shapeDef.put("@id", shapeID);
-			
-			// System.out.println(shapeID);
-			// TODO: if sh:desc not found check sh:class and sh:node
-			
-			// we need to get the name (and qname) of the target class 
-			String qname = model.qnameFor(shapeID);
-			String title = model.qnameFor(shapeID); // default name
-			if(s.hasProperty(SH.targetClass)) {
-				Resource targetClass = s.getPropertyResourceValue(SH.targetClass);
-				if(targetClass.hasProperty(RDFS.label)) {
-					title = targetClass.getProperty(RDFS.label).getLiteral().getString();
-				}
-				else if (model.qnameFor(targetClass.getURI()) != null) {
-					title = model.qnameFor(targetClass.getURI());
-				}
-				else if (targetClass.getLocalName() != null){
-					title = targetClass.getLocalName();
-				}
-				else {
-					title = targetClass.getURI();
-				}
 
-				qname = targetClass.getURI();
-			}
-			else {
-				logger.warn("No target class found for node shape " + s.getURI());
-				
-			}
 			addClassMappingSourceProps(shapeID, shapeProps, definitions);
 
-			
+			String title = s.getLocalName(); // default value
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, SH.name);
+			if (!titles.isEmpty()) {
+				title = titles.get("en");
+			}
+						
 			shapeDef.put("qname", qname);
-			shapeDef.put("title", title);	
 			
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
 			shapeDef.put("description", descs.get("en"));
@@ -932,7 +944,13 @@ public class JsonSchemaWriter {
 					if (typeNode.isLiteral()) {
 						shapeDef.put("@type", typeNode.asLiteral().getString());
 					} else if (typeNode.isResource()) {
-						shapeDef.put("@type", model.qnameFor(typeNode.asResource().getURI()));
+						String typeURI = typeNode.asResource().getURI();						
+						shapeDef.put("@type", typeURI);
+						String typeQName = model.qnameFor(typeURI);
+						if(typeQName != null) {
+							title = title + " (" + typeQName + ")";
+						}
+						
 					}
 
 				}
@@ -941,6 +959,8 @@ public class JsonSchemaWriter {
 			} else {
 				// what happens here?
 			}
+			shapeDef.put("title", title);	
+
 			definitions.put(shapeID, shapeDef);
 			
 		});
