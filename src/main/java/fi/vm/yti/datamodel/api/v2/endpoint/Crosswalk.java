@@ -75,6 +75,7 @@ import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator;
+import fi.vm.yti.datamodel.api.v2.transformation.SPARQLGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
 import fi.vm.yti.datamodel.api.v2.validator.ValidCrosswalk;
 import fi.vm.yti.datamodel.api.v2.validator.ValidMapping;
@@ -104,6 +105,7 @@ public class Crosswalk extends BaseMSCRController {
 	private final MappingMapper mappingMapper;
 	private final XSLTGenerator xsltGenerator;
 	private final RMLGenerator rmlGenerator;
+	private final SPARQLGenerator SPARQLGenerator;
 	private final AuthenticatedUserProvider userProvider;
     private final GroupManagementService groupManagementService;
     private final CrosswalkService crosswalkService;
@@ -119,6 +121,7 @@ public class Crosswalk extends BaseMSCRController {
             MappingMapper mappingMapper,
             XSLTGenerator xsltGenerator,
             RMLGenerator rmlGenerator,
+            SPARQLGenerator SPARQLGenerator,
             AuthenticatedUserProvider userProvider,
             GroupManagementService groupManagementService,
             CrosswalkService crosswalkService) {
@@ -130,6 +133,7 @@ public class Crosswalk extends BaseMSCRController {
 		this.mapper = mapper;
 		this.xsltGenerator = xsltGenerator;
 		this.rmlGenerator = rmlGenerator;
+		this.SPARQLGenerator = SPARQLGenerator;
 		this.mappingMapper = mappingMapper;
 		this.userProvider = userProvider;
 		this.groupManagementService = groupManagementService;
@@ -1067,7 +1071,16 @@ public class Crosswalk extends BaseMSCRController {
 					StringWriter out = new StringWriter();
 					rmlModel.write(out, "TURTLE");
 					return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(out.toString());
-				}				
+				}
+				else if(exportFormat.equalsIgnoreCase("sparql")) {
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.SHACL && targetSchemaInfo.getFormat() == SchemaFormat.CSV) {
+						
+						String r = SPARQLGenerator.generateRDFtoCSV(pid, mappings, crosswalkModel, 
+								jenaService.getSchemaContent(crosswalk.getSourceSchema()), 
+								jenaService.getSchemaContent(crosswalk.getTargetSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.TEXT_PLAIN).body(r);						
+					}					
+				}
 			}
 			
 			return ResponseEntity.ok(mappings);
