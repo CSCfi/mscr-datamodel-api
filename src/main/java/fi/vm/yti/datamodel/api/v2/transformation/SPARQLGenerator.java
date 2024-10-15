@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.transformation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -16,6 +17,7 @@ import org.topbraid.shacl.vocabulary.SH;
 
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
+import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 
 @Service
 public class SPARQLGenerator {
@@ -96,14 +98,39 @@ public class SPARQLGenerator {
 					
 					String targetTitle = targetPropertyShape.getProperty(SH.name).getString(); // this is always there
 					String targetVar = "?" + targetTitle + varSuffix;
-					// if source property is part of the row shape 
-					if(sourceNodeShape.getURI().equals(rowIteratorShape)) {
-						whereLines.add(rowVar + " <" + propertyPath.getURI() + "> " + targetVar + " . \n");
+
+					if(mapping.getProcessing() != null) {
+						ProcessingInfo pi = mapping.getProcessing();
+						if(pi.getId().equals("http://uri.suomi.fi/datamodel/ns/mscr#concatFunc")) {
+							String delimiter = pi.getParams().get("delimiter").toString();
+							String subQueryVar = "?" + UUID.randomUUID().toString().replaceAll("-", "_");
+							whereLines.add("{");
+							whereLines.add("select (group_concat(distinct " + subQueryVar +";separator=\"" + delimiter + "\") as " + targetVar + ")");
+							whereLines.add("where {");
+							if(sourceNodeShape.getURI().equals(rowIteratorShape)) {
+								whereLines.add(rowVar + " <" + propertyPath.getURI() + "> " + subQueryVar + " . \n");
+							}
+							else {
+								whereLines.add(rowVar + " (<>|!<>)* " + propertyShapeVar + " . \n");
+								whereLines.add(propertyShapeVar + " a <" + sourcePropertyClass.getURI() + "> . \n");
+								whereLines.add(propertyShapeVar + " <" + propertyPath.getURI() + "> " + subQueryVar + " . \n");
+							}							
+							whereLines.add("}}");
+						}
+						else {
+							throw new Exception("Function " + pi.getId() + " is not yet supported by SPARQL generator");
+						}
 					}
 					else {
-						whereLines.add(rowVar + " (<>|!<>)* " + propertyShapeVar + " . \n");
-						whereLines.add(propertyShapeVar + " a <" + sourcePropertyClass.getURI() + "> . \n");
-						whereLines.add(propertyShapeVar + " <" + propertyPath.getURI() + "> " + targetVar + " . \n");
+						if(sourceNodeShape.getURI().equals(rowIteratorShape)) {
+							whereLines.add(rowVar + " <" + propertyPath.getURI() + "> " + targetVar + " . \n");
+						}
+						else {
+							whereLines.add(rowVar + " (<>|!<>)* " + propertyShapeVar + " . \n");
+							whereLines.add(propertyShapeVar + " a <" + sourcePropertyClass.getURI() + "> . \n");
+							whereLines.add(propertyShapeVar + " <" + propertyPath.getURI() + "> " + targetVar + " . \n");
+						}
+						
 					}
 					
 					
@@ -129,7 +156,7 @@ public class SPARQLGenerator {
 		
 		
 		
-		q = select + " where {" + rowIterator + String.join("", whereLines) + " }";
+		q = select + " where {" + rowIterator + String.join("\n", whereLines) + " }";
 		System.out.println(q);
 		return q;
 	}
