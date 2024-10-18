@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.xmlet.xsdparser.core.XsdParser;
 import org.xmlet.xsdparser.xsdelements.XsdAbstractElement;
 import org.xmlet.xsdparser.xsdelements.XsdAll;
+import org.xmlet.xsdparser.xsdelements.XsdAttribute;
 import org.xmlet.xsdparser.xsdelements.XsdBuiltInDataType;
 import org.xmlet.xsdparser.xsdelements.XsdChoice;
 import org.xmlet.xsdparser.xsdelements.XsdComplexContent;
@@ -148,7 +149,7 @@ public class XSDMapper {
 			ObjectNode obj = m.createObjectNode();
 			obj.put("order", index);
 			obj.put("depth", depth);
-			
+				
 			String elementNamespace = null;
 			String elementName = e.getName();
 			if (schema != null) {				
@@ -532,6 +533,36 @@ public class XSDMapper {
 		}
 	}
 
+	void handleAttribute(XsdAttribute attr, ObjectNode props) {
+		ObjectNode obj = m.createObjectNode();
+		obj.put("sourceType", "attribute");
+		obj.put("name", attr.getName());
+		if(attr.getDefaultValue() != null) {
+			obj.put("default", attr.getDefaultValue());	
+		}
+		
+		// simpletype -> restrictions
+		if(attr.getXsdSimpleType() != null) {
+			handleSimpleType(attr.getXsdSimpleType(), obj);
+		}
+		if(attr.getTypeAsBuiltInType() != null) {
+			handleBuiltInType(attr.getTypeAsBuiltInType(), obj);
+		}
+		if(attr.getUse() != null) {
+			String use = attr.getUse();
+			if("required".equals(use)) {
+				obj.put("minItems", 1);
+				obj.put("maxItems", 1);				
+			}
+			
+		}
+		else {
+			obj.put("minItems", 0);
+			obj.put("maxItems", 1);
+		}
+		props.set(attr.getName(), obj);
+		
+	}
 	void handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode obj,
 			Set<Object> handledTypes, int depth) {
 		String ctypeName = e.getName();
@@ -550,15 +581,34 @@ public class XSDMapper {
 				// TODO - also requires handling of attributes
 				if (c.getXsdExtension() != null) {
 					XsdExtension ext = c.getXsdExtension();
-					if (ext.getBaseAsBuiltInDataType() != null) {
-						obj.remove("properties");
-						handleBuiltInType(ext.getBaseAsBuiltInDataType(), obj);
-					} else if (ext.getBaseAsSimpleType() != null) {
-						obj.remove("properties");
-						handleSimpleType(ext.getBaseAsSimpleType(), obj);
-					} else if (ext.getBaseAsComplexType() != null) {
+					
+					// attributes
+					if (ext.getXsdAttributes()  != null) {
+						if(!obj.has("properties")) {
+							properties = m.createObjectNode();
+							obj.set("properties", properties);
+						}
+						List<XsdAttribute> attrs = ext.getXsdAttributes().toList();
+						for(XsdAttribute attr : attrs) {
+							handleAttribute(attr, properties);
+						}
+					}
+					else {
+						if (ext.getBaseAsBuiltInDataType() != null) {
+							obj.remove("properties");	
+							
+							handleBuiltInType(ext.getBaseAsBuiltInDataType(), obj);
+						} else if (ext.getBaseAsSimpleType() != null) {
+							obj.remove("properties");	
+
+							handleSimpleType(ext.getBaseAsSimpleType(), obj);
+						}						
+					}
+					if (ext.getBaseAsComplexType() != null) {
 						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth);
 					}
+					
+
 				}
 
 			} else if (e.getComplexContent() != null) {
@@ -576,7 +626,13 @@ public class XSDMapper {
 					}
 				}
 
-			}
+			} else if (e.getAllXsdAttributes() != null) {
+				List<XsdAttribute> attrs =  e.getAllXsdAttributes().toList();
+				for(int ia = 0; ia < attrs.size(); ia++) {
+					XsdAttribute attr = attrs.get(ia);
+					handleAttribute(attr, properties);
+				}
+			}			
 			try {
 				XsdSequence seq = e.getChildAsSequence();
 				handleMultipleElements(schema, seq, obj, handledTypes, depth);
@@ -603,6 +659,7 @@ public class XSDMapper {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
 		int index = 0;
 		for (XsdAbstractElement ae : aes) {
+			
 			if (ae instanceof XsdElement) {
 				XsdSchema newSchema = findSchema(ae);	
 				

@@ -273,6 +273,9 @@ public class JSONSchemaMapper {
 
 		Iterator<Entry<String, JsonNode>> propertiesIterator = node.get("properties").fields();
 		while (propertiesIterator.hasNext()) {
+			
+
+			
 			Entry<String, JsonNode> entry = propertiesIterator.next();
 			String valueType = "string"; // default value
 			if (entry.getKey().startsWith("_") || entry.getKey().startsWith("$"))
@@ -282,6 +285,8 @@ public class JSONSchemaMapper {
 			}
 			final String key = URLEncoder.encode(entry.getKey());
 			Resource propertyShape = null;
+			
+			
 			if (valueType.equals("object")) {
 				propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
 						schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
@@ -348,6 +353,10 @@ public class JSONSchemaMapper {
 			else {
 				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));								
 				propertyShape = handleDatatypeProperty(propIDCapitalised, entry, model, schemaPID, nodeShapeResource, isRequired, false);
+				if(entry.getValue().has("sourceType")) {
+					propertyShape.addProperty(MSCR.sourceType, MSCR.sourceTypeAttribute);
+				}
+
 				// default max
 				if(!entry.getValue().has("maxItems")) {
 					propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	

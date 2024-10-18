@@ -295,6 +295,9 @@ public class JsonSchemaWriter {
 				}
 				prop.add("type", jsonDatatype);
 
+				if(propRes.getProperty(MSCR.sourceType) !=null) {
+					prop.add("sourceType", propRes.getProperty(MSCR.sourceType).getObject().asResource().getURI());
+				}
 				// enum
 				// pattern
 				// maxLength
