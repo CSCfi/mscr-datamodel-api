@@ -82,7 +82,39 @@ mscr:customSourceResourceFunc
     fno:name "custom source resource";
     fno:expects ( mscr:stringInputParam mscr:templateParam mscr:templateDataParam mscr:templateData2Param );
     fno:returns ( mscr:stringOutput) .
-          
+ 
+ 
+mscr:normalizeSpaceFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "normalizeSpace";
+    fno:expects ( mscr:stringInputParam);
+    fno:returns ( mscr:stringOutput) .
+             
+    
+mscr:addPrefixFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "addPrefix";
+    fno:expects ( mscr:stringInputParam mscr:prefixParam );
+    fno:returns ( mscr:stringOutput) .
+                 
+                 
+mscr:addSuffixFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "addSuffix";
+    fno:expects ( mscr:stringInputParam mscr:suffixParam );
+    fno:returns ( mscr:stringOutput) .             
+
+                 
+mscr:replaceFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "replace";
+    fno:expects ( mscr:stringInputParam mscr:patternParam mscr:replacementParam);
+    fno:returns ( mscr:stringOutput) .
+            
 mscr:templateParam
     a fno:Parameter ;
     fno:name "template" ;
@@ -139,6 +171,34 @@ mscr:delimiterParam
     fno:type xsd:string ;
     fno:required "true"^^xsd:boolean .
 
+mscr:prefixParam
+    a fno:Parameter ;
+    fno:name "prefix" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+    
+mscr:suffixParam
+    a fno:Parameter ;
+    fno:name "suffix" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .    
+    
+mscr:patternParam
+    a fno:Parameter ;
+    fno:name "pattern" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+  
+mscr:replacementParam
+    a fno:Parameter ;
+    fno:name "replacement" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+            
 mscr:doubleInputParam
     a fno:Parameter ;
     fno:name "input" ;
@@ -224,7 +284,32 @@ mscr:customSourceResourceMapping
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "customSourceResource" ] .
   
  
+mscr:normalizeSpaceMapping
+    a fno:Mapping ;
+    fno:function mscr:normalizeSpaceFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "normalizeSpace" ] .
   
+  
+mscr:addPrefixMapping
+    a fno:Mapping ;
+    fno:function mscr:addPrefixFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "addPrefix" ] .
+ 
+mscr:addSuffixMapping
+    a fno:Mapping ;
+    fno:function mscr:addSuffixFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "addSuffix" ] .  
+ 
+mscr:replaceMapping
+    a fno:Mapping ;
+    fno:function mscr:replaceFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "replace" ] .  
+  
+     
 mscr:simpleMappingFunctions
     a fnoi:JavaClass ;
     fnoi:class-name "fi.vm.yti.datamodel.api.v2.transformation.functions.SimpleMappingFunctions" .    

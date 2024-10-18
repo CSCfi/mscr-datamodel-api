@@ -1030,13 +1030,17 @@ public class Crosswalk extends BaseMSCRController {
 				else if(exportFormat.equalsIgnoreCase("xslt")) {
 					
 					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.XSD) {
-						String r = xsltGenerator.generate(mappings,jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalk.getSourceSchema(), jenaService.getSchemaContent(crosswalk.getTargetSchema()), crosswalk.getTargetSchema());
+						String r = xsltGenerator.generateXMLtoXML(mappings,jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalk.getSourceSchema(), jenaService.getSchemaContent(crosswalk.getTargetSchema()), crosswalk.getTargetSchema());
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
 					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.XSD) {
 						String r = xsltGenerator.generateJSONtoXML(mappings, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
+					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA) {
+						String r = xsltGenerator.generateJSONtoJSON(mappings,jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalk.getSourceSchema(), jenaService.getSchemaContent(crosswalk.getTargetSchema()), crosswalk.getTargetSchema());
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}					
 					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA) {
 						String r = xsltGenerator.generateXMLtoJSON(mappings, jenaService.getSchemaContent(crosswalk.getSourceSchema()), targetSchemaContent, crosswalk.getTargetSchema());
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						

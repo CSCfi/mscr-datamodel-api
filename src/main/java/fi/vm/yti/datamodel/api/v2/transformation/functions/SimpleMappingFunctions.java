@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -612,6 +613,25 @@ public class SimpleMappingFunctions {
 	
 	public static String filter(List<String> values, String property, String value) {
 		return "";
+	}
+	
+	public static String normalizeSpace(List<String> values) {
+		if(values.size() > 0) {
+			return StringUtils.normalizeSpace(values.get(0));
+		}
+		return "";
+	}
+	
+	public static String addPrefix(String value, String  prefix) {
+		return prefix + value;
+	}
+	
+	public static String addSuffix(String value, String  suffix) {
+		return value + suffix;
+	}	
+	
+	public static String replace(String value, String pattern, String replacement) {
+		return value.replaceAll(pattern, replacement);
 	}
 }
 
