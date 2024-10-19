@@ -190,6 +190,22 @@ public class MapperUtils {
         //null check for object
         return object == null ? null : object.toString();
     }
+    
+    public static Integer propertyToInt(Resource resource, Property property){
+        var prop = resource.getProperty(property);
+        //null check for property
+        if(prop == null){
+            return null;
+        }
+        var object = prop.getObject();
+        //null check for object
+        try {
+        	return object == null ? null : Integer.parseInt(object.toString());
+        }catch(NumberFormatException nfe) {
+        	return null;
+        }
+        
+    }    
 
     public static <T> T getLiteral(Resource resource, Property property, Class<T> type) {
         var prop = resource.getProperty(property);

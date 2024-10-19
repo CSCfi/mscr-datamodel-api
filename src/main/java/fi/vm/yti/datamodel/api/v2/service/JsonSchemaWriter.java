@@ -298,10 +298,20 @@ public class JsonSchemaWriter {
 				if(propRes.getProperty(MSCR.sourceType) !=null) {
 					prop.add("sourceType", propRes.getProperty(MSCR.sourceType).getObject().asResource().getURI());
 				}
+				String pattern = MapperUtils.propertyToString(propRes, SH.pattern);
+				if(pattern != null) {
+					prop.add("pattern", pattern);					
+				}
+				String maxLength = MapperUtils.propertyToString(propRes, SH.maxLength);
+				if(maxLength != null) {
+					prop.add("maxLength", maxLength);					
+				}
+				String minLength = MapperUtils.propertyToString(propRes, SH.minLength);
+				if(minLength != null) {
+					prop.add("minLength", minLength);					
+				}
+				
 				// enum
-				// pattern
-				// maxLength
-				// minLength
 				
 				JsonObject propObj = prop.build();
 				properties.add(refKey, propObj);
