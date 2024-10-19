@@ -348,7 +348,7 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		String filePath = "src/test/resources/xmlschema/sample.xsd";
 		Model m = service.transformXSDToInternal(schemaPID, filePath);
-		assertEquals(19, m.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size()); // just element instances, no attributes
+		assertEquals(23, m.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size()); // just element instances, no attributes
 		assertEquals(6, m.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size()); // 5 + root
 		
 		
