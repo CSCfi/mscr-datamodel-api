@@ -31,6 +31,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
 import org.w3c.dom.Document;
@@ -518,7 +519,7 @@ public class RMLGenerator {
 			Resource blank = m.createResource();
 
 			blank.addProperty(m.createProperty(nsRML + "reference"), referencePath);
-			blank.addProperty(m.createProperty(nsRR + "class"), targetOntologyClass);
+			blank.addProperty(m.createProperty(nsRR + "class"), targetOntologyClass != null ? targetOntologyClass : RDFS.Class);
 			return blank;
 		} else {
 			Resource ref = m.createResource();
