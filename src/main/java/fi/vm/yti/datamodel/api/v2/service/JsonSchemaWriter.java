@@ -33,6 +33,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.apache.jena.vocabulary.VOID;
+import org.apache.jena.vocabulary.XSD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -1078,11 +1079,12 @@ public class JsonSchemaWriter {
 						if(ti.hasNext()) {
 							types.add(dt.getURI());							
 						}
-						else {
-							// just get classes 
-							types.add(dt.getProperty(SH.class_).getResource().getURI());
-							
+						else if(dt.getProperty(SH.class_) != null) {							
+							types.add(dt.getProperty(SH.class_).getResource().getURI());							
 						}					
+						else {							
+							types.add(XSD.xstring.getURI());
+						}
 
 					};		
 					member = rest;
