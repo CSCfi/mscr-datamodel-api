@@ -978,7 +978,8 @@ public class Crosswalk extends BaseMSCRController {
 					+ "  OPTIONAL { ?prop sh:order ?order } .\n"
 					+ "  OPTIONAL { ?prop mscr:depth ?depth } .\n"
 					+ "  OPTIONAL {?prop sh:name ?name }\n"
-					+ "} order by ASC(?depth) ASC(?order) ASC(?name)";
+					+ "} order by ASC(str(?prop)) ASC(?depth)";
+					//+ "} order by ASC(?depth) ASC(?order) ASC(?name)";
 			Model queryModel = ModelFactory.createDefaultModel();
 			queryModel.add(crosswalkModel);
 			queryModel.add(targetSchemaContent);
