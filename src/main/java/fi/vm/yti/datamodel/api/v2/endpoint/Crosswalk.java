@@ -86,6 +86,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v2")
 @Tag(name="Crosswalk")
