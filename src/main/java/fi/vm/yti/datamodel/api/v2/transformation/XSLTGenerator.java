@@ -95,8 +95,10 @@ public class XSLTGenerator {
 		List<String> newParts = new ArrayList<String>();
 		List<String> allParts = new ArrayList<String>();
 		int i = 0;
+		boolean isAttribute = false;
 		Resource r = null;
 		for (String part : parts) {
+			isAttribute = false;
 			allParts.add(part);
 			if (part.length() > 0 && i % 2 != 0) {
 				// add possible namespace
@@ -115,9 +117,23 @@ public class XSLTGenerator {
 				} else {
 					newParts.add(part);
 				}
+				if(r.getProperty(MSCR.sourceType) != null) {
+					if(r.getProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI()) ) {
+						isAttribute = true;
+					}
+				}
 
 			}
 			i++;
+		}
+		if(isAttribute) {
+			String t = newParts.get(newParts.size() - 1);
+			/*
+			if(t.startsWith("/")) {
+				t = t.substring(1);
+			}
+			*/
+			newParts.set(newParts.size() - 1, "@" + t);
 		}
 		temp = "/" + StringUtils.join(newParts, "/");
 
@@ -1095,7 +1111,7 @@ public class XSLTGenerator {
 		// Create XPath object
 		XPath xpath = xpathFactory.newXPath();
 
-		List<String> namespaces = new ArrayList<String>();
+		final List<String> namespaces = new ArrayList<String>();
 
 		Document doc2 = docBuilder.newDocument();
 		Element root2 = doc2.createElement("root2");
@@ -1105,7 +1121,16 @@ public class XSLTGenerator {
 		for (String t : targetInfo.keySet()) {
 			addElementByPath2(xpath, root2, t, targetPID, targetModel, namespaces);
 		}
-
+		// also get the source namespaces and add those.
+		sourceModel.listObjectsOfProperty(MSCR.namespace).forEach(new Consumer<RDFNode>() {
+			
+			@Override
+			public void accept(RDFNode t) {
+				
+				namespaces.add((t.asResource().getURI()));
+			}
+		});
+		
 		initTargetAndSourceInfos(mappings, targetInfo, sourceInfo, targetToSource, sourceToTarget, sourceModel,
 				targetModel, namespaces);
 		// order path elements according to the target schema
@@ -1129,6 +1154,8 @@ public class XSLTGenerator {
 			}
 		});
 		
+
+		
 		// TreeNode2 treeNode = initTree(docBuilder.newDocument(), targetPID,
 		// targetModel, targetInfo, namespaces);
 		Document doc = docBuilder.newDocument();
@@ -1137,6 +1164,9 @@ public class XSLTGenerator {
 		root.setAttribute("version", "2.0");
 		doc.appendChild(root);
 
+		
+		
+		
 		for (int nsi = 0; nsi < namespaces.size(); nsi++) {
 			root.setAttribute("xmlns:ns" + nsi, namespaces.get(nsi));
 		}
@@ -1298,18 +1328,20 @@ public class XSLTGenerator {
 	}
 
 	private Element createContentElement(Document doc, TreeNode2 targetNode, int mappingIndex, List<String> namespaces, boolean addForEach) {
+		Element attrElement = null;
 		if(targetNode.isAttribute) {
-			Element contentElement = doc.createElementNS(xslNS, "attribute");
+			attrElement = doc.createElementNS(xslNS, "attribute");
 			if (targetNode.targetElementNamespace != null
 					&& !targetNode.targetElementNamespace.equals("")) {
-				contentElement.setAttribute("namespace", targetNode.targetElementNamespace);
+				attrElement.setAttribute("namespace", targetNode.targetElementNamespace);
 			}
-			contentElement.setAttribute("name", targetNode.targetElementName);
+			attrElement.setAttribute("name", targetNode.targetElementName);
 			
 			Element valueOf = doc.createElementNS(xslNS, "xsl:value-of");
 			valueOf.setAttribute("select", "$value_" + mappingIndex);
-			contentElement.appendChild(valueOf);
-			return contentElement;
+			attrElement.appendChild(valueOf);
+			return attrElement;
+			
 		}
 		else {
 			if(addForEach) {
@@ -1329,8 +1361,8 @@ public class XSLTGenerator {
 				Element contentValueOf = doc.createElementNS(xslNS, "value-of");						
 				contentValueOf.setAttribute("select", "$value_" + mappingIndex);
 				contentElement.appendChild(contentValueOf);
-				forEach.appendChild(contentElement);			
-				return forEach;
+				forEach.appendChild(contentElement);	
+				return contentElement;
 				
 			}
 			else {
@@ -1347,10 +1379,57 @@ public class XSLTGenerator {
 				Element contentValueOf = doc.createElementNS(xslNS, "value-of");						
 				contentValueOf.setAttribute("select", "$value_" + mappingIndex);
 				contentElement.appendChild(contentValueOf);
+		
 				return contentElement;
 				
+			}			
+		}
+
+		
+	}
+	
+	private boolean isLeafNode(TreeNode2 targetNode ) {
+		if(targetNode.isAttribute) {
+			return true;
+		}
+		if(targetNode.children.isEmpty()) {
+			return true;
+		}
+		boolean hasOnlyAttrChildren = true;
+		for(TreeNode2 c : targetNode.children.values()) {
+			if(!c.isAttribute) {
+				hasOnlyAttrChildren = false;
 			}
 		}
+		if(hasOnlyAttrChildren) {
+			return true;
+		}
+		return false;
+		
+	}
+	
+	private boolean hasAttributes(TreeNode2 targetNode) {
+		boolean hasAttr = false;
+		for(TreeNode2 c : targetNode.children.values()) {
+			if(c.isAttribute) {
+				hasAttr = true;
+			}
+		}
+		return hasAttr;
+	}
+	
+	private void addAttributeTemplates(TreeNode2 targetNode, Document doc, Element contentElement, String targetTemplateName) {
+	
+		Element callTemplate = doc.createElementNS(xslNS, "xsl:call-template");
+		contentElement.insertBefore(callTemplate, contentElement.getFirstChild());
+		//contentElement.appendChild(callTemplate);
+		callTemplate.setAttribute("name", targetTemplateName);
+		Element withParam = doc.createElementNS(xslNS, "xsl:with-param");
+		callTemplate.appendChild(withParam);
+		withParam.setAttribute("name", "node");
+		withParam.setAttribute("select", ".");
+			
+				
 	}
 	private void addTemplateXMLtoXML(Map<String, TreeNodeInfo> sourceUriToNode, Element stylesheet, Map<Integer, TreeNode2> children, int depth,
 			String parentTemplateName, Map<String, List<String>> targetToSource,
@@ -1358,7 +1437,7 @@ public class XSLTGenerator {
 			Map<String, List<MappingInfoDTO>> targetInfo, String parentSourceXPath, List<String> namespaces, Model sourceModel) {
 		Document doc = stylesheet.getOwnerDocument();
 		for (TreeNode2 targetNode : children.values()) {
-			boolean isLeafNode = targetNode.children.isEmpty();
+			boolean isLeafNode = isLeafNode(targetNode);
 			boolean isMapped = (targetNode.mappings != null && !targetNode.mappings.isEmpty());
 			if (isMapped) {
 				if (isLeafNode) {
@@ -1394,14 +1473,20 @@ public class XSLTGenerator {
 							//String mappingSourceXPath = getXpathFromId(ni.getUri());
 							String mappingSourceXPath = getXpathFromUri(ni.getUri(), sourceModel, namespaces);
 							if(!parentSourceXPath.equals("/")) {
-								mappingSourceXPath =  "$node"+mappingSourceXPath.substring(templateSourceXpath.length());
+								if(mappingSourceXPath.length() >= templateSourceXpath.length()) {
+									mappingSourceXPath =  "$node"+mappingSourceXPath.substring(templateSourceXpath.length());	
+								}
+								
+								
 							}
 							TreeNodeInfo node = sourceUriToNode.get(ni.getUri());
+							/*
 							if(node.isAttribute) {
 								mappingSourceXPath = mappingSourceXPath.substring(0, mappingSourceXPath.lastIndexOf("/")+1)
 										+ "@"
 										+ mappingSourceXPath.substring(mappingSourceXPath.lastIndexOf("/")+1);
 							}
+							*/
 							
 							String preProcessingSelect = getProcessingSelect(mappingSourceXPath, ni.getProcessing());
 							preProcessingVar.setAttribute("select", preProcessingSelect);
@@ -1508,7 +1593,7 @@ public class XSLTGenerator {
 								else if (funcID.equals("http://uri.suomi.fi/datamodel/ns/mscr#constantFunc")) {
 									Element processingVar = doc.createElementNS(xslNS, "xsl:variable");
 									templateElement.appendChild(processingVar);
-									
+
 									String value = mapping.getProcessing().getParams().get("value").toString();
 									processingVar.setAttribute("name", "processed_" + targetIndex);
 									processingVar.setAttribute("select", "'" + value + "'");
@@ -1544,7 +1629,83 @@ public class XSLTGenerator {
 									
 									Element contentElement = createContentElement(doc, targetNode, targetIndex, namespaces, false);
 									contentElements.add(contentElement);	
-								}									
+								}	
+								else if (funcID.equals("http://uri.suomi.fi/datamodel/ns/mscr#filterFunc")) {
+									
+									Element processingVar = doc.createElementNS(xslNS, "xsl:variable");
+									templateElement.appendChild(processingVar);
+									
+									String value = mapping.getProcessing().getParams().get("value").toString();
+									String property = mapping.getProcessing().getParams().get("property").toString();
+									
+
+									int typePropIndex = -1;
+									String filterPath = "";
+									String targetPath = "";
+									List<NodeInfo> sources = mapping.getSource();
+									if(sources.size() != 2) {
+										throw new RuntimeException("Filter function requires exactly two source properties");
+									}
+ 									for(int i = 0; i < sources.size(); i++) {
+										if(sources.get(i).getLabel().equals(property)) {
+											filterPath = getXpathFromUri(sources.get(i).getUri(), sourceModel, namespaces);
+										}
+										else {
+											typePropIndex = i;
+											targetPath = getXpathFromUri(sources.get(i).getUri(), sourceModel, namespaces);
+										}
+										
+									}
+
+									processingVar.setAttribute("name", "processed_" + targetIndex);
+									// process path difference 
+									String pathDiff = calculatePathDiff(targetPath, filterPath);
+									processingVar.setAttribute("select", "$preprocessed_" + typePropIndex + "[" + pathDiff + "='" + value + "']");
+									
+									
+									Element postProcessingVar = doc.createElementNS(xslNS, "xsl:variable");
+									templateElement.appendChild(postProcessingVar);
+									postProcessingVar.setAttribute("name", "value_" + targetIndex);							
+									String preProcessingSelect = getProcessingSelect("$processed_" + targetIndex, ni.getProcessing());
+									postProcessingVar.setAttribute("select", preProcessingSelect);
+
+									
+									Element contentElement = createContentElement(doc, targetNode, targetIndex, namespaces, false);
+									contentElements.add(contentElement);	
+								}	
+								else if (funcID.equals("http://uri.suomi.fi/datamodel/ns/mscr#celsiusToFahrenheitFunc")) {
+									Element processingVar = doc.createElementNS(xslNS, "xsl:variable");
+									templateElement.appendChild(processingVar);
+
+									processingVar.setAttribute("name", "processed_" + targetIndex);
+									processingVar.setAttribute("select", "number($preprocessed_" + mappingIndex + ") * 1.8 + 32");
+									
+									
+									Element postProcessingVar = doc.createElementNS(xslNS, "xsl:variable");
+									templateElement.appendChild(postProcessingVar);
+									postProcessingVar.setAttribute("name", "value_" + targetIndex);							
+									String preProcessingSelect = getProcessingSelect("$processed_" + targetIndex, ni.getProcessing());
+									postProcessingVar.setAttribute("select", preProcessingSelect);
+
+									
+									Element contentElement = createContentElement(doc, targetNode, targetIndex, namespaces, false);
+									contentElements.add(contentElement);
+								}
+								else {
+									Element processingVar = doc.createElementNS(xslNS, "xsl:variable");
+									templateElement.appendChild(processingVar);
+									processingVar.setAttribute("name", "processed_" + targetIndex);
+									processingVar.setAttribute("select", "$preprocessed_" + mappingIndex);
+									
+									Element postProcessingVar = doc.createElementNS(xslNS, "xsl:variable");
+									templateElement.appendChild(postProcessingVar);
+									postProcessingVar.setAttribute("name", "value_" + targetIndex);							
+									String preProcessingSelect = getProcessingSelect("$processed_" + targetIndex, ni.getProcessing());
+									postProcessingVar.setAttribute("select", preProcessingSelect);
+
+									Element contentElement = createContentElement(doc, targetNode, mappingIndex, namespaces, true);
+									contentElements.add(contentElement);									
+								}
 
 							}
 							else {	
@@ -1563,6 +1724,16 @@ public class XSLTGenerator {
 								Element contentElement = createContentElement(doc, targetNode, mappingIndex, namespaces, true);
 								contentElements.add(contentElement);
 
+								if(hasAttributes(targetNode)) {
+									String sourceXpath = targetToSource.get(targetNode.targetXPath).get(0);
+									String targetTemplateName = "t-" + targetNode.targetXPath.replaceAll("/", "-")
+									+ "-children-source--" + sourceXpath.replaceAll("/", "-").replaceAll(":", "_");
+									addAttributeTemplates(targetNode, doc, contentElement, targetTemplateName);
+									addTemplateXMLtoXML(sourceUriToNode, stylesheet, targetNode.children, depth + 1, targetTemplateName,
+											targetToSource, sourceToTarget, sourceInfo, targetInfo, sourceXpath, namespaces, sourceModel);
+									
+								}
+
 							}
 							targetIndex++;
 						}						
@@ -1573,6 +1744,8 @@ public class XSLTGenerator {
 
 						mappingIndex++;
 					}
+					
+
 				} else {
 					Element templateElement = getRootTemplate(stylesheet, parentTemplateName);
 					if (templateElement == null) {
@@ -1586,7 +1759,7 @@ public class XSLTGenerator {
 
 					for (String sourceXpath : targetToSource.get(targetNode.targetXPath)) {
 						Element forEach = doc.createElementNS(xslNS, "xsl:for-each");
-						forEach.setAttribute("select", "$node" + sourceXpath.substring(parentSourceXPath.length()));
+						forEach.setAttribute("select", "$node" + sourceXpath.substring(parentSourceXPath.length()).replaceAll("-", ""));
 						templateElement.appendChild(forEach);
 
 						Element contentElement = null;
@@ -1642,8 +1815,14 @@ public class XSLTGenerator {
 				contentElement.appendChild(callTemplate);
 				String templateNamePrefix = "";
 				if(!parentTemplateName.equals("root")) {
-					templateNamePrefix = parentTemplateName
-						.substring(parentTemplateName.indexOf("-children-source"));
+					if(parentTemplateName.indexOf("-children-source") >= 0) {
+						templateNamePrefix = parentTemplateName
+								.substring(parentTemplateName.indexOf("-children-source"));
+						
+					}
+					else {
+						templateNamePrefix = parentTemplateName;
+					}
 				}
 				String targetTemplateName = "t-" + targetNode.targetXPath.replaceAll("/", "-").replaceAll(":", "_")
 						+ templateNamePrefix;
@@ -1660,6 +1839,25 @@ public class XSLTGenerator {
 						sourceToTarget, sourceInfo, targetInfo, parentSourceXPath, namespaces, sourceModel);
 			}
 		}
+	}
+
+	private String calculatePathDiff(String targetPath, String filterPath) {
+		System.out.println("targetPath: " + targetPath);
+		System.out.println("filterPath: " + filterPath);
+		String commonPrefix = StringUtils.getCommonPrefix(targetPath, filterPath);
+		// how many steps to go from target to common prefix?
+		
+		String[] downStepParts = targetPath.substring(commonPrefix.length()).split("/");
+		String suffix = filterPath.substring(commonPrefix.length());
+		int repeatCount = downStepParts.length;
+		if(suffix.startsWith("/")) {
+			repeatCount--;
+			suffix = suffix.substring(1);
+			
+		}
+
+		String r = "../".repeat(repeatCount) + suffix;
+		return r;
 	}
 
 	private String getProcessingSelect(String sourcePath, ProcessingInfo processing) {
