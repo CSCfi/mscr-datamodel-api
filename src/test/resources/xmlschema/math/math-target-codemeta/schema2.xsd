@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema xmlns:q1="https://schema.org/" xmlns:tns="https://www.softwareheritage.org/schema/2018/deposit" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="https://www.softwareheritage.org/schema/2018/deposit" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="schema3.xsd" namespace="https://schema.org/" />
+  <xs:element name="deposit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="reference">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="object">
+                <xs:complexType>
+                  <xs:attribute name="swhid" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="metadata-provenance">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="q1:url" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

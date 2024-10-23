@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema xmlns:tns="https://doi.org/10.5063/SCHEMA/CODEMETA-2.0" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="https://doi.org/10.5063/SCHEMA/CODEMETA-2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="identifier" type="xs:string" />
+  <xs:element name="authors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="author">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="familyName" type="xs:string" />
+              <xs:element name="givenName" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string" />
+  <xs:element name="description" type="xs:string" />
+  <xs:element name="sameAs" type="xs:string" />
+  <xs:element name="codeRepository" type="xs:string" />
+  <xs:element name="keywords" type="xs:string" />
+  <xs:element name="operatingSystem" type="xs:string" />
+  <xs:element name="programmingLanguage" type="xs:string" />
+  <xs:element name="inCodeSet" type="xs:unsignedByte" maxOccurs="unbounded" />
+  <xs:element name="itemList" type="xs:unsignedShort" />
+  <xs:element name="supportingData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="name" type="xs:string" />
+          <xs:element name="identifier" type="xs:unsignedShort" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="citation" maxOccurs="unbounded">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="author" />
+          <xs:element name="identifier" type="xs:unsignedInt" />
+          <xs:element name="hasSource" type="xs:string" />
+          <xs:element name="headline" type="xs:string" />
+          <xs:element name="datePublished" type="xs:unsignedShort" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="url" type="xs:string" />
+</xs:schema>

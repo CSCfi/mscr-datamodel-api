@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema xmlns:schema="https://schema.org/" xmlns:codemeta="https://doi.org/10.5063/SCHEMA/CODEMETA-2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:swhdeposit="https://www.softwareheritage.org/schema/2018/deposit" xmlns:swh="https://www.softwareheritage.org/schema/2018/deposit" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="schema1.xsd" namespace="https://doi.org/10.5063/SCHEMA/CODEMETA-2.0" />
+  <xs:import schemaLocation="schema2.xsd" namespace="https://www.softwareheritage.org/schema/2018/deposit" />
+  <xs:element name="entry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="codemeta:identifier" />
+          <xs:element ref="swh:deposit" />
+          <xs:element ref="codemeta:author" />
+          <xs:element ref="codemeta:name" />
+          <xs:element ref="codemeta:description" />
+          <xs:element ref="codemeta:sameAs" />
+          <xs:element ref="codemeta:codeRepository" />
+          <xs:element maxOccurs="unbounded" ref="codemeta:keywords" />
+          <xs:element ref="codemeta:operatingSystem" />
+          <xs:element ref="codemeta:programmingLanguage" />
+          <xs:element ref="codemeta:inCodeSet" />
+          <xs:element ref="codemeta:itemList" />
+          <xs:element ref="codemeta:supportingData" />
+          <xs:element ref="codemeta:citation" />
+          <xs:element ref="codemeta:url" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
