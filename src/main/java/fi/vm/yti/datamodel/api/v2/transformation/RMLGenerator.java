@@ -189,7 +189,7 @@ public class RMLGenerator {
 				+ "OPTIONAL {?property sh:datatype ?datatype }  \n"
 				+ "OPTIONAL {?mapping mscr:processing ?processing }  \n"
 				+ "?mapping mscr:source/rdf:_1/mscr:uri ?source.\n" + "<" + targetClass
-				+ "> sh:property ?property.OPTIONAL {?property sh:class ?classRef}.\n" // type of class
+				+ "> sh:property ?property.OPTIONAL {{ ?property sh:class ?classRef } UNION { ?property sh:or ?or . ?or rdf:rest*/rdf:first ?first . ?first sh:class ?classRef }}.\n" // type of class
 
 				+ "FILTER(!strstarts( STR(?property), \"iterator:\") && !strstarts( STR(?property), \"subject:\"))\n"
 				+ "  FILTER(strstarts( STR(?source), \"" + iteratorPropertyUri + "\"))\n"
