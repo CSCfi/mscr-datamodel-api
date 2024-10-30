@@ -184,9 +184,10 @@ public class RMLGenerator {
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
 				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + "PREFIX dcterms: <http://purl.org/dc/terms/>\n"
 				+ "PREFIX sh: <http://www.w3.org/ns/shacl#>\n"
-				+ "select distinct ?processing ?source ?type ?property ?classRef ?path ?datatype \n" + "where {\n"
+				+ "select distinct ?processing ?source ?type ?property ?classRef ?path ?datatype ?nodeKind \n" + "where {\n"
 				+ "?mapping rdf:type mscr:Mapping . \n" + "?mapping mscr:target/rdf:_1/mscr:uri ?property .\n"
 				+ "OPTIONAL {?property sh:datatype ?datatype }  \n"
+				+ "OPTIONAL {?property sh:nodeKind ?nodeKind }  \n"				
 				+ "OPTIONAL {?mapping mscr:processing ?processing }  \n"
 				+ "?mapping mscr:source/rdf:_1/mscr:uri ?source.\n" + "<" + targetClass
 				+ "> sh:property ?property.OPTIONAL {{ ?property sh:class ?classRef } UNION { ?property sh:or ?or . ?or rdf:rest*/rdf:first ?first . ?first sh:class ?classRef }}.\n" // type of class
@@ -210,6 +211,7 @@ public class RMLGenerator {
 			Resource sourceResource = soln.getResource("source");
 			Resource type = soln.getResource("type");
 			Resource datatype = soln.getResource("datatype");
+			Resource nodeKind = soln.getResource("nodeKind");
 			Resource property = soln.getResource("?property");
 			Resource path = soln.getResource("?path");
 			Resource classRef = soln.getResource("classRef");
@@ -380,16 +382,27 @@ public class RMLGenerator {
 				pom.addProperty(m.createProperty(nsRR + "predicate"), path);
 			}
 			
-			addDatatype(m, ref, datatype, type);
+			addDatatype(m, ref, datatype, nodeKind, type);
 
 			triplesMap.addProperty(m.createProperty(nsRR + "predicateObjectMap"), pom);
 
 		}
 	}
 
-	private void addDatatype(Model m, Resource ref, Resource datatype, Resource type) {
+	private void addDatatype(Model m, Resource ref, Resource datatype, Resource nodeKind, Resource type) {
+		/*
 		if(type != null && type.getURI().equals(OWL.DatatypeProperty.getURI())) {
 			ref.addProperty(m.createProperty(nsRR+"datatype") , datatype);	
+		}
+		*/
+		if(datatype != null) {
+			ref.addProperty(m.createProperty(nsRR+"datatype") , datatype);
+			ref.addProperty(m.createProperty(nsRR+"termType") , m.createProperty(nsRR+"Literal"));
+		}
+		else if(nodeKind != null) {
+			if(nodeKind.getURI().equals(SH.IRI.getURI())) {
+				ref.addProperty(m.createProperty(nsRR+"termType") , m.createProperty(nsRR+"IRI"));
+			}
 		}
 		
 		
