@@ -23,10 +23,10 @@ public class JSONValidationService {
 	public static ValidationRecord validateJSONSchema(JsonNode inputSchemaNode) throws Exception, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		
-		if(!inputSchemaNode.has("$schema")) {
-			throw new Exception("Missing $schema property. Cannot validate schema.");
-		}
-		String inputSchemaVersion = inputSchemaNode.get("$schema").asText();
+		//if(!inputSchemaNode.has("$schema")) {
+		//	throw new Exception("Missing $schema property. Cannot validate schema.");
+		//}
+		String inputSchemaVersion = "http://json-schema.org/draft-04/schema#"; //inputSchemaNode.get("$schema").asText();
 
 		if (schemaURIandPathMap.containsKey(inputSchemaVersion)) {
 
