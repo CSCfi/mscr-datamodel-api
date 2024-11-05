@@ -260,9 +260,11 @@ public class Schema extends BaseMSCRController {
 
 	}
 
-	private SchemaInfoDTO getSchemaDTO(String pid, Model model, boolean includeVersionInfo, boolean includeVariantInfo) {
+	private SchemaInfoDTO getSchemaDTO(String pid, Model model, boolean includeVersionInfo, boolean includeVariantInfo, CONTENT_ACTION action) {
 		var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, model);
-		check(hasRightsToModel);
+		if(!Set.of(CONTENT_ACTION.mscrCopyOf, CONTENT_ACTION.copyOf).contains(action)) {
+			check(hasRightsToModel);			
+		}
 		var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
 		var ownerMapper = groupManagementService.mapOwner();
 		return mapper.mapToSchemaDTO(pid, model, includeVersionInfo, includeVariantInfo, userMapper, ownerMapper);
@@ -295,7 +297,7 @@ public class Schema extends BaseMSCRController {
 		Model contentModel = ModelFactory.createDefaultModel();
 		if (action != null) {
 			Model prevModel = getSchemaModel(target);
-			SchemaInfoDTO prevSchema = getSchemaDTO(target, prevModel, true, false);
+			SchemaInfoDTO prevSchema = getSchemaDTO(target, prevModel, true, false, action);
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action);
 			if (action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version

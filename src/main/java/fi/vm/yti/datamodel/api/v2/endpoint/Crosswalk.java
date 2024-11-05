@@ -61,6 +61,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
+import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController.CONTENT_ACTION;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
@@ -142,15 +143,18 @@ public class Crosswalk extends BaseMSCRController {
 		this.schemaMapper = schemaMapper;
 	}
 	
-	private CrosswalkInfoDTO getCrosswalkDTO(String pid, boolean includeVersionInfo) throws Exception {
+	private CrosswalkInfoDTO getCrosswalkDTO(String pid, boolean includeVersionInfo, CONTENT_ACTION action) throws Exception {
 		pid = PIDService.mapToInternal(pid);
         var model = jenaService.getCrosswalk(pid);
         if(model == null){
             throw new ResourceNotFoundException(pid);
         }
         var hasRightsToModel = authorizationManager.hasRightToModelMSCR(pid, model);
-        
-        check(hasRightsToModel);
+
+        if(!Set.of(CONTENT_ACTION.mscrCopyOf, CONTENT_ACTION.copyOf).contains(action)) {
+			check(hasRightsToModel);
+			
+		}                
         var userMapper = hasRightsToModel ? groupManagementService.mapUser() : null;
         var ownerMapper = groupManagementService.mapOwner();
 
@@ -278,7 +282,7 @@ public class Crosswalk extends BaseMSCRController {
 		String aggregationKey = null;
 		Model contentModel = ModelFactory.createDefaultModel();
 		if(action != null) {			
-			CrosswalkInfoDTO prev = getCrosswalkDTO(target, true);
+			CrosswalkInfoDTO prev = getCrosswalkDTO(target, true, action);
 			dto = mergeMetadata(prev, dto, action);			
 			if(action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
