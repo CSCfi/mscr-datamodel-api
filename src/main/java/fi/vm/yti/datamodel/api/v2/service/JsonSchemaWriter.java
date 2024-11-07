@@ -273,7 +273,10 @@ public class JsonSchemaWriter {
 				// add property
 				JsonObjectBuilder prop = Json.createObjectBuilder();
 				prop.add("@id", propRes.getURI());
-				prop.add("title", propName);				
+				prop.add("title", propName);
+				if(propRes.getProperty(SH.description) != null) {
+					prop.add("description", propRes.getProperty(SH.description).getString());
+				}
 				String pqname = propRes.getProperty(MSCR.qname) != null ? propRes.getRequiredProperty(MSCR.qname).getResource().getURI(): propRes.getURI().substring(propRes.getURI().lastIndexOf("/")+1);
 				String pnamespace = propRes.getProperty(MSCR.namespace) != null ? propRes.getProperty(MSCR.namespace).getObject().asResource().getURI(): null;
 				Integer pmaxCount = propRes.getProperty(SH.maxCount) != null && !propRes.getProperty(SH.maxCount).getLiteral().getDatatypeURI().equals("http://www.w3.org/2001/XMLSchema#string") ? propRes.getProperty(SH.maxCount).getInt() : null;
@@ -341,6 +344,9 @@ public class JsonSchemaWriter {
 			def.add("type", "object");
 			def.add("title", name);
 			def.add("qname", qname);
+			if(objectPropRes.getProperty(SH.description) != null) {
+				def.add("description", objectPropRes.getProperty(SH.description).getString());
+			}
 			if (maxCount != null) {
 				def.add("maxCount", ""+maxCount);
 			}
@@ -358,11 +364,10 @@ public class JsonSchemaWriter {
 			def.add("properties", properties.build());
 			definitions.add(objectPropRes.getURI().replace("/", "-"), def);
 		}
-		// add root last
-		
+		// add root last		
 		Resource rootResource = model.getResource(modelID + "#root/Root");
 		JsonObjectBuilder rootProperties = Json.createObjectBuilder();
-		
+		/*
 		if(schemaFormat == SchemaFormat.CSV) {
 			JsonObjectBuilder iteratorProp = Json.createObjectBuilder();
 			iteratorProp.add("title", "row iterator");
@@ -373,14 +378,27 @@ public class JsonSchemaWriter {
 			JsonObject _obj = iteratorProp.build();
 			rootProperties.add(iteratorPropID, _obj);
 			definitions.add(iteratorPropID, _obj);
-		}
+		}*/
+		JsonObjectBuilder rootDef = Json.createObjectBuilder();		
+		rootDef.add("type", "object");		
+		rootDef.add("qname", "root");
 
-		
-		JsonObjectBuilder rootDef = Json.createObjectBuilder();
-		rootDef.add("type", "object");
-		rootDef.add("title", "root");	
+
+		if(rootResource.getProperty(SH.name) != null) {
+			rootDef.add("title", rootResource.getProperty(SH.name).getString());	
+		}
+		else {
+			rootDef.add("title", "root");
+		}
+		if(rootResource.getProperty(SH.description) != null) {
+			rootDef.add("description", rootResource.getProperty(SH.description).getString());	
+		}
 		handleProperties(rootResource, model, rootProperties, definitions);
-		rootDef.add("properties", rootProperties);
+		rootDef.add("properties", rootProperties.build());
+		if(rootResource.getProperty(SH.maxCount) != null) {
+			rootDef.add("maxCount", ""+rootResource.getProperty(SH.maxCount).getInt());
+		}
+		
 		definitions.add(modelID + "#root-Root", rootDef.build());
 		return definitions;
 
@@ -476,11 +494,11 @@ public class JsonSchemaWriter {
 				throw new RuntimeException("Schema is missing root element");
 			}
 
-			JsonObjectBuilder modelProperties = Json.createObjectBuilder();
+			//JsonObjectBuilder modelProperties = Json.createObjectBuilder();
 //                modelProperties.add("$ref", "#/definitions/" + SplitIRI.localname(modelRoot));
-			modelProperties.add("$ref", "#/definitions/Root");
+			//modelProperties.add("$ref", "#/definitions/Root");
 			
-			String r = createModelSchemaWithRoot(schema, modelProperties, definitions, modelRoots);
+			String r = createModelSchemaWithRoot(schema, definitions, modelRoots, schemaFormat);
 			return r;
 
 		}
@@ -506,8 +524,8 @@ public class JsonSchemaWriter {
 		return builder.build();
 	}
 
-	private String createModelSchemaWithRoot(JsonObjectBuilder schema, JsonObjectBuilder properties,
-			JsonObjectBuilder definitions, List<String> roots) {
+	private String createModelSchemaWithRoot(JsonObjectBuilder schema,
+			JsonObjectBuilder definitions, List<String> roots, SchemaFormat format) {
 
 		schema.add("$schema", "http://json-schema.org/draft-04/schema#");
 
@@ -550,12 +568,20 @@ public class JsonSchemaWriter {
 					throw new RuntimeException("Not implemented yet! Root element of type array.");
 				}
 
-				JsonValue props = rootObj.get("properties");
-				if (props != null) {
-					schema.add("properties", props.asJsonObject());
+				JsonObjectBuilder properties = Json.createObjectBuilder();
+				if(format == SchemaFormat.XSD) {
+					JsonValue props = rootObj.get("properties");
+					if (props != null) {
+						schema.add("properties", props.asJsonObject());
+					}
+					
+				}
+				else {
+					properties.add(rootDefinition, rootObj);
+					schema.add("properties", properties.build());
+					
 				}
 				
-
 
 			}
 		} else {

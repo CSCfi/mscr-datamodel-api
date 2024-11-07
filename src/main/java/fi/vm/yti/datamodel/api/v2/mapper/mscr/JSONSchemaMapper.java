@@ -1,13 +1,10 @@
 package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jena.rdf.model.Bag;
@@ -20,7 +17,6 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,7 +24,6 @@ import org.topbraid.shacl.vocabulary.SH;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import fi.vm.yti.datamodel.api.index.OpenSearchConnector;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 
 @Service
@@ -188,21 +183,26 @@ public class JSONSchemaMapper {
 		return propertyResource;
 	}
 
-	private Resource handleDatatypeProperty(String propID, Entry<String, JsonNode> entry, Model model, String schemaPID,
+	private Resource handleDatatypeProperty(String propID, JsonNode entry, String key,  Model model, String schemaPID,
 			Resource nodeShapeResource, boolean isRequired, boolean isArrayItem) {
 		
-		String entryType = entry.getValue().has("type") ? entry.getValue().get("type").asText() : "string"; 
-		final String key = URLEncoder.encode(entry.getKey());
-		Resource propertyResource = addDatatypeProperty(propID + "/" + key, entry.getValue(), model,
+		String entryType = entry.has("type") ? entry.get("type").asText() : "string"; 
+		//final String key = URLEncoder.encode(entryKey);
+		Resource propertyResource = addDatatypeProperty(propID + "/" + key, entry, model,
 				schemaPID, entryType);
 		nodeShapeResource.addProperty(SH.property, propertyResource);
 		if (!isArrayItem) {
-			handleRequiredProperty(entry.getValue(), model, propertyResource, isRequired);
+			handleRequiredProperty(entry, model, propertyResource, isRequired);
 		} 
-		if (entry.getValue().get("type") != null && entry.getValue().get("type").asText().equals("string") & entry.getValue().has("pattern")) {
-			propertyResource.addProperty(SH.pattern, entry.getValue().get("pattern").asText());
+		if (entry.get("type") != null && entry.get("type").asText().equals("string") & entry.has("pattern")) {
+			propertyResource.addProperty(SH.pattern, entry.get("pattern").asText());
 		}
 		return propertyResource;
+	}	
+	private Resource handleDatatypeProperty(String propID, Entry<String, JsonNode> entry, Model model, String schemaPID,
+			Resource nodeShapeResource, boolean isRequired, boolean isArrayItem) {
+		final String key = URLEncoder.encode(entry.getKey());
+		return handleDatatypeProperty(propID, entry.getValue(), key, model, schemaPID, nodeShapeResource, isRequired, isArrayItem);
 	}
 	
 	private String capitaliseNodeIdentifier(String propID) {
@@ -213,11 +213,15 @@ public class JSONSchemaMapper {
 	}
 
 	private boolean isLangString(Entry <String, JsonNode> entry) {
-		if(entry.getValue().has("@type")) {			
-			return entry.getValue().get("@type").asText().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString");
+		return isLangString(entry.getValue());
+	}
+	
+	private boolean isLangString(JsonNode entry) {
+		if(entry.has("@type")) {			
+			return entry.get("@type").asText().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString");
 		}
 		return false;
-	}
+	}	
 	
 	private boolean isArray(Entry <String, JsonNode> entry) {
 		return entry.getValue().get("type").asText().equals("array");
@@ -226,13 +230,57 @@ public class JSONSchemaMapper {
 	private boolean isObject(Entry <String, JsonNode> entry) {
 		return entry.getValue().get("type").asText().equals("object");
 	}
-	
+
 	private boolean hasObjectItems(Entry <String, JsonNode> entry) {
 		
-		return (entry.getValue().has("items") && entry.getValue().get("items").has("type") 
-			 && entry.getValue().get("items").get("type").asText().equals("object"));
+		return hasObjectItems(entry.getValue());
 	}
 	
+	private boolean hasObjectItems(JsonNode entry) {
+		
+		return (entry.has("items") && entry.get("items").has("type") 
+			 && entry.get("items").get("type").asText().equals("object"));
+	}
+	
+	private void handleArray(String propID, JsonNode entry, String key, String schemaPID, Model model, Map<String, JsonNode> definitions) {
+		String propIDCapitalised = capitaliseNodeIdentifier(propID);
+		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
+		
+		Resource propertyShape = null;
+		if(isLangString(entry)) {
+			propertyShape = handleDatatypeProperty(propIDCapitalised, entry, key, model, schemaPID, nodeShapeResource, false, true);
+		}					
+		else {
+			propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry, model, schemaPID,
+					schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
+			if(entry.has("@id")) {
+				propertyShape.addProperty(MSCR.qname, model.createResource(entry.get("@id").asText()));			
+			}
+			if(entry.has("namespace")) {
+				propertyShape.addProperty(MSCR.namespace, model.createResource(entry.get("namespace").asText()));			
+			}
+
+			nodeShapeResource.addProperty(SH.property, propertyShape);
+			
+			if (hasObjectItems(entry)) {
+				handleObject(propIDCapitalised + "/" + key, entry.get("items"), schemaPID, model, definitions);
+			}
+			else {
+				if(!entry.has("items")) {
+					logger.warn("Array property " + key + " does not have any items. Skipping.");
+				}
+				else {
+					Entry<String, JsonNode> arrayItem = Map.entry(key, entry.get("items"));
+					propertyShape.removeAll(DCTerms.type); // TODO: remove this hack
+					propertyShape.removeAll(SH.node);
+					propertyShape = handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);					
+				}
+			}							
+			if(entry.get("maxItems") != null && entry.get("maxItems").asText(null) != null &&  !entry.get("maxItems").asText().equals("unbounded")) {
+				propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.get("maxItems").asInt()));
+			}								
+		}
+	}
 	/**
 	 * 
 	 * Handles an object property and creates the corresponding SHACL (Node)Shape.
@@ -243,7 +291,6 @@ public class JSONSchemaMapper {
 	 * @param model     The RDF model.
 	 */
 	public void handleObject(String propID, JsonNode node, String schemaPID, Model model, Map<String, JsonNode> definitions) {
-
 		String propIDCapitalised = capitaliseNodeIdentifier(propID);
 		String nameProperty = propID.substring(propID.lastIndexOf("/") + 1);		
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
@@ -251,27 +298,57 @@ public class JSONSchemaMapper {
 		nodeShapeResource.addProperty(RDF.type, (SH.NodeShape));
 		
 		if(schemaPID.indexOf(":definition") < 0) {
-			nodeShapeResource.addProperty(SH.name, nameProperty);
-			nodeShapeResource.addProperty(MSCR.localName, nameProperty);
+			if(node.has("title")) {
+				String nodeTitle = node.get("title").textValue(); 
+				nodeShapeResource.addProperty(SH.name, nodeTitle);
+				nodeShapeResource.addProperty(MSCR.localName, nodeTitle);
+			}
+			else {
+				nodeShapeResource.addProperty(SH.name, nameProperty);
+				nodeShapeResource.addProperty(MSCR.localName, nameProperty);
+			}
 		}
 		
 		
-		if (node == null || node.get("properties") == null) 
+		
+		if (node == null || (node.get("properties") == null && node.get("items") == null)) 
 			return;
 		if (node.has("description"))
-			nodeShapeResource.addProperty(DCTerms.description, node.get("description").asText());
+			nodeShapeResource.addProperty(SH.description, node.get("description").asText());
 		if (node.has("additionalProperties"))
 			nodeShapeResource.addProperty(SH.closed, model.createTypedLiteral(!node.get("additionalProperties").asBoolean()));
 		if(node.has("namespace")) {
 			nodeShapeResource.addProperty(MSCR.namespace, model.createResource(node.get("namespace").asText()));			
+		}
+		JsonNode type = node.get("type");
+		if(type != null) {
+			if(type.textValue().equals("array")) {
+				if(node.get("maxItems") != null && node.get("maxItems").asText(null) != null &&  !node.get("maxItems").asText().equals("unbounded")) {
+					nodeShapeResource.addLiteral(SH.maxCount, model.createTypedLiteral(node.get("maxItems").asInt()));
+				}								
+			}
+			else {
+				nodeShapeResource.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
+			}
+		}
+		else {
+			// defaults
+			nodeShapeResource.addLiteral(SH.maxCount, model.createTypedLiteral(1));
+			
 		}
 		
 		/*
 		 * Iterate over properties If a property is an array or object – add and
 		 * recursively iterate over them. If a property is a datatype or literal – it's just added.
 		 */
-
-		Iterator<Entry<String, JsonNode>> propertiesIterator = node.get("properties").fields();
+		
+		Iterator<Entry<String, JsonNode>> propertiesIterator = null;
+		if(node.has("properties")) {
+			propertiesIterator = node.get("properties").fields();	
+		}
+		else {
+			propertiesIterator = node.get("items").get("properties").fields();
+		}
 		while (propertiesIterator.hasNext()) {
 			
 
@@ -311,44 +388,7 @@ public class JSONSchemaMapper {
 				handleObject(propIDCapitalised + "/" + key, entry.getValue(), schemaPID, model,definitions);	
 			}
 			else if (valueType.equals("array")) {
-				if(isLangString(entry)) {
-					Entry<String, JsonNode> item = Map.entry(key, entry.getValue());
-					propertyShape = handleDatatypeProperty(propIDCapitalised, item, model, schemaPID, nodeShapeResource, false, true);
-				}					
-				else {
-					propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
-							schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
-					if(entry.getValue().has("@id")) {
-						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
-					}
-					if(entry.getValue().has("namespace")) {
-						propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
-					}
-
-					nodeShapeResource.addProperty(SH.property, propertyShape);
-					
-					if (hasObjectItems(entry)) {
-						handleObject(propIDCapitalised + "/" + key, entry.getValue().get("items"), schemaPID, model, definitions);
-					}
-					else {
-						if(!entry.getValue().has("items")) {
-							logger.warn("Array property " + entry.getKey() + " does not have any items. Skipping.");
-						}
-						else {
-							Entry<String, JsonNode> arrayItem = Map.entry(key, entry.getValue().get("items"));
-							propertyShape.removeAll(DCTerms.type); // TODO: remove this hack
-							propertyShape.removeAll(SH.node);
-							propertyShape = handleDatatypeProperty(propIDCapitalised, arrayItem, model, schemaPID, nodeShapeResource, false, true);
-							
-						}
-					}
-									
-					if(entry.getValue().get("maxItems") != null && entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
-						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
-					}					
-					
-				}
-				
+				handleArray(propID, entry.getValue(), key, schemaPID, model, definitions);
 			}
 			else {
 				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));								
