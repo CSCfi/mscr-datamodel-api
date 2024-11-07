@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
@@ -255,14 +256,14 @@ public class SchemaServiceTest {
 		b.add("two");
 		model.add(model.createResource(schemaPID + "#root/string"), SH.in, b);
 		*/
-//		model.write(System.out, "TURTLE");
+		model.write(System.out, "TURTLE");
 		
 		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/string"), SH.in));		
-		Bag strings = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/string"), SH.in).getBag();
+		RDFList strings = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/string"), SH.in).getList();
 		assertEquals(2, strings.size());
 
 		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in));		
-		Bag defaultwithouttype = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in).getBag();
+		RDFList defaultwithouttype = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in).getList();
 		assertEquals(2, defaultwithouttype.size());
 		
 		List<String> stringList = new ArrayList<String>();
@@ -280,7 +281,7 @@ public class SchemaServiceTest {
 		*/
 
 		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/integer"), SH.in));
-		Bag integers = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/integer"), SH.in).getBag();
+		RDFList integers = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/integer"), SH.in).getList();
 		assertEquals(3, integers.size());
 		
 		

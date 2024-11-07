@@ -30,16 +30,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+               ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -386,19 +377,8 @@
                 <http://www.clarin.eu/cmd/1ResourceType> ;
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
-        <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Metadata" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Resource" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "SearchService" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "SearchPage" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "LandingPage"
-                ] ;
+        <http://www.w3.org/ns/shacl#in> 
+        ( "Metadata" "Resource" "SearchService" "SearchPage" "LandingPage") ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -616,18 +596,9 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Male" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Female" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "NAP" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "Unknown"
-                ] ;
+                (
+                          "Male" "Female" "NAP" "Unspecified" "Unknown"
+                ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -1205,18 +1176,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Male" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Female" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "NAP" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "Unknown"
-                ] ;
+                ( "Male"  "Female" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -1272,16 +1232,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" "Unknown" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -1510,16 +1461,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -1964,16 +1906,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -2708,18 +2641,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Male" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Female" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "NAP" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "Unknown"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -3172,16 +3094,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -4126,16 +4039,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -4154,16 +4058,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -4544,18 +4439,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Male" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Female" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "NAP" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "Unknown"
-                ] ;
+                ( "Unspecified" ) ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>
@@ -4798,16 +4682,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Unspecified" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "true" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "false"
-                ] ;
+                ( "Unspecified" "Unknown" );
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#minCount>

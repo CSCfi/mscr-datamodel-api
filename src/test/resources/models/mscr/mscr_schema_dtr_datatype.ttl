@@ -200,20 +200,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "none" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "local" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "cloud" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "other" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
-                          "N/A"
-                ] ;
+                ( "none"  "local" "cloud" "unknown" "other" "N/A") ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -348,10 +335,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "zip"
-                ] ;
+                ( "zip");
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -427,20 +411,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "academic" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "public" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "regional" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "other" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
-                          "license only"
-                ] ;
+                ( "academic" "public" "regional" "other" "unknown" "license only");
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -564,12 +535,7 @@
         <http://www.w3.org/ns/shacl#defaultValue>
                 "development" ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "production" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "development"
-                ] ;
+                ( "production" "development" ) ;                
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -588,14 +554,7 @@
         <http://www.w3.org/ns/shacl#description>
                 "Integration level: Integrated (fully integrated), External (some parameters must be supplied by the user) and Local (download and install the application locally)" ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Integrated" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "External" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "Local"
-                ] ;
+                ( "Integrated" "External"  "Local") ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -623,10 +582,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "2"
-                ] ;
+                ( "2") ;
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -641,98 +597,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "Constituency Parsing" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_10>
-                          "Hyphenation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_11>
-                          "Inclusion detection" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_12>
-                          "Keyword Extractor" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_13>
-                          "Lemmatization" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_14>
-                          "Lookup Tools" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_15>
-                          "Machine Translation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_16>
-                          "Metadata Processing" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_17>
-                          "Morpho-syntactic tagger" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_18>
-                          "Morphological Analysis" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_19>
-                          "N-Gramming" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "Coreference Resolution" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_20>
-                          "Named Entity Recognition" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_21>
-                          "Named Entity Relation Detection" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_22>
-                          "NLP suite for Dutch" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_23>
-                          "Optical Character Recognition" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_24>
-                          "Part-Of-Speech Tagging" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_25>
-                          "Relation between name entities detection" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_26>
-                          "Sentiment Analysis" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_27>
-                          "Shallow Parsing" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_28>
-                          "Spatial expression detection" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_29>
-                          "Speech analysis" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "Data Conversion" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_30>
-                          "Speech Recognition" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_31>
-                          "Speech segmentation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_32>
-                          "Speech transcription" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_33>
-                          "Spelling correction" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_34>
-                          "Stylometry" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_35>
-                          "Text Analytics" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_36>
-                          "Text Enhancement" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_37>
-                          "Text Normalisation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_38>
-                          "Text Summarization" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_39>
-                          "TF, IDF, TF-IDF calculation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "Dependency Parsing" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_40>
-                          "Tokenisation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_41>
-                          "Topic Modelling" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_42>
-                          "Transliteration" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_43>
-                          "Visualisation of 3D models" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_44>
-                          "Visualisation of Geographic Data" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_45>
-                          "Word sense disambiguation" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "Distant Reading" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
-                          "Editing" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_7>
-                          "Extraction of Polish terminology" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_8>
-                          "Grapheme to Phoneme Conversion" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_9>
-                          "Handwritten Text Recognition"
-                ] ;
+                ( "Constituency Parsing" "Hyphenation" "Inclusion detection" "Keyword Extractor") ;                
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
@@ -1182,22 +1047,7 @@
         <http://www.w3.org/ns/shacl#datatype>
                 <http://www.w3.org/2001/XMLSchema#string> ;
         <http://www.w3.org/ns/shacl#in>
-                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
-                          "singleUser" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
-                          "smallGroups" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>
-                          "classroomSize" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_4>
-                          "lectureSize" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_5>
-                          "unlimited" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6>
-                          "unknown" ;
-                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_7>
-                          "other"
-                ] ;
+                ( "singleUser"  "smallGroups" "classroomSize" "lectureSize" "unlimited" "unknown" "other");
         <http://www.w3.org/ns/shacl#maxCount>
                 "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
         <http://www.w3.org/ns/shacl#name>
