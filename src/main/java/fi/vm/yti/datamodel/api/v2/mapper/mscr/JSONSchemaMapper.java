@@ -7,10 +7,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFList;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
@@ -85,18 +86,18 @@ public class JSONSchemaMapper {
 				} 
 				else if(key == "enum") {
 					if (!propertyNode.isEmpty()) {
-						Bag bag = model.createBag();
+						RDFList list = model.createList(new RDFNode[] {});					
 						String nodeType = node.has("type") ? node.get("type").asText() : "string";
 						for(int i = 0; i < propertyNode.size(); i++){
 							if (nodeType.equals("boolean"))
-								bag.add(model.createTypedLiteral(propertyNode.get(i).asBoolean())); 
+								list = list.with(model.createTypedLiteral(propertyNode.get(i).asBoolean())); 
 							else if (nodeType.equals("integer"))
-								bag.add(model.createTypedLiteral(propertyNode.get(i).numberValue()));
+								list = list.with(model.createTypedLiteral(propertyNode.get(i).numberValue()));
 							else 
-								bag.add(model.createLiteral(propertyNode.get(i).asText()));
+								list = list.with(model.createLiteral(propertyNode.get(i).asText()));
 						}	
 						
-						propertyResource.addProperty(SH.in,	bag);
+						propertyResource.addProperty(SH.in,	list);
 					} 
 				}
 				else {

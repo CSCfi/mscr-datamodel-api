@@ -316,7 +316,14 @@ public class JsonSchemaWriter {
 					prop.add("minLength", minLength);					
 				}
 				
-				// enum
+				if(propRes.hasProperty(SH.in)) {
+					RDFList values = propRes.getProperty(SH.in).getList();
+					List<String> valuesList = new ArrayList<String>();					
+					for(RDFNode _value : values.asJavaList()) {
+						valuesList.add(_value.asLiteral().getString());
+					}
+					prop.add("valuesIn", Json.createArrayBuilder(valuesList).build());
+				}
 				
 				JsonObject propObj = prop.build();
 				properties.add(refKey, propObj);

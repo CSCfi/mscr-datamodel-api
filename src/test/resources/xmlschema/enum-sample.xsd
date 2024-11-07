@@ -1,0 +1,13 @@
+ <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://tempuri.org/po.xsd#"
+               xmlns="http://tempuri.org/po.xsd#" elementFormDefault="qualified">
+
+	<xs:element name="color">
+	   <xs:simpleType>
+	      <xs:restriction base="xs:string">
+	          <xs:enumeration value="green"/>
+	          <xs:enumeration value="red"/>
+	          <xs:enumeration value="blue"/>
+	      </xs:restriction>
+	   </xs:simpleType>
+	</xs:element>
+</xs:schema>
