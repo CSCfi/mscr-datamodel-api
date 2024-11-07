@@ -10,8 +10,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
@@ -268,6 +271,25 @@ public class SchemaService {
 						
 					}
 					np.addProperty(SH.path, r.getPropertyResourceValue(SH.path));
+					if(r.hasProperty(SH.maxCount)) {
+						np.addProperty(SH.maxCount, r.getPropertyResourceValue(SH.maxCount));
+					}
+					if(r.hasProperty(SH.description)) {
+						np.addProperty(SH.description, r.getPropertyResourceValue(SH.description));
+					}
+					if(r.hasProperty(SH.name)) {
+						np.addProperty(SH.name, r.getPropertyResourceValue(SH.name));
+					}
+					if(r.hasProperty(SH.in)) {
+						
+						RDFList list = r.getRequiredProperty(SH.in).getList();
+						List<RDFNode> elements = new ArrayList<RDFNode>();
+						for(RDFNode node : list.asJavaList()) {
+							elements.add(node);
+						}
+						RDFList newList = m.createList((RDFNode[])elements.toArray());
+						np.addProperty(SH.in, newList);
+					}
 					m.remove(p, SH.property, r);
 					p.addProperty(SH.property, np);
 				}

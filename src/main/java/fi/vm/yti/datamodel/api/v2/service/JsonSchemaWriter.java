@@ -23,6 +23,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Alt;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
+import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
@@ -1059,7 +1060,18 @@ public class JsonSchemaWriter {
 			}
 			psProps.put("description", descs.get("en"));
 			
-
+			if(ps.hasProperty(SH.in)) {
+				RDFList values = ps.getProperty(SH.in).getList();
+				List<String> valuesList = new ArrayList<String>();
+				for(RDFNode node : values.asJavaList()) {
+					valuesList.add(node.asLiteral().getString());
+				}
+				psProps.put("valuesIn", valuesList);
+			}
+			
+			if(ps.hasProperty(SH.maxCount)) {
+				psProps.put("maxCount", ""+ps.getProperty(SH.maxCount).getInt());
+			}
 			Object datatype = "object";
 			if (ps.hasProperty(SH.node)) {
 
