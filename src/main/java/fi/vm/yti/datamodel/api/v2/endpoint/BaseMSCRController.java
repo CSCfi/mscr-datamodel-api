@@ -59,7 +59,7 @@ public abstract class BaseMSCRController {
     		}
     		else {
         		return ResponseEntity.ok()    				
-        				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + pid + getFileExtensionFromFormat(format))
+        				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + pid + getSchemaFileExtensionFromFormat(format))
         				.contentType(MediaType.parseMediaTypes(file.contentType()).get(0))
         				.body(file.data());		    	
     			
@@ -92,7 +92,29 @@ public abstract class BaseMSCRController {
     	}		
 	}
 	
-	private String getFileExtensionFromFormat(String format) {
+	public static String getCrosswalkFileExtensionFromFormat(String format) {
+		switch (format) {
+		case "PDF": {
+			return ".pdf";
+		}
+		case "CSV": {
+			return ".csv";
+		}
+		case "XSLT": {
+			return ".xml";
+		}
+		case "SSSOM": {
+			return ".csv";
+		}
+		case "MSCR": {
+			return ".json";
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + format);
+		}
+	}
+	
+	public static String getSchemaFileExtensionFromFormat(String format) {
 		
 		switch (format) {
 		case "CSV": {			

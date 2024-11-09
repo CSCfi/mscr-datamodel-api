@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -41,7 +42,9 @@ import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
+import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
@@ -211,7 +214,8 @@ public class CrosswalkMapper {
 		dto.setLanguages(MapperUtils.arrayPropertyToSet(modelResource, DCTerms.language));
 
 		// Label
-		dto.setLabel(MapperUtils.localizedPropertyToMap(modelResource, RDFS.label));
+		Map<String, String> labels = MapperUtils.localizedPropertyToMap(modelResource, RDFS.label);
+		dto.setLabel(labels);
 
 		// Description
 		dto.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));
@@ -222,16 +226,22 @@ public class CrosswalkMapper {
         MapperUtils.mapCreationInfo(dto, modelResource, userMapper);
         dto.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
 
+        String versionLabel = MapperUtils.propertyToString(modelResource, MSCR.versionLabel);
+        CrosswalkFormat format = CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format));
+
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllCrosswalkFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename(), timestampFormat.format(file.timestamp())));
+			String filename = labels.get("en") + "-" + versionLabel + BaseMSCRController.getCrosswalkFileExtensionFromFormat(format.name());
+			String contentType = format.name();
+
+			fileMetadatas.add(new FileMetadata(contentType, file.dataSize(), file.fileID(), filename, timestampFormat.format(file.timestamp())));
 		});
 		dto.setFileMetadata(fileMetadatas);
 		
-		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		dto.setFormat(format);
 		
-		dto.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
+		dto.setVersionLabel(versionLabel);
 		
 		dto.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
 		

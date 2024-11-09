@@ -44,6 +44,7 @@ import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.dto.Variant;
+import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
@@ -288,7 +289,8 @@ public class SchemaMapper {
 		schemaInfoDTO.setLanguages(MapperUtils.arrayPropertyToSet(modelResource, DCTerms.language));
 
 		// Label
-		schemaInfoDTO.setLabel(MapperUtils.localizedPropertyToMap(modelResource, RDFS.label));
+		Map<String, String> labels = MapperUtils.localizedPropertyToMap(modelResource, RDFS.label);
+		schemaInfoDTO.setLabel(labels);
 
 		// Description
 		schemaInfoDTO.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));
@@ -299,17 +301,21 @@ public class SchemaMapper {
         MapperUtils.mapCreationInfo(schemaInfoDTO, modelResource, userMapper);
         schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
 
+        String versionLabel = MapperUtils.propertyToString(modelResource, MSCR.versionLabel);
+        SchemaFormat format = SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format));
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();
 		retrievedSchemaFiles.forEach(file -> {
-			fileMetadatas.add(new FileMetadata(file.contentType(), file.dataSize(), file.fileID(), file.filename(), timestampFormat.format(file.timestamp())));
+			String filename = labels.get("en") + "-" + versionLabel + BaseMSCRController.getSchemaFileExtensionFromFormat(format.name());
+			String contentType = format.name();
+			fileMetadatas.add(new FileMetadata(contentType, file.dataSize(), file.fileID(), filename, timestampFormat.format(file.timestamp())));
 		});
 		schemaInfoDTO.setFileMetadata(fileMetadatas);
 		
-		schemaInfoDTO.setFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		schemaInfoDTO.setFormat(format);
 		
 		schemaInfoDTO.setNamespace(MapperUtils.propertyToString(modelResource, MSCR.namespace));
-		schemaInfoDTO.setVersionLabel(MapperUtils.propertyToString(modelResource, MSCR.versionLabel));
+		schemaInfoDTO.setVersionLabel(versionLabel);
 		
 		schemaInfoDTO.setAggregationKey(MapperUtils.propertyToString(modelResource, MSCR.aggregationKey));
 		
