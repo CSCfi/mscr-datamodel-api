@@ -301,7 +301,7 @@ public class Schema extends BaseMSCRController {
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action);
 			if (action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if (prevSchema.getHasRevisions() != null && prevSchema.getHasRevisions().size() > 1) {
+				if (prevSchema.getRevisions() != null && prevSchema.getRevisions().size() > 1) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 							"Revisions can only be created from the latest revision. Check your target PID.");
 				}

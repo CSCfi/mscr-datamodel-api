@@ -286,7 +286,7 @@ public class Crosswalk extends BaseMSCRController {
 			dto = mergeMetadata(prev, dto, action);			
 			if(action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if(prev.getHasRevisions() != null && !prev.getHasRevisions().isEmpty()) {
+				if(prev.getRevisions() != null && prev.getRevisions().size() > 1) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
 				}
 				aggregationKey = prev.getAggregationKey();
