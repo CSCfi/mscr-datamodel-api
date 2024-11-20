@@ -271,23 +271,27 @@ public class SchemaService {
 						
 					}
 					np.addProperty(SH.path, r.getPropertyResourceValue(SH.path));
+					if(r.hasProperty(SH.minCount)) {
+						np.addProperty(SH.minCount, r.getProperty(SH.minCount).getLiteral());
+					}
 					if(r.hasProperty(SH.maxCount)) {
-						np.addProperty(SH.maxCount, r.getPropertyResourceValue(SH.maxCount));
+						np.addProperty(SH.maxCount, r.getProperty(SH.maxCount).getLiteral());
 					}
 					if(r.hasProperty(SH.description)) {
-						np.addProperty(SH.description, r.getPropertyResourceValue(SH.description));
+						np.addProperty(SH.description, r.getProperty(SH.description).getLiteral());
 					}
 					if(r.hasProperty(SH.name)) {
-						np.addProperty(SH.name, r.getPropertyResourceValue(SH.name));
+						np.addProperty(SH.name, r.getProperty(SH.name).getLiteral());
 					}
 					if(r.hasProperty(SH.in)) {
 						
 						RDFList list = r.getRequiredProperty(SH.in).getList();
 						List<RDFNode> elements = new ArrayList<RDFNode>();
 						for(RDFNode node : list.asJavaList()) {
-							elements.add(node);
+							elements.add((RDFNode)node);
 						}
-						RDFList newList = m.createList((RDFNode[])elements.toArray());
+						
+						RDFList newList = m.createList(elements.toArray(new RDFNode[0]));
 						np.addProperty(SH.in, newList);
 					}
 					m.remove(p, SH.property, r);
