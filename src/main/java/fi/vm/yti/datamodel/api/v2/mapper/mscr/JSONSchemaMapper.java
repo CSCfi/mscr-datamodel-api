@@ -348,106 +348,112 @@ public class JSONSchemaMapper {
 			propertiesIterator = node.get("properties").fields();	
 		}
 		else {
-			propertiesIterator = node.get("items").get("properties").fields();
+			if(node.get("items").has("properties")) {
+				propertiesIterator = node.get("items").get("properties").fields();	
+			}
+			
 		}
-		while (propertiesIterator.hasNext()) {
-			
-
-			
-			Entry<String, JsonNode> entry = propertiesIterator.next();
-			String valueType = "string"; // default value
-			if (entry.getKey().startsWith("_") || entry.getKey().startsWith("$"))
-				continue;
-			if (entry.getValue().get("type") != null) {
-				valueType = entry.getValue().get("type").asText();
-			}
-			final String key = URLEncoder.encode(entry.getKey());
-			Resource propertyShape = null;
-			
-			
-			if (valueType.equals("object")) {
-				propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
-						schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
-				if(entry.getValue().has("@id")) {
-					propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
+		
+		if(propertiesIterator != null) {
+			while (propertiesIterator.hasNext()) {
+				
+	
+				
+				Entry<String, JsonNode> entry = propertiesIterator.next();
+				String valueType = "string"; // default value
+				if (entry.getKey().startsWith("_") || entry.getKey().startsWith("$"))
+					continue;
+				if (entry.getValue().get("type") != null) {
+					valueType = entry.getValue().get("type").asText();
 				}
-				if(entry.getValue().has("namespace")) {
-					propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
-				}
-				// default max
-				if(!entry.getValue().has("maxItems")) {
-					propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
-				}
-				else {
-					if(entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
-						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
+				final String key = URLEncoder.encode(entry.getKey());
+				Resource propertyShape = null;
+				
+				
+				if (valueType.equals("object")) {
+					propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
+							schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
+					if(entry.getValue().has("@id")) {
+						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
 					}
-					
-				}
-				
-				nodeShapeResource.addProperty(SH.property, propertyShape);
-				handleObject(propIDCapitalised + "/" + key, entry.getValue(), schemaPID, model,definitions);	
-			}
-			else if (valueType.equals("array")) {
-				handleArray(propID, entry.getValue(), key, schemaPID, model, definitions);
-			}
-			else {
-				boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));								
-				propertyShape = handleDatatypeProperty(propIDCapitalised, entry, model, schemaPID, nodeShapeResource, isRequired, false);
-				if(entry.getValue().has("sourceType")) {
-					propertyShape.addProperty(MSCR.sourceType, MSCR.sourceTypeAttribute);
-				}
-
-				// default max
-				if(!entry.getValue().has("maxItems")) {
-					propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
-				}
-				else {					
-					if(entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
-						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
-					}					
-				}
-				if(entry.getValue().has("@id")) {
-					propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
-				}
-				if(entry.getValue().has("namespace")) {
-					propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
-				}
-
-				
-			}
-			if(entry.getValue().get("order") != null) {
-				propertyShape.addLiteral(SH.order, ResourceFactory.createTypedLiteral(entry.getValue().get("order").asInt()));
-			}
-			if(entry.getValue().get("depth") != null) {
-				propertyShape.addLiteral(MSCR.depth, ResourceFactory.createTypedLiteral(entry.getValue().get("depth").asInt()));
-			}
-
-			if (entry.getValue().get("$ref") != null) {
-				String ref = entry.getValue().get("$ref").asText();
-				// TODO: set the class and datatype according to the references definition
-				String shapeName = ref.substring(ref.lastIndexOf("/")+1);
-				JsonNode defObj = definitions.get(shapeName);
-				if(defObj != null) {
-					String targetType = defObj.get("type") != null ? defObj.get("type").asText() : "string";
-					propertyShape.removeAll(SH.datatype);
-					propertyShape.removeAll(DCTerms.type);
-					if(targetType.equals("object")) {
-												
-						propertyShape.addProperty(SH.node, model.createResource(schemaPID + ":definition#" + shapeName + "/" +  shapeName));
-						propertyShape.addProperty(DCTerms.type, OWL.ObjectProperty);
+					if(entry.getValue().has("namespace")) {
+						propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
+					}
+					// default max
+					if(!entry.getValue().has("maxItems")) {
+						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
 					}
 					else {
-						Resource typeResource = XSDTypesMap.get(targetType);
-						propertyShape.addProperty(SH.datatype, typeResource);
-						propertyShape.addProperty(DCTerms.type, OWL.DatatypeProperty);
+						if(entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
+							propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
+						}
+						
 					}
+					
+					nodeShapeResource.addProperty(SH.property, propertyShape);
+					handleObject(propIDCapitalised + "/" + key, entry.getValue(), schemaPID, model,definitions);	
+				}
+				else if (valueType.equals("array")) {
+					handleArray(propID, entry.getValue(), key, schemaPID, model, definitions);
 				}
 				else {
-					throw new RuntimeException("Referenced object "+ shapeName + " not found in definitions.");
+					boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));								
+					propertyShape = handleDatatypeProperty(propIDCapitalised, entry, model, schemaPID, nodeShapeResource, isRequired, false);
+					if(entry.getValue().has("sourceType")) {
+						propertyShape.addProperty(MSCR.sourceType, MSCR.sourceTypeAttribute);
+					}
+	
+					// default max
+					if(!entry.getValue().has("maxItems")) {
+						propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
+					}
+					else {					
+						if(entry.getValue().get("maxItems").asText(null) != null &&  !entry.getValue().get("maxItems").asText().equals("unbounded")) {
+							propertyShape.addLiteral(SH.maxCount, model.createTypedLiteral(entry.getValue().get("maxItems").asInt()));
+						}					
+					}
+					if(entry.getValue().has("@id")) {
+						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
+					}
+					if(entry.getValue().has("namespace")) {
+						propertyShape.addProperty(MSCR.namespace, model.createResource(entry.getValue().get("namespace").asText()));			
+					}
+	
+					
 				}
+				if(entry.getValue().get("order") != null) {
+					propertyShape.addLiteral(SH.order, ResourceFactory.createTypedLiteral(entry.getValue().get("order").asInt()));
+				}
+				if(entry.getValue().get("depth") != null) {
+					propertyShape.addLiteral(MSCR.depth, ResourceFactory.createTypedLiteral(entry.getValue().get("depth").asInt()));
+				}
+	
+				if (entry.getValue().get("$ref") != null) {
+					String ref = entry.getValue().get("$ref").asText();
+					// TODO: set the class and datatype according to the references definition
+					String shapeName = ref.substring(ref.lastIndexOf("/")+1);
+					JsonNode defObj = definitions.get(shapeName);
+					if(defObj != null) {
+						String targetType = defObj.get("type") != null ? defObj.get("type").asText() : "string";
+						propertyShape.removeAll(SH.datatype);
+						propertyShape.removeAll(DCTerms.type);
+						if(targetType.equals("object")) {
+													
+							propertyShape.addProperty(SH.node, model.createResource(schemaPID + ":definition#" + shapeName + "/" +  shapeName));
+							propertyShape.addProperty(DCTerms.type, OWL.ObjectProperty);
+						}
+						else {
+							Resource typeResource = XSDTypesMap.get(targetType);
+							propertyShape.addProperty(SH.datatype, typeResource);
+							propertyShape.addProperty(DCTerms.type, OWL.DatatypeProperty);
+						}
+					}
+					else {
+						throw new RuntimeException("Referenced object "+ shapeName + " not found in definitions.");
+					}
+				}
+	
 			}
-
 		}
 	
 	}
