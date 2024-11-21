@@ -81,7 +81,11 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+    	exclude group: 'com.jayway.jsonpath', module: 'json-path'    	
+    }
+    implementation files('lib/snakeyaml-1.33-custom.jar')
+    
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.security:spring-security-core"
     implementation "org.springframework.boot:spring-boot-starter-tomcat"
@@ -119,7 +123,7 @@ dependencies {
     implementation "org.postgresql:postgresql"
     
     implementation "com.github.fnoio:function-agent-java:v1.1.0"
-    implementation files("lib/json-path-custom-2.8.0.jar")
+    implementation files("lib/json-path-custom-2.8.0.jar")   
     // https://mvnrepository.com/artifact/net.minidev/json-smart
     implementation 'net.minidev:json-smart:2.5.0'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-csv
@@ -158,6 +162,7 @@ dependencies {
     implementation('io.github.zenwave360:json-schema-ref-parser-jvm:0.8.2') {
         exclude group: 'com.jayway.jsonpath'
     }
+    
     // https://mvnrepository.com/artifact/com.github.xmlet/xsdParser
     //implementation group: 'com.github.xmlet', name: 'xsdParser', version: '1.2.4'
     implementation files("lib/xsdParser-1.2.14-SNAPSHOT.jar")
@@ -201,4 +206,5 @@ dependencyCheck {
 }
 configurations {
    all*.exclude group: 'xml-apis'
+   all*.exclude group: 'org.yaml' 
 }
