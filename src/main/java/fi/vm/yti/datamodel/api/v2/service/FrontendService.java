@@ -132,6 +132,7 @@ public class FrontendService {
 		}
 		return tree;
 	}
+	record NodeInfo(String key, Object obj) {}
 	
 	public CrosswalkEditorSchemaDTO getSchema(String contentString, SchemaInfoDTO metadata) throws Exception {
 		ObjectMapper mapper = new ObjectMapper(); // turn into a bean
@@ -144,16 +145,58 @@ public class FrontendService {
 		CrosswalkEditorSchemaDTO dto = new CrosswalkEditorSchemaDTO();
 		dto.setMetadata(metadata);
 		
+		Map<String, Object> definitions = (Map<String, Object>)resultMapOrList.get("definitions");
+
+		if(metadata.getCustomRoot() != null) {
+			// find the root node from the tree 
+			LinkedList q = new LinkedList();
+			q.offer(resultMapOrList);
+			NodeInfo node = findNode(q, metadata.getCustomRoot());
+			if(node != null) {
+				resultMapOrList = new LinkedHashMap<String, Object>();
+				Map<String, Object> properties = new LinkedHashMap<String, Object>();
+				properties.put(node.key, node.obj);
+				resultMapOrList.put("type", "object");
+				resultMapOrList.put("qname", "root");
+				resultMapOrList.put("title", "root");
+				resultMapOrList.put("properties", properties);				
+			}			
+			resultMapOrList.put("definitions", definitions);
+		}
 		Map<String, Object> tree = createTree(resultMapOrList);
-		
 		resultMapOrList.put("tree", tree);
-		
+		resultMapOrList.remove("properties");
+		for(String key : definitions.keySet()) {
+			Object obj = definitions.get(key);
+			if(obj instanceof Map) {
+				((Map)obj).remove("properties");
+			}
+		}		
 		dto.setContent(mapper.valueToTree(resultMapOrList));
 		
 		
 		return dto;
 	}
 	
+	private NodeInfo findNode(Queue q, String customRoot) {
+		if(q.isEmpty()) {
+			return null; // not found
+		}
+		Map<String, Object> map = (Map)q.poll();
+		for(String key : map.keySet()) {
+			Object obj = map.get(key);
+			if(key.equals(customRoot)) {
+				
+				return new NodeInfo(key, obj);
+			}
+			if(obj instanceof Map) {
+				q.offer(obj);
+			}
+ 		}
+		return findNode(q, customRoot);
+		
+	}
+
 	private FunctionDTO createSimpleFilterFunction(String name, String operator) {
 		return new FunctionDTO(
 				name, operator, "", 

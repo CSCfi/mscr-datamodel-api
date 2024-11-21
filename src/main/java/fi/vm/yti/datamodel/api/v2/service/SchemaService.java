@@ -423,10 +423,17 @@ public class SchemaService {
 	}
 	
 	public Model updateRootResourceMetadata(String rootResource, String schemaID, Model model) {
+	
 		Resource modelResource = model.getResource(schemaID);
 		modelResource.removeAll(MSCR.customRoot);
 		if(rootResource != null) {
-			modelResource.addProperty(MSCR.customRoot, model.createResource(rootResource));	
+			String resourcePrefix = schemaID+"#root/Root/";
+			String localName = rootResource.substring((resourcePrefix).length());
+			String encodedLocalName = URLEncoder.encode(localName).replaceAll("%2F", "/");
+			String newRootResource = resourcePrefix + encodedLocalName;
+			newRootResource = newRootResource.replaceAll("/", "-");
+
+			modelResource.addProperty(MSCR.customRoot, model.createResource(newRootResource));	
 		}
 		
 		return model;

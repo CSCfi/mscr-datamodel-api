@@ -937,34 +937,13 @@ public class Schema extends BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schema " + schemaID + " not found");
 			}			
 			check(authorizationManager.hasRightToModelMSCR(schemaID, model));
-			Model contentModel = jenaService.getSchema(schemaID+":content");
 
 			String format = MapperUtils.propertyToString(model.getResource(schemaID), MSCR.format);
-			SchemaFormat schemaFormat = SchemaFormat.valueOf(format);
 			if(!(format.equals(SchemaFormat.JSONSCHEMA.name()) || format.equals(SchemaFormat.XSD.name()) || format.equals(SchemaFormat.SKOSRDF.name()) || format.equals(SchemaFormat.MSCR.name()) )) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Update root resource endpoint is only available for JSONSchema, XSD, SKOSRDF and MSCR formats.");
 			}
-			if(rootResource == null) {
-				schemaService.resetRootResource(schemaID, schemaFormat, contentModel);
-				
-			}
-			else {
-				if(schemaFormat == SchemaFormat.SKOSRDF) {
-					schemaService.setRootResource(schemaID, schemaFormat, rootResource, contentModel);
-				}
-				else {
-					String resourcePrefix = schemaID+"#root/Root/";
-					String localName = rootResource.substring((resourcePrefix).length());
-					String encodedLocalName = URLEncoder.encode(localName).replaceAll("%2F", "/");
-					String newRootResource = resourcePrefix + encodedLocalName;
-					schemaService.setRootResource(schemaID, schemaFormat, newRootResource, contentModel);
-					
-				}
-			}
 			// update metadata 
-			schemaService.updateRootResourceMetadata(rootResource, schemaID, model);
-			
-			jenaService.putToSchema(schemaID+":content", contentModel);
+			schemaService.updateRootResourceMetadata(rootResource, schemaID, model);			
 			jenaService.putToSchema(schemaID, model);
 			return new UpdateResponseDTO("Updated root resource", schemaID);
 
