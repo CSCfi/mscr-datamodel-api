@@ -23,6 +23,7 @@ import org.xmlet.xsdparser.xsdelements.XsdComplexContent;
 import org.xmlet.xsdparser.xsdelements.XsdComplexType;
 import org.xmlet.xsdparser.xsdelements.XsdElement;
 import org.xmlet.xsdparser.xsdelements.XsdExtension;
+import org.xmlet.xsdparser.xsdelements.XsdGroup;
 import org.xmlet.xsdparser.xsdelements.XsdMultipleElements;
 import org.xmlet.xsdparser.xsdelements.XsdRestriction;
 import org.xmlet.xsdparser.xsdelements.XsdSchema;
@@ -671,6 +672,11 @@ public class XSDMapper {
 			}
 			else if (ae instanceof XsdMultipleElements) {
 				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes, depth);
+			}
+			
+			else if (ae instanceof XsdGroup) {
+				XsdGroup group = (XsdGroup)ae;
+				handleMultipleElements(schema, group.getChildElement(), obj, handledTypes, depth);
 			}
 			index++;
 		}
