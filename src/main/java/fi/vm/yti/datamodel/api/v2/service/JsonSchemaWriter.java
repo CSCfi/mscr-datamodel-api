@@ -899,7 +899,7 @@ public class JsonSchemaWriter {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
-		Map<String, Object> rootProperties = new LinkedHashMap<String, Object>();
+		Map<String, Object> rootProperties = new TreeMap<String, Object>();
 		rootDefinition.put("properties", rootProperties);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
@@ -1017,10 +1017,20 @@ public class JsonSchemaWriter {
 						shapeDef.put("@type", typeURI);
 						String typeQName = model.qnameFor(typeURI);
 						if(typeQName != null) {
-							title = typeQName;
+							qname = typeQName;
+						}
+						if(title == null || "".equals(title)) {
+							if(typeQName != null) {
+								title = typeQName;	
+							}
+							else {
+								title = typeURI;
+							}
+							 
 						}
 						
 					}
+					
 
 				}
 				//
@@ -1154,7 +1164,7 @@ public class JsonSchemaWriter {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
-		Map<String, Object> rootProperties = new LinkedHashMap<String, Object>();
+		Map<String, Object> rootProperties = new TreeMap<String, Object>();
 		rootDefinition.put("properties", rootProperties);
 
 		Map<String, Object> schema = new HashMap<String, Object>();
