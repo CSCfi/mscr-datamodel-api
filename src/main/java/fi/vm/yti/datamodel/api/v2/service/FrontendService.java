@@ -166,12 +166,14 @@ public class FrontendService {
 		Map<String, Object> tree = createTree(resultMapOrList);
 		resultMapOrList.put("tree", tree);
 		resultMapOrList.remove("properties");
+		/*
 		for(String key : definitions.keySet()) {
 			Object obj = definitions.get(key);
 			if(obj instanceof Map) {
 				((Map)obj).remove("properties");
 			}
-		}		
+		}
+		*/		
 		dto.setContent(mapper.valueToTree(resultMapOrList));
 		
 		
