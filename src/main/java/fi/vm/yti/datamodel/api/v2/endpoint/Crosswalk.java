@@ -305,7 +305,6 @@ public class Crosswalk extends BaseMSCRController {
 						tempModel.write(tempOutput, "TURTLE");
 						String tempString = FileUtils.readFileToString(tempFile);						
 						tempString = tempString.replaceAll(prev.getPID(), PID);
-						System.out.println(tempString);
 						FileUtils.write(tempFile, tempString); 
 						contentModel = RDFDataMgr.loadModel(tempFile.toURI().toURL().toString(), Lang.TURTLE);
 						tempOutput.close();
