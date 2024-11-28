@@ -981,13 +981,13 @@ public class JsonSchemaWriter {
 
 			addClassMappingSourceProps(shapeID, shapePropsOrdered, definitions);
 
-			String title = s.getLocalName(); // default value
+			String title = "";
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, SH.name);
 			if (!titles.isEmpty()) {
 				title = titles.get("en");
 			}
 						
-			shapeDef.put("qname", qname);
+			
 			
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
 			shapeDef.put("description", descs.get("en"));
@@ -1039,7 +1039,7 @@ public class JsonSchemaWriter {
 				// what happens here?
 			}
 			shapeDef.put("title", title);	
-
+			shapeDef.put("qname", qname);
 			definitions.put(shapeID, shapeDef);
 			
 		});
