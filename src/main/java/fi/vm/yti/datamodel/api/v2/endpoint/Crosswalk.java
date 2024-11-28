@@ -4,6 +4,8 @@ import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,7 +254,7 @@ public class Crosswalk extends BaseMSCRController {
 				Model targetModel = jenaService.getSchemaContent(dto.getTargetSchema());
 				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes, dto.getSourceSchema(), sourceModel, dto.getTargetSchema(), targetModel);
 			}
-			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.MSCR, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
+			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
 				// do nothing
 				contentModel = ModelFactory.createDefaultModel();
 			}
@@ -280,19 +284,32 @@ public class Crosswalk extends BaseMSCRController {
 		logger.info("Create Crosswalk {}", dto);
 		validateActionParams(dto, action, target); 
 		String aggregationKey = null;
+		final String PID = "mscr:crosswalk:" + UUID.randomUUID();
 		Model contentModel = ModelFactory.createDefaultModel();
 		if(action != null) {			
 			CrosswalkInfoDTO prev = getCrosswalkDTO(target, true, action);
 			dto = mergeMetadata(prev, dto, action);			
 			if(action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if(prev.getRevisions() != null && prev.getRevisions().size() > 1) {
+				if(prev.getRevisions() != null && prev.getRevisions().size() > 0 && !prev.getRevisions().get(prev.getRevisions().size() -1).getPid().equals(prev.getPID()) ) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
 				}
 				aggregationKey = prev.getAggregationKey();
 				if(prev.getFormat() == CrosswalkFormat.MSCR) {
 					if(jenaService.doesCrosswalkExist(prev.getPID() + ":content")) {
-						contentModel = jenaService.getCrosswalkContent(prev.getPID());						
+						// This is very ugly temporary fix for the copying content 
+						// TODO: clean up this monstrosity - use base uri for graphs
+						Model tempModel = jenaService.getCrosswalkContent(prev.getPID());
+						File tempFile = File.createTempFile("crosswalk", ".ttl");
+						OutputStream tempOutput = new FileOutputStream(tempFile);
+						tempModel.write(tempOutput, "TURTLE");
+						String tempString = FileUtils.readFileToString(tempFile);						
+						tempString = tempString.replaceAll(prev.getPID(), PID);
+						System.out.println(tempString);
+						FileUtils.write(tempFile, tempString); 
+						contentModel = RDFDataMgr.loadModel(tempFile.toURI().toURL().toString(), Lang.TURTLE);
+						tempOutput.close();
+						tempFile.delete();
 					}
 					
 				}
@@ -309,7 +326,7 @@ public class Crosswalk extends BaseMSCRController {
 				
 			}			
 		}
-		final String PID = "mscr:crosswalk:" + UUID.randomUUID();
+		
 		try {
 			String handle = null;
 			if(dto.getState() == MSCRState.PUBLISHED || dto.getState() == MSCRState.DEPRECATED) {
