@@ -24,7 +24,6 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
@@ -170,8 +169,7 @@ public class Crosswalk extends BaseMSCRController {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
 		checkVisibility(dto);	
-		checkState(null, dto.getState());
-
+		checkState(null, dto.getState());		
 		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser());
 		if(!contentModel.isEmpty()) {
 			jenaService.putToCrosswalk(PID+":content", contentModel);
@@ -494,13 +492,13 @@ public class Crosswalk extends BaseMSCRController {
 	        if(prev.getState() == MSCRState.DRAFT && dto.getState() == MSCRState.PUBLISHED) {
 				try {
 					String handle = PIDService.mint(PIDType.HANDLE, MSCRType.CROSSWALK, pid);
-					jenaModel = mapper.mapToUpdateJenaModel(pid, handle, dto, oldModel, userProvider.getUser());	
+					jenaModel = mapper.mapToUpdateJenaModel(pid, handle, dto, oldModel, userProvider.getUser(), true, prev.getState() != dto.getState());	
 				}catch(Exception ex) {
 					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception while geting a new handle for the schema." + ex.getMessage());
 				}
 			}
 			else {
-				jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, oldModel, userProvider.getUser());	
+				jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, oldModel, userProvider.getUser(), true, prev.getState() != dto.getState());	
 			}
 	        
 	
@@ -600,7 +598,7 @@ public class Crosswalk extends BaseMSCRController {
 				CrosswalkDTO dto = new CrosswalkDTO();
 				dto.setState(MSCRState.REMOVED);
 				dto = mergeMetadata(prev, dto, CONTENT_ACTION.delete);
-				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, ModelFactory.createDefaultModel(), userProvider.getUser());
+				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, dto, ModelFactory.createDefaultModel(), userProvider.getUser(), false, true);
 				var indexModel = mapper.mapToIndexModel(internalID, jenaModel);								
 				jenaService.updateCrosswalk(internalID, jenaModel);
 				if(jenaService.doesCrosswalkExist(internalID+":content")) {

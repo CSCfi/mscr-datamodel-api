@@ -42,7 +42,6 @@ import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
-import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
@@ -88,7 +87,8 @@ public class CrosswalkMapper {
 		dto.getLanguages().forEach(lang -> modelResource.addProperty(DCTerms.language, lang));
 
 		modelResource.addProperty(Iow.contentModified, ResourceFactory.createTypedLiteral(creationDate));
-
+		modelResource.addProperty(Iow.stateModified, ResourceFactory.createTypedLiteral(creationDate));
+		
 		modelResource.addProperty(DCAP.preferredXMLNamespacePrefix, PID);
 		modelResource.addProperty(DCAP.preferredXMLNamespace, modelResource);
 
@@ -138,9 +138,11 @@ public class CrosswalkMapper {
 			modelResource.addProperty(MSCR.aggregationKey, ResourceFactory.createResource(PID));
 		}
 		
-		modelResource.addProperty(MSCR.sourceSchema, ResourceFactory.createResource(dto.getSourceSchema()));
-		modelResource.addProperty(MSCR.targetSchema, ResourceFactory.createResource(dto.getTargetSchema()));
-		
+		Resource sourceSchema = ResourceFactory.createResource(dto.getSourceSchema());
+		Resource targetSchema = ResourceFactory.createResource(dto.getTargetSchema());
+		modelResource.addProperty(MSCR.sourceSchema, sourceSchema);
+		modelResource.addProperty(MSCR.targetSchema, targetSchema);
+
 		if(handle != null) {
 			modelResource.addProperty(MSCR.handle, model.createLiteral(handle));
 		}
@@ -289,7 +291,7 @@ public class CrosswalkMapper {
 		return dto;
 	}
 	
-	public Model mapToUpdateJenaModel(String pid, String handle, CrosswalkDTO dto, Model model, YtiUser user) {
+	public Model mapToUpdateJenaModel(String pid, String handle, CrosswalkDTO dto, Model model, YtiUser user, boolean isMetadataUpdate, boolean isStateUpdate) {
         var updateDate = new XSDDateTime(Calendar.getInstance());
         var modelResource = model.getResource(pid);
         var modelType = MapperUtils.getModelTypeFromResource(modelResource);
@@ -328,10 +330,15 @@ public class CrosswalkMapper {
             addOrgsToModel(dto, modelResource);
         }
 
+        if(isMetadataUpdate) {            
+            modelResource.removeAll(DCTerms.modified);
+            modelResource.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(updateDate));
+        }
+        if(isStateUpdate) {
+            modelResource.removeAll(Iow.stateModified);
+            modelResource.addProperty(Iow.stateModified, ResourceFactory.createTypedLiteral(updateDate));
+        } 
 
-
-        modelResource.removeAll(DCTerms.modified);
-        modelResource.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(updateDate));
         modelResource.removeAll(Iow.modifier);
         modelResource.addProperty(Iow.modifier, user.getId().toString());
         
@@ -379,7 +386,7 @@ public class CrosswalkMapper {
         var indexModel = new IndexCrosswalk();
         indexModel.setId(pid);
         indexModel.setStatus(Status.valueOf(resource.getProperty(OWL.versionInfo).getString()));
-        indexModel.setModified(resource.getProperty(DCTerms.modified).getString());
+        indexModel.setModified(resource.getProperty(DCTerms.modified).getString());        
         if(resource.getProperty(DCTerms.created) != null) {
             indexModel.setCreated(resource.getProperty(DCTerms.created).getString());        	
         }
@@ -387,6 +394,11 @@ public class CrosswalkMapper {
         if(contentModified != null) {
             indexModel.setContentModified(contentModified.getString());
         }
+        var stateModified = resource.getProperty(Iow.stateModified);
+        if(stateModified != null) {
+            indexModel.setStateModified(stateModified.getString());
+        }
+        
         indexModel.setType(MSCRType.CROSSWALK);
 
         indexModel.setPrefix(pid); 
@@ -447,7 +459,7 @@ public class CrosswalkMapper {
         	indexModel.setSourceSchema(resource.getPropertyResourceValue(MSCR.sourceSchema).getURI());
         }
         if(resource.hasProperty(MSCR.targetSchema)) {
-        	indexModel.setTargetSchema(resource.getPropertyResourceValue(MSCR.targetSchema).getURI());
+        	indexModel.setTargetSchema(resource.getPropertyResourceValue(MSCR.targetSchema).getURI());	
         }
         indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
         indexModel.setSourceURL(MapperUtils.propertyToString(resource, MSCR.sourceURL));

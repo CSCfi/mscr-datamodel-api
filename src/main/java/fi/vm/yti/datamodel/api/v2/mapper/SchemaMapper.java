@@ -88,7 +88,9 @@ public class SchemaMapper {
 
 		schemaDTO.getLanguages().forEach(lang -> modelResource.addProperty(DCTerms.language, lang));
 
+		// this method is called only when the schema is created
 		modelResource.addProperty(Iow.contentModified, ResourceFactory.createTypedLiteral(creationDate));
+		modelResource.addProperty(Iow.stateModified, ResourceFactory.createTypedLiteral(creationDate));
 
 		modelResource.addProperty(DCAP.preferredXMLNamespacePrefix, PID);
 		modelResource.addProperty(DCAP.preferredXMLNamespace, modelResource);
@@ -148,8 +150,7 @@ public class SchemaMapper {
 		return model;
 	}
 
-	public Model mapToUpdateJenaModel(String pid, String handle, SchemaDTO dto, Model model, YtiUser user) {
-        var updateDate = new XSDDateTime(Calendar.getInstance());
+	public Model mapToUpdateJenaModel(String pid, String handle, SchemaDTO dto, Model model, YtiUser user, boolean isMetadataUpdate, boolean isStateUpdate) {
         var modelResource = model.getResource(pid);
 
         //update languages before getting and using the languages for localized properties
@@ -195,9 +196,15 @@ public class SchemaMapper {
             modelResource.removeAll(DCTerms.contributor);
             addOrgsToModel(dto, modelResource);
         }
-
-        modelResource.removeAll(DCTerms.modified);
-        modelResource.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(updateDate));
+        var updateDate = new XSDDateTime(Calendar.getInstance());
+        if(isMetadataUpdate) {            
+            modelResource.removeAll(DCTerms.modified);
+            modelResource.addProperty(DCTerms.modified, ResourceFactory.createTypedLiteral(updateDate));
+        }
+        if(isStateUpdate) {
+            modelResource.removeAll(Iow.stateModified);
+            modelResource.addProperty(Iow.stateModified, ResourceFactory.createTypedLiteral(updateDate));
+        }        
         modelResource.removeAll(Iow.modifier);
         modelResource.addProperty(Iow.modifier, user.getId().toString());
         
@@ -422,6 +429,11 @@ public class SchemaMapper {
         if(contentModified != null) {
             indexModel.setContentModified(contentModified.getString());
         }
+        var stateModified = resource.getProperty(Iow.stateModified);
+        if(stateModified != null) {
+            indexModel.setStateModified(stateModified.getString());
+        }
+        
         indexModel.setType(MSCRType.SCHEMA);
         indexModel.setPrefix(pid);
         indexModel.setLabel(MapperUtils.localizedPropertyToMap(resource, RDFS.label));

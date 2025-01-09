@@ -16,6 +16,7 @@ import fi.vm.yti.datamodel.api.v2.dto.UserDTO;
 public class IndexSchema extends IndexBase {
 
     private String contentModified;
+    private String stateModified;
 	private MSCRType type;
 	private MSCRState state;
 	private MSCRVisibility visibility;
@@ -62,8 +63,16 @@ public class IndexSchema extends IndexBase {
     public void setContentModified(String contentModified) {
         this.contentModified = contentModified;
     }
+    
+    public String getStateModified() {
+		return stateModified;
+	}
 
-    public String getPrefix() {
+	public void setStateModified(String stateModified) {
+		this.stateModified = stateModified;
+	}
+
+	public String getPrefix() {
         return prefix;
     }
 

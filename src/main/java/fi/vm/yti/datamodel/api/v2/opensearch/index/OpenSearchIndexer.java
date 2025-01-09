@@ -300,6 +300,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.isPartOf, "?isPartOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.stateModified, "?stateModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.format, "?format");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
@@ -350,6 +351,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.stateModified, "?stateModified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDFS.isDefinedBy, "?isDefinedBy");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, RDFS.comment, "?note");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, RDFS.subClassOf, "?subClassOf");
@@ -373,7 +375,9 @@ public class OpenSearchIndexer {
 
     public void initCrosswalkIndex() {
         var constructBuilder = new ConstructBuilder()
-                .addPrefixes(ModelConstants.PREFIXES);
+                .addPrefixes(ModelConstants.PREFIXES)
+        		.addWhere(GRAPH_VARIABLE, RDF.type, MSCR.CROSSWALK);
+
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDFS.label, "?prefLabel");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, RDFS.comment, "?comment");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDF.type, "?modelType");
@@ -382,6 +386,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
+        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.stateModified, "?stateModified");        
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceSchema, "?sourceSchema");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.targetSchema, "?targetSchema");
@@ -415,8 +420,12 @@ public class OpenSearchIndexer {
         var indexModels = jenaService.constructWithQueryCrosswalks(constructBuilder.build());
         var list = new ArrayList<IndexCrosswalk>();
         indexModels.listSubjects().forEach(next -> {
-            var indexModel = crosswalkMapper.mapToIndexModel(next.getURI(), indexModels);
-            list.add(indexModel);
+        	try {
+	            var indexModel = crosswalkMapper.mapToIndexModel(next.getURI(), indexModels);
+	            list.add(indexModel);
+        	}catch(Exception ex) {
+        		logger.error("Could not index crosswalk " + next.getURI(), ex);        	
+        	}
         });
         bulkInsert(OPEN_SEARCH_INDEX_CROSSWALK, list);
     }

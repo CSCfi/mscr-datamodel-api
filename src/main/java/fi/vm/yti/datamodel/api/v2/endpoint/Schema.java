@@ -556,13 +556,13 @@ public class Schema extends BaseMSCRController {
 			if (prevSchema.getState() == MSCRState.DRAFT && schemaDTO.getState() == MSCRState.PUBLISHED) {
 				try {
 					String handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, pid);
-					jenaModel = mapper.mapToUpdateJenaModel(pid, handle, schemaDTO, oldModel, userProvider.getUser());
+					jenaModel = mapper.mapToUpdateJenaModel(pid, handle, schemaDTO, oldModel, userProvider.getUser(), true, prevSchema.getState() != schemaDTO.getState());
 				} catch (Exception ex) {
 					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 							"Exception while geting a new handle for the schema." + ex.getMessage());
 				}
 			} else {
-				jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, oldModel, userProvider.getUser());
+				jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, oldModel, userProvider.getUser(), true, prevSchema.getState() != schemaDTO.getState());
 			}
 
 			jenaService.putToSchema(pid, jenaModel);
@@ -652,7 +652,7 @@ public class Schema extends BaseMSCRController {
 				SchemaDTO schemaDTO = new SchemaDTO();
 				schemaDTO.setState(MSCRState.REMOVED);
 				schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, CONTENT_ACTION.delete);
-				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, ModelFactory.createDefaultModel(), userProvider.getUser());
+				var jenaModel = mapper.mapToUpdateJenaModel(pid, null, schemaDTO, ModelFactory.createDefaultModel(), userProvider.getUser(), false, true);
 				var indexModel = mapper.mapToIndexModel(internalID, jenaModel);
 				jenaService.updateSchema(internalID, jenaModel);
 				if(jenaService.doesSchemaExist(internalID+":content")) {
