@@ -986,8 +986,18 @@ public class JsonSchemaWriter {
 			if (!titles.isEmpty()) {
 				title = titles.get("en");
 			}
-						
-			
+			else {
+				// use local name for backup
+				if(s.getLocalName() != null) {
+					title = s.getLocalName();
+				}
+				else {
+					titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+					if (!titles.isEmpty()) {
+						title = titles.get("en");
+					}									
+				}
+			}			
 			
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, SH.description);
 			shapeDef.put("description", descs.get("en"));
