@@ -42,7 +42,9 @@ import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO.CrosswalkSchemaInfo;
 import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
@@ -59,17 +61,20 @@ public class CrosswalkMapper {
 	private final CoreRepository coreRepository;
     private final String defaultNamespace;
     private final JenaService jenaService;
+    private final SchemaMapper schemaMapper;
     private final DateFormat timestampFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:MM:SSZ");
 	
 	public CrosswalkMapper(
 			CoreRepository coreRepository,
 			PostgresStorageService storageService,
 			@Value("${defaultNamespace}") String defaultNamespace,
-			JenaService jenaService) {
+			JenaService jenaService,
+			SchemaMapper schemaMapper) {
 		this.coreRepository = coreRepository;
 		this.storageService = storageService;
 		this.defaultNamespace = defaultNamespace;
 		this.jenaService = jenaService;
+		this.schemaMapper = schemaMapper;
 	}
 	
 	
@@ -202,9 +207,9 @@ public class CrosswalkMapper {
 	}
 	
 	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
-		return mapToCrosswalkDTO(PID, model, false, userMapper, ownerMapper);
+		return mapToCrosswalkDTO(PID, model, false, false, userMapper, ownerMapper);
 	}
-	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, boolean includeVersionData, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
+	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, boolean includeVersionData, boolean includeCrosswalkSchemaInfo, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
 		var dto = new CrosswalkInfoDTO();
 		dto.setPID(PID);
 
@@ -289,7 +294,31 @@ public class CrosswalkMapper {
 		if(modelResource.hasProperty(MSCR.sourceURL)) {
 			dto.setSourceURL(MapperUtils.propertyToString(modelResource, MSCR.sourceURL));
 		}
+		
+		if(includeCrosswalkSchemaInfo) {
+			Model sourceSchemaModel = jenaService.getSchema(dto.getSourceSchema());
+			Model targetSchemaModel = jenaService.getSchema(dto.getTargetSchema());
+			dto.setSourceSchemaInfo(createCrosswalkSchemaInfo(dto.getSourceSchema(), sourceSchemaModel));
+			dto.setTargetSchemaInfo(createCrosswalkSchemaInfo(dto.getTargetSchema(), targetSchemaModel));
+			
+		}
 		return dto;
+	}
+	
+	private CrosswalkSchemaInfo createCrosswalkSchemaInfo(String schemaID, Model model) {
+		SchemaInfoDTO dto = schemaMapper.mapToSchemaDTO(schemaID, model, null, null);
+		
+		return new CrosswalkSchemaInfo(
+				schemaID,
+				dto.getHandle(),
+				dto.getLabel().get("en"),
+				dto.getVersionLabel(),
+				-1,
+				dto.getFormat().name()
+				
+				);
+		 
+		
 	}
 	
 	public Model mapToUpdateJenaModel(String pid, String handle, CrosswalkDTO dto, Model model, YtiUser user, boolean isMetadataUpdate, boolean isStateUpdate) {

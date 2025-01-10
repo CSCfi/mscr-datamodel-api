@@ -8,6 +8,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
 	
+	public record CrosswalkSchemaInfo(String id, String handle, String name, String versionLabel, int versionIndex, String format) {}
+	
 	private MSCRState state;
 	private MSCRVisibility visibility;
 
@@ -30,6 +32,26 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 	private String sourceURL;
 	private MSCRSubType subType;
 	
+	private CrosswalkSchemaInfo sourceSchemaInfo;
+	private CrosswalkSchemaInfo targetSchemaInfo;
+	
+	
+	public CrosswalkSchemaInfo getSourceSchemaInfo() {
+		return sourceSchemaInfo;
+	}
+
+	public void setSourceSchemaInfo(CrosswalkSchemaInfo sourceSchemaInfo) {
+		this.sourceSchemaInfo = sourceSchemaInfo;
+	}
+
+	public CrosswalkSchemaInfo getTargetSchemaInfo() {
+		return targetSchemaInfo;
+	}
+
+	public void setTargetSchemaInfo(CrosswalkSchemaInfo targetSchemaInfo) {
+		this.targetSchemaInfo = targetSchemaInfo;
+	}
+
 	public MSCRSubType getSubType() {
 		return subType;
 	}

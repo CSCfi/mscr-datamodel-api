@@ -336,7 +336,10 @@ public class SchemaMapper {
 		Set<String> ownerIds = MapperUtils.arrayPropertyToSet(modelResource, MSCR.owner);
 		schemaInfoDTO.setOwner(ownerIds);
 				
-		schemaInfoDTO.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
+		if(ownerMapper != null) {
+			schemaInfoDTO.setOwnerMetadata(MapperUtils.mapOwnerInfo(ownerIds, ownerMapper));
+		}
+		
 		
 		if(modelResource.hasProperty(MSCR.PROV_wasRevisionOf)) {
 			schemaInfoDTO.setRevisionOf(MapperUtils.propertyToString(modelResource, MSCR.PROV_wasRevisionOf));
