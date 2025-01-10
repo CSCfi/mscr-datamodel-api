@@ -12,8 +12,16 @@ public class CrosswalkDTO extends DataModelDTO implements MSCRCommonMetadata {
 	private String targetSchema;
 	private String versionLabel;
 	private String sourceURL;
+	private MSCRSubType subType;
 	
-	
+	public MSCRSubType getSubType() {
+		return subType;
+	}
+
+	public void setSubType(MSCRSubType subType) {
+		this.subType = subType;
+	}
+
 	public String getSourceURL() {
 		return sourceURL;
 	}

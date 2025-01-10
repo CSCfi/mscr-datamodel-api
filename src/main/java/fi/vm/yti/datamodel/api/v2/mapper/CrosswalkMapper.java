@@ -73,7 +73,7 @@ public class CrosswalkMapper {
 	}
 	
 	
-	public Model mapToJenaModel(String PID, String handle, CrosswalkDTO dto, final String revisionOf, final String aggregationKey, @NotNull YtiUser user) {
+	public Model mapToJenaModel(String PID, String handle, CrosswalkDTO dto, final String revisionOf, final String aggregationKey, @NotNull YtiUser user, final String subType) {
 		log.info("Mapping CrosswalkDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -150,6 +150,7 @@ public class CrosswalkMapper {
 			modelResource.addProperty(MSCR.sourceURL, model.createResource(dto.getSourceURL()));
 		}
 		
+		modelResource.addLiteral(MSCR.subType, subType);
 		return model;
 	}
 	
@@ -463,6 +464,8 @@ public class CrosswalkMapper {
         }
         indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
         indexModel.setSourceURL(MapperUtils.propertyToString(resource, MSCR.sourceURL));
+        
+        indexModel.setSubType(MapperUtils.propertyToString(resource, MSCR.subType));
         
         return indexModel;
     }

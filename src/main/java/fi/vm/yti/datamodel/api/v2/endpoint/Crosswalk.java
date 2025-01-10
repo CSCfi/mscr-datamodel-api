@@ -169,8 +169,18 @@ public class Crosswalk extends BaseMSCRController {
 			check(authorizationManager.hasRightToAnyOrganization(dto.getOrganizations()));
 		}
 		checkVisibility(dto);	
-		checkState(null, dto.getState());		
-		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser());
+		checkState(null, dto.getState());
+		
+		var ownerMapper = groupManagementService.mapOwner();
+		Model sourceSchemaModel = jenaService.getSchema(dto.getSourceSchema());
+		Model targetSchemaModel = jenaService.getSchema(dto.getTargetSchema());
+
+		SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, null, ownerMapper);
+		SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, null, ownerMapper);		
+		
+		String subType = getCrosswalkContentSubType(sourceSchemaInfo.getFormat().name(), targetSchemaInfo.getFormat().name());
+		
+		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser(), subType);
 		if(!contentModel.isEmpty()) {
 			jenaService.putToCrosswalk(PID+":content", contentModel);
 		}

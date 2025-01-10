@@ -4,4 +4,5 @@ public interface MSCRCommonMetadata {
 
 	public MSCRVisibility getVisibility();
 	public MSCRState getState();
+	public MSCRSubType getSubType();
 }

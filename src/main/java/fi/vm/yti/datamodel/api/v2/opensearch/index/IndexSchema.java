@@ -39,8 +39,18 @@ public class IndexSchema extends IndexBase {
     private String namespace;
     private String handle;
     private String sourceURL;
+    private String subType;
     
-    public MSCRVisibility getVisibility() {
+    
+    public String getSubType() {
+		return subType;
+	}
+
+	public void setSubType(String subType) {
+		this.subType = subType;
+	}
+
+	public MSCRVisibility getVisibility() {
 		return visibility;
 	}
 

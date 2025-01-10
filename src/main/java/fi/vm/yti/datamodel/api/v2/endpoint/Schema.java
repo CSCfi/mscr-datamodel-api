@@ -354,8 +354,9 @@ public class Schema extends BaseMSCRController {
 				handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, PID);
 
 			}
+			String subType = getSchemaContentSubType(schemaDTO.getFormat().name());
 			var jenaModel = mapper.mapToJenaModel(PID, handle, schemaDTO, target, aggregationKey,
-					userProvider.getUser());
+					userProvider.getUser(), subType);
 			if(!contentModel.isEmpty()) {
 				jenaService.putToSchema(PID+":content", contentModel);
 			}

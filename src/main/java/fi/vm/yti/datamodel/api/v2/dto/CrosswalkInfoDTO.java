@@ -28,7 +28,15 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 	
 	private Set<OwnerDTO> ownerMetadata;
 	private String sourceURL;
+	private MSCRSubType subType;
 	
+	public MSCRSubType getSubType() {
+		return subType;
+	}
+
+	public void setSubType(MSCRSubType subType) {
+		this.subType = subType;
+	}	
 	
 	public String getSourceURL() {
 		return sourceURL;

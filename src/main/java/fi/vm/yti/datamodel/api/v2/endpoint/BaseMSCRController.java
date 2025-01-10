@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.endpoint;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRCommonMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
@@ -216,4 +218,56 @@ public abstract class BaseMSCRController {
 		
 	}
 	
+	protected String getSchemaContentSubType(String format) {
+		switch (format) {
+		case "CSV" : 
+		case "XSD" : 
+		case "JSONSCHEMA" : 
+		case "SHACL" :
+			return MSCRSubType.DATA_SCHEMA.name();
+		case "SKOSRDF":
+		case "ENUM":
+			return MSCRSubType.VOCABULARY.name();
+		case "RDFS":
+		case "OWL":
+			return MSCRSubType.ONTOLOGY.name();		
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + format);
+		}
+	}
+	
+	private static Set<String> dataSchemas = Set.of(SchemaFormat.CSV.name(), SchemaFormat.XSD.name(), SchemaFormat.JSONSCHEMA.name(), SchemaFormat.SHACL.name());
+	private static Set<String> vocabularies = Set.of(SchemaFormat.SKOSRDF.name(), SchemaFormat.ENUM.name());
+	private static Set<String> ontologies = Set.of(SchemaFormat.RDFS.name(), SchemaFormat.OWL.name());
+	
+	protected String getCrosswalkContentSubType(String sourceSchemaFormat, String targetSchemaFormat) {
+		if(dataSchemas.contains(sourceSchemaFormat) && dataSchemas.contains(targetSchemaFormat)) {
+			return MSCRSubType.DATA_CROSSWALK.name();
+		}
+		else if(
+				(vocabularies.contains(sourceSchemaFormat) && vocabularies.contains(targetSchemaFormat))
+				||
+				(ontologies.contains(sourceSchemaFormat) && ontologies.contains(targetSchemaFormat))
+				||
+				(ontologies.contains(sourceSchemaFormat) && vocabularies.contains(targetSchemaFormat))
+				||
+				(vocabularies.contains(sourceSchemaFormat) && ontologies.contains(targetSchemaFormat))) {
+			return MSCRSubType.SEMANTIC_MAPPING.name();
+		}
+		else if(
+				(dataSchemas.contains(sourceSchemaFormat) && vocabularies.contains(targetSchemaFormat))
+				||
+				(dataSchemas.contains(sourceSchemaFormat) && ontologies.contains(targetSchemaFormat))
+				||
+				(ontologies.contains(sourceSchemaFormat) && dataSchemas.contains(targetSchemaFormat))
+				||
+				(vocabularies.contains(sourceSchemaFormat) && dataSchemas.contains(targetSchemaFormat))) {
+			return MSCRSubType.SEMANTIC_ANNOTATION.name();
+		}
+		else {
+			throw new IllegalArgumentException("Source schema format: " + sourceSchemaFormat + ", target schema format:" + targetSchemaFormat);
+		}
+		
+		
+	}
 }

@@ -34,7 +34,7 @@ public class MSCR {
     public static final Property versions = ResourceFactory.createProperty(URI, "versions");
     public static final Resource CROSSWALK = ResourceFactory.createResource(URI + "Crosswalk");
     public static final Resource SCHEMA = ResourceFactory.createResource(URI + "Schema");
-
+    
     public static final Resource MAPPINGSET = ResourceFactory.createResource(URI + "MappingSet");
     public static final Resource MAPPING = ResourceFactory.createResource(URI + "Mapping");
     public static final Resource FnO_FUNCTION = ResourceFactory.createResource(FnO + "Function");
@@ -96,6 +96,8 @@ public class MSCR {
     public static final Property notes = ResourceFactory.createProperty(URI, "notes");
     
     public static final Property qname = ResourceFactory.createProperty(URI, "qname");
+    
+    public static final Property subType = ResourceFactory.createProperty(URI, "subType");
 
     public record Organization(String id,  Map<String, String> label) {}
 

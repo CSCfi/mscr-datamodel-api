@@ -71,11 +71,11 @@ public class SchemaMapper {
 		this.storageService = storageService;
 		this.jenaService = jenaService;
 	}
-	public Model mapToJenaModel(String PID, String handle, SchemaDTO schemaDTO, YtiUser user) {
-		return mapToJenaModel(PID, handle, schemaDTO, null, null, user);
+	public Model mapToJenaModel(String PID, String handle, SchemaDTO schemaDTO, YtiUser user, String subType) {
+		return mapToJenaModel(PID, handle, schemaDTO, null, null, user, subType);
 	}
 
-	public Model mapToJenaModel(String PID, String handle, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey, YtiUser user) {
+	public Model mapToJenaModel(String PID, String handle, SchemaDTO schemaDTO, final String revisionOf, final String aggregationKey, YtiUser user, String subType) {
 		log.info("Mapping SchemaDTO to Jena Model");
 		var model = ModelFactory.createDefaultModel();
 		var modelUri = PID;
@@ -146,7 +146,8 @@ public class SchemaMapper {
 		if(schemaDTO.getSourceURL() != null) {
 			modelResource.addProperty(MSCR.sourceURL, model.createResource(schemaDTO.getSourceURL()));
 		}
-				
+			
+		modelResource.addLiteral(MSCR.subType, subType);
 		return model;
 	}
 
@@ -493,6 +494,7 @@ public class SchemaMapper {
         indexModel.setNamespace(MapperUtils.propertyToString(resource, MSCR.namespace));
         indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
         indexModel.setSourceURL(MapperUtils.propertyToString(resource, MSCR.sourceURL));
+        indexModel.setSubType(MapperUtils.propertyToString(resource, MSCR.subType));
         return indexModel;
     }     
 	
