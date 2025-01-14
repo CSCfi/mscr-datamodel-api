@@ -1,0 +1,1 @@
+{"from":0,"query":{"bool":{"must":[{"terms":{"type":["SCHEMA"]}},{"term":{"hasRevision":{"value":"false"}}},{"terms":{"visibility":["PUBLIC"]}}],"must_not":[{"terms":{"state":["REMOVED"]}}]}},"size":10,"sort":[{"label.fi.keyword":{"order":"asc","unmapped_type":"keyword"}}]}

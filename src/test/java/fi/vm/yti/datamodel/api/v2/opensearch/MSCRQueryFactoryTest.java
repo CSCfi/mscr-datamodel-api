@@ -45,4 +45,31 @@ public class MSCRQueryFactoryTest {
         JSONAssert.assertEquals(expected, OpenSearchUtils.getPayload(query), JSONCompareMode.LENIENT);
 
 	}	
+	
+	@Test
+	void createMSCRQuerySchemas() throws Exception {
+		var r = new MSCRSearchRequest();
+		
+		r.setType(Set.of(MSCRType.SCHEMA));
+		
+		r.setIncludeFacets(false);
+		var query = MSCRQueryFactory.createMSCRQuery(r, true, Set.of("urn:test"));
+		
+        String expected = OpenSearchUtils.getJsonString("/es/mscrSearchSchema.json");
+        JSONAssert.assertEquals(expected, OpenSearchUtils.getPayload(query), JSONCompareMode.LENIENT);
+	}	
+	
+	@Test
+	void createMSCRQuerySchemasIncludePersonalPrivate() throws Exception {
+		var r = new MSCRSearchRequest();
+		
+		r.setType(Set.of(MSCRType.SCHEMA));
+		
+		r.setIncludeFacets(false);
+		r.setIncludePersonalPrivate(true);
+		var query = MSCRQueryFactory.createMSCRQuery(r, true, Set.of("urn:test"));
+		
+        String expected = OpenSearchUtils.getJsonString("/es/mscrSearchSchemaIncludePersonalPrivate.json");
+        JSONAssert.assertEquals(expected, OpenSearchUtils.getPayload(query), JSONCompareMode.LENIENT);
+	}
 }

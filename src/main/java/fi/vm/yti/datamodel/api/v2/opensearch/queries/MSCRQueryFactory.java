@@ -110,21 +110,22 @@ public class MSCRQueryFactory {
         	must.add(namespaceQuery);
         }
         
-        var finalQuery = QueryBuilders.bool();
-        finalQuery.must(must);
+        if(!includeOnlyPublic &&  owners != null && !owners.isEmpty()) {
+        	must.add(QueryFactoryUtils.termsQuery("owner", owners.stream().toList()));        	
+        }
+        // only return the latest version
+        // --> hasRevision is empty --> hasRevision = "false" 
+        must.add(QueryFactoryUtils.termQuery("hasRevision", "false"));
+        
+        
+        var finalQuery = QueryBuilders.bool();                
+        finalQuery.must(must);        
         if(!mustNot.isEmpty()) {        	
         	finalQuery.mustNot(mustNot);
         }
         
-        // only return the latest version
-        // --> hasRevision is empty --> hasRevision = "false" 
-        finalQuery.must((QueryFactoryUtils.termQuery("hasRevision", "false")));
         if(includeOnlyPublic) {        
         	finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name()))); 
-        }
-        if(owners != null && !owners.isEmpty()) {
-        	finalQuery.must(QueryFactoryUtils.termsQuery("owner", owners.stream().toList()));        	
-        	
         }
         
         var sortLang = request.getSortLang() != null ? request.getSortLang() : QueryFactoryUtils.DEFAULT_SORT_LANG;
@@ -134,13 +135,34 @@ public class MSCRQueryFactory {
                 .unmappedType(FieldType.Keyword)
                 .build();
 
-        
         var sr = new SearchRequest.Builder()        		
                 .index(indices)                
                 .size(QueryFactoryUtils.pageSize(request.getPageSize()))
                 .from(QueryFactoryUtils.pageFrom(request.getPageFrom()))
-                .sort(SortOptions.of(s -> s.field(sort)))                
-                .query(finalQuery.build()._toQuery());
+                .sort(SortOptions.of(s -> s.field(sort)));
+        var finalQ = finalQuery.build();
+        
+        if(request.isIncludePersonalPrivate()) {
+        	
+        	var personalQuery = QueryBuilders.bool();
+        	
+        	personalQuery
+        		.must(must)
+        		.must(QueryFactoryUtils.termsQuery("owner", owners.stream().toList()))
+        		.mustNot(finalQ.mustNot());
+        	
+        	var outerQuery = QueryBuilders.bool().should(personalQuery.build()._toQuery()).should(finalQ._toQuery());
+        	outerQuery.minimumShouldMatch("1");
+        	
+        	//finalQuery.should(generalQuery.build()._toQuery());
+        	//finalQuery.should(personalQuery.build()._toQuery());
+        	sr.query(outerQuery.build()._toQuery());
+        }
+        else {
+        	sr.query(finalQ._toQuery());
+        }
+                   
+                
 
         if(request.isIncludeFacets()) {
         	// always add all aggregations

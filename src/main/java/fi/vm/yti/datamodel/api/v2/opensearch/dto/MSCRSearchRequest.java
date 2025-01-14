@@ -24,8 +24,14 @@ public class MSCRSearchRequest extends BaseSearchRequest {
 	private boolean includeFacets = false;
 	private String prefDisplayLang;
 	
+	private boolean includePersonalPrivate = false;
 	
-	
+	public boolean isIncludePersonalPrivate() {
+		return includePersonalPrivate;
+	}
+	public void setIncludePersonalPrivate(boolean includePersonlPrivate) {
+		this.includePersonalPrivate = includePersonlPrivate;
+	}
 	public Set<MSCRSubType> getSubtype() {
 		return subtype;
 	}
