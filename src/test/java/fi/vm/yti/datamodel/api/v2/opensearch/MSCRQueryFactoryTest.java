@@ -25,7 +25,7 @@ public class MSCRQueryFactoryTest {
 		
 		r.setIncludeFacets(true);
 		var query = MSCRQueryFactory.createMSCRQuery(r, true, null);
-		
+		System.out.println(query);
         String expected = OpenSearchUtils.getJsonString("/es/mscrSearchRequest.json");
         JSONAssert.assertEquals(expected, OpenSearchUtils.getPayload(query), JSONCompareMode.LENIENT);
 

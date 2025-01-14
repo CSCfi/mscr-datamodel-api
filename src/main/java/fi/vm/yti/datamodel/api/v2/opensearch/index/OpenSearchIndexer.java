@@ -572,7 +572,8 @@ public class OpenSearchIndexer {
         		Map.entry("handle", getKeywordProperty()),
         		Map.entry("sourceURL", getKeywordProperty()),
         		Map.entry("subType", getKeywordProperty()),
-        		Map.entry("visibility", getKeywordProperty())
+        		Map.entry("visibility", getKeywordProperty()),
+        		Map.entry("owner", getKeywordProperty())
         		
         		);
         		
@@ -602,8 +603,8 @@ public class OpenSearchIndexer {
         		Map.entry("handle", getKeywordProperty()),
         		Map.entry("sourceURL", getKeywordProperty()),
         		Map.entry("subType", getKeywordProperty()),
-        		Map.entry("visibility", getKeywordProperty())
-        		
+        		Map.entry("visibility", getKeywordProperty()),
+        		Map.entry("owner", getKeywordProperty())
 
         );              
     }    
