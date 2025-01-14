@@ -570,7 +570,9 @@ public class OpenSearchIndexer {
         		Map.entry("numberOfRevisions", getIntProperty()),
         		Map.entry("revisions", getNotIndexedJSONProperty()),
         		Map.entry("handle", getKeywordProperty()),
-        		Map.entry("sourceURL", getKeywordProperty())
+        		Map.entry("sourceURL", getKeywordProperty()),
+        		Map.entry("subType", getKeywordProperty()),
+        		Map.entry("visibility", getKeywordProperty())
         		
         		);
         		
@@ -598,7 +600,10 @@ public class OpenSearchIndexer {
 				Map.entry("sourceSchema", getKeywordProperty()),
 				Map.entry("targetSchema", getKeywordProperty()),
         		Map.entry("handle", getKeywordProperty()),
-        		Map.entry("sourceURL", getKeywordProperty())
+        		Map.entry("sourceURL", getKeywordProperty()),
+        		Map.entry("subType", getKeywordProperty()),
+        		Map.entry("visibility", getKeywordProperty())
+        		
 
         );              
     }    

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 
 public class MSCRSearchRequest extends BaseSearchRequest {
@@ -18,11 +19,19 @@ public class MSCRSearchRequest extends BaseSearchRequest {
 	private Set<String> targetSchemas;
 	private String sourceURL;
 	private String namespace;
+	private Set<MSCRSubType> subtype;
 	
 	private boolean includeFacets = false;
 	private String prefDisplayLang;
 	
 	
+	
+	public Set<MSCRSubType> getSubtype() {
+		return subtype;
+	}
+	public void setSubtype(Set<MSCRSubType> subtype) {
+		this.subtype = subtype;
+	}
 	public Set<MSCRState> getState() {
 		return state;
 	}

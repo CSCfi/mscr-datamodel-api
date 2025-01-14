@@ -18,6 +18,7 @@ import org.opensearch.client.opensearch.core.SearchRequest;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
@@ -44,6 +45,11 @@ public class MSCRQueryFactory {
             must.add(typeQuery);            
         }
 
+        var subtype = request.getSubtype();
+        if(subtype != null && !subtype.isEmpty()){
+            var subtypeQuery =  QueryFactoryUtils.termsQuery("subType", subtype.stream().map(MSCRSubType::name).toList());
+            must.add(subtypeQuery);            
+        }
         var state = request.getState();
         if(state != null && !state.isEmpty()){
             var stateQuery = QueryFactoryUtils.termsQuery("state", state.stream().map(MSCRState::name).toList());
@@ -114,10 +120,10 @@ public class MSCRQueryFactory {
         // --> hasRevision is empty --> hasRevision = "false" 
         finalQuery.must((QueryFactoryUtils.termQuery("hasRevision", "false")));
         if(includeOnlyPublic) {        
-        	finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name().toLowerCase()))); // Why does this only works in lowercase?
+        	finalQuery.must(QueryFactoryUtils.termsQuery("visibility", Set.of(MSCRVisibility.PUBLIC.name()))); 
         }
         if(owners != null && !owners.isEmpty()) {
-        	finalQuery.must(QueryFactoryUtils.termsQuery("owner.keyword", owners.stream().toList()));        	
+        	finalQuery.must(QueryFactoryUtils.termsQuery("owner", owners.stream().toList()));        	
         	
         }
         
