@@ -33,6 +33,7 @@ import fi.vm.yti.datamodel.api.v2.dto.FileMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
@@ -278,6 +279,9 @@ public class SchemaMapper {
 		if(modelResource.hasProperty(MSCR.customRoot)) {
 			schemaInfoDTO.setCustomRoot(MapperUtils.propertyToString(modelResource, MSCR.customRoot));
 		}
+		if(modelResource.hasProperty(MSCR.subType)) {
+			schemaInfoDTO.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
+		}
 				
 		return schemaInfoDTO;
 	}
@@ -387,6 +391,9 @@ public class SchemaMapper {
 		}
 		if(modelResource.hasProperty(MSCR.customRoot)) {
 			schemaInfoDTO.setCustomRoot(MapperUtils.propertyToString(modelResource, MSCR.customRoot));
+		}
+		if(modelResource.hasProperty(MSCR.subType)) {
+			schemaInfoDTO.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
 		}
 
 		return schemaInfoDTO;

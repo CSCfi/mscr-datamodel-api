@@ -36,6 +36,7 @@ import fi.vm.yti.datamodel.api.v2.dto.FileMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
+import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
@@ -202,7 +203,9 @@ public class CrosswalkMapper {
 		
 		dto.setSourceSchema(MapperUtils.propertyToString(modelResource, MSCR.sourceSchema));
 		dto.setTargetSchema(MapperUtils.propertyToString(modelResource, MSCR.targetSchema));
-
+		if(modelResource.hasProperty(MSCR.subType)) {
+			dto.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
+		}
 		return dto;
 	}
 	
@@ -301,6 +304,9 @@ public class CrosswalkMapper {
 			dto.setSourceSchemaInfo(createCrosswalkSchemaInfo(dto.getSourceSchema(), sourceSchemaModel));
 			dto.setTargetSchemaInfo(createCrosswalkSchemaInfo(dto.getTargetSchema(), targetSchemaModel));
 			
+		}
+		if(modelResource.hasProperty(MSCR.subType)) {
+			dto.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
 		}
 		return dto;
 	}
@@ -512,6 +518,7 @@ public class CrosswalkMapper {
 		s.setFormat(source.getFormat());		
 		s.setSourceSchema(source.getSourceSchema());
 		s.setTargetSchema(source.getTargetSchema());
+		s.setSubType(source.getSubType());
 		return s;
 	} 
 
