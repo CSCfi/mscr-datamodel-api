@@ -4,6 +4,7 @@ import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -202,7 +203,8 @@ public class Schema extends BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						String.format("Unsupported schema description format: %s not supported", format));
 			}
-			jenaService.putToSchema(pid + ":content", schemaModel);			
+			
+			jenaService.putToSchema(pid + ":content", schemaModel);
 			storageService.storeSchemaFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
 
 		} catch (ResponseStatusException statusex) {
@@ -250,11 +252,14 @@ public class Schema extends BaseMSCRController {
 		}
 		else if(action == CONTENT_ACTION.mscrCopyOf) { 
 			s.setFormat(SchemaFormat.MSCR);
+			s.setOriginalFormat(prevSchema.getFormat());
 		}
 		else {
 			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		}
 		s.setSourceURL(inputSchema.getSourceURL());
+		s.setSubType(prevSchema.getSubType());
+		s.setOriginalFormat(prevSchema.getOriginalFormat());
 		
 		return s;
 
@@ -354,7 +359,7 @@ public class Schema extends BaseMSCRController {
 				handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, PID);
 
 			}
-			String subType = getSchemaContentSubType(schemaDTO.getFormat().name());
+			String subType = getSchemaContentSubType(schemaDTO.getFormat().name());	
 			var jenaModel = mapper.mapToJenaModel(PID, handle, schemaDTO, target, aggregationKey,
 					userProvider.getUser(), subType);
 			if(!contentModel.isEmpty()) {
@@ -502,6 +507,7 @@ public class Schema extends BaseMSCRController {
 			}
 			addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);	
 		}catch(Exception ex) {
+			ex.printStackTrace();
 			// revert any possible metadata changes
 			if(dto != null) {
 				try {
@@ -831,7 +837,7 @@ public class Schema extends BaseMSCRController {
 		try {
 			pid = PIDService.mapToInternal(pid);
 			if(jenaService.doesSchemaExist(pid+":content")) {
-				var model = jenaService.getSchema(pid+":content");
+				var model = jenaService.getSchema(pid+":content");		
 				StreamingResponseBody responseBody = httpResponseOutputStream -> {
 					model.write(httpResponseOutputStream, "TURTLE");
 				};

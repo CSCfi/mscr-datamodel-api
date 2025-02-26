@@ -30,6 +30,7 @@ public class MSCR {
     public static final String FnO ="https://w3id.org/function/ontology#";
 
     public static final Property format = ResourceFactory.createProperty(URI, "format");
+    public static final Property originalFormat = ResourceFactory.createProperty(URI, "originalFormat");
     public static final Property latestVersion = ResourceFactory.createProperty(URI, "latestVersion");
     public static final Property versions = ResourceFactory.createProperty(URI, "versions");
     public static final Resource CROSSWALK = ResourceFactory.createResource(URI + "Crosswalk");
@@ -89,6 +90,8 @@ public class MSCR {
     public static final Property source = ResourceFactory.createProperty(URI, "source");
     public static final Property predicate = ResourceFactory.createProperty(URI, "predicate");
     public static final Property target = ResourceFactory.createProperty(URI, "target");
+    public static final Resource SOURCE = ResourceFactory.createResource(URI + "Source");
+    public static final Resource TARGET = ResourceFactory.createResource(URI + "Target");
 
     public static final Property processing = ResourceFactory.createProperty(URI, "processing");
     public static final Property oneOf = ResourceFactory.createProperty(URI, "oneOf");
@@ -98,6 +101,10 @@ public class MSCR {
     public static final Property qname = ResourceFactory.createProperty(URI, "qname");
     
     public static final Property subType = ResourceFactory.createProperty(URI, "subType");
+    public static final Property schemaPath = ResourceFactory.createProperty(URI, "schemaPath");
+    public static final Property instancePath = ResourceFactory.createProperty(URI, "instancePath");
+
+	public static final Property FnO_predicate = ResourceFactory.createProperty(FnO, "predicate");
 
     public record Organization(String id,  Map<String, String> label) {}
 

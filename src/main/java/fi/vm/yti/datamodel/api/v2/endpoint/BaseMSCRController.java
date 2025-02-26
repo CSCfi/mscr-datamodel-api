@@ -220,6 +220,8 @@ public abstract class BaseMSCRController {
 	
 	protected String getSchemaContentSubType(String format) {
 		switch (format) {
+		case "MSCR":
+			return null;
 		case "CSV" : 
 		case "XSD" : 
 		case "JSONSCHEMA" : 
@@ -236,36 +238,29 @@ public abstract class BaseMSCRController {
 		}
 	}
 	
-	private static Set<String> dataSchemas = Set.of(SchemaFormat.CSV.name(), SchemaFormat.XSD.name(), SchemaFormat.JSONSCHEMA.name(), SchemaFormat.SHACL.name());
-	private static Set<String> vocabularies = Set.of(SchemaFormat.SKOSRDF.name(), SchemaFormat.ENUM.name());
-	private static Set<String> ontologies = Set.of(SchemaFormat.RDFS.name(), SchemaFormat.OWL.name());
 	
-	protected String getCrosswalkContentSubType(String sourceSchemaFormat, String targetSchemaFormat) {
-		if(dataSchemas.contains(sourceSchemaFormat) && dataSchemas.contains(targetSchemaFormat)) {
+	protected String getCrosswalkContentSubType(String sourceSubtype, String targetSubtype) {
+		if("DATA_SCHEMA".equals(sourceSubtype) && "DATA_SCHEMA".equals(targetSubtype)) {
 			return MSCRSubType.DATA_CROSSWALK.name();
 		}
 		else if(
-				(vocabularies.contains(sourceSchemaFormat) && vocabularies.contains(targetSchemaFormat))
+				("VOCABULARY".equals(sourceSubtype) || "ONTOLOGY".equals(sourceSubtype))
 				||
-				(ontologies.contains(sourceSchemaFormat) && ontologies.contains(targetSchemaFormat))
-				||
-				(ontologies.contains(sourceSchemaFormat) && vocabularies.contains(targetSchemaFormat))
-				||
-				(vocabularies.contains(sourceSchemaFormat) && ontologies.contains(targetSchemaFormat))) {
+				("VOCABULARY".equals(targetSubtype) && "ONTOLOGY".equals(targetSubtype))) {
 			return MSCRSubType.SEMANTIC_MAPPING.name();
 		}
 		else if(
-				(dataSchemas.contains(sourceSchemaFormat) && vocabularies.contains(targetSchemaFormat))
+				("DATA_SCHEMA".equals(sourceSubtype) && "VOCABULARY".equals(targetSubtype))
 				||
-				(dataSchemas.contains(sourceSchemaFormat) && ontologies.contains(targetSchemaFormat))
+				("DATA_SCHEMA".equals(sourceSubtype) && "ONTOLOGY".equals(targetSubtype))
 				||
-				(ontologies.contains(sourceSchemaFormat) && dataSchemas.contains(targetSchemaFormat))
+				("ONTOLOGY".equals(sourceSubtype) && "DATA_SCHEMA".equals(targetSubtype))
 				||
-				(vocabularies.contains(sourceSchemaFormat) && dataSchemas.contains(targetSchemaFormat))) {
+				("VOCABULARY".equals(sourceSubtype) && "DATA_SCHEMA".equals(targetSubtype))) {
 			return MSCRSubType.SEMANTIC_ANNOTATION.name();
 		}
 		else {
-			throw new IllegalArgumentException("Source schema format: " + sourceSchemaFormat + ", target schema format:" + targetSchemaFormat);
+			throw new IllegalArgumentException("Source schema subtype : " + sourceSubtype + ", target schema subtype:" + targetSubtype);
 		}
 		
 		
