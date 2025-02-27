@@ -331,7 +331,7 @@ public class CrosswalkMapper {
 				
 			}
 			if(
-				(xsltSources.contains(sourceSchemaDTO.getFormat()) || xsltSources.contains(sourceSchemaDTO.getOriginalFormat()))
+				(xsltSources.contains(sourceSchemaDTO.getFormat()) || (sourceSchemaDTO.getOriginalFormat() != null && xsltSources.contains(sourceSchemaDTO.getOriginalFormat())))
 				&&
 				(xsltSources.contains(targetSchemaDTO.getFormat()) || (targetSchemaDTO.getOriginalFormat() != null && xsltSources.contains(targetSchemaDTO.getOriginalFormat())))
 				) {
@@ -340,7 +340,7 @@ public class CrosswalkMapper {
 			if(
 					(xsltSources.contains(sourceSchemaDTO.getFormat()) || (sourceSchemaDTO.getOriginalFormat() != null && xsltSources.contains(sourceSchemaDTO.getOriginalFormat())))
 					&&
-					(targetSchemaDTO.getFormat() == SchemaFormat.SHACL || targetSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL)
+					(targetSchemaDTO.getFormat() == SchemaFormat.SHACL || (targetSchemaDTO.getOriginalFormat() != null && targetSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL))
 					) {
 					gf.add(new GeneratedFileMetadata("RML", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=rml"));
 				}			
