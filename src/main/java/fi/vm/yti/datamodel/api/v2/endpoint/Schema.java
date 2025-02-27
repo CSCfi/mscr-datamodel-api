@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -17,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,18 +251,22 @@ public class Schema extends BaseMSCRController {
 				inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : prevSchema.getVersionLabel());
 		
 		if(action == CONTENT_ACTION.revisionOf) {
-			s.setFormat(prevSchema.getFormat());	
+			s.setFormat(prevSchema.getFormat());
+			if(prevSchema.getFormat() == SchemaFormat.MSCR) {
+				s.setOriginalFormat(prevSchema.getOriginalFormat());	
+			}			
 		}
 		else if(action == CONTENT_ACTION.mscrCopyOf) { 
 			s.setFormat(SchemaFormat.MSCR);
-			s.setOriginalFormat(prevSchema.getFormat());
+			s.setOriginalFormat(prevSchema.getFormat());				
 		}
 		else {
 			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		}
 		s.setSourceURL(inputSchema.getSourceURL());
 		s.setSubType(prevSchema.getSubType());
-		s.setOriginalFormat(prevSchema.getOriginalFormat());
+		
+		
 		
 		return s;
 
@@ -313,7 +320,20 @@ public class Schema extends BaseMSCRController {
 				aggregationKey = prevSchema.getAggregationKey();
 				if(prevSchema.getFormat() == SchemaFormat.MSCR) {
 					if(jenaService.doesSchemaExist(prevSchema.getPID() + ":content")) {
-						contentModel = jenaService.getSchemaContent(prevSchema.getPID());
+						// This is really hacky!
+						File tempFile = File.createTempFile("model", ".ttl");
+						Model tempModel = jenaService.getSchemaContent(prevSchema.getPID());
+						FileOutputStream fos = new FileOutputStream(tempFile);						
+						RDFDataMgr.write(fos, tempModel, Lang.TTL);
+						
+						String fileContent = FileUtils.readFileToString(tempFile);
+						fileContent = fileContent.replaceFirst("<" + prevSchema.getPID() + "#>", "<" + PID + "#>").replaceFirst("<" + prevSchema.getPID() + ">", "<" + PID + ">");
+						StringReader r = new StringReader(fileContent);
+						contentModel.read(r, null, "TURTLE");
+						r.close();
+						fos.close();
+						
+						
 					}
 										
 				}
@@ -340,7 +360,7 @@ public class Schema extends BaseMSCRController {
 					fileBytes = schemaFile.data();
 					contentType = schemaFile.contentType();
 				}
-				addFileToSchema(PID, prevSchema.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType);	
+				addFileToSchema(PID, schemaDTO.getOriginalFormat() != null ? schemaDTO.getOriginalFormat() : schemaDTO.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType);	
 				
 				
 				
