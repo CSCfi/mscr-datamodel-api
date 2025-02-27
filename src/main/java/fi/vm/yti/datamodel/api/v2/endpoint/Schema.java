@@ -327,7 +327,10 @@ public class Schema extends BaseMSCRController {
 						RDFDataMgr.write(fos, tempModel, Lang.TTL);
 						
 						String fileContent = FileUtils.readFileToString(tempFile);
-						fileContent = fileContent.replaceFirst("<" + prevSchema.getPID() + "#>", "<" + PID + "#>").replaceFirst("<" + prevSchema.getPID() + ">", "<" + PID + ">");
+						fileContent = 
+								fileContent
+								.replaceFirst("<" + prevSchema.getPID() + "#", "<" + PID + "#")
+								.replaceFirst("<" + prevSchema.getPID() + ">", "<" + PID + ">");
 						StringReader r = new StringReader(fileContent);
 						contentModel.read(r, null, "TURTLE");
 						r.close();
