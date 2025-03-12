@@ -249,14 +249,14 @@ public abstract class BaseMSCRController {
 		}
 	}
 	protected String getCrosswalkContentSubType(SchemaInfoDTO source, SchemaInfoDTO target) {
-		String sourceSubtype = source.getSubType().name();
-		String targetSubtype = target.getSubType().name();
+		String sourceSubtype = null;
+		String targetSubtype = null;
 		
-		if(!EnumUtils.isValidEnum(MSCRSubType.class, source.getSubType().name())) {
+		if(source.getSubType() != null && !EnumUtils.isValidEnum(MSCRSubType.class, source.getSubType().name())) {
 			sourceSubtype = getSchemaContentSubType(getFormat(source));
 		}
-		if(!EnumUtils.isValidEnum(MSCRSubType.class, target.getSubType().name())) {
-			sourceSubtype = getSchemaContentSubType(getFormat(target));
+		if(target.getSubType() != null & !EnumUtils.isValidEnum(MSCRSubType.class, target.getSubType().name())) {
+			targetSubtype = getSchemaContentSubType(getFormat(target));
 		}
 			
 			
