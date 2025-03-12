@@ -255,7 +255,7 @@ public abstract class BaseMSCRController {
 		if(source.getSubType() != null && !EnumUtils.isValidEnum(MSCRSubType.class, source.getSubType().name())) {
 			sourceSubtype = getSchemaContentSubType(getFormat(source));
 		}
-		if(target.getSubType() != null & !EnumUtils.isValidEnum(MSCRSubType.class, target.getSubType().name())) {
+		if(target.getSubType() != null && !EnumUtils.isValidEnum(MSCRSubType.class, target.getSubType().name())) {
 			targetSubtype = getSchemaContentSubType(getFormat(target));
 		}
 			
