@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
@@ -238,8 +240,26 @@ public abstract class BaseMSCRController {
 		}
 	}
 	
-	
-	protected String getCrosswalkContentSubType(String sourceSubtype, String targetSubtype) {
+	private String getFormat(SchemaInfoDTO dto) {
+		if(dto.getFormat() == SchemaFormat.MSCR) {
+			return dto.getOriginalFormat().name();
+		}
+		else {
+			return dto.getFormat().name();
+		}
+	}
+	protected String getCrosswalkContentSubType(SchemaInfoDTO source, SchemaInfoDTO target) {
+		String sourceSubtype = source.getSubType().name();
+		String targetSubtype = target.getSubType().name();
+		
+		if(!EnumUtils.isValidEnum(MSCRSubType.class, source.getSubType().name())) {
+			sourceSubtype = getSchemaContentSubType(getFormat(source));
+		}
+		if(!EnumUtils.isValidEnum(MSCRSubType.class, target.getSubType().name())) {
+			sourceSubtype = getSchemaContentSubType(getFormat(target));
+		}
+			
+			
 		if("DATA_SCHEMA".equals(sourceSubtype) && "DATA_SCHEMA".equals(targetSubtype)) {
 			return MSCRSubType.DATA_CROSSWALK.name();
 		}
@@ -261,7 +281,9 @@ public abstract class BaseMSCRController {
 		}
 		else {
 			throw new IllegalArgumentException("Source schema subtype : " + sourceSubtype + ", target schema subtype:" + targetSubtype);
-		}
+		}			
+		
+
 		
 		
 	}

@@ -178,7 +178,7 @@ public class Crosswalk extends BaseMSCRController {
 		SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, null, ownerMapper);
 		SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, null, ownerMapper);		
 		
-		String subType = getCrosswalkContentSubType(sourceSchemaInfo.getFormat().name(), targetSchemaInfo.getFormat().name());
+		String subType = getCrosswalkContentSubType(sourceSchemaInfo, targetSchemaInfo);
 		
 		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser(), subType);
 		if(!contentModel.isEmpty()) {
