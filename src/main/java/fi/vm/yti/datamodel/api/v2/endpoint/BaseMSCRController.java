@@ -1,6 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.endpoint;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -252,11 +253,17 @@ public abstract class BaseMSCRController {
 		String sourceSubtype = null;
 		String targetSubtype = null;
 		
-		if(source.getSubType() == null || !EnumUtils.isValidEnum(MSCRSubType.class, source.getSubType().name())) {
+		if(source.getSubType() == null ||  !Arrays.stream(MSCRSubType.values()).anyMatch((t) -> t.name().equals(source.getSubType().name())) ) {
 			sourceSubtype = getSchemaContentSubType(getFormat(source));
 		}
-		if(target.getSubType() == null || !EnumUtils.isValidEnum(MSCRSubType.class, target.getSubType().name())) {
+		else {
+			sourceSubtype = source.getSubType().name();
+		}
+		if(target.getSubType() == null ||  !Arrays.stream(MSCRSubType.values()).anyMatch((t) -> t.name().equals(target .getSubType().name())) ) {
 			targetSubtype = getSchemaContentSubType(getFormat(target));
+		}
+		else {
+			targetSubtype = target.getSubType().name();
 		}
 			
 			
