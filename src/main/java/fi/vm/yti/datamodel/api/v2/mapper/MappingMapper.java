@@ -154,12 +154,12 @@ public class MappingMapper {
 		return mappingResource;		
 	}	
 	
-	public Model mapToJenaModel(String mappingPID, MappingDTO dto, @NotNull String parentPID) {
+	public Model mapToJenaModel(String mappingPID, String mappingID, MappingDTO dto, @NotNull String parentPID) {
 		var model = ModelFactory.createDefaultModel();		
 		var creationDate = new XSDDateTime(Calendar.getInstance());
 		var mappingResource = model.createResource(mappingPID)
 				.addProperty(RDF.type, MSCR.MAPPING)
-				.addProperty(DCTerms.identifier, mappingPID)
+				.addProperty(DCTerms.identifier, mappingID)
 				.addProperty(DCTerms.isPartOf, ResourceFactory.createResource(parentPID));
 
 
@@ -168,15 +168,27 @@ public class MappingMapper {
 		mapMappingToModel(dto, model, mappingResource);		
 		return model;
 	}
-
 	public MappingInfoDTO mapToMappingDTO(String mappingPID, Model model) {
+		return mapToMappingDTO(null,  mappingPID, model);
+	}
+
+	public MappingInfoDTO mapToMappingDTO(String handle, String mappingPID, Model model) {
 		Resource r = model.getResource(mappingPID);
-		
 		MappingInfoDTO m = new MappingInfoDTO();
-		m.setPID(mappingPID);
+		
+		String mappingID = MapperUtils.propertyToString(r, DCTerms.identifier);
+		m.setId(mappingID);
+
+		if(handle == null) {
+			m.setPID(mappingPID);	
+		}
+		else {
+			m.setPID(handle + "@mapping=" + mappingID);
+		}
+		
+		
 		if(r.hasProperty(DCTerms.isPartOf))
 			m.setIsPartOf(r.getProperty(DCTerms.isPartOf).getResource().getURI());
-		m.setId(MapperUtils.propertyToString(r, MSCR.id));
 		
 		if(r.hasProperty(MSCR.source)) {
 			Seq sources = (Seq)r.getProperty(MSCR.source).getSeq();
