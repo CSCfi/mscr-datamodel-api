@@ -3,7 +3,10 @@ package fi.vm.yti.datamodel.api.v2.service;
 import org.apache.jena.arq.querybuilder.AskBuilder;
 import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.Query;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -55,13 +58,13 @@ public class JenaService {
     	this.coreRepository = coreRepository;
     	this.defaultNamespace = defaultNamespace;
     	
-        this.schemaWrite = RDFConnection.connect(endpoint + "/schema/data");
-        this.schemaRead = RDFConnection.connect(endpoint + "/schema/get");
-        this.schemaSparql = RDFConnection.connect(endpoint + "/schema/sparql");
+        this.schemaWrite = RDFConnection.connect(endpoint + "/core/data");
+        this.schemaRead = RDFConnection.connect(endpoint + "/core/get");
+        this.schemaSparql = RDFConnection.connect(endpoint + "/core/sparql");
 
-        this.crosswalkWrite = RDFConnection.connect(endpoint + "/crosswalk/data");
-        this.crosswalkRead = RDFConnection.connect(endpoint + "/crosswalk/get");
-        this.crosswalkSparql = RDFConnection.connect(endpoint + "/crosswalk/sparql");
+        this.crosswalkWrite = RDFConnection.connect(endpoint + "/core/data");
+        this.crosswalkRead = RDFConnection.connect(endpoint + "/core/get");
+        this.crosswalkSparql = RDFConnection.connect(endpoint + "/core/sparql");
 
 
     }
@@ -84,6 +87,10 @@ public class JenaService {
         }
     }
     
+    public ResultSet doCoreSelectQuery(String query) {
+    	return schemaSparql.query(query).execSelect();
+    }
+    
 
 
     public int getVersionNumber() {
@@ -100,8 +107,9 @@ public class JenaService {
     public boolean isVersionGraphInitialized(){
         return coreRepository.graphExists(VERSION_NUMBER_GRAPH);
     }
-    
+
     public void putToSchema(String graphName, Model model) {
+    	
         schemaWrite.put(graphName, model);
     }
     
