@@ -117,21 +117,22 @@ public class Schema extends BaseMSCRController {
 		this.groupManagementService = groupManagementService;
 	}
 
-	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format) {
+	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format, boolean skipProcessing) {
 		try {
 
 			if (format == SchemaFormat.JSONSCHEMA) {
-				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
-				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
-
-				boolean isValidJSONSchema = validationRecord.isValid();
-				List<String> validationMessages = validationRecord.validationOutput();
-
-				if (!isValidJSONSchema) {
-					String exceptionOutput = String.join("\n", validationMessages);
-					throw new Exception(exceptionOutput);
+				if(!skipProcessing) {
+					JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
+					ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
+	
+					boolean isValidJSONSchema = validationRecord.isValid();
+					List<String> validationMessages = validationRecord.validationOutput();
+	
+					if (!isValidJSONSchema) {
+						String exceptionOutput = String.join("\n", validationMessages);
+						throw new Exception(exceptionOutput);
+					}
 				}
-
 			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML || format == SchemaFormat.CSV
 					|| format == SchemaFormat.SKOSRDF || format == SchemaFormat.RDFS || format == SchemaFormat.SHACL
 					|| format == SchemaFormat.PDF || format == SchemaFormat.OWL ||format == SchemaFormat.ENUM) {
