@@ -271,7 +271,8 @@ public class FrontendController {
 			}
 		}			
 		else {
-			contentString = schemaWriter.newModelSchema(pid, model, "en", metadata.getFormat());
+			SchemaFormat format = metadata.getOriginalFormat() != null ? metadata.getOriginalFormat() : metadata.getFormat();
+			contentString = schemaWriter.newModelSchema(pid, model, "en", format);
 		}
 		
     	try {
