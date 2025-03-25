@@ -97,6 +97,8 @@ public class MSCR {
     public static final Property oneOf = ResourceFactory.createProperty(URI, "oneOf");
     public static final Property processingParams = ResourceFactory.createProperty(URI, "processingParams");
     public static final Property notes = ResourceFactory.createProperty(URI, "notes");
+    public static final Property confidence = ResourceFactory.createProperty(URI, "confidence");
+    public static final Property justification = ResourceFactory.createProperty(URI, "justification");
     
     public static final Property qname = ResourceFactory.createProperty(URI, "qname");
     
