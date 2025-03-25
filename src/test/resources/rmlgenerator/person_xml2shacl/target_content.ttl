@@ -1,0 +1,47 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix shapes: <https://shacl-play.sparna.fr/shapes/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dash:  <http://datashapes.org/dash#> .
+
+<mscr:schema:5b042ba6-58a4-4d8b-bac1-47fa40204a0d>
+        <http://rdfs.org/ns/void#rootResource>
+                shapes:Person .
+
+shapes:Person  a        sh:NodeShape ;
+        rdfs:label      "Person"@en ;
+        sh:property     shapes:Person_familyName , shapes:Person_givenName , shapes:Person_name , shapes:Person_age ;
+        sh:targetClass  <http://schema.org/Person> .
+
+shapes:Person_familyName
+        sh:datatype  xsd:string ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "familyName"@en ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      <http://schema.org/familyName> .
+
+shapes:Person_givenName
+        sh:datatype  xsd:string ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "givenName"@en ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      <http://schema.org/givenName> .
+
+shapes:Person_name  dash:propertyRole  dash:LabelRole ;
+        sh:datatype        xsd:string ;
+        sh:maxCount        1 ;
+        sh:minCount        1 ;
+        sh:name            "name"@en ;
+        sh:nodeKind        sh:Literal ;
+        sh:path            <http://schema.org/name> .
+
+shapes:Person_age  dash:propertyRole  dash:LabelRole ;
+        sh:datatype        xsd:integer ;
+        sh:maxCount        1 ;
+        sh:minCount        1 ;
+        sh:name            "age"@en ;
+        sh:nodeKind        sh:Literal ;
+        sh:path            <http://schema.org/age> .

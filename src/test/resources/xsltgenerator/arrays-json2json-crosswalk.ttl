@@ -1,0 +1,40 @@
+<mscr:crosswalk:26a5ffd2-97ee-40f7-bc9d-9db2c6a0569e>
+        <http://uri.suomi.fi/datamodel/ns/mscr#mappings>
+                <mscr:crosswalk:26a5ffd2-97ee-40f7-bc9d-9db2c6a0569e@mapping=32676e82-757b-4111-adc5-60198e0444d5> .
+
+<mscr:crosswalk:26a5ffd2-97ee-40f7-bc9d-9db2c6a0569e@mapping=32676e82-757b-4111-adc5-60198e0444d5>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:26a5ffd2-97ee-40f7-bc9d-9db2c6a0569e@mapping=32676e82-757b-4111-adc5-60198e0444d5" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:26a5ffd2-97ee-40f7-bc9d-9db2c6a0569e> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-02-05T09:44:46.295Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0#root-Root-fruits" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "fruits" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0#root-Root-fruits>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0#root-Root-vegetables-Vegetables-veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0#root-Root-vegetables-Vegetables-veggieName>
+                          ]
+                ] .

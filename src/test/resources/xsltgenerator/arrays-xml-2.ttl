@@ -1,0 +1,142 @@
+@prefix :      <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b2#> .
+
+<mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b2>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root-Root-root  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/root2" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/root2" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#minCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "root2" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-root-Root ;
+        <http://www.w3.org/ns/shacl#order>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-root .
+
+:root-Root-root-Root  a  <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root2" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root2" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-root-Root-vegetables , :root-Root-root-Root-fruits .
+
+:root-Root-root-Root-vegetables-Vegetables-veggieLike
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                "2"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/root2/vegetables2/veggieLike2" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/root2/vegetables2/veggieLike2" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#minCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "veggieLike" ;
+        <http://www.w3.org/ns/shacl#order>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-root-Root-vegetables-Vegetables-veggieLike .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root2" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root2" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-root .
+
+:root-Root-root-Root-vegetables-Vegetables
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "vegetables2" ;
+        <http://www.w3.org/ns/shacl#name>
+                "vegetables2" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-root-Root-vegetables-Vegetables-veggieLike , :root-Root-root-Root-vegetables-Vegetables-veggieName .
+
+:root-Root-root-Root-vegetables-Vegetables-veggieName
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                "2"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/root2/vegetables2/veggieName2" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/root2/vegetables2/veggieName2" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#minCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "veggieName2" ;
+        <http://www.w3.org/ns/shacl#order>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-root-Root-vegetables-Vegetables-veggieName .
+
+:root-Root-root-Root-vegetables
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/root2/vegetables2" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/root2/vegetables2" ;
+        <http://www.w3.org/ns/shacl#minCount>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "vegetables2" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-root-Root-vegetables-Vegetables ;
+        <http://www.w3.org/ns/shacl#order>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-root-Root-vegetables .
+
+:root-Root-root-Root-fruits
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/root2/fruits2" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/root2/fruits2" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#minCount>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "fruits2" ;
+        <http://www.w3.org/ns/shacl#order>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-root-Root-fruits .                

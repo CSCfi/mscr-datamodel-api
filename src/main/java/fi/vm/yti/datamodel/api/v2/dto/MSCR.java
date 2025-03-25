@@ -103,6 +103,7 @@ public class MSCR {
     public static final Property subType = ResourceFactory.createProperty(URI, "subType");
     public static final Property schemaPath = ResourceFactory.createProperty(URI, "schemaPath");
     public static final Property instancePath = ResourceFactory.createProperty(URI, "instancePath");
+    public static final Property valuesFrom = ResourceFactory.createProperty(URI, "valuesFrom");
 
 	public static final Property FnO_predicate = ResourceFactory.createProperty(FnO, "predicate");
 

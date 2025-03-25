@@ -33,5 +33,4 @@ public class OutputDTO {
 	public void setRequired(boolean isRequired) {
 		this.isRequired = isRequired;
 	}
-	
 }
