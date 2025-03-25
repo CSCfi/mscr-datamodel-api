@@ -172,6 +172,32 @@ dependencies {
 	// https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi-distribution
 	implementation group: 'net.sourceforge.owlapi', name: 'owlapi-distribution', version: '5.5.0'
 
+	testImplementation('net.sf.saxon:Saxon-HE:9.9.1-4') {
+		exclude module: 'javax.xml'
+	}
+	// https://mvnrepository.com/artifact/org.xmlunit/xmlunit-core
+	testImplementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.10.0'
+	// https://mvnrepository.com/artifact/org.xmlunit/xmlunit-assertj
+	testImplementation group: 'org.xmlunit', name: 'xmlunit-assertj', version: '2.10.0'
+	// https://mvnrepository.com/artifact/org.skyscreamer/jsonassert
+	testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.3'
+
+	// https://mvnrepository.com/artifact/com.giffing.bucket4j.spring.boot.starter/bucket4j-spring-boot-starter
+	//implementation group: 'com.giffing.bucket4j.spring.boot.starter', name: 'bucket4j-spring-boot-starter', version: '0.12.8'
+	
+	// https://mvnrepository.com/artifact/io.apptik.json/json-generator
+	//implementation group: 'io.apptik.json', name: 'json-generator', version: '1.0.4'
+	// https://mvnrepository.com/artifact/io.apptik.json/json-schema
+	//implementation group: 'io.apptik.json', name: 'json-schema', version: '1.0.4'
+	//implementation files('lib/json-schema-1.0.jar')
+	//implementation name: 'io.apptik.json:json-schema-1.0'
+	// https://mvnrepository.com/artifact/in.jlibs/jlibs-xsd
+	implementation group: 'in.jlibs', name: 'jlibs-xsd', version: '3.0.1'
+	
+	implementation files('lib/json-generator-1.0.4.jar')
+	implementation files('lib/json-core-1.0.4.jar')
+	implementation files('lib/json-schema-1.0.jar')
+	implementation files('lib/json-wrapper-1.0.4.jar')
 }
 
 sonarqube {
