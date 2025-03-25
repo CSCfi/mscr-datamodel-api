@@ -153,11 +153,14 @@ public class Schema extends BaseMSCRController {
 	}
 
 	private void addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
-			final String contentType) {
+			final String contentType, boolean skipProcessing) {
 		try {
-			Model schemaModel = null;
-
-			if (format == SchemaFormat.JSONSCHEMA) {
+			Model schemaModel = ModelFactory.createDefaultModel();
+			
+			if(skipProcessing) {
+				// do nothing
+			}
+			else if (format == SchemaFormat.JSONSCHEMA) {
 				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
 
@@ -179,7 +182,6 @@ public class Schema extends BaseMSCRController {
 				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);
 			} else if (format == SchemaFormat.PDF) {
 				// do nothing
-				schemaModel = ModelFactory.createDefaultModel();
 			} else if (format == SchemaFormat.OWL) {
 				schemaModel = schemaService.addOWL(pid, contentURL, fileInBytes);				
 			} else if (format == SchemaFormat.RDFS) {
@@ -298,7 +300,8 @@ public class Schema extends BaseMSCRController {
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO,
 			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
-			@RequestParam(name = "target", required = false) String target) throws Exception {
+			@RequestParam(name = "target", required = false) String target,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
 
 		validateActionParams(schemaDTO, action, target);
 		checkVisibility(schemaDTO);
@@ -355,7 +358,7 @@ public class Schema extends BaseMSCRController {
 					// try to download url to file
 					File tempFile = File.createTempFile("schema", "temp");
 					FileUtils.copyURLToFile(new URL(prevSchema.getSourceURL()), tempFile);
-					fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), prevSchema.getFormat());
+					fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), prevSchema.getFormat(), skipProcessing);
 					contentType = "application/octet-stream"; // TODO: fix this
 				}
 				else {
@@ -363,7 +366,7 @@ public class Schema extends BaseMSCRController {
 					fileBytes = schemaFile.data();
 					contentType = schemaFile.contentType();
 				}
-				addFileToSchema(PID, schemaDTO.getOriginalFormat() != null ? schemaDTO.getOriginalFormat() : schemaDTO.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType);	
+				addFileToSchema(PID, schemaDTO.getOriginalFormat() != null ? schemaDTO.getOriginalFormat() : schemaDTO.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType, skipProcessing);	
 				
 				
 				
@@ -380,7 +383,6 @@ public class Schema extends BaseMSCRController {
 			String handle = null;
 			if (schemaDTO.getState() == MSCRState.PUBLISHED || schemaDTO.getState() == MSCRState.DEPRECATED) {
 				handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, PID);
-
 			}
 			String subType = getSchemaContentSubType(schemaDTO.getFormat().name());	
 			var jenaModel = mapper.mapToJenaModel(PID, handle, schemaDTO, target, aggregationKey,
@@ -431,8 +433,8 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) {
-		return uploadSchemaFile(pid, null, file);
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file, @RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) {
+		return uploadSchemaFile(pid, null, file, skipProcessing);
 	}
 
 	@Hidden
@@ -441,7 +443,8 @@ public class Schema extends BaseMSCRController {
 	public SchemaInfoDTO uploadSchemaFile(
 			@PathVariable String pid,
 			@PathVariable String suffix, 
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam("file") MultipartFile file,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) {
 
 		if (suffix != null) {
 			pid = pid + "/" + suffix;
@@ -464,7 +467,7 @@ public class Schema extends BaseMSCRController {
 						.toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType());
+			addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType(), skipProcessing);
 			return schemaDTO;
 		} catch (RuntimeException rex) {
 			throw rex;
@@ -486,7 +489,8 @@ public class Schema extends BaseMSCRController {
 			@RequestParam(name = "contentURL", required = false) String contentURL,
 			@RequestParam(name = "file", required = false) MultipartFile file,
 			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
-			@RequestParam(name = "target", required = false) String target) throws Exception {
+			@RequestParam(name = "target", required = false) String target,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
 
 		if (contentURL == null && file == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -508,10 +512,10 @@ public class Schema extends BaseMSCRController {
 				// try to download url to file
 				File tempFile = File.createTempFile("schema", "temp");
 				FileUtils.copyURLToFile(new URL(contentURL), tempFile);
-				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat());
+				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat(), skipProcessing);
 				contentType = "application/octet-stream"; // TODO: fix this
 			} else {
-				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat());
+				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat(), skipProcessing);
 				contentType = file.getContentType();
 			}
 
@@ -521,14 +525,14 @@ public class Schema extends BaseMSCRController {
 		
 		SchemaInfoDTO dto = null;
 		try {
-			dto = createSchema(schemaDTO, action, target);
+			dto = createSchema(schemaDTO, action, target, skipProcessing);
 			final String PID = dto.getPID();
 
 			if (!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);	
+			addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType, skipProcessing);	
 		}catch(Exception ex) {
 			ex.printStackTrace();
 			// revert any possible metadata changes
