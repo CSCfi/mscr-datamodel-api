@@ -238,25 +238,6 @@ public class Crosswalk extends BaseMSCRController {
 		
 	}	
 	
-	private MappingDTO mergeMetadata(MappingInfoDTO prev, MappingDTO input) {
-		MappingDTO d = new MappingDTO();
-		
-		d.setId(input != null && input.getId() != null ? input.getId() : prev.getId());
-		d.setDepends_on(input != null && input.getDepends_on() != null ? input.getDepends_on() : prev.getDepends_on());
-		d.setSource(input != null && input.getSource() != null ? input.getSource() : prev.getSource());
-		d.setSourceType(input != null && input.getSourceType() != null ? input.getSourceType() : prev.getSourceType());
-		d.setSourceDescription(input != null && input.getSourceDescription() != null ? input.getSourceDescription() : prev.getSourceDescription());
-		d.setPredicate(input != null && input.getPredicate() != null ? input.getPredicate() : prev.getPredicate());
-		d.setFilter(input != null && input.getFilter() != null ? input.getFilter() : prev.getFilter());
-		d.setTarget(input != null && input.getTarget() != null ? input.getTarget() : prev.getTarget());
-		d.setTargetType(input != null && input.getTargetType() != null ? input.getTargetType() : prev.getTargetType());
-		d.setTargetDescription(input != null && input.getTargetDescription() != null ? input.getTargetDescription() : prev.getTargetDescription());
-		d.setProcessing(input != null && input.getProcessing() != null ? input.getProcessing() : prev.getProcessing());
-		d.setOneOf(input != null && input.getOneOf() != null ? input.getOneOf() : prev.getOneOf());
-		return d;
-		
-	}
-	
 	private void addFileToCrosswalk(final String pid, final CrosswalkInfoDTO dto, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {	 
 		try {
