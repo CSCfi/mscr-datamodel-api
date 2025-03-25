@@ -58,11 +58,11 @@ public class CSVMapper {
 		}
 		return model;
 	}
-	public Model mapToModel(String pid, byte[] data, String delimiter) throws Exception {
+	public Model mapToModel(String pid, byte[] data, char delimiter) throws Exception {
 		Model m = ModelFactory.createDefaultModel();
 		m.setNsPrefix("", pid +"#");
 		InputStream input = new ByteArrayInputStream(data);
-		CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+		CSVParser parser = new CSVParserBuilder().withSeparator(delimiter).build();
 		CSVReader reader = new CSVReaderBuilder(new InputStreamReader(input)).withCSVParser(parser).build();
 		
 		long lines = reader.getLinesRead();

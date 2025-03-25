@@ -446,7 +446,14 @@ public class JSONSchemaMapper {
 				if (entry.getValue().get("$ref") != null) {
 					String ref = entry.getValue().get("$ref").asText();
 					// TODO: set the class and datatype according to the references definition
-					String shapeName = ref.substring(ref.lastIndexOf("-")+1);
+					String shapeName = "";
+					if(ref.indexOf("-") >= 0) {
+						shapeName = ref.substring(ref.lastIndexOf("-")+1);
+					}
+					else if(ref.indexOf("/") >= 0) {
+						shapeName = ref.substring(ref.lastIndexOf("/")+1);
+					}
+					 
 					JsonNode defObj = definitions.get(shapeName);
 					if(defObj != null) {
 						String targetType = defObj.get("type") != null ? defObj.get("type").asText() : "string";

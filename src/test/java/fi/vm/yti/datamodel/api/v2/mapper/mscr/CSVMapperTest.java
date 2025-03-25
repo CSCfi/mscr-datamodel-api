@@ -28,7 +28,7 @@ class CSVMapperTest {
 		byte[] data = getByteStreamFromPath("csvschema/semicolon_delimiter.csv");
 		assertNotNull(data);
 		CSVMapper mapper = new CSVMapper();
-		Model m = mapper.mapToModel("urn:test1", data, ";");
+		Model m = mapper.mapToModel("urn:test1", data, ';');
 		
 		assertEquals(3, m.listResourcesWithProperty(RDF.type, SH.PropertyShape).toList().size());							
 	}
@@ -38,7 +38,7 @@ class CSVMapperTest {
 		byte[] data = getByteStreamFromPath("csvschema/semicolon_delimiter_multiline.csv");
 		assertNotNull(data);
 		CSVMapper mapper = new CSVMapper();
-		Model m = mapper.mapToModel("urn:test1", data, ";");
+		Model m = mapper.mapToModel("urn:test1", data, ';');
 		
 		assertEquals(3, m.listResourcesWithProperty(RDF.type, SH.PropertyShape).toList().size());		
 	}
@@ -48,7 +48,7 @@ class CSVMapperTest {
 		byte[] data = getByteStreamFromPath("csvschema/comma_delimiter.csv");
 		assertNotNull(data);
 		CSVMapper mapper = new CSVMapper();
-		Model m = mapper.mapToModel("urn:test1", data, ",");
+		Model m = mapper.mapToModel("urn:test1", data, ',');
 		
 		assertEquals(3, m.listResourcesWithProperty(RDF.type, SH.PropertyShape).toList().size());							
 	}
@@ -59,8 +59,9 @@ class CSVMapperTest {
 		byte[] data = getByteStreamFromPath("csvschema/semicolon_delimiter.csv");
 		assertNotNull(data);
 		CSVMapper mapper = new CSVMapper();
-		Model m = mapper.mapToModel("urn:test1", data, ",");
+		Model m = mapper.mapToModel("urn:test1", data, ',');
 		// the whole line is considered as one property
+		m.write(System.out, "TURTLE");
 		assertEquals(1, m.listResourcesWithProperty(RDF.type, SH.PropertyShape).toList().size());							
 	}
 

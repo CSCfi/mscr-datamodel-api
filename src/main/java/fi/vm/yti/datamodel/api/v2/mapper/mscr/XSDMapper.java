@@ -79,12 +79,8 @@ public class XSDMapper {
 
 	public SchemaParserResultDTO loadSchema(String filePath) {
 		SchemaParserResultDTO r = new SchemaParserResultDTO();
-
-		//System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-//		        "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");		
 		Properties systemProperties = System.getProperties();
 		systemProperties.remove("javax.xml.parsers.DocumentBuilderFactory");
-//		systemProperties.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.xsltc.trax.TransformerFactoryImpl");
 		System.setProperties(systemProperties);
 		try {
 			XsdParser p = new XsdParser(filePath);

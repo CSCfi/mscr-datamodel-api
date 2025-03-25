@@ -127,7 +127,7 @@ public class SchemaService {
 	
 	public Model transformCSVSchemaToInternal(String schemaPID, byte[] data, String delimiter) throws Exception, IOException {
 		CSVMapper mapper = new CSVMapper();		
-		Model model = mapper.mapToModel(schemaPID, data, delimiter);
+		Model model = mapper.mapToModel(schemaPID, data, delimiter.charAt(0));
 		Resource modelResource = model.createResource(schemaPID);
 		addDefaultRootResourceForCSV(modelResource, model);
 		

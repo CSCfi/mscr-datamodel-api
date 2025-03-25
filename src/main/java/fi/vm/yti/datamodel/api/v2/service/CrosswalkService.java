@@ -67,10 +67,11 @@ public class CrosswalkService {
             }
             else {            	
             	subjectResource = ResourceFactory.createResource(subjectId);
-            	if(!sourceModel.containsResource(subjectResource)) {
-            		throw new RuntimeException("Subject id " + subjectId + " not found in the source schema.");
-            	}
             }
+        	if(!sourceModel.containsResource(subjectResource)) {
+        		throw new RuntimeException("Subject id " + (subjectId != null ? subjectId : subjectLabel) + " not found in the source schema.");
+        	}
+            
             if(objectId == null || (objectType != null && objectType.equals("rdfs literal"))) {
             	if(!targetFormat.equals("ENUM")) {
             		throw new RuntimeException("object id is null or object type is rdfs literal, but target schema is not of type ENUM.");
@@ -79,11 +80,11 @@ public class CrosswalkService {
             }
             else {
             	objectResource = ResourceFactory.createResource(objectId);
-            	if(!targetModel.containsResource(objectResource)) {
-            		throw new RuntimeException("Object id " + objectId + " not found in the target schema.");
-            	}
             	
             }                          
+        	if(!targetModel.containsResource(objectResource)) {
+        		throw new RuntimeException("Object id " + (objectId != null ? objectId : objectLabel)  + " not found in the target schema.");
+        	}
             
             String mappingPID = pid + "@mapping=" + UUID.randomUUID();
             MappingDTO dto = new MappingDTO();
