@@ -1265,5 +1265,164 @@ public class JsonSchemaWriter {
 
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
+	
+	private String getTitleValue(Resource s, Model model) {
+		Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+		
+		String uri = s.getURI();
+		String qName = null;
+		if(uri == null) {
+			uri = s.getId().toString();
+		}
+		else {
+			qName = model.qnameFor(uri);
+		}
+		
+		
+		if(titles.get("en") != null) {
+			return titles.get("en");
+		}
+		else {
+			if(titles.get("eng") != null) {
+				return titles.get("eng");
+			}
+			else {
+				if(qName != null) {
+					return qName;	
+				}
+				else {
+					if(uri.contains("#")) {
+						return uri.substring(uri.lastIndexOf("#") + 1);
+					}
+					else {
+						return uri;
+					}
+				}
+				
+			}
+			
+		}
+
+	}
+
+
+	public String owlVocabulary(String pid, Model model, String string) throws Exception {
+		Map<String, Object> definitions = new HashMap<String, Object>();
+
+		Map<String, Object> rootDefinition = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new TreeMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);
+
+		Map<String, Object> schema = new HashMap<String, Object>();
+		schema.put("definitions", definitions);
+		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+		schema.put("type", "object");
+
+		schema.put("properties", rootProperties);
+
+		Map<String, Object> dataProperties = new TreeMap<String, Object>();
+		Map<String, Object> objectProperties = new TreeMap<String, Object>();
+		Map<String, Object> classes = new TreeMap<String, Object>();
+		
+		model.listSubjectsWithProperty(RDF.type,  OWL.Class).forEach(obj -> {
+			Resource s = (Resource) obj;
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, Object> classDef = new HashMap<String, Object>();
+
+			String uri = s.getURI();
+			String qName = null;
+			if(uri == null) {
+				uri = s.getId().toString();
+			}else {
+				qName = model.qnameFor(uri);	
+			}
+			
+			
+			classDef.put("title", getTitleValue(s, model));
+			classDef.put("description", descs.get("en"));
+			classDef.put("qname", qName);
+			classDef.put("@id", uri);
+			
+			classDef.put("type", "object");
+			classDef.put("@type", uri);			
+			
+			classes.put(uri, classDef);
+			definitions.put(uri, classDef);
+			
+		});
+
+		model.listSubjectsWithProperty(RDF.type,  OWL.DatatypeProperty).forEach(obj -> {
+			Resource s = (Resource) obj;
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, Object> classDef = new HashMap<String, Object>();
+
+			String uri = s.getURI();
+			String qName = model.qnameFor(uri);
+			
+			classDef.put("title", getTitleValue(s, model));
+			classDef.put("description", descs.get("en"));
+			classDef.put("qname", qName);
+			classDef.put("@id", uri);			
+			classDef.put("type", "object");
+			
+			dataProperties.put(uri, classDef);
+			definitions.put(uri, classDef);
+
+		});
+
+		model.listSubjectsWithProperty(RDF.type,  OWL.ObjectProperty).forEach(obj -> {
+			Resource s = (Resource) obj;
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, Object> classDef = new HashMap<String, Object>();
+
+			String uri = s.getURI();
+			String qName = model.qnameFor(uri);
+			
+			classDef.put("title", getTitleValue(s, model));
+			classDef.put("description", descs.get("en"));
+			classDef.put("qname", qName);
+			classDef.put("@id", uri);
+			
+			classDef.put("type", "object");
+			
+			objectProperties.put(uri, classDef);			
+			definitions.put(uri, classDef);
+
+		});
+
+		
+		Map<String, Object> classesProp = new LinkedHashMap();
+		classesProp.put("title", "Classes");
+		classesProp.put("type", "object");
+		classesProp.put("qname", "mscr:classes");
+		classesProp.put("@id", "mscr:classes");
+		classesProp.put("properties", classes);		
+		rootProperties.put("mscr:classes", classesProp);
+		definitions.put("mscr:classes", classesProp);
+		
+		Map<String, Object> dataProps = new LinkedHashMap();
+		dataProps.put("title", "Data properties");
+		dataProps.put("type", "object");
+		dataProps.put("qname", "mscr:dataProps");
+		dataProps.put("@id", "mscr:dataProps");
+		dataProps.put("properties", dataProperties);		
+		rootProperties.put("mscr:dataProps", dataProps);
+		definitions.put("mscr:dataProps", dataProps);
+		
+		Map<String, Object> objectProps = new LinkedHashMap();
+		objectProps.put("title", "Object properties");
+		objectProps.put("type", "object");
+		objectProps.put("qname", "mscr:objectProps");
+		objectProps.put("@id", "mscr:objectProps");
+		objectProps.put("properties", objectProperties);		
+		rootProperties.put("mscr:objectProps", objectProps);
+		definitions.put("mscr:objectProps", objectProps);
+		
+		
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
+	}	
 
 }

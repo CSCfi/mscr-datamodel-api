@@ -256,7 +256,7 @@ public class FrontendController {
 		}
 		else if(metadata.getFormat() == SchemaFormat.OWL) {
 			try {
-				contentString = schemaWriter.owl(pid, model, "en");
+				contentString = schemaWriter.owlVocabulary(pid, model, "en");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
