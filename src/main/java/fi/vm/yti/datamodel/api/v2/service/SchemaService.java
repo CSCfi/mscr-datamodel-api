@@ -452,5 +452,22 @@ public class SchemaService {
 		
 		return m;
 	}
+
+	public void updateValuesFrom(Model model, String propURI, String vocabularyURI) throws Exception {
+		Resource prop = ResourceFactory.createResource(propURI);
+		if(!model.containsResource(prop)) {
+			throw new Exception("Property " + prop + " not found");
+		}		
+		prop = model.getResource(propURI);
+		model.removeAll(prop, SH.datatype, null);
+		model.removeAll(prop, DCTerms.type, null);
+		model.add(prop, DCTerms.type, OWL.DatatypeProperty); // setting new type always
+		model.removeAll(prop, MSCR.valuesFrom, null);
+		if(!vocabularyURI.equals("clear")) {
+			model.add(prop, MSCR.valuesFrom, model.createResource(vocabularyURI));
+		}
+		
+				
+	}
 }
 	

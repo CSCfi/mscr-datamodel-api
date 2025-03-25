@@ -898,19 +898,19 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not search DTR instance. " + e.getMessage());
 		}
 	}	
-	
-	@Operation(summary = "Update data type of a SHACL property")
+
+	@Operation(summary = "Update property")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
-	public UpdateResponseDTO updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype") String datatype) {
-		return updateProperty(null, schemaID, target, datatype);
+	@PatchMapping(path = "/schema/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
+		return updateProperty(null, schemaID, target, datatype, valuesFrom);
 	}	
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
-	public UpdateResponseDTO updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
+	@PatchMapping(path = "/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
 		if (prefix != null) {
 			schemaID = prefix + "/" + schemaID;
 		}
@@ -927,7 +927,7 @@ public class Schema extends BaseMSCRController {
 			if(!format.equals(SchemaFormat.MSCR.name())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be MSCR.");
 			}
-			String resourcePrefix = schemaID+"#root/Root/";
+			String resourcePrefix = schemaID+"#root-Root-";
 			String localName = target.substring((resourcePrefix).length());
 			String encodedLocalName = URLEncoder.encode(localName).replaceAll("%2F", "/");
 			String encodedTarget = resourcePrefix + encodedLocalName;
@@ -935,19 +935,45 @@ public class Schema extends BaseMSCRController {
 			if(propResource == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);
 			}
+			if(!datatype.equals("")) {
+				Model propModel = schemaService.fetchAndMapDTRType(datatype);
+				Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
+				jenaService.putToSchema(datatypeResource.getURI(), propModel);
+				schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
+				jenaService.putToSchema(schemaID+":content", contentModel);
+				return new UpdateResponseDTO("Property " + target + " updated with data type " + datatype , schemaID);		
+			}
+			else if(!valuesFrom.equals("")) {
+				if(!valuesFrom.equals("clear") && !jenaService.doesSchemaExist(valuesFrom)) {
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Given vocabulary does not exist in the system. Vocabulary URI:" + valuesFrom);
+				}
+				schemaService.updateValuesFrom(contentModel, encodedTarget, valuesFrom);
+				jenaService.putToSchema(schemaID+":content", contentModel);
+				return new UpdateResponseDTO("Property " + target + " updated with valuesFrom " + valuesFrom , schemaID);
+			}
+			return new UpdateResponseDTO("Nothing to do", schemaID);
 			
-			Model propModel = schemaService.fetchAndMapDTRType(datatype);
-			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
-			jenaService.putToSchema(datatypeResource.getURI(), propModel);
-			schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
-			jenaService.putToSchema(schemaID+":content", contentModel);
 			
-			return new UpdateResponseDTO("Property " + target + " updated with data type " + datatype , schemaID);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}		
+	}	
+	
+	@Operation(summary = "Update data type of a SHACL property")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateDTRProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
+		return updateProperty(null, schemaID, target, datatype, valuesFrom);
+	}	
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateDTRProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
+		return updateProperty(prefix, schemaID, target, datatype, valuesFrom);
 	}
 	
 	@Operation(summary = "Update root resource")
