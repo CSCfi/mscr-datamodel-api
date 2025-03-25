@@ -63,8 +63,9 @@ public class MappingMapper {
 		return pi;
 	}
 	
-	private Resource mapNodeInfoToModel(NodeInfo ni, Model model) {
+	private Resource mapNodeInfoToModel(NodeInfo ni, Model model, Resource type) {
 		Resource sourceResource = model.createResource();
+		sourceResource.addProperty(RDF.type, type);
 		sourceResource.addLiteral(MSCR.id, ni.getId());
 		sourceResource.addLiteral(MSCR.label, ni.getLabel());
 		if(ni.getProcessing() != null) {
@@ -124,7 +125,7 @@ public class MappingMapper {
 		if(m.getSource() != null && m.getSource().size() > 0) {
 			Seq items = model.createSeq();
 			m.getSource().forEach(_r -> {
-				Resource r = mapNodeInfoToModel(_r, model);
+				Resource r = mapNodeInfoToModel(_r, model, MSCR.SOURCE);
 				items.add(r);
 			});	
 			mappingResource.addProperty(MSCR.source, items);
@@ -132,7 +133,7 @@ public class MappingMapper {
 		if(m.getTarget() != null && m.getTarget().size() > 0) {
 			Seq items = model.createSeq();
 			m.getTarget().forEach(_r -> {
-				Resource r = mapNodeInfoToModel(_r, model);
+				Resource r = mapNodeInfoToModel(_r, model, MSCR.TARGET);
 				items.add(r);
 			});	
 			mappingResource.addProperty(MSCR.target, items);
@@ -143,10 +144,7 @@ public class MappingMapper {
 			
 		}		
 		mappingResource.addProperty(MSCR.predicate, ResourceFactory.createResource(m.getPredicate()));
-		if(m.getOneOf() != null && m.getOneOf().size() > 0) {
-			m.getOneOf().forEach(o -> mappingResource.addProperty(MSCR.oneOf, mapOneOfToModel(o, model)));
-		}
-		
+
 		if(m.getNotes() != null) {
 			mappingResource.addProperty(MSCR.notes, m.getNotes());
 		}
