@@ -6,69 +6,69 @@
         "records": {
             "items": {
                 "properties": {
-                    "AGGREGATION_LEVEL": {
+                    "aggregation_level": {
                         "const": "DATASET",
                         "description": "Data object type, dataset or file",
                         "type": "string"
                     },
-                    "DRS_ID": {
+                    "drs_id": {
                         "description": "CMIP6 data reference syntax, the dataset's drs_id",
                         "type": "string"
                     },
-                    "ERRATA_IDS": {
+                    "errata_ids": {
                         "description": "errata information for dataset",
                         "type": "string"
                     },
-                    "FIXED_CONTENT": {
+                    "fixed_content": {
                         "const": "TRUE",
                         "description": "Indicated that content will stay bit-equal, true or false",
                         "type": "string"
                     },
-                    "HAS_PARTS": {
+                    "has_parts": {
                         "description": "dataset has sub datasets, semicolon-separated list, with \"hdl:\" prepended. ",
                         "type": "string"
                     },
-                    "HOSTING_NODE": {
+                    "hosting_node": {
                         "description": "original data node of this dataset (max 1), contains host and publication date, so that the most recent one can be used, HTML snippet",
                         "type": "string"
                     },
-                    "HS_ADMIN": {
+                    "hs_admin": {
                         "description": "admin information, JSON-ish",
                         "type": "string"
                     },
-                    "REPLACED_BY": {
+                    "replaced_by": {
                         "description": "handle of following version, pid with \"hdl:\" ",
                         "type": "string"
                     },
-                    "REPLACES": {
+                    "replaces": {
                         "description": "handle of previous version, pid with \"hdl:\"  ",
                         "type": "string"
                     },
-                    "REPLICA_NODE": {
+                    "replica_node": {
                         "description": "data node for replicas of this dataset, contains host and publication date, HTML snippet  ",
                         "type": "string"
                     },
-                    "UNPUBLISHED_REPLICAS": {
+                    "unpublished_replicas": {
                         "description": "data node for unpublished replicas of this dataset, contains host and publication date, HTML snippet",
                         "type": "string"
                     },
-                    "URL": {
+                    "url": {
                         "description": "handle id, landing page URL",
                         "type": "string"
                     },
-                    "VERSION_NUMBER": {
+                    "version_number": {
                         "description": "dataset version: YYYYMMDD",
                         "type": "string"
                     },
-                    "_ADDED_ERRATA_IDS": {
+                    "_added_errata_ids": {
                         "description": "removed errata information, string and timestamp",
                         "type": "string"
                     },
-                    "_REMOVED_ERRATA_IDS": {
+                    "_removed_errata_ids": {
                         "description": "removed errata information, string and timestamp",
                         "type": "string"
                     },
-                    "_REMOVED_HOSTS": {
+                    "_removed_hosts": {
                         "description": "removed data nodes for original datasets, hostname and timestamp",
                         "type": "string"
                     }

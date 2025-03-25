@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="root">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="biographic_references" />
+        <xs:element name="contributors">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="author_references" />
+              <xs:element name="authors">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="aliases" />
+                    <xs:element name="checked" type="xs:unsignedByte" />
+                    <xs:element name="codes" type="xs:string" />
+                    <xs:element name="name" type="xs:string" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="editors" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="database" type="xs:string" />
+        <xs:element name="datestamp" type="xs:dateTime" />
+        <xs:element name="document_type">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="code" type="xs:string" />
+              <xs:element name="description" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="editorial_contributions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="contribution_type" type="xs:string" />
+              <xs:element name="language" type="xs:string" />
+              <xs:element name="reviewer">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="author_code" type="xs:string" />
+                    <xs:element name="name" type="xs:string" />
+                    <xs:element name="reviewer_id" type="xs:unsignedShort" />
+                    <xs:element name="sign" type="xs:string" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="text" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="id" type="xs:string" />
+        <xs:element name="identifier" type="xs:decimal" />
+        <xs:element maxOccurs="unbounded" name="keywords" type="xs:string" />
+        <xs:element name="language">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="addition" />
+              <xs:element name="languages" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="license" />
+        <xs:element maxOccurs="unbounded" name="links">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="identifier" type="xs:string" />
+              <xs:element name="type" type="xs:string" />
+              <xs:element name="url" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element maxOccurs="unbounded" name="msc">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="code" type="xs:string" />
+              <xs:element name="scheme" type="xs:string" />
+              <xs:element name="text" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element maxOccurs="unbounded" name="references">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="doi" type="xs:string" />
+              <xs:element name="position" type="xs:unsignedByte" />
+              <xs:element name="text" type="xs:string" />
+              <xs:element name="zbmath">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="author_codes" type="xs:string" />
+                    <xs:element name="document_id" type="xs:unsignedInt" />
+                    <xs:element maxOccurs="unbounded" name="msc" type="xs:string" />
+                    <xs:element name="prefix" type="xs:string" />
+                    <xs:element name="series_id" type="xs:unsignedShort" />
+                    <xs:element name="year" type="xs:unsignedShort" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="source">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="book" />
+              <xs:element name="pages" type="xs:string" />
+              <xs:element name="series">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="acronym" />
+                    <xs:element maxOccurs="unbounded" name="issn">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="number" type="xs:string" />
+                          <xs:element name="type" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="issue" type="xs:unsignedByte" />
+                    <xs:element name="issue_id" type="xs:unsignedInt" />
+                    <xs:element name="parallel_title" />
+                    <xs:element name="part" />
+                    <xs:element name="publisher" type="xs:string" />
+                    <xs:element name="series_id" type="xs:unsignedShort" />
+                    <xs:element name="short_title" type="xs:string" />
+                    <xs:element name="title" type="xs:string" />
+                    <xs:element name="volume" type="xs:unsignedByte" />
+                    <xs:element name="year" type="xs:unsignedShort" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="source" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="states">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="c" type="xs:string" />
+              <xs:element name="r" type="xs:string" />
+              <xs:element name="s" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="title">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="addition" />
+              <xs:element name="original" />
+              <xs:element name="subtitle" />
+              <xs:element name="title" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="year" type="xs:unsignedShort" />
+        <xs:element name="zbmath_url" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

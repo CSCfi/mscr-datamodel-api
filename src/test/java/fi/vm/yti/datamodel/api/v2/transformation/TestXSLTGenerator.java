@@ -61,7 +61,7 @@ class TestXSLTGenerator {
 		NodeIterator i = model.listObjectsOfProperty(model.getResource(pid), MSCR.mappings);
 		while (i.hasNext()) {
 			Resource mappingResource = i.next().asResource();
-			MappingInfoDTO dto = mappingMapper.mapToMappingDTO(mappingResource.getURI(), model);
+			MappingInfoDTO dto = mappingMapper.mapToMappingDTO(null, mappingResource.getURI(), model);
 			mappings.add(dto);
 		}
 		return mappings;
