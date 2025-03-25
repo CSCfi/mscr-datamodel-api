@@ -460,8 +460,12 @@ public class Crosswalk extends BaseMSCRController {
 			Collection<UUID> orgs = dto.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 
-		}			
-		addFileToCrosswalk(PID, infoDto, fileBytes, contentURL, contentType);
+		}	
+		try {
+			addFileToCrosswalk(PID, infoDto, fileBytes, contentURL, contentType);
+		}catch(Exception ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		}
 		var userMapper = groupManagementService.mapUser();
 		var ownerMapper = groupManagementService.mapOwner();
 		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, false, userMapper, ownerMapper);
