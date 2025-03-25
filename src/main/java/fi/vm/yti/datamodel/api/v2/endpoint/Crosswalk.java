@@ -455,7 +455,7 @@ public class Crosswalk extends BaseMSCRController {
 		}		
 		
 		CrosswalkInfoDTO infoDto = createCrosswalk(dto, action, target);
-		final String PID = infoDto.getPID();
+		final String PID = infoDto.getHandle() != null ? infoDto.getHandle() : infoDto.getPID();
 		if(!dto.getOrganizations().isEmpty()) {
 			Collection<UUID> orgs = dto.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
