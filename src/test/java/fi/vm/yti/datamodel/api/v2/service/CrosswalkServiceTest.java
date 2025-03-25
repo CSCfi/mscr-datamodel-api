@@ -54,7 +54,7 @@ class CrosswalkServiceTest {
 		Model sourceModel = schemaService.transformEnumSkos(sourcePID, getBytesFromPath("enum/cf-small1.csv"));
 		Model targetModel = schemaService.transformEnumSkos(targetPID, getBytesFromPath("enum/gcmd-small1.csv"));
 		byte[] crosswalkBytes = getBytesFromPath("sssom/cf-to-gcmd-small1-mappings.csv");
-		Model m = service.transformSSSOMToInternal(crosswalkPID, crosswalkBytes, sourcePID, sourceModel, targetPID, targetModel);
+		Model m = service.transformSSSOMToInternal(crosswalkPID, crosswalkBytes, sourcePID, "ENUM", sourceModel, targetPID, "ENUM", targetModel);
 		m.write(System.out, "TURTLE");
 		
 		assertEquals(6, m.listSubjectsWithProperty(org.apache.jena.vocabulary.RDF.type, MSCR.MAPPING).toList().size());
@@ -68,7 +68,7 @@ class CrosswalkServiceTest {
 		Model sourceModel = schemaService.transformEnumSkos(sourcePID, getBytesFromPath("enum/cf-small1.csv"));
 		Model targetModel = schemaService.transformEnumSkos(targetPID, getBytesFromPath("enum/gcmd-small1.csv"));
 		byte[] crosswalkBytes = getBytesFromPath("sssom/cf-to-gcmd-small1-mappings-one-miss.csv");
-		Model m = service.transformSSSOMToInternal(crosswalkPID, crosswalkBytes, sourcePID, sourceModel, targetPID, targetModel);
+		Model m = service.transformSSSOMToInternal(crosswalkPID, crosswalkBytes, sourcePID, "ENUM", sourceModel, targetPID, "ENUM", targetModel);
 		m.write(System.out, "TURTLE");
 		
 		assertEquals(5, m.listSubjectsWithProperty(org.apache.jena.vocabulary.RDF.type, MSCR.MAPPING).toList().size());
