@@ -970,8 +970,12 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping")
 	public ResponseEntity<Object> getMappings(
-			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat) {
-		return getMappings(pid, null, exportFormat); 
+			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat,
+			@RequestParam(name = "includeSource", required = false) String includeSource,			
+			@RequestParam(name = "includeTarget", required = false) String includeTarget			
+			
+			) {
+		return getMappings(pid, null, exportFormat, includeSource, includeTarget); 
 	}
 
 	@Hidden
@@ -980,7 +984,11 @@ public class Crosswalk extends BaseMSCRController {
 	public ResponseEntity<Object> getMappings(
 			@PathVariable String pid, 
 			@PathVariable String suffix, 
-			@RequestParam(name = "exportFormat", required = false) String exportFormat) {
+			@RequestParam(name = "exportFormat", required = false) String exportFormat,
+			@RequestParam(name = "includeSource", required = false) String includeSource,			
+			@RequestParam(name = "includeTarget", required = false) String includeTarget			
+			
+			) {
 		
 		// TODO: check that crosswalk exists
 		if (suffix != null) {
@@ -1064,8 +1072,17 @@ public class Crosswalk extends BaseMSCRController {
 					
 					StringWriter writer = new StringWriter();
 	
+					if(includeSource != null && includeSource.equals("true")) {
+						model.add(jenaService.getSchemaContent(sourceSchemaInfo.getPID()));
+					}
+					if(includeTarget != null && includeTarget.equals("true")) {
+						model.add(jenaService.getSchemaContent(targetSchemaInfo.getPID()));
+					}
 					model.write(writer, "TURTLE");
-					return ResponseEntity.ok(writer.getBuffer().toString());
+					writer.flush();
+					String outputStr = writer.toString();
+					writer.close();
+					return ResponseEntity.ok(outputStr);
 				}
 				else if(exportFormat.equalsIgnoreCase("xslt")) {
 					
