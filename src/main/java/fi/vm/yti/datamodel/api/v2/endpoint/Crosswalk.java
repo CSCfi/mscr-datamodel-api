@@ -1038,6 +1038,7 @@ public class Crosswalk extends BaseMSCRController {
 				QuerySolution soln = mapi.next();
 				Resource mappingResource = soln.getResource("mapping");			
 				MappingInfoDTO dto = mappingMapper.mapToMappingDTO(
+						crosswalk.getHandle(),
 						mappingResource.getURI(), 
 						crosswalkModel);
 				mappings.add(dto);
