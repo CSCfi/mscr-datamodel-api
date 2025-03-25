@@ -47,6 +47,14 @@ public class NodeInfo {
 		this.uri = uri;
 	}
 	
+	public boolean hasProcessing() {
+		if(processing != null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 	
 }

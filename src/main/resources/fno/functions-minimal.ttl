@@ -5,6 +5,7 @@
 @prefix doap: <http://usefulinc.com/ns/doap#> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 mscr:simpleMappingProblem
     a fno:Problem ;
@@ -53,6 +54,14 @@ mscr:concatFunc
     fno:name "concat";
     fno:expects ( mscr:stringInputParam mscr:delimiterParam );
     fno:returns ( mscr:stringOutput) .
+
+mscr:concat2Func
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "concat2";
+    fno:expects ( mscr:listParam mscr:delimiterParam );
+    fno:returns ( mscr:stringOutput) .
+ 
  
 mscr:splitFunc
     a   fno:Function ;
@@ -90,7 +99,13 @@ mscr:normalizeSpaceFunc
     fno:name "normalizeSpace";
     fno:expects ( mscr:stringInputParam);
     fno:returns ( mscr:stringOutput) .
-             
+
+mscr:regexGetGroupFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "regex - extract group";
+    fno:expects ( mscr:stringInputParam mscr:regexParam);
+    fno:returns ( mscr:stringOutput) .             
     
 mscr:addPrefixFunc
     a   fno:Function ;
@@ -114,7 +129,36 @@ mscr:replaceFunc
     fno:name "replace";
     fno:expects ( mscr:stringInputParam mscr:patternParam mscr:replacementParam);
     fno:returns ( mscr:stringOutput) .
+         
+mscr:replace2Func
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "replace2";
+    fno:expects ( mscr:listParam mscr:patternParam);
+    fno:returns ( mscr:stringOutput) .
+         
+mscr:mapVocabulariesFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleMappingProblem ;
+    fno:name "Map values between MSCR vocabularies";
+    fno:expects ( mscr:stringInputParam );
+    fno:returns ( mscr:stringOutput) .
+   
             
+mscr:revertInvertedIndexFunc
+    a   fno:Function ;
+    fno:solves mscr:simpleValueTranformationProblem ;
+    fno:name "reverseInverseIndex" ;
+    fno:expects ( mscr:objectInputParam);
+    fno:returns ( mscr:stringOutput) .
+  
+mscr:objectInputParam
+    a fno:Parameter ;
+    fno:name "input" ;
+    fno:predicate mscr:inputObject ;
+    fno:type xsd:anySimpleType ;
+    fno:required "true"^^xsd:boolean .
+       
 mscr:templateParam
     a fno:Parameter ;
     fno:name "template" ;
@@ -177,7 +221,14 @@ mscr:prefixParam
     fno:predicate mscr:inputString ;
     fno:type xsd:string ;
     fno:required "true"^^xsd:boolean .
-    
+
+mscr:regexParam
+    a fno:Parameter ;
+    fno:name "regex" ;
+    fno:predicate mscr:inputString ;
+    fno:type xsd:string ;
+    fno:required "true"^^xsd:boolean .
+       
 mscr:suffixParam
     a fno:Parameter ;
     fno:name "suffix" ;
@@ -206,6 +257,13 @@ mscr:doubleInputParam
     fno:type xsd:double ;
     fno:required "true"^^xsd:boolean .
         
+mscr:listParam
+    a             fno:Parameter ;
+	fno:name "input" ;
+    fno:predicate mscr:listParameter ;
+    fno:type      rdf:List ;
+    fno:required  "true"^^xsd:boolean .   
+             
 mscr:stringOutput
     a fno:Output ;
     fno:name "string output" ;
@@ -226,6 +284,15 @@ mscr:doubleOutput
     fno:predicate mscr:outputDouble ;
     fno:type xsd:double ;
     fno:required "true"^^xsd:boolean .         
+
+
+    
+mscr:mapVocabulariesFuncMapping
+    a fno:Mapping ;
+    fno:function mscr:mapVocabulariesFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "mapVocabularies" ] .
+
     
 mscr:stringToStringMapping
     a fno:Mapping ;
@@ -257,6 +324,13 @@ mscr:concatMapping
     fno:function mscr:concatFunc ;
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .
+
+mscr:concat2Mapping
+    a fno:Mapping ;
+    fno:function mscr:concat2Func ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "concat" ] .
+ 
  
 mscr:splitMapping
     a fno:Mapping ;
@@ -289,7 +363,13 @@ mscr:normalizeSpaceMapping
     fno:function mscr:normalizeSpaceFunc ;
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "normalizeSpace" ] .
-  
+
+mscr:regexGetGroupFuncMapping
+    a fno:Mapping ;
+    fno:function mscr:regexGetGroupFunc ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "regexGetGroup" ] .
+    
   
 mscr:addPrefixMapping
     a fno:Mapping ;
@@ -308,7 +388,13 @@ mscr:replaceMapping
     fno:function mscr:replaceFunc ;
     fno:implementation mscr:simpleMappingFunctions ;
     fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "replace" ] .  
-  
+ 
+mscr:replace2Mapping
+    a fno:Mapping ;
+    fno:function mscr:replace2Func ;
+    fno:implementation mscr:simpleMappingFunctions ;
+    fno:methodMapping [ a fnom:StringMethodMapping ; fnom:method-name "replace2" ] .  
+   
      
 mscr:simpleMappingFunctions
     a fnoi:JavaClass ;

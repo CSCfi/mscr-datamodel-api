@@ -1,0 +1,43 @@
+@prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
+@prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
+@prefix :      <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b>
+        a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
+        rdfs:comment                ""@en ;
+        rdfs:label                  "arrays - xml"@en ;
+        dcterms:created             "2025-01-23T08:28:18.163Z"^^xsd:dateTime ;
+        dcterms:identifier          "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b" ;
+        dcterms:language            "en" ;
+        dcterms:modified            "2025-01-29T12:39:26.179Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b> ;
+        dcap:preferredXMLNamespacePrefix
+                "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b" ;
+        iow:contentModified         "2025-01-23T08:28:18.161Z"^^xsd:dateTime ;
+        iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:stateModified           "2025-01-23T08:28:18.161Z"^^xsd:dateTime ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
+                <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#format>
+                "XSD" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://test.com> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#owner>
+                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#state>
+                "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#subType>
+                "DATA_SCHEMA" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
+                "1" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
+                "PUBLIC" ;
+        owl:versionInfo             "DRAFT" .

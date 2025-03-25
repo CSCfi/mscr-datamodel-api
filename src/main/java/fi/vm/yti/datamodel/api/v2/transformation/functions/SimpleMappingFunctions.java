@@ -622,6 +622,13 @@ public class SimpleMappingFunctions {
 		return "";
 	}
 	
+	public static String regexGetGroup(List<String> values) {
+		if(values.size() > 0) {
+			return values.get(0);
+		}
+		return "";
+	}
+	
 	public static String addPrefix(String value, String  prefix) {
 		return prefix + value;
 	}
@@ -632,6 +639,17 @@ public class SimpleMappingFunctions {
 	
 	public static String replace(String value, String pattern, String replacement) {
 		return value.replaceAll(pattern, replacement);
+	}
+	
+	public static String replace2(List<String> values, String pattern) {
+		for(int i = 0; i < values.size(); i++) {
+			pattern = pattern.replace("{value_" + i + "}", values.get(i).toString());
+		}
+		return pattern;
+	}	
+	
+	public static String mapVocabulariesFunc(String value) {
+		return value;
 	}
 }
 

@@ -40,9 +40,11 @@ public class FunctionMapper {
 				while(i.hasNext()) {
 					Resource paramResource = (Resource) i.next();
 					String paramName = MapperUtils.propertyToString(paramResource, MSCR.FnO_name);
+					String paramPredicate = paramResource.getProperty(MSCR.FnO_predicate).getResource().getURI();
+
 					String paramDatatype = MapperUtils.propertyToString(paramResource, MSCR.FnO_type);
 					boolean isRequired = paramResource.getProperty(MSCR.FnO_required).getBoolean();
-					ParameterDTO param = new ParameterDTO(paramName, paramDatatype, isRequired);
+					ParameterDTO param = new ParameterDTO(paramPredicate, paramName, paramDatatype, isRequired);
 					if(paramName.equals("input")) {
 						param.setDefaultValue("self");
 					}
