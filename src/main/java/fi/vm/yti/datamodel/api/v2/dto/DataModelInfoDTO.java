@@ -1,5 +1,6 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,16 @@ public class DataModelInfoDTO extends ResourceCommonDTO {
     private String contact;
     private Map<String, String> documentation = Map.of();
     private String handle;
+    
+    private List<String> creators;
+    private List<String> domains;
+    private List<String> identifiers;
+    private String license;
+    private List<String> publishers;
+    private List<GuestEditorDTO> guestEditors;
+    private String issued;
+    private List<String> projects;
+    
 
     public ModelType getType() {
         return type;
@@ -138,6 +149,70 @@ public class DataModelInfoDTO extends ResourceCommonDTO {
 
 	public void setHandle(String handle) {
 		this.handle = handle;
+	}
+
+	public List<String> getCreators() {
+		return creators;
+	}
+
+	public void setCreators(List<String> creators) {
+		this.creators = creators;
+	}
+
+	public List<String> getDomains() {
+		return domains;
+	}
+
+	public void setDomains(List<String> domains) {
+		this.domains = domains;
+	}
+
+	public List<String> getIdentifiers() {
+		return identifiers;
+	}
+
+	public void setIdentifiers(List<String> identifiers) {
+		this.identifiers = identifiers;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public List<String> getPublishers() {
+		return publishers;
+	}
+
+	public void setPublishers(List<String> publishers) {
+		this.publishers = publishers;
+	}
+
+	public List<GuestEditorDTO> getGuestEditors() {
+		return guestEditors;
+	}
+
+	public void setGuestEditors(List<GuestEditorDTO> guestEditors) {
+		this.guestEditors = guestEditors;
+	}
+
+	public String getIssued() {
+		return issued;
+	}
+
+	public void setIssued(String issued) {
+		this.issued = issued;
+	}
+
+	public List<String> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(List<String> projects) {
+		this.projects = projects;
 	}
     
     
