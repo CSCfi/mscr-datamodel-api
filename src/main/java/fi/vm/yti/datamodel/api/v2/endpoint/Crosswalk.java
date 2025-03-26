@@ -257,7 +257,7 @@ public class Crosswalk extends BaseMSCRController {
 				SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, userMapper, ownerMapper);
 				SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, userMapper, ownerMapper);
 				
-				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes,  dto.getSourceSchema(), sourceSchemaInfo.getFormat().name(), sourceModel, dto.getTargetSchema(), targetSchemaInfo.getFormat().name(), targetModel);
+				contentModel = crosswalkService.transformSSSOMToInternal(dto.getHandle(), pid, fileInBytes,  dto.getSourceSchema(), sourceSchemaInfo.getFormat().name(), sourceModel, dto.getTargetSchema(), targetSchemaInfo.getFormat().name(), targetModel);
 
 			}
 			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {

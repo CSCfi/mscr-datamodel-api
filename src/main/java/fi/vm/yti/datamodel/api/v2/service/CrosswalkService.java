@@ -12,6 +12,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.SKOS;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import com.opencsv.CSVReaderHeaderAwareBuilder;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
+import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
 
 @Service
@@ -35,7 +37,7 @@ public class CrosswalkService {
 		this.mappingMapper = mappingMapper;
 	}
 	
-	public Model transformSSSOMToInternal(String pid, byte[] fileInBytes, String sourcePID, String sourceFormat, Model sourceModel, String targetPID, String targetFormat, Model targetModel) throws Exception {
+	public Model transformSSSOMToInternal(String handle, String pid, byte[] fileInBytes, String sourcePID, String sourceFormat, Model sourceModel, String targetPID, String targetFormat, Model targetModel) throws Exception {
 		Model m = ModelFactory.createDefaultModel();
 		StringReader sr = new StringReader(new String(fileInBytes, StandardCharsets.UTF_8));
 		
@@ -86,8 +88,13 @@ public class CrosswalkService {
         		throw new RuntimeException("Object id " + (objectId != null ? objectId : objectLabel)  + " not found in the target schema.");
         	}
             
-            String mappingPID = pid + "@mapping=" + UUID.randomUUID();
-            MappingDTO dto = new MappingDTO();
+    		String mappingID = UUID.randomUUID().toString();
+    		String mappingPID = pid + "@mapping=" + mappingID;
+    		if(handle != null) {
+    			mappingPID = handle + "@mapping=" + mappingID;
+
+    		}
+        	MappingDTO dto = new MappingDTO();
             
             List<NodeInfo> sources = new ArrayList<NodeInfo>();
             NodeInfo source = new NodeInfo();
@@ -110,7 +117,7 @@ public class CrosswalkService {
             dto.setTarget(targets);
             dto.setPredicate(predicateId);
             dto.setNotes(comment);
-            m.add(mappingMapper.mapToJenaModel(null, mappingPID, dto, pid));
+            m.add(mappingMapper.mapToJenaModel(mappingPID, mappingID, dto, pid));
             crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
                        
 		}	
