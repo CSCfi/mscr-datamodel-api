@@ -503,6 +503,28 @@ where {
 			return "string";
 		}
 	}
+	
+	private String getNamespaceAgnosticInstancePath(String path, boolean isAttribute) {
+		String newPath = "";
+		if(path.startsWith("$node")) {
+			path = path.substring(5);
+			newPath = "$node";
+		}
+		String[] parts = path.split("/");
+		
+		for(int i = 1; i < parts.length; i++) {
+			if((i == parts.length - 1) && isAttribute) {
+				newPath = newPath + "/" + parts[i];
+						
+			}
+			else {
+				newPath = newPath + "/*[local-name() = '" + parts[i] + "']";	
+			}
+			
+		}
+		System.out.println(newPath);
+		return newPath;
+	}
 	private TemplateInfo addTemplate(TreeNode target, Element stylesheet, String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, TemplateInfo prevTi, boolean isJSONSource, boolean isJSONTarget) {
 		Element parentElement = prevTi == null ? null : prevTi.contentElement;
 		boolean isLeafElement = isLeafElement(target);
@@ -565,6 +587,7 @@ where {
 					NodeInfo sourceNode = mappingInfo.getSource().get(0);
 					Resource sourceProperty = sourceSchemaModel.getResource(sourceNode.getUri());
 					Element contentValueOf = doc.createElementNS(xslNS, "value-of");
+					//String iteratorPath = getNamespaceAgnosticInstancePath(sourceProperty.getProperty(MSCR.instancePath).getString(), target.isAttribute);
 					String iteratorPath = sourceProperty.getProperty(MSCR.instancePath).getString();
 					if(isJSONSource) {
 						iteratorPath = getXPathFromJsonPath(iteratorPath, sourceSchemaURI, sourceSchemaModel);
@@ -574,6 +597,10 @@ where {
 					if(iteratorPath.startsWith(prevIteratorPath)) {
 						pathSuffix = iteratorPath.substring(prevIteratorPath.length());
 					}
+					if(!isJSONSource) {
+						pathSuffix = getNamespaceAgnosticInstancePath(pathSuffix, target.isAttribute);
+					}
+					
 					if(isTargetRepeatable) {
 						contentValueOf.setAttribute("select", ".");
 						contentRoot.setAttribute("select", "$node" + pathSuffix);
@@ -1031,6 +1058,10 @@ where {
 //			}	
 			
 		}
+		if(!isJSONSource) {
+			valuePath = getNamespaceAgnosticInstancePath(valuePath, sourceProperty.hasProperty(MSCR.sourceType));
+		}
+		
 		if(sourceNode.getProcessing() != null) {
 			return getFunctionSelect(e, valuePath, sourceNode.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource);
 
@@ -1244,23 +1275,30 @@ where {
 				}
 				ResIterator i  = inputModel.listSubjectsWithProperty(MSCR.schemaPath, inputModel.createLiteral(schemaPath));
 				String order = null;
+				String namespace = null;
 				if(i.hasNext()) {
 					Resource r = i.next();
 					order = !isJSONOutput && !targetInfo.isAttribute ? r.getRequiredProperty(SH.order).getObject().asLiteral().getInt()+ "" : "0";
+					if(r.hasProperty(MSCR.namespace)) {
+						namespace = r.getRequiredProperty(MSCR.namespace).getResource().getURI();	
+					}
+					
 				}
 				else {
 					throw new RuntimeException("Schema path " + schemaPath + " not found in the target model");
 				}
+				node.setAttribute("namespace", namespace);
+				node.setAttribute("order", order);
 				if(candidatePath.equals(path)) {
 					node.setAttribute("propertyURI", targetInfo.propertyURI.getURI());
 					node.setAttribute("mappingURI", targetInfo.mappingURI.getURI());
-					node.setAttribute("order", order);
+					
 					node.setAttribute("isAttribute", ""+targetInfo.isAttribute);
-					node.setAttribute("namespace", targetInfo.namespace);
+//					node.setAttribute("namespace", targetInfo.namespace);
 					node.setAttribute("datatype", targetInfo.datatype);
 				}	
 				else {
-					node.setAttribute("order", order);
+					//node.setAttribute("order", order);
 				}
 			}
 		}

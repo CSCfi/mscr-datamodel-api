@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resource>
+<resource xmlns="http://datacite.org/schema/kernel-4">
     <identifier xmlns="http://datacite.org/schema/kernel-4" identifierType="DOI">10.4007/annals.2015.181.1.7</identifier>
     <creators>
         <creator xmlns="http://datacite.org/schema/kernel-4">
@@ -27,7 +27,7 @@
     <relatedItems>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/3377327</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>elliott.peter-d-t-a</creatorName>
                     <givenName>elliott</givenName>
@@ -39,14 +39,14 @@
                     <familyName>heini</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">P. D. T. A. Elliott and H. Halberstam, ''A conjecture in prime number theory,'' in Symposia Mathematica, Vol. IV, London: Academic Press, 1970, pp. 59-72.</title>
             </titles>
             <publicationYear>1970</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/4097497</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>friedlander.john-b</creatorName>
                     <givenName>friedlander</givenName>
@@ -58,14 +58,14 @@
                     <familyName>andrew-j</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">J. Friedlander and A. Granville, ''Limitations to the equi-distribution of primes. I,'' Ann. of Math., vol. 129, iss. 2, pp. 363-382, 1989.</title>
             </titles>
             <publicationYear>1989</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/5551831</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>graham.sidney-w</creatorName>
                     <givenName>graham</givenName>
@@ -87,14 +87,14 @@
                     <familyName>janos</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston, S. W. Graham, J. Pintz, and C. Y. Yildirim, ''Small gaps between products of two primes,'' Proc. Lond. Math. Soc., vol. 98, iss. 3, pp. 741-774, 2009.</title>
             </titles>
             <publicationYear>2009</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/5135166</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>yildirim.cem-yalcin</creatorName>
                     <givenName>yildirim</givenName>
@@ -111,14 +111,14 @@
                     <familyName>daniel-alan</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston, J. Pintz, and C. Y. Yildirim, ''Primes in tuples. III. On the difference \(p_{n+\nu}-p_n\),'' Funct. Approx. Comment. Math., vol. 35, pp. 79-89, 2006.</title>
             </titles>
             <publicationYear>2006</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/5610431</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>yildirim.cem-yalcin</creatorName>
                     <givenName>yildirim</givenName>
@@ -135,14 +135,14 @@
                     <familyName>daniel-alan</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston, J. Pintz, and C. Y. Yildirim, ''Primes in tuples. I,'' Ann. of Math., vol. 170, iss. 2, pp. 819-862, 2009.</title>
             </titles>
             <publicationYear>2009</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/5170700</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>yildirim.cem-yalcin</creatorName>
                     <givenName>yildirim</givenName>
@@ -154,49 +154,49 @@
                     <familyName>daniel-alan</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston and C. Y. Yildirim, ''Higher correlations of divisor sums related to primes. III. Small gaps between primes,'' Proc. Lond. Math. Soc., vol. 95, iss. 3, pp. 653-686, 2007.</title>
             </titles>
             <publicationYear>2007</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/6587992</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>polymath.d-h-j</creatorName>
                     <givenName>polymath</givenName>
                     <familyName>d-h-j</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">D. H. J. Polymath, New equidistribution estimates of Zhang type, and bounded gaps between primes.</title>
             </titles>
             <publicationYear>2014</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/195021</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>selberg.atle</creatorName>
                     <givenName>selberg</givenName>
                     <familyName>atle</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">A. Selberg, Collected Papers. Vol. II, New York: Springer-Verlag, 1991.</title>
             </titles>
             <publicationYear>1991</publicationYear>
         </relatedItem>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">
             <relatedItemIdentifier>https://zbmath.org/6302171</relatedItemIdentifier>
-            <creators xmlns="">
+            <creators>
                 <creator xmlns="http://datacite.org/schema/kernel-4">
                     <creatorName>zhang.yitang.1</creatorName>
                     <givenName>zhang</givenName>
                     <familyName>yitang</familyName>
                 </creator>
             </creators>
-            <titles xmlns="">
+            <titles>
                 <title xmlns="http://datacite.org/schema/kernel-4">Y. Zhang, ''Bounded gaps between primes,'' Ann. of Math., vol. 179, iss. 3, pp. 1121-1174, 2014.</title>
             </titles>
             <publicationYear>2014</publicationYear>
