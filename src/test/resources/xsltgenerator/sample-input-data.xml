@@ -1,0 +1,56 @@
+
+<!--@(orderDate?) (shipTo , billTo , items)-->
+<purchaseOrder xmlns="http://tempuri.org/po.xsd#" orderDate="2025-03-26" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+       
+    <!--@(country?) (name , street , city , state , zip)-->
+       
+    <shipTo country="US">
+        <name>name1</name>
+        <street>street1</street>
+        <city>city1</city>
+        <state>state1</state>
+        <zip>-868.126</zip>
+    </shipTo>
+       
+    <!--@(country?) (name , street , city , state , zip)-->
+       
+    <billTo country="US">
+        <name>name2</name>
+        <street>street2</street>
+        <city>city2</city>
+        <state>state2</state>
+        <zip>797.105</zip>
+    </billTo>
+       
+    <!--(item*)-->
+       
+    <items>
+              
+        <!--@(partNum) (productName , quantity , USPrice , shipDate?)-->
+              
+        <item partNum="partNum1">
+            <productName>productName1</productName>
+            <quantity>33</quantity>
+            <USPrice>-519.180</USPrice>
+            <shipDate>2025-03-26</shipDate>
+        </item>
+              
+        <!--@(partNum) (productName , quantity , USPrice , shipDate?)-->
+              
+        <item partNum="partNum2">
+            <productName>productName2</productName>
+            <quantity>66</quantity>
+            <USPrice>635.720</USPrice>
+            <shipDate>2025-03-26</shipDate>
+        </item>
+              
+        <!--@(partNum) (productName , quantity , USPrice , shipDate?)-->
+              
+        <item partNum="partNum3">
+            <productName>productName3</productName>
+            <quantity>35</quantity>
+            <USPrice>-269.254</USPrice>
+            <shipDate>2025-03-26</shipDate>
+        </item>
+    </items>
+</purchaseOrder>
