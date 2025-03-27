@@ -44,13 +44,5 @@
             <shipDate>2025-03-26</shipDate>
         </item>
               
-        <!--@(partNum) (productName , quantity , USPrice , shipDate?)-->
-              
-        <item partNum="partNum3">
-            <productName>productName3</productName>
-            <quantity>35</quantity>
-            <USPrice>-269.254</USPrice>
-            <shipDate>2025-03-26</shipDate>
-        </item>
     </items>
 </purchaseOrder>

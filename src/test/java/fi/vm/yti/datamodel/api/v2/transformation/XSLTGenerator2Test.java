@@ -607,8 +607,7 @@ class XSLTGenerator2Test {
 			String expectedResult = """
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
-   <shipTo>
-      <country xmlns=\"\">US</country>
+   <shipTo country="US">
       <zip>-868.126</zip>
    </shipTo>
 </purchaseOrder>										
@@ -628,4 +627,134 @@ class XSLTGenerator2Test {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	@Test
+	public void testSample2() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk2.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+   <items>
+	  <item partNum="partNum1">
+		<productName>productName1</productName>
+	  </item>
+	  <item partNum="partNum2">
+		<productName>productName2</productName>
+	  </item>
+   </items>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	
+	
+	@Test
+	public void testSample3() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk3.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+   <items>
+	  <item partNum="partNum1">
+	  </item>
+	  <item partNum="partNum2">
+	  </item>
+   </items>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	
+	@Test
+	public void testSample4() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk4.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+   <items>
+	  <item>
+		<productName>productName1</productName>
+	  </item>
+	  <item>
+		<productName>productName2</productName>
+	  </item>
+   </items>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+		
 }
