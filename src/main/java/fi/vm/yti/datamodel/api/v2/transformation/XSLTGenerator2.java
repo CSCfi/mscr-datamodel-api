@@ -451,8 +451,13 @@ where {
 		for (int i = 0; i < _list.getLength(); i++) {			
 			Element childElement = (Element)_list.item(i);
 			if(childElement.getParentNode() == element) {
+				
 				if(!isJSONOutput && childElement.hasAttribute("order")) {
-					order = Integer.parseInt(childElement.getAttribute("order"));
+					try {
+						order = Integer.parseInt(childElement.getAttribute("order"));
+					}catch(Exception e) {
+						order = (-i);
+					}
 				}
 				node.children.put(
 						//(isJSONOutput || !childElement.hasAttribute("order")) ? order : Integer.parseInt(childElement.getAttribute("order")),
@@ -533,7 +538,7 @@ where {
 		boolean isParentRepeatable = prevTi == null ? false : prevTi.isRepeatable;
 		
 		Document doc = stylesheet.getOwnerDocument();
-		String prevIteratorPath = prevTi == null ? "" : prevTi.prevIteratorPath;
+		String prevIteratorPath = (prevTi == null) ? "" : prevTi.prevIteratorPath;
 		
 		String templateName = "template_" + target.targetElementName.replaceAll(":", "-") + "_" + UUID.randomUUID().toString();
 		Element templateElement = doc.createElementNS(xslNS, "xsl:template");
@@ -545,17 +550,29 @@ where {
 
 		Element contentRoot = null;
 		Element contentElement = null;
-		if(isLeafElement && isJSONTarget) {
-			contentElement = doc.createElementNS(funcNS, mapXSDtoJSONXMLDatatype(target.datatype));
-			Resource propertyResource = targetSchemaModel.getResource(target.targetPropertyURI).asResource();
-			Resource propertyNodeShape = targetSchemaModel.listSubjectsWithProperty(SH.property, propertyResource).nextResource();
-			ResIterator resi = targetSchemaModel.listSubjectsWithProperty(SH.node, propertyNodeShape);
-			if(resi.hasNext()) {
-				Resource propertyParentPropResource = resi.next();
-				if(propertyParentPropResource.getProperty(SH.maxCount) == null || propertyParentPropResource.getProperty(SH.maxCount).getInt() > 1) {
-					contentElement.setAttribute("key", target.targetElementName);	
+		if(isLeafElement) {
+			if(isJSONTarget) {
+				contentElement = doc.createElementNS(funcNS, mapXSDtoJSONXMLDatatype(target.datatype));
+				Resource propertyResource = targetSchemaModel.getResource(target.targetPropertyURI).asResource();
+				Resource propertyNodeShape = targetSchemaModel.listSubjectsWithProperty(SH.property, propertyResource).nextResource();
+				ResIterator resi = targetSchemaModel.listSubjectsWithProperty(SH.node, propertyNodeShape);
+				if(resi.hasNext()) {
+					Resource propertyParentPropResource = resi.next();
+					if(propertyParentPropResource.getProperty(SH.maxCount) == null || propertyParentPropResource.getProperty(SH.maxCount).getInt() > 1) {
+						contentElement.setAttribute("key", target.targetElementName);	
+					}
+				}							
+			}
+			else {
+				if(target.isAttribute) {
+					contentElement = doc.createElementNS(xslNS, "xsl:attribute");
+					contentElement.setAttribute("name", target.targetElementName);
 				}
-			}			
+				else {
+					contentElement = doc.createElementNS(target.targetElementNamespace, target.targetElementName);
+				}
+			}
+
 		}
 		else {
 
@@ -608,9 +625,16 @@ where {
 					}
 					else {
 						contentValueOf.setAttribute("select", "$node" + pathSuffix);	
-					}					
-					contentElement.appendChild(contentValueOf);	
+					}
+					if((isLeafElement && !hasAttributes(target)) || !isLeafElement) {
+						contentElement.appendChild(contentValueOf);	
+					}
+												
 					templateElement.appendChild(contentRoot);
+					if(isTargetRepeatable) {
+						prevIteratorPath = iteratorPath;
+					}
+					
 					
 				}
 				else {
@@ -641,6 +665,9 @@ where {
 				}
 				
 				String pathSuffix = prevIteratorPath.substring(prevTi == null ? 0 : prevTi.prevIteratorPath.length());	
+				if(!isJSONSource) {
+					pathSuffix = getNamespaceAgnosticInstancePath(pathSuffix, target.isAttribute);
+				}
 				
 				contentRoot.setAttribute("select", "$node" + pathSuffix );
 				templateElement.appendChild(contentRoot);
@@ -1274,11 +1301,20 @@ where {
 					schemaPath =  "$"  + candidatePath.replaceAll("/", ".");
 				}
 				ResIterator i  = inputModel.listSubjectsWithProperty(MSCR.schemaPath, inputModel.createLiteral(schemaPath));
-				String order = null;
+				String order = "0";
 				String namespace = null;
+				Resource r = null;
 				if(i.hasNext()) {
-					Resource r = i.next();
-					order = !isJSONOutput && !targetInfo.isAttribute ? r.getRequiredProperty(SH.order).getObject().asLiteral().getInt()+ "" : "0";
+					r = i.next();
+					if(r.hasProperty(MSCR.sourceType) && r.getRequiredProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI())) {
+						order = candidatePath;
+					}
+					else if(!isJSONOutput && !targetInfo.isAttribute) {
+						order = r.getRequiredProperty(SH.order).getObject().asLiteral().getInt()+ "";
+					}
+					// special handling for attributes that do not have order 
+
+
 					if(r.hasProperty(MSCR.namespace)) {
 						namespace = r.getRequiredProperty(MSCR.namespace).getResource().getURI();	
 					}
@@ -1296,9 +1332,10 @@ where {
 					node.setAttribute("isAttribute", ""+targetInfo.isAttribute);
 //					node.setAttribute("namespace", targetInfo.namespace);
 					node.setAttribute("datatype", targetInfo.datatype);
-				}	
+				}
 				else {
-					//node.setAttribute("order", order);
+					boolean isAttribute = r.hasProperty(MSCR.sourceType) && r.getRequiredProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI());
+					node.setAttribute("isAttribute", ""+isAttribute);
 				}
 			}
 		}
