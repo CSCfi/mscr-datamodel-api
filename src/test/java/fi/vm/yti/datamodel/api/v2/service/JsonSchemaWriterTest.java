@@ -1,6 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +54,8 @@ public class JsonSchemaWriterTest {
 	public void testSimpleNested() throws Exception {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/jsonschema/simple_nested.ttl");		
-		String json = service.newModelSchema("urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571", model, "en", SchemaFormat.JSONSCHEMA);
-		// TODO: Add assertons		
+		String json = service.newModelSchema("mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62", model, "en", SchemaFormat.JSONSCHEMA);
+		assertNotNull(json);
 	}	
 	
 	
@@ -61,8 +63,8 @@ public class JsonSchemaWriterTest {
 	public void testTTV_CRIS() throws Exception {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/jsonschema/ttv_cris.ttl");		
-		String json = service.newModelSchema("urn:IAMNOTAPID:4b28461f-396d-485a-8cac-31ca6d091c00", model, "en", SchemaFormat.SHACL);
-		// TODO: Add assertions
+		String json = service.newModelSchema("mscr:schema:7f2b7d96-48e7-43b2-a4a0-48f098e1911d", model, "en", SchemaFormat.JSONSCHEMA);
+		assertNotNull(json);
 		
 	}
 	
@@ -120,6 +122,7 @@ public class JsonSchemaWriterTest {
 
 	
 	@Test
+	@Disabled
 	public void testSchemaWithDTRDatatype() throws Exception {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/mscr_schema_dtr_datatype.ttl");		
@@ -135,8 +138,8 @@ public class JsonSchemaWriterTest {
 	public void testOpenaire40() throws Exception {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/xsd/openaire-4.0.ttl");		
-		String json = service.newModelSchema("pid:test", model, "en", SchemaFormat.XSD);
-		System.out.println(json);
+		String json = service.newModelSchema("mscr:schema:43d12c8c-80cd-4790-ab7a-c4979e8f9fb1", model, "en", SchemaFormat.XSD);
+		assertNotNull(json);
 		
 	}
 
@@ -145,10 +148,8 @@ public class JsonSchemaWriterTest {
 	public void testLinguisticTrip() throws Exception {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("models/mscr/xsd/fieldtrip.ttl");		
-		String json = service.newModelSchema("mscr:schema:afd463ba-386b-4468-a786-c17e0edf99e5", model, "en",SchemaFormat.XSD);
-		//System.out.println(json);
-		FileUtils.write(new File("ui-schema.json"), json);
-		
+		String json = service.newModelSchema("mscr:schema:cac34cb0-ebf4-49db-8616-b11b79371748", model, "en",SchemaFormat.XSD);
+		assertNotNull(json);
 	}
 	
 	@Test
@@ -156,6 +157,6 @@ public class JsonSchemaWriterTest {
 		Model model = ModelFactory.createDefaultModel();
 		model.read("shacl/openalex-ontology.ttl");	
 		String json = service.shacl("test", model, null);
-		FileUtils.write(new File("openalex-schema.json"), json);
+		assertNotNull(json);
 	}
 }

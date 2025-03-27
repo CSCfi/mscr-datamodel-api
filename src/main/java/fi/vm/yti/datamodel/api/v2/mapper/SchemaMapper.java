@@ -112,6 +112,10 @@ public class SchemaMapper {
 		model.setNsPrefix(prefix, modelUri + "#");
 
 		modelResource.addProperty(MSCR.format, schemaDTO.getFormat().toString());
+		if(schemaDTO.getOriginalFormat() != null) {
+			modelResource.addProperty(MSCR.originalFormat, schemaDTO.getOriginalFormat().toString());	
+		}
+		
 				
 		
 		modelResource.addProperty(MSCR.namespace, ResourceFactory.createResource(schemaDTO.getNamespace()));
@@ -147,8 +151,16 @@ public class SchemaMapper {
 		if(schemaDTO.getSourceURL() != null) {
 			modelResource.addProperty(MSCR.sourceURL, model.createResource(schemaDTO.getSourceURL()));
 		}
-			
-		modelResource.addLiteral(MSCR.subType, subType);
+		
+		if(subType != null) {
+			modelResource.addLiteral(MSCR.subType, subType);	
+		}
+		else {
+			if(schemaDTO.getSubType() != null) {
+				modelResource.addLiteral(MSCR.subType, schemaDTO.getSubType().name());
+			}
+		}
+		
 		return model;
 	}
 
@@ -257,6 +269,10 @@ public class SchemaMapper {
 		schemaInfoDTO.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));		
 		schemaInfoDTO.setPID(PID);
 		schemaInfoDTO.setFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
+		if(modelResource.hasProperty(MSCR.originalFormat)) {
+			schemaInfoDTO.setOriginalFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.originalFormat)));	
+		}
+		
 		
 		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
 		schemaInfoDTO.setOrganizations(OrganizationMapper.mapOrganizationsToDTO(organizations, coreRepository.getOrganizations()));
@@ -314,6 +330,10 @@ public class SchemaMapper {
         schemaInfoDTO.setContact(MapperUtils.propertyToString(modelResource, Iow.contact));
 
         String versionLabel = MapperUtils.propertyToString(modelResource, MSCR.versionLabel);
+        if(modelResource.hasProperty(MSCR.originalFormat)) {
+            SchemaFormat originalFormat = SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.originalFormat));
+    		schemaInfoDTO.setOriginalFormat(originalFormat);
+        }
         SchemaFormat format = SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format));
 		List<StoredFileMetadata> retrievedSchemaFiles = storageService.retrieveAllSchemaFilesMetadata(PID);
 		Set<FileMetadata> fileMetadatas = new HashSet<>();

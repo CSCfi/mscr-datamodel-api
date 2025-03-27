@@ -16,6 +16,7 @@ public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadat
 	private String PID;
 
 	private SchemaFormat format;
+	private SchemaFormat originalFormat;
 	private String namespace;
 	private String versionLabel;
 	private String revisionOf;	
@@ -172,6 +173,14 @@ public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadat
 	public void setVariants2(Map<String, List<Variant>> variants2) {
 		this.variants2 = variants2;
 	}
+	public SchemaFormat getOriginalFormat() {
+		return originalFormat;
+	}
+
+	public void setOriginalFormat(SchemaFormat originalFormat) {
+		this.originalFormat = originalFormat;
+	}
+
 	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

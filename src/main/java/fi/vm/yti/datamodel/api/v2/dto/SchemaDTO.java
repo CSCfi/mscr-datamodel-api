@@ -8,6 +8,8 @@ public class SchemaDTO extends DataModelDTO implements MSCRCommonMetadata {
 	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
 
 	private SchemaFormat format;
+	private SchemaFormat originalFormat;
+
 	private String namespace;
 	private String versionLabel;
 	private String sourceURL;
@@ -66,6 +68,14 @@ public class SchemaDTO extends DataModelDTO implements MSCRCommonMetadata {
 
 	public void setVersionLabel(String versionLabel) {
 		this.versionLabel = versionLabel;
+	}
+
+	public SchemaFormat getOriginalFormat() {
+		return originalFormat;
+	}
+
+	public void setOriginalFormat(SchemaFormat originalFormat) {
+		this.originalFormat = originalFormat;
 	}
 
 	@Override

@@ -1,0 +1,289 @@
+@prefix :      <mscr:schema:df2667b3-a84c-419c-a565-890b59569ca1#> .
+
+<mscr:schema:df2667b3-a84c-419c-a565-890b59569ca1>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#closed>
+                true ;
+        <http://www.w3.org/ns/shacl#description>
+                "CMIP6 PID Kernel Information Profile for datasets" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-records .
+
+:root-Root-records  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*]" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records" ;
+        <http://www.w3.org/ns/shacl#name>
+                "records" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-records-Records ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records .
+
+:root-Root-records-Records-URL
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].URL" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.URL" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "handle id, landing page URL" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "URL" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-URL .
+
+:root-Root-records-Records-AGGREGATION_LEVEL
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].AGGREGATION_LEVEL" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.AGGREGATION_LEVEL" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Data object type, dataset or file" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "AGGREGATION_LEVEL" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-AGGREGATION_LEVEL .
+
+:root-Root-records-Records-REPLACES
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].REPLACES" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.REPLACES" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "handle of previous version, pid with \"hdl:\"  " ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "REPLACES" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-REPLACES .
+
+:root-Root-records-Records-ERRATA_IDS
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].ERRATA_IDS" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.ERRATA_IDS" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "errata information for dataset" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "ERRATA_IDS" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-ERRATA_IDS .
+
+:root-Root-records-Records-DRS_ID
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].DRS_ID" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.DRS_ID" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "CMIP6 data reference syntax, the dataset's drs_id" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "DRS_ID" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-DRS_ID .
+
+:root-Root-records-Records-HS_ADMIN
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].HS_ADMIN" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.HS_ADMIN" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "admin information, JSON-ish" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "HS_ADMIN" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-HS_ADMIN .
+
+:root-Root-records-Records-HAS_PARTS
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].HAS_PARTS" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.HAS_PARTS" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "dataset has sub datasets, semicolon-separated list, with \"hdl:\" prepended. " ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "HAS_PARTS" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-HAS_PARTS .
+
+:root-Root-records-Records-UNPUBLISHED_REPLICAS
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].UNPUBLISHED_REPLICAS" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.UNPUBLISHED_REPLICAS" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "data node for unpublished replicas of this dataset, contains host and publication date, HTML snippet" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "UNPUBLISHED_REPLICAS" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-UNPUBLISHED_REPLICAS .
+
+:root-Root-records-Records-VERSION_NUMBER
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].VERSION_NUMBER" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.VERSION_NUMBER" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "dataset version: YYYYMMDD" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "VERSION_NUMBER" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-VERSION_NUMBER .
+
+:root-Root-records-Records
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "CMIP6_KIP_DATASET" ;
+        <http://www.w3.org/ns/shacl#name>
+                "CMIP6_KIP_DATASET" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-records-Records-URL , :root-Root-records-Records-AGGREGATION_LEVEL , :root-Root-records-Records-REPLACES , :root-Root-records-Records-ERRATA_IDS , :root-Root-records-Records-DRS_ID , :root-Root-records-Records-HS_ADMIN , :root-Root-records-Records-HAS_PARTS , :root-Root-records-Records-UNPUBLISHED_REPLICAS , :root-Root-records-Records-VERSION_NUMBER , :root-Root-records-Records-REPLACED_BY , :root-Root-records-Records-FIXED_CONTENT , :root-Root-records-Records-HOSTING_NODE , :root-Root-records-Records-REPLICA_NODE .
+
+:root-Root-records-Records-REPLACED_BY
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].REPLACED_BY" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.REPLACED_BY" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "handle of following version, pid with \"hdl:\" " ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "REPLACED_BY" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-REPLACED_BY .
+
+:root-Root-records-Records-FIXED_CONTENT
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].FIXED_CONTENT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.FIXED_CONTENT" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Indicated that content will stay bit-equal, true or false" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "FIXED_CONTENT" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-FIXED_CONTENT .
+
+:root-Root-records-Records-HOSTING_NODE
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].HOSTING_NODE" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.HOSTING_NODE" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "original data node of this dataset (max 1), contains host and publication date, so that the most recent one can be used, HTML snippet" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "HOSTING_NODE" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-HOSTING_NODE .
+
+:root-Root-records-Records-REPLICA_NODE
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.records[*].REPLICA_NODE" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.records.REPLICA_NODE" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "data node for replicas of this dataset, contains host and publication date, HTML snippet  " ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "REPLICA_NODE" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-records-Records-REPLICA_NODE .

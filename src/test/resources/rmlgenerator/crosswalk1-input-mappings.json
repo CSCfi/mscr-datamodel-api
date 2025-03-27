@@ -1,0 +1,88 @@
+[
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771#root-Root",
+                "label": "Person",
+                "processing": null,
+                "uri": null
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "iterator:https://shacl-play.sparna.fr/shapes/Person",
+                "label": "iterator source",
+                "processing": null,
+                "uri": "iterator:https://shacl-play.sparna.fr/shapes/Person"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": null,
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:170c9c32-3b18-4ac1-853c-5a48aa1b3172",
+        "pid": "mscr:crosswalk:170c9c32-3b18-4ac1-853c-5a48aa1b3172@mapping=c001bb3a-18e5-4309-86f2-cb23ccc3789e"
+    },
+    {
+        "id": null,
+        "depends_on": null,
+        "source": [
+            {
+                "id": "mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771#root-Root-lastName",
+                "label": "lastName",
+                "processing": {
+                    "id": "http://uri.suomi.fi/datamodel/ns/mscr#addPrefixFunc",
+                    "params": {
+                        "input": "self",
+                        "prefix": "http://example.com"
+                    }
+                },
+                "uri": "mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771#root-Root-lastName"
+            },
+            {
+                "id": "mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771#root-Root-firstName",
+                "label": "firstName",
+                "processing": null,
+                "uri": "mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771#root-Root-firstName"
+            }
+        ],
+        "sourceType": null,
+        "sourceDescription": null,
+        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+        "filter": null,
+        "target": [
+            {
+                "id": "subject:https://shacl-play.sparna.fr/shapes/Person",
+                "label": "subject source",
+                "processing": {
+                    "id": "http://uri.suomi.fi/datamodel/ns/mscr#addSuffixFunc",
+                    "params": {
+                        "input": "self",
+                        "suffix": "/test"
+                    }
+                },
+                "uri": "subject:https://shacl-play.sparna.fr/shapes/Person"
+            }
+        ],
+        "targetType": null,
+        "targetDescription": null,
+        "processing": {
+            "id": "http://uri.suomi.fi/datamodel/ns/mscr#concatFunc",
+            "params": {
+                "input": "self",
+                "delimiter": "/"
+            }
+        },
+        "notes": "",
+        "oneOf": null,
+        "isPartOf": "mscr:crosswalk:170c9c32-3b18-4ac1-853c-5a48aa1b3172",
+        "pid": "mscr:crosswalk:170c9c32-3b18-4ac1-853c-5a48aa1b3172@mapping=5256cec5-1286-4157-b3a9-bfc38abf6c1f"
+    }
+]

@@ -98,7 +98,7 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		
-		Resource root = model.createResource(schemaPID + "#root/Root");
+		Resource root = model.createResource(schemaPID + "#root-Root");
 		
 		model.write(System.out, "TURTLE");
 		
@@ -116,17 +116,17 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		
-		Resource root = model.createResource(schemaPID + "#root/Root");
+		Resource root = model.createResource(schemaPID + "#root-Root");
 		model.write(System.out, "TTL");
 		assertTrue(model.contains(root, RDF.type, SH.NodeShape));		
 		assertEquals(3, model.listSubjectsWithProperty(RDF.type, SH.NodeShape).toList().size());
 		assertEquals(7, model.listSubjectsWithProperty(RDF.type, SH.PropertyShape).toList().size());
 		
-		assertEquals(SH.NodeShape, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/address/Address"), RDF.type).getObject());		
-		Resource addressProperty = model.getResource(schemaPID+"#root/Root/address");
-		assertEquals(ResourceFactory.createResource(schemaPID + "#root/Root/address/Address"), addressProperty.getProperty(SH.node).getObject().asResource());
-		Resource cityProperty = model.getResource(schemaPID+"#root/Root/address/Address/city");
-		assertEquals(ResourceFactory.createResource(schemaPID + "#root/Root/address/Address/city/City"), cityProperty.getProperty(SH.node).getObject().asResource());
+		assertEquals(SH.NodeShape, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-address-Address"), RDF.type).getObject());		
+		Resource addressProperty = model.getResource(schemaPID+"#root-Root-address");
+		assertEquals(ResourceFactory.createResource(schemaPID + "#root-Root-address-Address"), addressProperty.getProperty(SH.node).getObject().asResource());
+		Resource cityProperty = model.getResource(schemaPID+"#root-Root-address-Address-city");
+		assertEquals(ResourceFactory.createResource(schemaPID + "#root-Root-address-Address-city-City"), cityProperty.getProperty(SH.node).getObject().asResource());
 
 	}
 	
@@ -138,7 +138,7 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		
-		Resource root = model.createResource(schemaPID + "#root/Root");
+		Resource root = model.createResource(schemaPID + "#root-Root");
 		
 		assertTrue(model.contains(root, SH.closed, model.createTypedLiteral(true)));
 	}
@@ -153,12 +153,12 @@ public class SchemaServiceTest {
 		
 		model.write(System.out, "TURTLE");
 		
-		assertEquals(XSD.integer, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/address/Address/house_number"), SH.datatype).getObject());
-		assertEquals(XSD.integer, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/address/Address/city/City/population"), SH.datatype).getObject());
-		assertEquals(XSD.xfloat, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/height"), SH.datatype).getObject());
-		assertEquals(XSD.xboolean, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/has_cats"), SH.datatype).getObject());
-		assertEquals("common", model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/lastName"), SH.defaultValue).getString());
-		assertEquals("test", model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/address"), SH.defaultValue).getString());
+		assertEquals(XSD.integer, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-address-Address-house_number"), SH.datatype).getObject());
+		assertEquals(XSD.integer, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-address-Address-city-City-population"), SH.datatype).getObject());
+		assertEquals(XSD.xfloat, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-height"), SH.datatype).getObject());
+		assertEquals(XSD.xboolean, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-has_cats"), SH.datatype).getObject());
+		assertEquals("common", model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-lastName"), SH.defaultValue).getString());
+		assertEquals("test", model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-address"), SH.defaultValue).getString());
 	}
 	
 	@Test
@@ -168,8 +168,8 @@ public class SchemaServiceTest {
 		
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
-		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/lastName"), SH.minCount).getInt());
-		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/lastName"), SH.maxCount).getInt());
+		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-lastName"), SH.minCount).getInt());
+		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-lastName"), SH.maxCount).getInt());
 		
 	}
 	
@@ -182,23 +182,23 @@ public class SchemaServiceTest {
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		model.write(System.out, "TURTLE");
 
-		assertEquals(XSD.xstring, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/firstName"), SH.datatype).getObject());
+		assertEquals(XSD.xstring, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-firstName"), SH.datatype).getObject());
 		// lastName is functional property -> must have maxCount = 1
-		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/firstName"), SH.maxCount).getInt());
+		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-firstName"), SH.maxCount).getInt());
 		// lastName is not required -> should not have minCount
-		assertFalse(model.contains(model.createResource(schemaPID + "#root/Root/firstName"), SH.minCount));
+		assertFalse(model.contains(model.createResource(schemaPID + "#root-Root-firstName"), SH.minCount));
 
 		// not restrictions on number of items in an array -> no maxCount
-		assertFalse(model.contains(model.createResource(schemaPID + "#root/Root/lastNames"), SH.maxCount));
+		assertFalse(model.contains(model.createResource(schemaPID + "#root-Root-lastNames"), SH.maxCount));
 		
 
-		assertEquals(2, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/addresses/Addresses/numbers"), SH.minCount).getInt());
-		assertFalse(model.contains(model.createResource(schemaPID + "#root/Root/addresses/Addresses/numbers"), SH.maxCount));
+		assertEquals(2, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-addresses-Addresses-numbers"), SH.minCount).getInt());
+		assertFalse(model.contains(model.createResource(schemaPID + "#root-Root-addresses-Addresses-numbers"), SH.maxCount));
 
-		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/addresses/Addresses/city/City/area_codes"), SH.maxCount).getInt());
-		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/addresses/Addresses/city/City/area_codes"), SH.minCount).getInt());
+		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-addresses-Addresses-city-City-area_codes"), SH.maxCount).getInt());
+		assertEquals(1, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-addresses-Addresses-city-City-area_codes"), SH.minCount).getInt());
 		
-		assertEquals(OWL.DatatypeProperty, model.getRequiredProperty(model.createResource(schemaPID+"#root/Root/addresses/Addresses/numbers"),DCTerms.type).getObject().asResource());
+		assertEquals(OWL.DatatypeProperty, model.getRequiredProperty(model.createResource(schemaPID+"#root-Root-addresses-Addresses-numbers"),DCTerms.type).getObject().asResource());
 	}
 	
 	@Test
@@ -210,15 +210,15 @@ public class SchemaServiceTest {
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 		model.write(System.out, "TURTLE");
 
-		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/minNumber"), SH.minInclusive).getInt());		
-		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/maxNumber"), SH.maxInclusive).getInt());
-		assertEquals(10.2, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/numberRange"), SH.minInclusive).getDouble());
-		assertEquals(100.1, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/numberRange"), SH.maxInclusive).getDouble());
+		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-minNumber"), SH.minInclusive).getInt());		
+		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-maxNumber"), SH.maxInclusive).getInt());
+		assertEquals(10.2, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-numberRange"), SH.minInclusive).getDouble());
+		assertEquals(100.1, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-numberRange"), SH.maxInclusive).getDouble());
 
-		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/minNumberEx"), SH.minExclusive).getInt());
-		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/maxNumberEx"), SH.maxExclusive).getInt());
-		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/numberRangeEx"), SH.minExclusive).getInt());
-		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/numberRangeEx"), SH.maxExclusive).getInt());
+		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-minNumberEx"), SH.minExclusive).getInt());
+		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-maxNumberEx"), SH.maxExclusive).getInt());
+		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-numberRangeEx"), SH.minExclusive).getInt());
+		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-numberRangeEx"), SH.maxExclusive).getInt());
 
 	}
 	
@@ -230,13 +230,13 @@ public class SchemaServiceTest {
 		String schemaPID = "urn:test:" + UUID.randomUUID().toString();
 		Model model = service.transformJSONSchemaToInternal(schemaPID, data);
 				
-		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/minString"), SH.minLength).getInt());
-		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/maxString"), SH.maxLength).getInt());
+		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-minString"), SH.minLength).getInt());
+		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-maxString"), SH.maxLength).getInt());
 
-		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/stringLengthRange"), SH.minLength).getInt());
-		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/stringLengthRange"), SH.maxLength).getInt());
+		assertEquals(10, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-stringLengthRange"), SH.minLength).getInt());
+		assertEquals(100, model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-stringLengthRange"), SH.maxLength).getInt());
 
-		assertEquals("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$", model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/stringPattern"), SH.pattern).getString());
+		assertEquals("^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$", model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-stringPattern"), SH.pattern).getString());
 	}
 	
 	@Test
@@ -258,12 +258,12 @@ public class SchemaServiceTest {
 		*/
 		model.write(System.out, "TURTLE");
 		
-		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/string"), SH.in));		
-		RDFList strings = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/string"), SH.in).getList();
+		assertTrue(model.contains(model.createResource(schemaPID + "#root-Root-string"), SH.in));		
+		RDFList strings = model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-string"), SH.in).getList();
 		assertEquals(2, strings.size());
 
-		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in));		
-		RDFList defaultwithouttype = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/defaultwithouttype"), SH.in).getList();
+		assertTrue(model.contains(model.createResource(schemaPID + "#root-Root-defaultwithouttype"), SH.in));		
+		RDFList defaultwithouttype = model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-defaultwithouttype"), SH.in).getList();
 		assertEquals(2, defaultwithouttype.size());
 		
 		List<String> stringList = new ArrayList<String>();
@@ -280,8 +280,8 @@ public class SchemaServiceTest {
 		model.add(model.createResource(schemaPID + "#root/integer"), SH.in, b2);
 		*/
 
-		assertTrue(model.contains(model.createResource(schemaPID + "#root/Root/integer"), SH.in));
-		RDFList integers = model.getRequiredProperty(model.createResource(schemaPID + "#root/Root/integer"), SH.in).getList();
+		assertTrue(model.contains(model.createResource(schemaPID + "#root-Root-integer"), SH.in));
+		RDFList integers = model.getRequiredProperty(model.createResource(schemaPID + "#root-Root-integer"), SH.in).getList();
 		assertEquals(3, integers.size());
 		
 		
@@ -408,7 +408,7 @@ public class SchemaServiceTest {
 	void testRecursiveSchema1() throws Exception {
 		JsonNode json = getJsonNodeFromPath("jsonschema/test_jsonschema_recursive1.json");
 		ObjectMapper m2 = new ObjectMapper();
-		//System.out.println(m2.writeValueAsString(json));
+		System.out.println(m2.writeValueAsString(json));
 		Model m = service.transformJSONSchemaToInternal("pid:test", json);
 		m.write(System.out, "TURTLE");
 	}

@@ -41,6 +41,7 @@ import org.w3c.dom.NodeList;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 
 @Service
@@ -57,8 +58,13 @@ public class RMLGenerator {
 	String nsFNML = "http://semweb.mmlab.be/ns/fnml#";
 	String nsGREL = "http://users.ugent.be/~bjdmeest/function/grel.ttl#";
 	
-	private String getXpathFromId(String id) {
 
+	
+	
+	private String getXpathFromId(String id) {
+		if(id == null) {
+			return id;
+		}
 		String temp = id.substring(id.indexOf("Root") + 4);
 		// remove all parts with capital letter from the temp string
 		String[] parts = temp.split("/");
@@ -112,6 +118,8 @@ public class RMLGenerator {
 		return node;
 	}
 
+	
+	
 	private String getXPath(Node node) {
 		Node parent = node.getParentNode();
 		if (parent == null) {
@@ -407,7 +415,31 @@ public class RMLGenerator {
 		
 		
 	}
+	/*
+	private Map<String, String> generateSourceElementMap(List<MappingInfoDTO> mappings) {
+		Map<String, String> pathCache = new HashMap<String, String>();
+		for(MappingInfoDTO mapping : mappings) {
+			// mapping is the source source root elements
+			for(NodeInfo ni : mapping.getSource()) {
+				String sourceElementID = ni.getId();
+				String sourcePathTemp = sourceElementID.substring(sourceElementID.indexOf("#"));
+				String[] parts = sourcePathTemp.split("/");
+				String path = "";				
+				int i = 0;
+				for (; i < parts.length; i++) {
+					String part = parts[i];
+					if (part.length() > 0 && i % 2 != 0) {
+							path = path + "/" + part;
+						}
 
+					}
+				}
+			}
+			
+		}
+		
+	}
+*/
 	public Model generate(List<MappingInfoDTO> mappings, Model mappingsModel, Model sourceModel, String sourcePID,
 			Model targetModel) throws Exception {
 

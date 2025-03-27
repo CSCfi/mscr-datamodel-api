@@ -33,6 +33,7 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkFormat;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.DCAP;
 import fi.vm.yti.datamodel.api.v2.dto.FileMetadata;
+import fi.vm.yti.datamodel.api.v2.dto.GeneratedFileMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.Iow;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
@@ -43,6 +44,7 @@ import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
 import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO.CrosswalkSchemaInfo;
@@ -65,6 +67,9 @@ public class CrosswalkMapper {
     private final SchemaMapper schemaMapper;
     private final DateFormat timestampFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:MM:SSZ");
 	
+	private static Set<SchemaFormat> xsltSources = Set.of(SchemaFormat.CSV, SchemaFormat.XSD, SchemaFormat.JSONSCHEMA);
+
+    
 	public CrosswalkMapper(
 			CoreRepository coreRepository,
 			PostgresStorageService storageService,
@@ -297,25 +302,58 @@ public class CrosswalkMapper {
 		if(modelResource.hasProperty(MSCR.sourceURL)) {
 			dto.setSourceURL(MapperUtils.propertyToString(modelResource, MSCR.sourceURL));
 		}
-		
+		Model sourceSchemaModel = jenaService.getSchema(dto.getSourceSchema());
+		Model targetSchemaModel = jenaService.getSchema(dto.getTargetSchema());
+		SchemaInfoDTO sourceSchemaDTO = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, null, null);
+		SchemaInfoDTO targetSchemaDTO = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, null, null);
 		if(includeCrosswalkSchemaInfo) {
-			Model sourceSchemaModel = jenaService.getSchema(dto.getSourceSchema());
-			Model targetSchemaModel = jenaService.getSchema(dto.getTargetSchema());
-			dto.setSourceSchemaInfo(createCrosswalkSchemaInfo(dto.getSourceSchema(), sourceSchemaModel));
-			dto.setTargetSchemaInfo(createCrosswalkSchemaInfo(dto.getTargetSchema(), targetSchemaModel));
+			dto.setSourceSchemaInfo(createCrosswalkSchemaInfo(sourceSchemaDTO, sourceSchemaModel));
+			dto.setTargetSchemaInfo(createCrosswalkSchemaInfo(targetSchemaDTO, targetSchemaModel));
 			
 		}
 		if(modelResource.hasProperty(MSCR.subType)) {
 			dto.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
 		}
+		
+		if(dto.getFormat() == CrosswalkFormat.MSCR) {
+			List<GeneratedFileMetadata> gf = new ArrayList<GeneratedFileMetadata>();
+			// every MSCR crosswalk have a mapping files (json & ttl)
+			gf.add(new GeneratedFileMetadata("mappings graph", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping/internal"));
+			gf.add(new GeneratedFileMetadata("mappings", "application/json", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping"));
+			
+			if(
+					(sourceSchemaDTO.getFormat() == SchemaFormat.SHACL || sourceSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL) 
+					&&
+					(targetSchemaDTO.getFormat() == SchemaFormat.CSV || targetSchemaDTO.getOriginalFormat() == SchemaFormat.CSV)
+					
+				) {
+				gf.add(new GeneratedFileMetadata("SPARQL query", "application/sparql-results", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=sparql"));
+				
+			}
+			if(
+				(xsltSources.contains(sourceSchemaDTO.getFormat()) || (sourceSchemaDTO.getOriginalFormat() != null && xsltSources.contains(sourceSchemaDTO.getOriginalFormat())))
+				&&
+				(xsltSources.contains(targetSchemaDTO.getFormat()) || (targetSchemaDTO.getOriginalFormat() != null && xsltSources.contains(targetSchemaDTO.getOriginalFormat())))
+				) {
+				gf.add(new GeneratedFileMetadata("XSLT", "text/xml", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=xslt"));
+			}
+			if(
+					(xsltSources.contains(sourceSchemaDTO.getFormat()) || (sourceSchemaDTO.getOriginalFormat() != null && xsltSources.contains(sourceSchemaDTO.getOriginalFormat())))
+					&&
+					(targetSchemaDTO.getFormat() == SchemaFormat.SHACL || (targetSchemaDTO.getOriginalFormat() != null && targetSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL))
+					) {
+					gf.add(new GeneratedFileMetadata("RML", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=rml"));
+				}			
+			dto.setGeneratedFileMetadata(gf);
+		}
 		return dto;
 	}
 	
-	private CrosswalkSchemaInfo createCrosswalkSchemaInfo(String schemaID, Model model) {
-		SchemaInfoDTO dto = schemaMapper.mapToSchemaDTO(schemaID, model, null, null);
+	private CrosswalkSchemaInfo createCrosswalkSchemaInfo(SchemaInfoDTO dto, Model model) {
+		
 		
 		return new CrosswalkSchemaInfo(
-				schemaID,
+				dto.getPID(),
 				dto.getHandle(),
 				dto.getLabel().get("en"),
 				dto.getVersionLabel(),

@@ -22,14 +22,11 @@ import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.repository.CoreRepository;
 import fi.vm.yti.datamodel.api.v2.service.DataTransformationService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
-import fi.vm.yti.datamodel.api.v2.service.impl.FnoDataTransformationServiceImpl;
-
 
 @ExtendWith(SpringExtension.class)
 @Import({
 	JenaService.class,		
-	CoreRepository.class,
-	FnoDataTransformationServiceImpl.class
+	CoreRepository.class
 })
 @Disabled
 class Datacite2CMDITest {

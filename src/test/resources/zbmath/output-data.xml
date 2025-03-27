@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://datacite.org/schema/kernel-4">
+    <identifier xmlns="http://datacite.org/schema/kernel-4" identifierType="DOI">10.4007/annals.2015.181.1.7</identifier>
+    <creators>
+        <creator xmlns="http://datacite.org/schema/kernel-4">
+            <creatorName>Maynard, James</creatorName>
+            <givenName>James</givenName>
+            <familyName>Maynard</familyName>
+        </creator>
+    </creators>
+    <titles>
+        <title xmlns="http://datacite.org/schema/kernel-4" titleType="en">Small gaps between primes</title>
+    </titles>
+    <subjects>
+        <subject xmlns="http://datacite.org/schema/kernel-4">prime number</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">small gap</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">sieve method</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">\(k\)-tuples conjecture</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">admissible set</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">Selberg sieve</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">symmetric polynomial</subject>
+        <subject xmlns="http://datacite.org/schema/kernel-4">symmetric matrix</subject>
+    </subjects>
+    <rightsList>
+        <rights xmlns="http://datacite.org/schema/kernel-4" rightsIdentifier="">The zbMATH Open OAI-PMH API is subject to the Terms and Conditions for the zbMATH Open API Service of FIZ Karlsruhe.</rights>
+    </rightsList>
+    <relatedItems>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/3377327</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>elliott.peter-d-t-a</creatorName>
+                    <givenName>elliott</givenName>
+                    <familyName>peter-d-t-a</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>halberstam.heini</creatorName>
+                    <givenName>halberstam</givenName>
+                    <familyName>heini</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">P. D. T. A. Elliott and H. Halberstam, ''A conjecture in prime number theory,'' in Symposia Mathematica, Vol. IV, London: Academic Press, 1970, pp. 59-72.</title>
+            </titles>
+            <publicationYear>1970</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/4097497</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>friedlander.john-b</creatorName>
+                    <givenName>friedlander</givenName>
+                    <familyName>john-b</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>granville.andrew-j</creatorName>
+                    <givenName>granville</givenName>
+                    <familyName>andrew-j</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">J. Friedlander and A. Granville, ''Limitations to the equi-distribution of primes. I,'' Ann. of Math., vol. 129, iss. 2, pp. 363-382, 1989.</title>
+            </titles>
+            <publicationYear>1989</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/5551831</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>graham.sidney-w</creatorName>
+                    <givenName>graham</givenName>
+                    <familyName>sidney-w</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>yildirim.cem-yalcin</creatorName>
+                    <givenName>yildirim</givenName>
+                    <familyName>cem-yalcin</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>goldston.daniel-alan</creatorName>
+                    <givenName>goldston</givenName>
+                    <familyName>daniel-alan</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>pintz.janos</creatorName>
+                    <givenName>pintz</givenName>
+                    <familyName>janos</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston, S. W. Graham, J. Pintz, and C. Y. Yildirim, ''Small gaps between products of two primes,'' Proc. Lond. Math. Soc., vol. 98, iss. 3, pp. 741-774, 2009.</title>
+            </titles>
+            <publicationYear>2009</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/5135166</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>yildirim.cem-yalcin</creatorName>
+                    <givenName>yildirim</givenName>
+                    <familyName>cem-yalcin</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>pintz.janos</creatorName>
+                    <givenName>pintz</givenName>
+                    <familyName>janos</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>goldston.daniel-alan</creatorName>
+                    <givenName>goldston</givenName>
+                    <familyName>daniel-alan</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston, J. Pintz, and C. Y. Yildirim, ''Primes in tuples. III. On the difference \(p_{n+\nu}-p_n\),'' Funct. Approx. Comment. Math., vol. 35, pp. 79-89, 2006.</title>
+            </titles>
+            <publicationYear>2006</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/5610431</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>yildirim.cem-yalcin</creatorName>
+                    <givenName>yildirim</givenName>
+                    <familyName>cem-yalcin</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>pintz.janos</creatorName>
+                    <givenName>pintz</givenName>
+                    <familyName>janos</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>goldston.daniel-alan</creatorName>
+                    <givenName>goldston</givenName>
+                    <familyName>daniel-alan</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston, J. Pintz, and C. Y. Yildirim, ''Primes in tuples. I,'' Ann. of Math., vol. 170, iss. 2, pp. 819-862, 2009.</title>
+            </titles>
+            <publicationYear>2009</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/5170700</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>yildirim.cem-yalcin</creatorName>
+                    <givenName>yildirim</givenName>
+                    <familyName>cem-yalcin</familyName>
+                </creator>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>goldston.daniel-alan</creatorName>
+                    <givenName>goldston</givenName>
+                    <familyName>daniel-alan</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">D. A. Goldston and C. Y. Yildirim, ''Higher correlations of divisor sums related to primes. III. Small gaps between primes,'' Proc. Lond. Math. Soc., vol. 95, iss. 3, pp. 653-686, 2007.</title>
+            </titles>
+            <publicationYear>2007</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/6587992</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>polymath.d-h-j</creatorName>
+                    <givenName>polymath</givenName>
+                    <familyName>d-h-j</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">D. H. J. Polymath, New equidistribution estimates of Zhang type, and bounded gaps between primes.</title>
+            </titles>
+            <publicationYear>2014</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/195021</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>selberg.atle</creatorName>
+                    <givenName>selberg</givenName>
+                    <familyName>atle</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">A. Selberg, Collected Papers. Vol. II, New York: Springer-Verlag, 1991.</title>
+            </titles>
+            <publicationYear>1991</publicationYear>
+        </relatedItem>
+        <relatedItem xmlns="http://datacite.org/schema/kernel-4">
+            <relatedItemIdentifier>https://zbmath.org/6302171</relatedItemIdentifier>
+            <creators>
+                <creator xmlns="http://datacite.org/schema/kernel-4">
+                    <creatorName>zhang.yitang.1</creatorName>
+                    <givenName>zhang</givenName>
+                    <familyName>yitang</familyName>
+                </creator>
+            </creators>
+            <titles>
+                <title xmlns="http://datacite.org/schema/kernel-4">Y. Zhang, ''Bounded gaps between primes,'' Ann. of Math., vol. 179, iss. 3, pp. 1121-1174, 2014.</title>
+            </titles>
+            <publicationYear>2014</publicationYear>
+        </relatedItem>
+    </relatedItems>
+</resource>

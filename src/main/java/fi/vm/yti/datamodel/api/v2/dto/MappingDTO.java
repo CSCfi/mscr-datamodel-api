@@ -5,21 +5,15 @@ import java.util.List;
 public class MappingDTO {
 
 	protected String id;
-	protected List<String> depends_on;
 	protected List<NodeInfo> source;
-	protected String sourceType; // type for all sources as a whole
-	protected String sourceDescription; // desc for all sources as a whole
 	protected String predicate;
-	protected MappingFilterDTO filter;
 	protected List<NodeInfo> target;
-	protected String targetType;
-	protected String targetDescription;	
 	protected ProcessingInfo processing; 
 	protected String notes;
+	protected String confidence;
+	protected String justification;
 	
 	
-	protected List<OneOfDTO> oneOf;
-
 	public MappingDTO() {
 		
 	}
@@ -32,36 +26,12 @@ public class MappingDTO {
 		this.id = id;
 	}
 
-	public List<String> getDepends_on() {
-		return depends_on;
-	}
-
-	public void setDepends_on(List<String> depends_on) {
-		this.depends_on = depends_on;
-	}
-
 	public List<NodeInfo> getSource() {
 		return source;
 	}
 
 	public void setSource(List<NodeInfo> source) {
 		this.source = source;
-	}
-
-	public String getSourceType() {
-		return sourceType;
-	}
-
-	public void setSourceType(String sourceType) {
-		this.sourceType = sourceType;
-	}
-
-	public String getSourceDescription() {
-		return sourceDescription;
-	}
-
-	public void setSourceDescription(String sourceDescription) {
-		this.sourceDescription = sourceDescription;
 	}
 
 	public String getPredicate() {
@@ -80,22 +50,6 @@ public class MappingDTO {
 		this.target = target;
 	}
 
-	public String getTargetType() {
-		return targetType;
-	}
-
-	public void setTargetType(String targetType) {
-		this.targetType = targetType;
-	}
-
-	public String getTargetDescription() {
-		return targetDescription;
-	}
-
-	public void setTargetDescription(String targetDescription) {
-		this.targetDescription = targetDescription;
-	}
-
 	public ProcessingInfo getProcessing() {
 		return processing;
 	}
@@ -109,31 +63,10 @@ public class MappingDTO {
 			String targetDescription, ProcessingInfo processing) {
 		super();
 		this.id = id;
-		this.depends_on = depends_on;
 		this.source = source;
-		this.sourceType = sourceType;
-		this.sourceDescription = sourceDescription;
 		this.predicate = predicate;
 		this.target = target;
-		this.targetType = targetType;
-		this.targetDescription = targetDescription;
 		this.processing = processing;
-	}
-
-	public  MappingFilterDTO getFilter() {
-		return filter;
-	}
-
-	public void setFilter( MappingFilterDTO filter) {
-		this.filter = filter;
-	}
-
-	public List<OneOfDTO> getOneOf() {
-		return oneOf;
-	}
-
-	public void setOneOf(List<OneOfDTO> oneOf) {
-		this.oneOf = oneOf;
 	}
 
 	public String getNotes() {
@@ -142,6 +75,22 @@ public class MappingDTO {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public String getJustification() {
+		return justification;
+	}
+
+	public void setJustification(String justification) {
+		this.justification = justification;
+	}
+
+	public String getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(String confidence) {
+		this.confidence = confidence;
 	}
 
 

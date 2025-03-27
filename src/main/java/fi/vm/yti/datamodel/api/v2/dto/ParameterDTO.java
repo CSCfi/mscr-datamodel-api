@@ -8,10 +8,12 @@ public class ParameterDTO {
 	private String datatype;
 	private boolean isRequired;
 	private String defaultValue; 
+	private String uri;
 	
 	public ParameterDTO() {}
-	public ParameterDTO(String name, String datatype, boolean isRequired) {
+	public ParameterDTO(String uri, String name, String datatype, boolean isRequired) {
 		super();
+		this.uri = uri;
 		this.name = name;
 		this.datatype = datatype;
 		this.isRequired = isRequired;
@@ -39,6 +41,12 @@ public class ParameterDTO {
 	}
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+	public String getUri() {
+		return uri;
+	}
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 	
 }

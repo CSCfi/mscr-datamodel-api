@@ -83,6 +83,8 @@
             "title": "CMIP6HandleRecs",
             "type": "array"
         }
-    }
+    },
+    "type": "object"
+    
    
 }

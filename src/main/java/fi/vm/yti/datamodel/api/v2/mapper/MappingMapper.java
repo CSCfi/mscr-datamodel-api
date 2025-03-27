@@ -63,8 +63,9 @@ public class MappingMapper {
 		return pi;
 	}
 	
-	private Resource mapNodeInfoToModel(NodeInfo ni, Model model) {
+	private Resource mapNodeInfoToModel(NodeInfo ni, Model model, Resource type) {
 		Resource sourceResource = model.createResource();
+		sourceResource.addProperty(RDF.type, type);
 		sourceResource.addLiteral(MSCR.id, ni.getId());
 		sourceResource.addLiteral(MSCR.label, ni.getLabel());
 		if(ni.getProcessing() != null) {
@@ -124,7 +125,7 @@ public class MappingMapper {
 		if(m.getSource() != null && m.getSource().size() > 0) {
 			Seq items = model.createSeq();
 			m.getSource().forEach(_r -> {
-				Resource r = mapNodeInfoToModel(_r, model);
+				Resource r = mapNodeInfoToModel(_r, model, MSCR.SOURCE);
 				items.add(r);
 			});	
 			mappingResource.addProperty(MSCR.source, items);
@@ -132,7 +133,7 @@ public class MappingMapper {
 		if(m.getTarget() != null && m.getTarget().size() > 0) {
 			Seq items = model.createSeq();
 			m.getTarget().forEach(_r -> {
-				Resource r = mapNodeInfoToModel(_r, model);
+				Resource r = mapNodeInfoToModel(_r, model, MSCR.TARGET);
 				items.add(r);
 			});	
 			mappingResource.addProperty(MSCR.target, items);
@@ -143,10 +144,7 @@ public class MappingMapper {
 			
 		}		
 		mappingResource.addProperty(MSCR.predicate, ResourceFactory.createResource(m.getPredicate()));
-		if(m.getOneOf() != null && m.getOneOf().size() > 0) {
-			m.getOneOf().forEach(o -> mappingResource.addProperty(MSCR.oneOf, mapOneOfToModel(o, model)));
-		}
-		
+
 		if(m.getNotes() != null) {
 			mappingResource.addProperty(MSCR.notes, m.getNotes());
 		}
@@ -154,12 +152,12 @@ public class MappingMapper {
 		return mappingResource;		
 	}	
 	
-	public Model mapToJenaModel(String mappingPID, MappingDTO dto, @NotNull String parentPID) {
+	public Model mapToJenaModel(String mappingPID, String mappingID, MappingDTO dto, @NotNull String parentPID) {
 		var model = ModelFactory.createDefaultModel();		
 		var creationDate = new XSDDateTime(Calendar.getInstance());
 		var mappingResource = model.createResource(mappingPID)
 				.addProperty(RDF.type, MSCR.MAPPING)
-				.addProperty(DCTerms.identifier, mappingPID)
+				.addProperty(DCTerms.identifier, mappingID)
 				.addProperty(DCTerms.isPartOf, ResourceFactory.createResource(parentPID));
 
 
@@ -168,15 +166,27 @@ public class MappingMapper {
 		mapMappingToModel(dto, model, mappingResource);		
 		return model;
 	}
-
 	public MappingInfoDTO mapToMappingDTO(String mappingPID, Model model) {
+		return mapToMappingDTO(null,  mappingPID, model);
+	}
+
+	public MappingInfoDTO mapToMappingDTO(String handle, String mappingPID, Model model) {
 		Resource r = model.getResource(mappingPID);
-		
 		MappingInfoDTO m = new MappingInfoDTO();
-		m.setPID(mappingPID);
+		
+		String mappingID = MapperUtils.propertyToString(r, DCTerms.identifier);
+		m.setId(mappingID);
+
+		if(handle == null) {
+			m.setPID(mappingPID);	
+		}
+		else {
+			m.setPID(handle + "@mapping=" + mappingID);
+		}
+		
+		
 		if(r.hasProperty(DCTerms.isPartOf))
 			m.setIsPartOf(r.getProperty(DCTerms.isPartOf).getResource().getURI());
-		m.setId(MapperUtils.propertyToString(r, MSCR.id));
 		
 		if(r.hasProperty(MSCR.source)) {
 			Seq sources = (Seq)r.getProperty(MSCR.source).getSeq();
