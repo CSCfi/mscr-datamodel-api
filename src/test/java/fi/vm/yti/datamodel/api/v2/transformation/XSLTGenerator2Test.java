@@ -756,5 +756,35 @@ class XSLTGenerator2Test {
 			e.printStackTrace();
 		}
 	}	
+	
+	@Test
+	public void testCSVtoCSV() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:eddcc67e-6c5d-494d-973a-65a2024d2acd";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/csv1-crosswalk.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/csv1-source.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/csv1-target.ttl") ;
+		try {
+			String xslt = g.generateCSVtoCSV(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData =
+"""
+<data>firstName,lastName,test
+Jane,Doe,"value, with a comma"
+</data>
+""".trim();
+			String result = transform(inputData, xslt, "text");
+			String expectedResult = 
+"""
+name,test
+"Doe Jane","value, with a comma"
+""".trim();
+
+			assertEquals(expectedResult, result);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}		
 		
 }
