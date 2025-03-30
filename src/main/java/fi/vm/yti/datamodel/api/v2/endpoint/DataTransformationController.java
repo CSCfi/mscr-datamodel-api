@@ -379,6 +379,10 @@ public class DataTransformationController {
 			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
 				xslt = xsltGenerator.generateXMLtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
+				xslt = xsltGenerator.generateCSVtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}
+			
 			/*
 			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (sourceFormat.equals(SchemaFormat.CSV.name()))) {
 				xslt = xsltGenerator1.generateXMLtoCSV(mappings, crosswalkModel);

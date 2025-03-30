@@ -770,6 +770,7 @@ class XSLTGenerator2Test {
 """
 <data>firstName,lastName,test
 Jane,Doe,"value, with a comma"
+Test, Tester, testing
 </data>
 """.trim();
 			String result = transform(inputData, xslt, "text");
@@ -777,6 +778,7 @@ Jane,Doe,"value, with a comma"
 """
 name,test
 "Doe Jane","value, with a comma"
+" Tester Test"," testing"
 """.trim();
 
 			assertEquals(expectedResult, result);

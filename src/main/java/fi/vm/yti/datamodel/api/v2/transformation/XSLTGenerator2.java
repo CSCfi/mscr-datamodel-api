@@ -783,7 +783,7 @@ where {
 				Element isLast = doc.createElementNS(xslNS, "xsl:if");
 				isLast.setAttribute("test", "position() != last()");
 				isLast.appendChild(newLine);
-				templateElement.appendChild(isLast);
+				contentRoot.appendChild(isLast);
 			}
 		}
 		
