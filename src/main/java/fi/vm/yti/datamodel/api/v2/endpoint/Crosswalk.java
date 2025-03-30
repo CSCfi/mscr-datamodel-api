@@ -1111,6 +1111,10 @@ public class Crosswalk extends BaseMSCRController {
 						String r = xsltGenerator1.generateJSONtoCSV(mappings, crosswalkModel, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.CSV || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.CSV) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
+						String r = xsltGenerator.generateCSVtoCSV(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
 					
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "XSLT export is not supported between " + sourceSchemaInfo.getFormat() + " and " + targetSchemaInfo.getFormat());
 							

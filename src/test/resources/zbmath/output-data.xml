@@ -22,7 +22,7 @@
         <subject xmlns="http://datacite.org/schema/kernel-4">symmetric matrix</subject>
     </subjects>
     <rightsList>
-        <rights xmlns="http://datacite.org/schema/kernel-4" rightsIdentifier="">The zbMATH Open OAI-PMH API is subject to the Terms and Conditions for the zbMATH Open API Service of FIZ Karlsruhe.</rights>
+        <rights schemeURI="https://api.zbmath.org/v1/" rightsURI="" rightsIdentifierScheme="" xmlns="http://datacite.org/schema/kernel-4" rightsIdentifier="">The zbMATH Open OAI-PMH API is subject to the Terms and Conditions for the zbMATH Open API Service of FIZ Karlsruhe.</rights>
     </rightsList>
     <relatedItems>
         <relatedItem xmlns="http://datacite.org/schema/kernel-4">

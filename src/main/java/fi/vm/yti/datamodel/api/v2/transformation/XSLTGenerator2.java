@@ -2,6 +2,7 @@ package fi.vm.yti.datamodel.api.v2.transformation;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator.TreeNode2;
 public class XSLTGenerator2 {
 
 	public static final String xslNS = "http://www.w3.org/1999/XSL/Transform";
+	public static final String xsNS = "http://www.w3.org/2001/XMLSchema";
 	public static final String funcNS = "http://www.w3.org/2005/xpath-functions";
 
 	record TreeNode(Map<Integer, TreeNode> children, String targetPropertyURI, String mappingURI, String targetElementName,
@@ -64,13 +66,13 @@ public class XSLTGenerator2 {
 	
 	record IteratorData(String iteratorPropertyURI, String targetShapeURI, String sourcePropertyURI, String mappingURI) {}
 
-	private TreeNode generateTreeMap(DocumentBuilder docBuilder, List<String> namespaces, Model crosswalkModel, Model targetSchemaModel, boolean isJSONOutput, boolean isJSONInput) throws Exception {
+	private TreeNode generateTreeMap(DocumentBuilder docBuilder, List<String> namespaces, Model crosswalkModel, Model targetSchemaModel, boolean isJSONOutput, boolean isJSONInput, boolean isCSVOutput, boolean isCSVInput) throws Exception {
 		Document targetDoc = docBuilder.newDocument();
 
-		generateTargetTree(targetDoc, namespaces, ModelFactory.createUnion(crosswalkModel, targetSchemaModel), isJSONOutput, isJSONInput);
+		generateTargetTree(targetDoc, namespaces, ModelFactory.createUnion(crosswalkModel, targetSchemaModel), isJSONOutput, isJSONInput, isCSVOutput, isCSVInput);
 		System.out.println(toString(targetDoc));
 		Element treeRoot = (Element)targetDoc.getDocumentElement().getFirstChild();
-		return generateTargetMap(treeRoot, isJSONOutput); // make another version of the target tree with ordered elements
+		return generateTargetMap(treeRoot, isJSONOutput, isCSVOutput); // make another version of the target tree with ordered elements
 	}
 	public String generateXMLtoXML(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -80,12 +82,12 @@ public class XSLTGenerator2 {
 		final List<String> namespaces = getNamespaces(sourceSchemaModel);
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 		
-		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, false); 
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, false, false, false); 
 
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "3.0");
 		doc.appendChild(stylesheet);
-		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false, false, false, false);
 		addRootTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);
 	}
@@ -98,13 +100,13 @@ public class XSLTGenerator2 {
 		final List<String> namespaces = getNamespaces(sourceSchemaModel);
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 
-		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, true); 
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, true, false, false); 
 
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "3.0");
 		stylesheet.setAttribute("xmlns:f", funcNS);
 		doc.appendChild(stylesheet);
-		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, true, false);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, true, false, false, false, false);
 		addRootJSONInputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);	
 	}
@@ -117,13 +119,13 @@ public class XSLTGenerator2 {
 		final List<String> namespaces = getNamespaces(sourceSchemaModel);
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 
-		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, true, false); 
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, true, false, false, false); 
 
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "3.0");
 		stylesheet.setAttribute("xmlns:f", funcNS);
 		doc.appendChild(stylesheet);
-		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, true);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, true, false, false, false);
 		addRootJSONOutputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);	
 	}	
@@ -136,18 +138,94 @@ public class XSLTGenerator2 {
 		final List<String> namespaces = getNamespaces(sourceSchemaModel);
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 
-		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, true, true); 
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, true, true, false, false); 
 
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "3.0");
 		stylesheet.setAttribute("xmlns:f", funcNS);
 		doc.appendChild(stylesheet);
-		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, true, true);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, true, true, false, false, false);
 		addRootJSONInputAndOutputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);	
 	}	
 	public String generateCSVtoCSV(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
-		return null;
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, List.of(), crosswalkModel, targetSchemaModel, false, false, true, true); 
+
+		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
+		stylesheet.setAttribute("version", "3.0");
+		stylesheet.setAttribute("xmlns:xs", xsNS);
+		stylesheet.setAttribute("xmlns:fn", "fn");
+		doc.appendChild(stylesheet);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, List.of(), sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false, true, true, false);
+		addRootCSVInputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet, targetTreeMap.children.values());		
+		return toString(doc);
+
+	}
+	private void addRootCSVInputTemplate(String rootTemplateName, Element stylesheet, Collection<TreeNode> cols) {
+		Document doc = stylesheet.getOwnerDocument();
+		
+		Element func = doc.createElementNS(xslNS, "xsl:function");
+		func.setAttribute("name", "fn:getTokens");
+		func.setAttribute("as", "xs:string+");
+		Element funcParam = doc.createElementNS(xslNS, "xsl:param");
+		funcParam.setAttribute("name", "str");
+		func.appendChild(funcParam);
+		
+		Element funcAnalyze = doc.createElementNS(xslNS, "xsl:analyze-string");
+		funcAnalyze.setAttribute("select", "concat($str, ';')");
+		funcAnalyze.setAttribute("regex", "((\"[^\"]*\")+|[^;]*);");
+		func.appendChild(funcAnalyze);
+		
+		Element funcMatch = doc.createElementNS(xslNS, "matching-substring");
+		funcAnalyze.appendChild(funcMatch);
+		Element funcSequence = doc.createElementNS(xslNS, "sequence");
+		funcSequence.setAttribute("select", "replace(regex-group(1), \"^\"\"|\"\"$|(\"\")\"\"\", \"$1\")");		
+		funcMatch.appendChild(funcSequence);
+		
+		stylesheet.appendChild(func);
+		
+		Element output = doc.createElementNS(xslNS, "output");
+		stylesheet.appendChild(output);
+		output.setAttribute("method", "text");
+
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		
+		Element dataVar = doc.createElementNS(xslNS, "variable");
+		dataVar.setAttribute("name", "csv");
+		dataVar.setAttribute("select", "data");
+		rootTemplate.appendChild(dataVar);
+		
+		Element linesVar = doc.createElementNS(xslNS, "variable");
+		linesVar.setAttribute("name", "lines");
+		linesVar.setAttribute("select", "tokenize($csv, '\\r?\\n')");
+		rootTemplate.appendChild(linesVar);
+
+		// generate target cols 
+		Element headerText = doc.createElementNS(xslNS, "text");
+		List<String> cols2 = new ArrayList<String>();
+		cols.forEach(c -> { cols2.add(c.targetElementName);});
+		headerText.setTextContent(String.join(";", cols2));
+		
+		
+		rootTemplate.appendChild(headerText);
+		Element newLine = doc.createElementNS(xslNS, "xsl:value-of");				
+		newLine.setAttribute("select", "concat('', '\n')");
+		rootTemplate.appendChild(newLine);
+		
+		Element callTemplate = doc.createElementNS(xslNS, "call-template");
+		callTemplate.setAttribute("name", rootTemplateName);
+		rootTemplate.appendChild(callTemplate);
+		Element withParam = doc.createElementNS(xslNS, "with-param");
+		withParam.setAttribute("name", "node");
+		withParam.setAttribute("select", "$lines[position() > 1][. != '']");
+		callTemplate.appendChild(withParam);
+		stylesheet.appendChild(rootTemplate);		
+		
 	}
 	public String generateXMLtoCSV(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, List<MappingInfoDTO> mappings) throws Exception {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -157,7 +235,7 @@ public class XSLTGenerator2 {
 		final List<String> namespaces = getNamespaces(sourceSchemaModel);
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 
-		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, false); 
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, false, true ,false); 
 
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "2.0");
@@ -440,7 +518,7 @@ where {
 		stylesheet.appendChild(rootTemplate);
 	}	
 	
-	private TreeNode generateTargetMap(Element element, boolean isJSONOutput) {
+	private TreeNode generateTargetMap(Element element, boolean isJSONOutput, boolean isCSVOutput) {
 		String propertyURI = element.getAttribute("propertyURI");
 		String mappingURI = element.getAttribute("mappingURI");
 		boolean isAttribute = Boolean.parseBoolean(element.getAttribute("isAttribute"));
@@ -451,13 +529,18 @@ where {
 		for (int i = 0; i < _list.getLength(); i++) {			
 			Element childElement = (Element)_list.item(i);
 			if(childElement.getParentNode() == element) {
+				
 				if(!isJSONOutput && childElement.hasAttribute("order")) {
-					order = Integer.parseInt(childElement.getAttribute("order"));
+					try {
+						order = Integer.parseInt(childElement.getAttribute("order"));
+					}catch(Exception e) {
+						order = (-i);
+					}
 				}
 				node.children.put(
 						//(isJSONOutput || !childElement.hasAttribute("order")) ? order : Integer.parseInt(childElement.getAttribute("order")),
 						order,
-						generateTargetMap(childElement, isJSONOutput)
+						generateTargetMap(childElement, isJSONOutput, isCSVOutput)
 				);						
 				order++;
 			}
@@ -467,11 +550,14 @@ where {
 	
 
 	private Element addTemplatesXMLtoXML(Element stylesheet, TreeNode targetTreeMap, List<String> namespaces,
-			String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, TemplateInfo ti, boolean isJSONSource, boolean isJSONTarget) {
-		ti = addTemplate(targetTreeMap, stylesheet, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, ti, isJSONSource, isJSONTarget);
+			String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, TemplateInfo ti, boolean isJSONSource, boolean isJSONTarget, boolean isCSVSource, boolean isCSVTarget, boolean isLastChild) {
+		ti = addTemplate(targetTreeMap, stylesheet, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, ti, isJSONSource, isJSONTarget, isCSVSource, isCSVTarget, isLastChild);
+		int numberOfChildren = targetTreeMap.children.size();
+		int i = 0;
 		for(TreeNode child : targetTreeMap.children.values()) {
 			
-			addTemplatesXMLtoXML(stylesheet, child, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, ti, isJSONSource, isJSONTarget);
+			addTemplatesXMLtoXML(stylesheet, child, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, ti, isJSONSource, isJSONTarget, isCSVSource, isCSVTarget, i == (numberOfChildren -1));
+			i++;
 		}
 		return ti.contentElement;
 	}
@@ -525,7 +611,7 @@ where {
 		System.out.println(newPath);
 		return newPath;
 	}
-	private TemplateInfo addTemplate(TreeNode target, Element stylesheet, String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, TemplateInfo prevTi, boolean isJSONSource, boolean isJSONTarget) {
+	private TemplateInfo addTemplate(TreeNode target, Element stylesheet, String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, TemplateInfo prevTi, boolean isJSONSource, boolean isJSONTarget, boolean isCSVSource, boolean isCSVTarget, boolean isLastChild) {
 		Element parentElement = prevTi == null ? null : prevTi.contentElement;
 		boolean isLeafElement = isLeafElement(target);
 		boolean isLeafElementOrAttribute = isLeafElementOrAttribute(target);
@@ -533,7 +619,7 @@ where {
 		boolean isParentRepeatable = prevTi == null ? false : prevTi.isRepeatable;
 		
 		Document doc = stylesheet.getOwnerDocument();
-		String prevIteratorPath = prevTi == null ? "" : prevTi.prevIteratorPath;
+		String prevIteratorPath = (prevTi == null) ? "" : prevTi.prevIteratorPath;
 		
 		String templateName = "template_" + target.targetElementName.replaceAll(":", "-") + "_" + UUID.randomUUID().toString();
 		Element templateElement = doc.createElementNS(xslNS, "xsl:template");
@@ -545,21 +631,40 @@ where {
 
 		Element contentRoot = null;
 		Element contentElement = null;
-		if(isLeafElement && isJSONTarget) {
-			contentElement = doc.createElementNS(funcNS, mapXSDtoJSONXMLDatatype(target.datatype));
-			Resource propertyResource = targetSchemaModel.getResource(target.targetPropertyURI).asResource();
-			Resource propertyNodeShape = targetSchemaModel.listSubjectsWithProperty(SH.property, propertyResource).nextResource();
-			ResIterator resi = targetSchemaModel.listSubjectsWithProperty(SH.node, propertyNodeShape);
-			if(resi.hasNext()) {
-				Resource propertyParentPropResource = resi.next();
-				if(propertyParentPropResource.getProperty(SH.maxCount) == null || propertyParentPropResource.getProperty(SH.maxCount).getInt() > 1) {
-					contentElement.setAttribute("key", target.targetElementName);	
+		if(isLeafElement) {
+			if(isJSONTarget) {
+				contentElement = doc.createElementNS(funcNS, mapXSDtoJSONXMLDatatype(target.datatype));
+				Resource propertyResource = targetSchemaModel.getResource(target.targetPropertyURI).asResource();
+				Resource propertyNodeShape = targetSchemaModel.listSubjectsWithProperty(SH.property, propertyResource).nextResource();
+				ResIterator resi = targetSchemaModel.listSubjectsWithProperty(SH.node, propertyNodeShape);
+				if(resi.hasNext()) {
+					Resource propertyParentPropResource = resi.next();
+					if(propertyParentPropResource.getProperty(SH.maxCount) == null || propertyParentPropResource.getProperty(SH.maxCount).getInt() > 1) {
+						contentElement.setAttribute("key", target.targetElementName);	
+					}
+				}							
+			}
+			else if(isCSVTarget) {
+				contentElement = doc.createElementNS(xslNS, "xsl:value-of");
+			}
+			else {
+				if(target.isAttribute) {
+					contentElement = doc.createElementNS(xslNS, "xsl:attribute");
+					contentElement.setAttribute("name", target.targetElementName);
 				}
-			}			
+				else {
+					contentElement = doc.createElementNS(target.targetElementNamespace, target.targetElementName);
+				}
+			}
+
+		}
+		else if(isCSVTarget) {
+			contentElement = doc.createElementNS(xslNS, "xsl:value-of");
+
 		}
 		else {
-
 			contentElement = doc.createElementNS(target.targetElementNamespace, target.targetElementName);	
+				
 				
 		}
 		
@@ -607,16 +712,32 @@ where {
 						
 					}
 					else {
-						contentValueOf.setAttribute("select", "$node" + pathSuffix);	
-					}					
-					contentElement.appendChild(contentValueOf);	
+						if(isCSVSource) {
+							contentValueOf.setAttribute("select", "$node" + iteratorPath);
+						}
+						else {
+							contentValueOf.setAttribute("select", "$node" + pathSuffix);	
+						}
+						
+					}
+					if((isLeafElement && !hasAttributes(target)) || !isLeafElement) {
+						contentElement.appendChild(contentValueOf);	
+					}
+					if(isCSVTarget) {
+						contentValueOf.setAttribute("select", "concat('\"'," + contentValueOf.getAttribute("select") + ",'\"')");
+					}
+
 					templateElement.appendChild(contentRoot);
+					if(isTargetRepeatable) {
+						prevIteratorPath = iteratorPath;
+					}
+					
 					
 				}
 				else {
 					// add function elements
 					int targetNodeInfoIndex = getTargetNodeInfo(mappingInfo.getTarget(), target.targetPropertyURI);
-					contentElement = addProcessingTemplates(mappingInfo, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, templateElement, prevTi, targetNodeInfoIndex, target, isJSONSource, isJSONTarget);
+					contentElement = addProcessingTemplates(mappingInfo, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, templateElement, prevTi, targetNodeInfoIndex, target, isJSONSource, isJSONTarget, isCSVSource, isCSVTarget);
 					
 				}
 			
@@ -641,6 +762,9 @@ where {
 				}
 				
 				String pathSuffix = prevIteratorPath.substring(prevTi == null ? 0 : prevTi.prevIteratorPath.length());	
+				if(!isJSONSource) {
+					pathSuffix = getNamespaceAgnosticInstancePath(pathSuffix, target.isAttribute);
+				}
 				
 				contentRoot.setAttribute("select", "$node" + pathSuffix );
 				templateElement.appendChild(contentRoot);
@@ -653,6 +777,14 @@ where {
 		else {
 			// just the content element - no attributes
 			templateElement.appendChild(contentRoot);
+			if(isCSVTarget) {
+				Element newLine = doc.createElementNS(xslNS, "xsl:value-of");					
+				newLine.setAttribute("select", "concat('', '\n')");
+				Element isLast = doc.createElementNS(xslNS, "xsl:if");
+				isLast.setAttribute("test", "position() != last()");
+				isLast.appendChild(newLine);
+				contentRoot.appendChild(isLast);
+			}
 		}
 		
 		if(parentElement != null) {
@@ -687,8 +819,13 @@ where {
 			else {
 				withParam.setAttribute("select", "$node");
 			}*/			
+			if(isCSVSource) {
+				withParam.setAttribute("select", "fn:getTokens(.)");
+			}
+			else {
+				withParam.setAttribute("select", ".");	
+			}
 				
-			withParam.setAttribute("select", ".");	
 			System.out.println(target.targetPropertyURI);
 			System.out.println(prevTi);
 			//if(isJSONTarget && isLeafElement && isParentRepeatable && ) {
@@ -704,6 +841,15 @@ where {
 				parentElement.appendChild(callTemplate);
 				
 			}
+			if(isCSVTarget) {
+				if(!isLastChild) {
+					Element delimiter = doc.createElementNS(xslNS, "xsl:text");
+					delimiter.setTextContent(";");
+
+					parentElement.appendChild(delimiter);
+					
+				}
+			}
 			
 			
 		}
@@ -718,6 +864,8 @@ where {
 				//TemplateInfo attrTi = addTemplate(c, stylesheet, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, tempTi, isJSONSource, isJSONTarget);
 				Element callTemplate2 = doc.createElementNS(xslNS, "xsl:call-template");
 				callTemplate2.setAttribute("name", "testing");
+
+
 
 				Element withParam2 = doc.createElementNS(xslNS, "xsl:with-param");
 				callTemplate2.appendChild(withParam2);
@@ -739,6 +887,7 @@ where {
 			
 		}
 		
+		
 		return new TemplateInfo(contentElement, prevIteratorPath, isTargetRepeatable, isObjectProp);
 	}
 	
@@ -753,14 +902,14 @@ where {
 		throw new RuntimeException("Could not get the target node info based on target property URI");	
 	}
 
-	private Element addProcessingTemplates(MappingInfoDTO mappingInfo, String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, Element templateElement, TemplateInfo ti, int targetNodeIndex, TreeNode target, boolean isJSONSource, boolean isJSONTarget ) {
+	private Element addProcessingTemplates(MappingInfoDTO mappingInfo, String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, Element templateElement, TemplateInfo ti, int targetNodeIndex, TreeNode target, boolean isJSONSource, boolean isJSONTarget, boolean isCSVSource, boolean isCSVTarget) {
 		Document doc = templateElement.getOwnerDocument();
 		
 		int sourceIndex = 0;
 		for (NodeInfo sourceNode : mappingInfo.getSource()) {			
 			Element variable = doc.createElementNS(xslNS, "xsl:variable");
 			variable.setAttribute("name", "source_var_" + sourceIndex);
-			String selectValue = getSourceFunctionSelect(templateElement, sourceSchemaURI, sourceSchemaModel, sourceNode, ti, isJSONSource, mappingInfo);
+			String selectValue = getSourceFunctionSelect(templateElement, sourceSchemaURI, sourceSchemaModel, sourceNode, ti, isJSONSource, isCSVSource, mappingInfo);
 			variable.setAttribute("select", selectValue);
 			templateElement.appendChild(variable);			
 			sourceIndex++;
@@ -824,6 +973,7 @@ where {
 			else {
 				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, "$mapping_func_output[" + (targetNodeIndex + 1) + "]", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
 			}
+			
 			targetElement.appendChild(targetValueOf);
 			return targetElement;
 		}
@@ -864,6 +1014,10 @@ where {
 				}
 				*/	
 			}
+			else if(isCSVTarget) {
+				targetElement = doc.createElementNS(xslNS, "xsl:value-of");
+			}
+			
 			else {
 				targetElement = doc.createElementNS(target.targetElementNamespace, target.targetElementName);	
 			}
@@ -876,6 +1030,9 @@ where {
 				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, ".", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
 			}
 			
+			if(isCSVTarget) {
+				targetValueOf.setAttribute("select", "concat('\"'," + targetValueOf.getAttribute("select") + ",'\"')");
+			}
 			
 			targetElement.appendChild(targetValueOf);
 			return targetElement;
@@ -1042,7 +1199,7 @@ where {
 		return r;
 	}
 	
-	private String getSourceFunctionSelect(Element e, String sourceSchemaURI, Model sourceSchemaModel, NodeInfo sourceNode, TemplateInfo ti, boolean isJSONSource, MappingInfoDTO mappingInfo) {
+	private String getSourceFunctionSelect(Element e, String sourceSchemaURI, Model sourceSchemaModel, NodeInfo sourceNode, TemplateInfo ti, boolean isJSONSource, boolean isCSVSource, MappingInfoDTO mappingInfo) {
 		Resource sourceProperty = sourceSchemaModel.getProperty(sourceNode.getUri());
 		
 		String valuePath = sourceProperty.getProperty(MSCR.instancePath).getString();
@@ -1061,7 +1218,9 @@ where {
 		if(!isJSONSource) {
 			valuePath = getNamespaceAgnosticInstancePath(valuePath, sourceProperty.hasProperty(MSCR.sourceType));
 		}
-		
+		if(isCSVSource) {
+			valuePath = valuePath + sourceProperty.getProperty(MSCR.instancePath).getString();
+		}
 		if(sourceNode.getProcessing() != null) {
 			return getFunctionSelect(e, valuePath, sourceNode.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource);
 
@@ -1228,7 +1387,7 @@ where {
 	}
 	record TargetInfo(String instancePath, String schemaPath, Resource propertyURI, Resource mappingURI, int order, boolean isAttribute, String namespace, String datatype) {}
 	
-	private Element generateTargetTree(Document targetDoc, List<String> namespaces, Model inputModel, boolean isJSONOutput, boolean isJSONInput) throws Exception {		
+	private Element generateTargetTree(Document targetDoc, List<String> namespaces, Model inputModel, boolean isJSONOutput, boolean isJSONInput, boolean isCSVOutput, boolean isCSVInput) throws Exception {		
 		List<TargetInfo> targetInfos = getTargetInfos(inputModel);
 		XPathFactory xpathFactory = XPathFactory.newInstance();
 		XPath xpath = xpathFactory.newXPath();
@@ -1240,14 +1399,33 @@ where {
 			root.appendChild(jsonRoot);
 			root = jsonRoot;
 		}
+		if(isCSVOutput) {
+			Element csvRoot = targetDoc.createElement("csvroot");
+			root.appendChild(csvRoot);
+			root = csvRoot;
+		}
 		for(TargetInfo ti : targetInfos) {
-			addElementByPath(xpath, root, ti, inputModel, isJSONOutput, isJSONInput);	
+			addElementByPath(xpath, root, ti, inputModel, isJSONOutput, isJSONInput, isCSVOutput, isCSVInput);	
 		}
 		return root;
 		
 	}
 
-	private Element addElementByPath(XPath xpath, Element parent, TargetInfo targetInfo, Model inputModel, boolean isJSONOutput, boolean isJSONInput) throws Exception {
+	private Element addElementByPath(XPath xpath, Element parent, TargetInfo targetInfo, Model inputModel, boolean isJSONOutput, boolean isJSONInput, boolean isCSVOutput, boolean isCSVInput) throws Exception {
+		var dom = parent.getOwnerDocument();
+		if(isCSVOutput) {
+			Resource r = inputModel.getResource(targetInfo.propertyURI.getURI());
+			String name = r.getProperty(SH.name).getString();
+			Integer order = r.getProperty(SH.order).getInt();
+			Element node = (Element) parent.appendChild(dom.createElement(name));
+			node.setAttribute("order", ""+order);
+			node.setAttribute("datatype", targetInfo.datatype);
+			node.setAttribute("propertyURI", targetInfo.propertyURI.getURI());
+			node.setAttribute("mappingURI", targetInfo.mappingURI.getURI());
+			node.setAttribute("isAttribute", ""+targetInfo.isAttribute);
+
+			return node;
+		}
 		String path = targetInfo.schemaPath;
 		if(isJSONOutput) {
 			path = path.replaceAll("\\$", "").replaceAll("\\.", "/").replaceAll("\\[\\*\\]", "");
@@ -1255,7 +1433,7 @@ where {
 
 		var node = parent;
 		var parts = path.split("/");
-		var dom = parent.getOwnerDocument();
+		
 		String candidatePath = "";
 		for (String part : parts) {
 			
@@ -1274,11 +1452,20 @@ where {
 					schemaPath =  "$"  + candidatePath.replaceAll("/", ".");
 				}
 				ResIterator i  = inputModel.listSubjectsWithProperty(MSCR.schemaPath, inputModel.createLiteral(schemaPath));
-				String order = null;
+				String order = "0";
 				String namespace = null;
+				Resource r = null;
 				if(i.hasNext()) {
-					Resource r = i.next();
-					order = !isJSONOutput && !targetInfo.isAttribute ? r.getRequiredProperty(SH.order).getObject().asLiteral().getInt()+ "" : "0";
+					r = i.next();
+					if(r.hasProperty(MSCR.sourceType) && r.getRequiredProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI())) {
+						order = candidatePath;
+					}
+					else if(!isJSONOutput && !targetInfo.isAttribute) {
+						order = r.getRequiredProperty(SH.order).getObject().asLiteral().getInt()+ "";
+					}
+					// special handling for attributes that do not have order 
+
+
 					if(r.hasProperty(MSCR.namespace)) {
 						namespace = r.getRequiredProperty(MSCR.namespace).getResource().getURI();	
 					}
@@ -1296,9 +1483,10 @@ where {
 					node.setAttribute("isAttribute", ""+targetInfo.isAttribute);
 //					node.setAttribute("namespace", targetInfo.namespace);
 					node.setAttribute("datatype", targetInfo.datatype);
-				}	
+				}
 				else {
-					//node.setAttribute("order", order);
+					boolean isAttribute = r.hasProperty(MSCR.sourceType) && r.getRequiredProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI());
+					node.setAttribute("isAttribute", ""+isAttribute);
 				}
 			}
 		}
@@ -1316,8 +1504,10 @@ where {
   ?mapping a :Mapping .
   ?mapping :target/(<>|!<>)*/:id ?targetPropertyURI .
   bind(URI(?targetPropertyURI) as ?targetProperty)
-  ?targetProperty :instancePath ?xpath .
-  ?targetProperty :schemaPath ?schemaPath .
+  optional {
+	  ?targetProperty :instancePath ?xpath .
+	  ?targetProperty :schemaPath ?schemaPath .
+  }
   optional {
     ?targetProperty sh:order ?order
   }
@@ -1340,8 +1530,15 @@ where {
 		List<TargetInfo> list = new ArrayList<TargetInfo>();
 		while(results.hasNext()) {
 			QuerySolution soln = results.next();
-			String xpath = soln.get("xpath").asLiteral().getString();
-			String schemaPath = soln.get("schemaPath").asLiteral().getString();
+			String xpath = null;
+			if(soln.get("xpath") != null) {
+				xpath = soln.get("xpath").asLiteral().getString();
+				
+			}
+			String schemaPath = null;
+			if(soln.get("schemaPath") != null) {			
+				schemaPath = soln.get("schemaPath").asLiteral().getString();
+			}
 			Resource mapping = soln.get("mapping").asResource();
 			Resource property = soln.get("targetProperty").asResource();
 			int order = -1;
