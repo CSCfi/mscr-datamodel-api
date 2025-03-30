@@ -768,17 +768,17 @@ class XSLTGenerator2Test {
 			String xslt = g.generateCSVtoCSV(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
 			String inputData =
 """
-<data>firstName,lastName,test
-Jane,Doe,"value, with a comma"
-Test, Tester, testing
+<data>firstName;lastName;test
+Jane;Doe;"value; with a semicolon"
+Test; Tester; testing
 </data>
 """.trim();
 			String result = transform(inputData, xslt, "text");
 			String expectedResult = 
 """
-name,test
-"Doe Jane","value, with a comma"
-" Tester Test"," testing"
+name;test
+"Doe Jane";"value; with a semicolon"
+" Tester Test";" testing"
 """.trim();
 
 			assertEquals(expectedResult, result);

@@ -176,8 +176,8 @@ public class XSLTGenerator2 {
 		func.appendChild(funcParam);
 		
 		Element funcAnalyze = doc.createElementNS(xslNS, "xsl:analyze-string");
-		funcAnalyze.setAttribute("select", "concat($str, ',')");
-		funcAnalyze.setAttribute("regex", "((\"[^\"]*\")+|[^,]*),");
+		funcAnalyze.setAttribute("select", "concat($str, ';')");
+		funcAnalyze.setAttribute("regex", "((\"[^\"]*\")+|[^;]*);");
 		func.appendChild(funcAnalyze);
 		
 		Element funcMatch = doc.createElementNS(xslNS, "matching-substring");
@@ -209,7 +209,7 @@ public class XSLTGenerator2 {
 		Element headerText = doc.createElementNS(xslNS, "text");
 		List<String> cols2 = new ArrayList<String>();
 		cols.forEach(c -> { cols2.add(c.targetElementName);});
-		headerText.setTextContent(String.join(",", cols2));
+		headerText.setTextContent(String.join(";", cols2));
 		
 		
 		rootTemplate.appendChild(headerText);
@@ -844,7 +844,7 @@ where {
 			if(isCSVTarget) {
 				if(!isLastChild) {
 					Element delimiter = doc.createElementNS(xslNS, "xsl:text");
-					delimiter.setTextContent(",");
+					delimiter.setTextContent(";");
 
 					parentElement.appendChild(delimiter);
 					
