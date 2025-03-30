@@ -203,7 +203,7 @@ public class FrontendService {
 		return new FunctionDTO(
 				name, operator, "", 
 				List.of(
-						new ParameterDTO("input", "object", true) 
+						new ParameterDTO("http://uri.suomi.fi/datamodel/ns/mscr#input", "input", "object", true) 
 						), 
 				List.of(
 						new OutputDTO("output", "object", true)

@@ -1,0 +1,356 @@
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f>
+        <http://uri.suomi.fi/datamodel/ns/mscr#mappings>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=cf24f867-9207-4330-b324-876541dbf1b6> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=a30641ac-fb48-4c21-a9ba-a02cd187625c> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=85c19404-b7db-4b94-8b86-31100141b04a> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=da5edae1-37d7-4532-ab48-5c2d5555c028> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=830c704a-5b30-4bfb-836a-8d4bac908bf8> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=4bda64f3-306f-4d5f-913c-82a0c7f19f2f> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=72a87729-e51c-49b1-b683-e71b5b819b33> , <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=ec6dff2f-e382-4eda-bf32-51bc847e58bb> .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=cf24f867-9207-4330-b324-876541dbf1b6>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=cf24f867-9207-4330-b324-876541dbf1b6" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:40:06.41Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "root" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "iterator:https://shacl-play.sparna.fr/shapes/Thing" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "iterator source" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <iterator:https://shacl-play.sparna.fr/shapes/Thing>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=a30641ac-fb48-4c21-a9ba-a02cd187625c>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=a30641ac-fb48-4c21-a9ba-a02cd187625c" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:40:24.159Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#processing>
+                [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                          "http://uri.suomi.fi/datamodel/ns/mscr#constantFunc" ;
+                  <http://uri.suomi.fi/datamodel/ns/mscr#processingParams>
+                          [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "input" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "self"
+                                    ] ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "http://uri.suomi.fi/datamodel/ns/mscr#constantStringParameter" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "http://example.com/veggie"
+                                    ]
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "root" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "subject:https://shacl-play.sparna.fr/shapes/Thing" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "subject source" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <subject:https://shacl-play.sparna.fr/shapes/Thing>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=85c19404-b7db-4b94-8b86-31100141b04a>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=85c19404-b7db-4b94-8b86-31100141b04a" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:40:29.075Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-fruits" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "fruits" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-fruits>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "https://shacl-play.sparna.fr/shapes/Thing_fruit" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "fruit" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <https://shacl-play.sparna.fr/shapes/Thing_fruit>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=da5edae1-37d7-4532-ab48-5c2d5555c028>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=da5edae1-37d7-4532-ab48-5c2d5555c028" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:41:07.338Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#processing>
+                [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                          "http://uri.suomi.fi/datamodel/ns/mscr#addPrefixFunc" ;
+                  <http://uri.suomi.fi/datamodel/ns/mscr#processingParams>
+                          [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "input" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "self"
+                                    ] ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "http://uri.suomi.fi/datamodel/ns/mscr#prefixParameter" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "https://example.com/"
+                                    ]
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieName>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "https://shacl-play.sparna.fr/shapes/Thing_vegetable" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "vegetable" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <https://shacl-play.sparna.fr/shapes/Thing_vegetable>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=830c704a-5b30-4bfb-836a-8d4bac908bf8>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=830c704a-5b30-4bfb-836a-8d4bac908bf8" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:41:18.241Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "vegetables" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "iterator:https://shacl-play.sparna.fr/shapes/Vegetable" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "iterator source" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <iterator:https://shacl-play.sparna.fr/shapes/Vegetable>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=4bda64f3-306f-4d5f-913c-82a0c7f19f2f>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=4bda64f3-306f-4d5f-913c-82a0c7f19f2f" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:41:34.848Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#processing>
+                [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                          "http://uri.suomi.fi/datamodel/ns/mscr#addPrefixFunc" ;
+                  <http://uri.suomi.fi/datamodel/ns/mscr#processingParams>
+                          [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "input" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "self"
+                                    ] ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "http://uri.suomi.fi/datamodel/ns/mscr#prefixParameter" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "https://example.com/"
+                                    ]
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieName>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "subject:https://shacl-play.sparna.fr/shapes/Vegetable" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "subject source" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <subject:https://shacl-play.sparna.fr/shapes/Vegetable>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=72a87729-e51c-49b1-b683-e71b5b819b33>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=72a87729-e51c-49b1-b683-e71b5b819b33" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:41:39.822Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieName>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "https://shacl-play.sparna.fr/shapes/Vegetable_veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieName" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <https://shacl-play.sparna.fr/shapes/Vegetable_veggieName>
+                          ]
+                ] .
+
+<mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=ec6dff2f-e382-4eda-bf32-51bc847e58bb>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f@mapping=ec6dff2f-e382-4eda-bf32-51bc847e58bb" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:e0434bd1-310f-4de8-99c6-1dee0b41086f> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-01-29T12:41:44.597Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieLike" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieLike" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b#root-Root-root-Root-vegetables-Vegetables-veggieLike>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "https://shacl-play.sparna.fr/shapes/Vegetable_veggieLike" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "veggieLike" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <https://shacl-play.sparna.fr/shapes/Vegetable_veggieLike>
+                          ]
+                ] .

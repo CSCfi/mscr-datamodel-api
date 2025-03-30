@@ -4,6 +4,8 @@ import static fi.vm.yti.security.AuthorizationException.check;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -16,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,21 +117,22 @@ public class Schema extends BaseMSCRController {
 		this.groupManagementService = groupManagementService;
 	}
 
-	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format) {
+	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format, boolean skipProcessing) {
 		try {
 
 			if (format == SchemaFormat.JSONSCHEMA) {
-				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
-				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
-
-				boolean isValidJSONSchema = validationRecord.isValid();
-				List<String> validationMessages = validationRecord.validationOutput();
-
-				if (!isValidJSONSchema) {
-					String exceptionOutput = String.join("\n", validationMessages);
-					throw new Exception(exceptionOutput);
+				if(!skipProcessing) {
+					JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
+					ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
+	
+					boolean isValidJSONSchema = validationRecord.isValid();
+					List<String> validationMessages = validationRecord.validationOutput();
+	
+					if (!isValidJSONSchema) {
+						String exceptionOutput = String.join("\n", validationMessages);
+						throw new Exception(exceptionOutput);
+					}
 				}
-
 			} else if (format == SchemaFormat.XSD || format == SchemaFormat.XML || format == SchemaFormat.CSV
 					|| format == SchemaFormat.SKOSRDF || format == SchemaFormat.RDFS || format == SchemaFormat.SHACL
 					|| format == SchemaFormat.PDF || format == SchemaFormat.OWL ||format == SchemaFormat.ENUM) {
@@ -149,11 +154,14 @@ public class Schema extends BaseMSCRController {
 	}
 
 	private void addFileToSchema(final String pid, final SchemaFormat format, final byte[] fileInBytes, final String contentURL,
-			final String contentType) {
+			final String contentType, boolean skipProcessing) {
 		try {
-			Model schemaModel = null;
-
-			if (format == SchemaFormat.JSONSCHEMA) {
+			Model schemaModel = ModelFactory.createDefaultModel();
+			
+			if(skipProcessing) {
+				// do nothing
+			}
+			else if (format == SchemaFormat.JSONSCHEMA) {
 				JsonNode jsonObj = schemaService.parseSchema(new String(fileInBytes));
 				ValidationRecord validationRecord = JSONValidationService.validateJSONSchema(jsonObj);
 
@@ -175,7 +183,6 @@ public class Schema extends BaseMSCRController {
 				schemaModel = schemaService.addSKOSVocabulary(pid, fileInBytes);
 			} else if (format == SchemaFormat.PDF) {
 				// do nothing
-				schemaModel = ModelFactory.createDefaultModel();
 			} else if (format == SchemaFormat.OWL) {
 				schemaModel = schemaService.addOWL(pid, contentURL, fileInBytes);				
 			} else if (format == SchemaFormat.RDFS) {
@@ -202,7 +209,8 @@ public class Schema extends BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						String.format("Unsupported schema description format: %s not supported", format));
 			}
-			jenaService.putToSchema(pid + ":content", schemaModel);			
+			
+			jenaService.putToSchema(pid + ":content", schemaModel);
 			storageService.storeSchemaFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
 
 		} catch (ResponseStatusException statusex) {
@@ -246,15 +254,22 @@ public class Schema extends BaseMSCRController {
 				inputSchema != null && inputSchema.getVersionLabel() != null ? inputSchema.getVersionLabel() : prevSchema.getVersionLabel());
 		
 		if(action == CONTENT_ACTION.revisionOf) {
-			s.setFormat(prevSchema.getFormat());	
+			s.setFormat(prevSchema.getFormat());
+			if(prevSchema.getFormat() == SchemaFormat.MSCR) {
+				s.setOriginalFormat(prevSchema.getOriginalFormat());	
+			}			
 		}
 		else if(action == CONTENT_ACTION.mscrCopyOf) { 
 			s.setFormat(SchemaFormat.MSCR);
+			s.setOriginalFormat(prevSchema.getFormat());				
 		}
 		else {
 			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		}
 		s.setSourceURL(inputSchema.getSourceURL());
+		s.setSubType(prevSchema.getSubType());
+		
+		
 		
 		return s;
 
@@ -286,7 +301,8 @@ public class Schema extends BaseMSCRController {
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO,
 			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
-			@RequestParam(name = "target", required = false) String target) throws Exception {
+			@RequestParam(name = "target", required = false) String target,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
 
 		validateActionParams(schemaDTO, action, target);
 		checkVisibility(schemaDTO);
@@ -308,7 +324,23 @@ public class Schema extends BaseMSCRController {
 				aggregationKey = prevSchema.getAggregationKey();
 				if(prevSchema.getFormat() == SchemaFormat.MSCR) {
 					if(jenaService.doesSchemaExist(prevSchema.getPID() + ":content")) {
-						contentModel = jenaService.getSchemaContent(prevSchema.getPID());
+						// This is really hacky!
+						File tempFile = File.createTempFile("model", ".ttl");
+						Model tempModel = jenaService.getSchemaContent(prevSchema.getPID());
+						FileOutputStream fos = new FileOutputStream(tempFile);						
+						RDFDataMgr.write(fos, tempModel, Lang.TTL);
+						
+						String fileContent = FileUtils.readFileToString(tempFile);
+						fileContent = 
+								fileContent
+								.replaceFirst("<" + prevSchema.getPID() + "#", "<" + PID + "#")
+								.replaceFirst("<" + prevSchema.getPID() + ">", "<" + PID + ">");
+						StringReader r = new StringReader(fileContent);
+						contentModel.read(r, null, "TURTLE");
+						r.close();
+						fos.close();
+						
+						
 					}
 										
 				}
@@ -327,7 +359,7 @@ public class Schema extends BaseMSCRController {
 					// try to download url to file
 					File tempFile = File.createTempFile("schema", "temp");
 					FileUtils.copyURLToFile(new URL(prevSchema.getSourceURL()), tempFile);
-					fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), prevSchema.getFormat());
+					fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), prevSchema.getFormat(), skipProcessing);
 					contentType = "application/octet-stream"; // TODO: fix this
 				}
 				else {
@@ -335,7 +367,7 @@ public class Schema extends BaseMSCRController {
 					fileBytes = schemaFile.data();
 					contentType = schemaFile.contentType();
 				}
-				addFileToSchema(PID, prevSchema.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType);	
+				addFileToSchema(PID, schemaDTO.getOriginalFormat() != null ? schemaDTO.getOriginalFormat() : schemaDTO.getFormat(), fileBytes, prevSchema.getSourceURL(), contentType, skipProcessing);	
 				
 				
 				
@@ -352,9 +384,8 @@ public class Schema extends BaseMSCRController {
 			String handle = null;
 			if (schemaDTO.getState() == MSCRState.PUBLISHED || schemaDTO.getState() == MSCRState.DEPRECATED) {
 				handle = PIDService.mint(PIDType.HANDLE, MSCRType.SCHEMA, PID);
-
 			}
-			String subType = getSchemaContentSubType(schemaDTO.getFormat().name());
+			String subType = getSchemaContentSubType(schemaDTO.getFormat().name());	
 			var jenaModel = mapper.mapToJenaModel(PID, handle, schemaDTO, target, aggregationKey,
 					userProvider.getUser(), subType);
 			if(!contentModel.isEmpty()) {
@@ -403,8 +434,8 @@ public class Schema extends BaseMSCRController {
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file) {
-		return uploadSchemaFile(pid, null, file);
+	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file, @RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) {
+		return uploadSchemaFile(pid, null, file, skipProcessing);
 	}
 
 	@Hidden
@@ -413,7 +444,8 @@ public class Schema extends BaseMSCRController {
 	public SchemaInfoDTO uploadSchemaFile(
 			@PathVariable String pid,
 			@PathVariable String suffix, 
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam("file") MultipartFile file,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) {
 
 		if (suffix != null) {
 			pid = pid + "/" + suffix;
@@ -436,7 +468,7 @@ public class Schema extends BaseMSCRController {
 						.toList();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType());
+			addFileToSchema(pid, schemaDTO.getFormat(), file.getBytes(), null, file.getContentType(), skipProcessing);
 			return schemaDTO;
 		} catch (RuntimeException rex) {
 			throw rex;
@@ -458,7 +490,8 @@ public class Schema extends BaseMSCRController {
 			@RequestParam(name = "contentURL", required = false) String contentURL,
 			@RequestParam(name = "file", required = false) MultipartFile file,
 			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
-			@RequestParam(name = "target", required = false) String target) throws Exception {
+			@RequestParam(name = "target", required = false) String target,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
 
 		if (contentURL == null && file == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -480,10 +513,10 @@ public class Schema extends BaseMSCRController {
 				// try to download url to file
 				File tempFile = File.createTempFile("schema", "temp");
 				FileUtils.copyURLToFile(new URL(contentURL), tempFile);
-				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat());
+				fileBytes = validateFileUpload(FileUtils.readFileToByteArray(tempFile), schemaDTO.getFormat(), skipProcessing);
 				contentType = "application/octet-stream"; // TODO: fix this
 			} else {
-				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat());
+				fileBytes = validateFileUpload(file.getBytes(), schemaDTO.getFormat(), skipProcessing);
 				contentType = file.getContentType();
 			}
 
@@ -493,15 +526,16 @@ public class Schema extends BaseMSCRController {
 		
 		SchemaInfoDTO dto = null;
 		try {
-			dto = createSchema(schemaDTO, action, target);
+			dto = createSchema(schemaDTO, action, target, skipProcessing);
 			final String PID = dto.getPID();
 
 			if (!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations();
 				check(authorizationManager.hasRightToAnyOrganization(orgs));
 			}
-			addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType);	
+			addFileToSchema(PID, schemaDTO.getFormat(), fileBytes, contentURL, contentType, skipProcessing);	
 		}catch(Exception ex) {
+			ex.printStackTrace();
 			// revert any possible metadata changes
 			if(dto != null) {
 				try {
@@ -831,7 +865,7 @@ public class Schema extends BaseMSCRController {
 		try {
 			pid = PIDService.mapToInternal(pid);
 			if(jenaService.doesSchemaExist(pid+":content")) {
-				var model = jenaService.getSchema(pid+":content");
+				var model = jenaService.getSchema(pid+":content");		
 				StreamingResponseBody responseBody = httpResponseOutputStream -> {
 					model.write(httpResponseOutputStream, "TURTLE");
 				};
@@ -864,19 +898,19 @@ public class Schema extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not search DTR instance. " + e.getMessage());
 		}
 	}	
-	
-	@Operation(summary = "Update data type of a SHACL property")
+
+	@Operation(summary = "Update property")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
-	public UpdateResponseDTO updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype") String datatype) {
-		return updateProperty(null, schemaID, target, datatype);
+	@PatchMapping(path = "/schema/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
+		return updateProperty(null, schemaID, target, datatype, valuesFrom);
 	}	
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
-	public UpdateResponseDTO updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam String datatype) {
+	@PatchMapping(path = "/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
 		if (prefix != null) {
 			schemaID = prefix + "/" + schemaID;
 		}
@@ -893,7 +927,7 @@ public class Schema extends BaseMSCRController {
 			if(!format.equals(SchemaFormat.MSCR.name())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Schema format must be MSCR.");
 			}
-			String resourcePrefix = schemaID+"#root/Root/";
+			String resourcePrefix = schemaID+"#root-Root-";
 			String localName = target.substring((resourcePrefix).length());
 			String encodedLocalName = URLEncoder.encode(localName).replaceAll("%2F", "/");
 			String encodedTarget = resourcePrefix + encodedLocalName;
@@ -901,19 +935,45 @@ public class Schema extends BaseMSCRController {
 			if(propResource == null) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property " + target + " not in schema " + schemaID);
 			}
+			if(!datatype.equals("")) {
+				Model propModel = schemaService.fetchAndMapDTRType(datatype);
+				Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
+				jenaService.putToSchema(datatypeResource.getURI(), propModel);
+				schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
+				jenaService.putToSchema(schemaID+":content", contentModel);
+				return new UpdateResponseDTO("Property " + target + " updated with data type " + datatype , schemaID);		
+			}
+			else if(!valuesFrom.equals("")) {
+				if(!valuesFrom.equals("clear") && !jenaService.doesSchemaExist(valuesFrom)) {
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Given vocabulary does not exist in the system. Vocabulary URI:" + valuesFrom);
+				}
+				schemaService.updateValuesFrom(contentModel, encodedTarget, valuesFrom);
+				jenaService.putToSchema(schemaID+":content", contentModel);
+				return new UpdateResponseDTO("Property " + target + " updated with valuesFrom " + valuesFrom , schemaID);
+			}
+			return new UpdateResponseDTO("Nothing to do", schemaID);
 			
-			Model propModel = schemaService.fetchAndMapDTRType(datatype);
-			Resource datatypeResource = propModel.listSubjectsWithProperty(RDF.type).next();
-			jenaService.putToSchema(datatypeResource.getURI(), propModel);
-			schemaService.updatePropertyDataTypeFromDTR(contentModel, encodedTarget, datatypeResource.getURI());
-			jenaService.putToSchema(schemaID+":content", contentModel);
 			
-			return new UpdateResponseDTO("Property " + target + " updated with data type " + datatype , schemaID);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}		
+	}	
+	
+	@Operation(summary = "Update data type of a SHACL property")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateDTRProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
+		return updateProperty(null, schemaID, target, datatype, valuesFrom);
+	}	
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	public UpdateResponseDTO updateDTRProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
+		return updateProperty(prefix, schemaID, target, datatype, valuesFrom);
 	}
 	
 	@Operation(summary = "Update root resource")

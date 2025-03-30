@@ -27,7 +27,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.sparql.util.ModelUtils;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
@@ -47,7 +46,6 @@ import org.topbraid.shacl.vocabulary.SH;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.jsonldjava.utils.JsonUtils;
 
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
@@ -57,9 +55,9 @@ import fi.vm.yti.datamodel.api.v2.mapper.mscr.SKOSMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.mscr.XSDMapper;
 import fi.vm.yti.datamodel.api.v2.service.dtr.DTRClient;
 import io.zenwave360.jsonrefparser.$RefParser;
-import io.zenwave360.jsonrefparser.$Refs;
-import io.zenwave360.jsonrefparser.$RefParserOptions.OnCircular;
 import io.zenwave360.jsonrefparser.$RefParserOptions;
+import io.zenwave360.jsonrefparser.$RefParserOptions.OnCircular;
+import io.zenwave360.jsonrefparser.$Refs;
 
 
 @Service
@@ -89,7 +87,8 @@ public class SchemaService {
 	public Model transformJSONSchemaToInternal(String schemaPID, JsonNode root) throws Exception, IOException {
 
 		Model model = ModelFactory.createDefaultModel();
-	
+		model.setNsPrefix("", schemaPID +"#");
+		
 		// ObjectMapper is required to parse the JSON data		
 		//ObjectMapper mapper = new ObjectMapper();		
 		//JsonNode root = mapper.readTree(mapper.writeValueAsBytes(jsonObj));
@@ -115,8 +114,12 @@ public class SchemaService {
 		
 		jsonSchemaMapper.handleDefinitions(definitions, schemaPID, model);
 		// Adding the schema to a corresponding internal model
-		
-		jsonSchemaMapper.handleObject("root", root, schemaPID, model, definitions);
+		String rootType = root.get("type").asText();
+		String rootInstancePath = "$";
+		if(rootType.equals("array")) {
+			rootInstancePath = rootInstancePath + "[*]";
+		}
+		jsonSchemaMapper.handleObject("root", root, schemaPID, model, definitions, "$", rootInstancePath);
 		addDefaultRootResourceForJSONSchema(modelResource, model);		
 		return model;
 
@@ -124,7 +127,7 @@ public class SchemaService {
 	
 	public Model transformCSVSchemaToInternal(String schemaPID, byte[] data, String delimiter) throws Exception, IOException {
 		CSVMapper mapper = new CSVMapper();		
-		Model model = mapper.mapToModel(schemaPID, data, delimiter);
+		Model model = mapper.mapToModel(schemaPID, data, delimiter.charAt(0));
 		Resource modelResource = model.createResource(schemaPID);
 		addDefaultRootResourceForCSV(modelResource, model);
 		
@@ -137,8 +140,6 @@ public class SchemaService {
 		$RefParser parser = new $RefParser(data).withOptions(new $RefParserOptions().withOnCircular(OnCircular.SKIP));
 		$Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
 		Object resultMapOrList = refs.schema();
-		System.out.println(((Map)resultMapOrList).keySet().size());
-		
 		ObjectMapper mapper = new ObjectMapper(); 
 		return mapper.valueToTree(resultMapOrList);
 	}
@@ -159,19 +160,12 @@ public class SchemaService {
 		if(!schemes.hasNext()) {
 			throw new Exception("No ConceptScheme found.");
 		}
-		Resource scheme = schemes.next(); // just getting the first one
-		Resource schema = m.createResource(pid);
-		
-		
-		
-		
 		return m;
 	}
 	
 	public Model transformXSDToInternal(String schemaPID, String filePath) throws Exception {
 		ObjectNode jroot = xsdMapper.mapToInternalJson(filePath);
-		return transformJSONSchemaToInternal(schemaPID, jroot);
-		
+		return transformJSONSchemaToInternal(schemaPID, jroot);		
 	}
 
 	public Model transformXSDToInternal(String pid, byte[] fileInBytes) throws Exception {
@@ -378,10 +372,10 @@ public class SchemaService {
 		});
 	}	
 	private void addDefaultRootResourceForJSONSchema(Resource schema, Model m) {
-		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root/Root"));
+		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root-Root"));
 	}	
 	private void addDefaultRootResourceForCSV(Resource schema, Model m) {
-		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root/Root"));
+		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI() + "#root"));
 	}	
 	private void addDefaultRootResourceForSKOS(Resource schema, Model m) {
 		schema.addProperty(VOID.rootResource, m.getResource(schema.getURI()+"#root/Root"));
@@ -404,7 +398,7 @@ public class SchemaService {
 			// do nothing
 		}		
 		else {
-			schema.addProperty(VOID.rootResource, model.getResource(schemaInternalId +"#root/Root"));	
+			schema.addProperty(VOID.rootResource, model.getResource(schemaInternalId +"#root"));	
 		}		
 		return model;
 	}
@@ -457,6 +451,23 @@ public class SchemaService {
 		sc.close();
 		
 		return m;
+	}
+
+	public void updateValuesFrom(Model model, String propURI, String vocabularyURI) throws Exception {
+		Resource prop = ResourceFactory.createResource(propURI);
+		if(!model.containsResource(prop)) {
+			throw new Exception("Property " + prop + " not found");
+		}		
+		prop = model.getResource(propURI);
+		model.removeAll(prop, SH.datatype, null);
+		model.removeAll(prop, DCTerms.type, null);
+		model.add(prop, DCTerms.type, OWL.DatatypeProperty); // setting new type always
+		model.removeAll(prop, MSCR.valuesFrom, null);
+		if(!vocabularyURI.equals("clear")) {
+			model.add(prop, MSCR.valuesFrom, model.createResource(vocabularyURI));
+		}
+		
+				
 	}
 }
 	

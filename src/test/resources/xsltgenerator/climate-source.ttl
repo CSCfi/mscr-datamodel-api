@@ -1,0 +1,161 @@
+@prefix :      <mscr:schema:3b24ee60-73b5-425f-990b-18351687d567#> .
+
+<mscr:schema:3b24ee60-73b5-425f-990b-18351687d567>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*]" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$" ;
+        <http://www.w3.org/ns/shacl#name>
+                "CMIP6HandleRecs" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root ;
+        <http://www.w3.org/ns/shacl#path>
+                :root .
+                
+:root-Root-data  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].data" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.data" ;
+        <http://www.w3.org/ns/shacl#closed>
+                false ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "CMIP6 Handle data" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-data-Data ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-data .
+
+:root-Root-data-Data  a  <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "CMIP6 Handle data" ;
+        <http://www.w3.org/ns/shacl#closed>
+                true ;
+        <http://www.w3.org/ns/shacl#name>
+                "CMIP6 Handle data" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-data-Data-value , :root-Root-data-Data-format .
+
+:root-Root-type  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].type" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.type" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#in>
+                ( "URL" "AGGREGATION_LEVEL" "FIXED_CONTENT" "DRS_ID" "HAS_PARTS" "VERSION_NUMBER" "REPLACES" "REPLACED_BY" "ERRATA_IDS" "_REMOVED_ERRATA_IDS" "_ADDED_ERRATA_IDS" "REPLICA_NODE" "HOSTING_NODE" "UNPUBLISHED_REPLICAS" "_REMOVED_HOSTS" "HS_ADMIN" "FILE_NAME" "FILE_SIZE" "IS_PART_OF" "FILE_VERSION" "CHECKSUM" "CHECKSUM_METHOD" "URL_ORIGINAL_DATA" "PROBLEM" "URL_REPLICA" "LONG_TIME_ARCHIVE_URL" ) ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "CMIP6 Handle key" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-type .
+
+:root-Root-index  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].index" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.index" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "sequence number" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-index .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "CMIP6HandleRecs" ;
+        <http://www.w3.org/ns/shacl#description>
+                "CMIP6 Handle records - more than one entry" ;
+        <http://www.w3.org/ns/shacl#name>
+                "CMIP6HandleRecs" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-data , :root-Root-type , :root-Root-index , :root-Root-timestamp , :root-Root-ttl .
+
+:root-Root-timestamp  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].timestamp" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.timestamp" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "timestamp" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-timestamp .
+
+:root-Root-data-Data-value
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].data.value" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.data.value" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "value of Handle data label" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-data-Data-value .
+
+:root-Root-data-Data-format
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].data.format" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.data.format" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "format of Handle data label, e.g. string, number ...." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "format of Handle data label" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-data-Data-format .
+
+:root-Root-ttl  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$[*].ttl" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.ttl" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Handle time to live" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-ttl .

@@ -18,6 +18,8 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 	private CrosswalkFormat format;
 	private String aggregationKey;
 	private Set<FileMetadata> fileMetadata = Set.of();	
+	private List<GeneratedFileMetadata> generatedFileMetadata = List.of();	
+
 	private String sourceSchema;
 	private String targetSchema;
 	private Set<String> owner;
@@ -34,7 +36,6 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 	
 	private CrosswalkSchemaInfo sourceSchemaInfo;
 	private CrosswalkSchemaInfo targetSchemaInfo;
-	
 	
 	public CrosswalkSchemaInfo getSourceSchemaInfo() {
 		return sourceSchemaInfo;
@@ -184,6 +185,14 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 		this.hasRevisions = hasRevisions;
 	}
 	
+
+	public List<GeneratedFileMetadata> getGeneratedFileMetadata() {
+		return generatedFileMetadata;
+	}
+
+	public void setGeneratedFileMetadata(List<GeneratedFileMetadata> generatedFileMetadata) {
+		this.generatedFileMetadata = generatedFileMetadata;
+	}
 
 	@Override
     public String toString() {

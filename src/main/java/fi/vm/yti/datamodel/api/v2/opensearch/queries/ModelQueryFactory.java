@@ -2,17 +2,27 @@ package fi.vm.yti.datamodel.api.v2.opensearch.queries;
 
 import fi.vm.yti.datamodel.api.v2.dto.ModelType;
 import fi.vm.yti.datamodel.api.v2.dto.Status;
+import fi.vm.yti.datamodel.api.v2.messaging.IntegrationContainerRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.dto.ModelSearchRequest;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import org.opensearch.client.opensearch._types.SortOptions;
 import org.opensearch.client.opensearch._types.SortOptionsBuilders;
 import org.opensearch.client.opensearch._types.SortOrder;
 import org.opensearch.client.opensearch._types.mapping.FieldType;
+import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
+import org.opensearch.client.opensearch._types.query_dsl.FieldAndFormat;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.QueryBuilders;
 import org.opensearch.client.opensearch.core.SearchRequest;
+import org.opensearch.client.opensearch.core.search.SourceConfig;
+import org.opensearch.client.opensearch.core.search.SourceConfigBuilders;
+import org.opensearch.client.opensearch.core.search.SourceConfigParamBuilders;
+import org.opensearch.client.opensearch.core.search.SourceFilter;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static fi.vm.yti.datamodel.api.v2.opensearch.OpenSearchUtil.logPayload;
@@ -166,5 +176,42 @@ public class ModelQueryFactory {
         logPayload(sr);
         return sr;
 	}
+	
+	public static SearchRequest createUpdatedResourcesQuery(IntegrationContainerRequest r) {
+        var must = new ArrayList<Query>();
+        var should = new ArrayList<Query>();
+		        
+        if(r.getUri() != null && !r.getUri().isEmpty()) {
+            var idQuery = QueryFactoryUtils.termsQuery("id", r.getUri().stream().toList());
+            must.add(idQuery);
+        }
+        
+        if (r.getBefore() != null) {
+            must.add(QueryFactoryUtils.rangeLteQuery("stateModified", r.getBefore()));
+        }
 
+        if (r.getAfter() != null) {
+            must.add(QueryFactoryUtils.rangeGteQuery("stateModified", r.getAfter()));
+        }
+        
+        // status one of the ones that come after draft
+        var statusQuery = QueryFactoryUtils.termsQuery("state", List.of("PUBLISHED", "INVALID", "DEPRECATED", "REMOVED"));
+        should.add(statusQuery);
+        var finalQuery = QueryBuilders.bool()
+                .must(must)
+                .should(should)
+                .build();
+		var sr = new SearchRequest.Builder()
+                .index(List.of(OpenSearchIndexer.OPEN_SEARCH_INDEX_SCHEMA, OpenSearchIndexer.OPEN_SEARCH_INDEX_CROSSWALK))
+                //.size(QueryFactoryUtils.pageSize(r.getPageSize()))
+                //.from(QueryFactoryUtils.pageFrom(r.getPageFrom()))
+                .size(10000)
+                .from(0) 
+                .source(f -> f.filter(SourceFilter.of(ff -> ff.includes("id", "state", "label.en", "stateModified", "contentModified", "versionLabel", "modified", "type", "sourceSchemaAggregationKey", "targetSchemaAggregationKey", "created"))))
+                .query(finalQuery._toQuery())
+                .build();
+		
+		logPayload(sr);
+		return sr;
+	}	
 }

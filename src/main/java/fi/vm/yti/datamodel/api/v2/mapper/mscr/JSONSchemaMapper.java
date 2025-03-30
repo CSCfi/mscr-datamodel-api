@@ -111,7 +111,7 @@ public class JSONSchemaMapper {
 
 	private void checkAndDefaultName(Resource propertyResource, String propID) {
 		if(!propertyResource.hasProperty(SH.name)) {
-			String defaultName = propID.substring(propID.lastIndexOf("/")+1);
+			String defaultName = propID.substring(propID.lastIndexOf("-")+1);
 			propertyResource.addLiteral(SH.name, ResourceFactory.createPlainLiteral(defaultName));
 		}
 		
@@ -189,7 +189,7 @@ public class JSONSchemaMapper {
 		
 		String entryType = entry.has("type") ? entry.get("type").asText() : "string"; 
 		//final String key = URLEncoder.encode(entryKey);
-		Resource propertyResource = addDatatypeProperty(propID + "/" + key, entry, model,
+		Resource propertyResource = addDatatypeProperty(propID + "-" + key, entry, model,
 				schemaPID, entryType);
 		nodeShapeResource.addProperty(SH.property, propertyResource);
 		if (!isArrayItem) {
@@ -207,10 +207,10 @@ public class JSONSchemaMapper {
 	}
 	
 	private String capitaliseNodeIdentifier(String propID) {
-		int lastSlash = propID.lastIndexOf('/');
+		int lastSlash = propID.lastIndexOf('-');
 		String stringAfterSlash = propID.substring(lastSlash + 1);
 		char firstChar = Character.toUpperCase(stringAfterSlash.charAt(0));
-		return propID + "/" + firstChar + stringAfterSlash.substring(1);
+		return propID + "-" + firstChar + stringAfterSlash.substring(1);
 	}
 
 	private boolean isLangString(Entry <String, JsonNode> entry) {
@@ -243,7 +243,7 @@ public class JSONSchemaMapper {
 			 && entry.get("items").get("type").asText().equals("object"));
 	}
 	
-	private void handleArray(String propID, JsonNode entry, String key, String schemaPID, Model model, Map<String, JsonNode> definitions) {
+	private void handleArray(String propID, JsonNode entry, String key, String schemaPID, Model model, Map<String, JsonNode> definitions, String schemaPath, String instancePath) {
 		String propIDCapitalised = capitaliseNodeIdentifier(propID);
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
 		
@@ -252,8 +252,13 @@ public class JSONSchemaMapper {
 			propertyShape = handleDatatypeProperty(propIDCapitalised, entry, key, model, schemaPID, nodeShapeResource, false, true);
 		}					
 		else {
-			propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry, model, schemaPID,
-					schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
+			
+			propertyShape = addObjectProperty(propIDCapitalised + "-" + key, entry, model, schemaPID,
+					schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key));
+			
+			propertyShape.addLiteral(MSCR.schemaPath, model.createLiteral(schemaPath));
+			propertyShape.addLiteral(MSCR.instancePath, model.createLiteral(instancePath));
+			
 			if(entry.has("@id")) {
 				propertyShape.addProperty(MSCR.qname, model.createResource(entry.get("@id").asText()));			
 			}
@@ -264,7 +269,7 @@ public class JSONSchemaMapper {
 			nodeShapeResource.addProperty(SH.property, propertyShape);
 			
 			if (hasObjectItems(entry)) {
-				handleObject(propIDCapitalised + "/" + key, entry.get("items"), schemaPID, model, definitions);
+				handleObject(propIDCapitalised + "-" + key, entry.get("items"), schemaPID, model, definitions, schemaPath, instancePath);
 			}
 			else {
 				if(!entry.has("items")) {
@@ -291,10 +296,11 @@ public class JSONSchemaMapper {
 	 * @param schemaPID The schema PID.
 	 * @param model     The RDF model.
 	 */
-	public void handleObject(String propID, JsonNode node, String schemaPID, Model model, Map<String, JsonNode> definitions) {
-		String propIDCapitalised = capitaliseNodeIdentifier(propID);
-		String nameProperty = propID.substring(propID.lastIndexOf("/") + 1);		
+	public void handleObject(String propID, JsonNode node, String schemaPID, Model model, Map<String, JsonNode> definitions, String schemaPath, String instancePath) {
+		String propIDCapitalised = capitaliseNodeIdentifier(propID);		
+		String nameProperty = propID.substring(propID.lastIndexOf("-") + 1);		
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
+		
 		
 		nodeShapeResource.addProperty(RDF.type, (SH.NodeShape));
 		
@@ -322,21 +328,7 @@ public class JSONSchemaMapper {
 			nodeShapeResource.addProperty(MSCR.namespace, model.createResource(node.get("namespace").asText()));			
 		}
 		JsonNode type = node.get("type");
-		if(type != null) {
-			if(type.textValue().equals("array")) {
-				if(node.get("maxItems") != null && node.get("maxItems").asText(null) != null &&  !node.get("maxItems").asText().equals("unbounded")) {
-					nodeShapeResource.addLiteral(SH.maxCount, model.createTypedLiteral(node.get("maxItems").asInt()));
-				}								
-			}
-			else {
-				nodeShapeResource.addLiteral(SH.maxCount, model.createTypedLiteral(1));	
-			}
-		}
-		else {
-			// defaults
-			nodeShapeResource.addLiteral(SH.maxCount, model.createTypedLiteral(1));
-			
-		}
+
 		
 		/*
 		 * Iterate over properties If a property is an array or object – add and
@@ -370,9 +362,12 @@ public class JSONSchemaMapper {
 				Resource propertyShape = null;
 				
 				
+				String newSchemaPath = schemaPath + "." + entry.getKey();
+				String newInstancePath = instancePath + "." + entry.getKey();		
+				
 				if (valueType.equals("object")) {
-					propertyShape = addObjectProperty(propIDCapitalised + "/" + key, entry.getValue(), model, schemaPID,
-							schemaPID + "#" + propIDCapitalised + "/" + key +"/" + StringUtils.capitalise(key));
+					propertyShape = addObjectProperty(propIDCapitalised + "-" + key, entry.getValue(), model, schemaPID,
+							schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key));
 					if(entry.getValue().has("@id")) {
 						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
 					}
@@ -389,16 +384,19 @@ public class JSONSchemaMapper {
 						}
 						
 					}
-					
+
 					nodeShapeResource.addProperty(SH.property, propertyShape);
-					handleObject(propIDCapitalised + "/" + key, entry.getValue(), schemaPID, model,definitions);	
+					handleObject(propIDCapitalised + "-" + key, entry.getValue(), schemaPID, model,definitions, newSchemaPath, newInstancePath);	
 				}
 				else if (valueType.equals("array")) {
-					handleArray(propID, entry.getValue(), key, schemaPID, model, definitions);
+					newInstancePath = newInstancePath + "[*]";
+					
+					handleArray(propID, entry.getValue(), key, schemaPID, model, definitions, newSchemaPath, newInstancePath);
 				}
 				else {
 					boolean isRequired = (entry.getValue().has("required") && (entry.getValue().get("required").asBoolean() == true));								
 					propertyShape = handleDatatypeProperty(propIDCapitalised, entry, model, schemaPID, nodeShapeResource, isRequired, false);
+					
 					if(entry.getValue().has("sourceType")) {
 						propertyShape.addProperty(MSCR.sourceType, MSCR.sourceTypeAttribute);
 					}
@@ -421,6 +419,23 @@ public class JSONSchemaMapper {
 	
 					
 				}
+				if(propertyShape != null) {
+					if(entry.getValue().has("schemaPath")) {
+						propertyShape.addLiteral(MSCR.schemaPath, model.createLiteral(entry.getValue().get("schemaPath").asText() ));
+					}
+					else {
+						propertyShape.addLiteral(MSCR.schemaPath, model.createLiteral(newSchemaPath));	
+					}
+					if(entry.getValue().has("instancePath")) {
+						propertyShape.addLiteral(MSCR.instancePath, model.createLiteral(entry.getValue().get("instancePath").asText() ));
+					}
+					else {
+						propertyShape.addLiteral(MSCR.instancePath, model.createLiteral(newInstancePath));	
+					}					
+				}
+
+				
+				
 				if(entry.getValue().get("order") != null) {
 					propertyShape.addLiteral(SH.order, ResourceFactory.createTypedLiteral(entry.getValue().get("order").asInt()));
 				}
@@ -431,7 +446,14 @@ public class JSONSchemaMapper {
 				if (entry.getValue().get("$ref") != null) {
 					String ref = entry.getValue().get("$ref").asText();
 					// TODO: set the class and datatype according to the references definition
-					String shapeName = ref.substring(ref.lastIndexOf("/")+1);
+					String shapeName = "";
+					if(ref.indexOf("-") >= 0) {
+						shapeName = ref.substring(ref.lastIndexOf("-")+1);
+					}
+					else if(ref.indexOf("/") >= 0) {
+						shapeName = ref.substring(ref.lastIndexOf("/")+1);
+					}
+					 
 					JsonNode defObj = definitions.get(shapeName);
 					if(defObj != null) {
 						String targetType = defObj.get("type") != null ? defObj.get("type").asText() : "string";
@@ -439,7 +461,7 @@ public class JSONSchemaMapper {
 						propertyShape.removeAll(DCTerms.type);
 						if(targetType.equals("object")) {
 													
-							propertyShape.addProperty(SH.node, model.createResource(schemaPID + ":definition#" + shapeName + "/" +  shapeName));
+							propertyShape.addProperty(SH.node, model.createResource(schemaPID + ":definition#" + shapeName + "-" +  shapeName));
 							propertyShape.addProperty(DCTerms.type, OWL.ObjectProperty);
 						}
 						else {
@@ -467,7 +489,7 @@ public class JSONSchemaMapper {
 			String defName = defNames.next();
 			//System.out.println(defName);
 			Model m = ModelFactory.createDefaultModel();
-			handleObject(defName, defs.get(defName), schemaPID + ":definition", m, defs);
+			handleObject(defName, defs.get(defName), schemaPID + ":definition", m, defs, "", "");
 			//m.write(System.out, "TURTLE");
 			model.add(m);
 		}

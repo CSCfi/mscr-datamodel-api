@@ -79,8 +79,10 @@ import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator;
+import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2;
 import fi.vm.yti.datamodel.api.v2.transformation.SPARQLGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
+import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator2;
 import fi.vm.yti.datamodel.api.v2.validator.ValidCrosswalk;
 import fi.vm.yti.datamodel.api.v2.validator.ValidMapping;
 import fi.vm.yti.security.AuthenticatedUserProvider;
@@ -108,8 +110,9 @@ public class Crosswalk extends BaseMSCRController {
     private final SchemaMapper schemaMapper;
 	private final CrosswalkMapper mapper;
 	private final MappingMapper mappingMapper;
-	private final XSLTGenerator xsltGenerator;
-	private final RMLGenerator rmlGenerator;
+	private final XSLTGenerator2 xsltGenerator;
+	private final XSLTGenerator xsltGenerator1;
+	private final RMLGenerator2 rmlGenerator;
 	private final SPARQLGenerator SPARQLGenerator;
 	private final AuthenticatedUserProvider userProvider;
     private final GroupManagementService groupManagementService;
@@ -124,8 +127,9 @@ public class Crosswalk extends BaseMSCRController {
             SchemaMapper schemaMapper,
             CrosswalkMapper mapper,
             MappingMapper mappingMapper,
-            XSLTGenerator xsltGenerator,
-            RMLGenerator rmlGenerator,
+            XSLTGenerator2 xsltGenerator,
+            XSLTGenerator xsltGenerator1,
+            RMLGenerator2 rmlGenerator,
             SPARQLGenerator SPARQLGenerator,
             AuthenticatedUserProvider userProvider,
             GroupManagementService groupManagementService,
@@ -137,6 +141,7 @@ public class Crosswalk extends BaseMSCRController {
 		this.jenaService = jenaService;
 		this.mapper = mapper;
 		this.xsltGenerator = xsltGenerator;
+		this.xsltGenerator1 = xsltGenerator1;
 		this.rmlGenerator = rmlGenerator;
 		this.SPARQLGenerator = SPARQLGenerator;
 		this.mappingMapper = mappingMapper;
@@ -178,7 +183,7 @@ public class Crosswalk extends BaseMSCRController {
 		SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, null, ownerMapper);
 		SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, null, ownerMapper);		
 		
-		String subType = getCrosswalkContentSubType(sourceSchemaInfo.getFormat().name(), targetSchemaInfo.getFormat().name());
+		String subType = getCrosswalkContentSubType(sourceSchemaInfo, targetSchemaInfo);
 		
 		Model jenaModel = mapper.mapToJenaModel(PID, handle, dto, target, aggregationKey, userProvider.getUser(), subType);
 		if(!contentModel.isEmpty()) {
@@ -233,34 +238,27 @@ public class Crosswalk extends BaseMSCRController {
 		
 	}	
 	
-	private MappingDTO mergeMetadata(MappingInfoDTO prev, MappingDTO input) {
-		MappingDTO d = new MappingDTO();
-		
-		d.setId(input != null && input.getId() != null ? input.getId() : prev.getId());
-		d.setDepends_on(input != null && input.getDepends_on() != null ? input.getDepends_on() : prev.getDepends_on());
-		d.setSource(input != null && input.getSource() != null ? input.getSource() : prev.getSource());
-		d.setSourceType(input != null && input.getSourceType() != null ? input.getSourceType() : prev.getSourceType());
-		d.setSourceDescription(input != null && input.getSourceDescription() != null ? input.getSourceDescription() : prev.getSourceDescription());
-		d.setPredicate(input != null && input.getPredicate() != null ? input.getPredicate() : prev.getPredicate());
-		d.setFilter(input != null && input.getFilter() != null ? input.getFilter() : prev.getFilter());
-		d.setTarget(input != null && input.getTarget() != null ? input.getTarget() : prev.getTarget());
-		d.setTargetType(input != null && input.getTargetType() != null ? input.getTargetType() : prev.getTargetType());
-		d.setTargetDescription(input != null && input.getTargetDescription() != null ? input.getTargetDescription() : prev.getTargetDescription());
-		d.setProcessing(input != null && input.getProcessing() != null ? input.getProcessing() : prev.getProcessing());
-		d.setOneOf(input != null && input.getOneOf() != null ? input.getOneOf() : prev.getOneOf());
-		return d;
-		
-	}
-	
 	private void addFileToCrosswalk(final String pid, final CrosswalkInfoDTO dto, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {	 
 		try {
 			Model contentModel = null;
 			CrosswalkFormat format = dto.getFormat();
 			if(format == CrosswalkFormat.SSSOM) {
+				var userMapper = groupManagementService.mapUser();
+				var ownerMapper = groupManagementService.mapOwner();
+
+				
 				Model sourceModel = jenaService.getSchemaContent(dto.getSourceSchema());
 				Model targetModel = jenaService.getSchemaContent(dto.getTargetSchema());
-				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes, dto.getSourceSchema(), sourceModel, dto.getTargetSchema(), targetModel);
+				
+				Model sourceSchemaModel = jenaService.getSchema(dto.getSourceSchema());
+				Model targetSchemaModel = jenaService.getSchema(dto.getTargetSchema());
+
+				SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, userMapper, ownerMapper);
+				SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, userMapper, ownerMapper);
+				
+				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes,  dto.getSourceSchema(), sourceSchemaInfo.getFormat().name(), sourceModel, dto.getTargetSchema(), targetSchemaInfo.getFormat().name(), targetModel);
+
 			}
 			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
 				// do nothing
@@ -274,7 +272,7 @@ public class Crosswalk extends BaseMSCRController {
 			
 		
 		} catch (Exception ex) {
-			throw new RuntimeException("Error occured while ingesting file based crosswalk description", ex);
+			throw new RuntimeException("Error occured while ingesting file based crosswalk description." + ex.getMessage(), ex);
 		}
 		
 	}
@@ -450,13 +448,17 @@ public class Crosswalk extends BaseMSCRController {
 		}		
 		
 		CrosswalkInfoDTO infoDto = createCrosswalk(dto, action, target);
-		final String PID = infoDto.getPID();
+		final String PID = infoDto.getHandle() != null ? infoDto.getHandle() : infoDto.getPID();
 		if(!dto.getOrganizations().isEmpty()) {
 			Collection<UUID> orgs = dto.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 
-		}			
-		addFileToCrosswalk(PID, infoDto, fileBytes, contentURL, contentType);
+		}	
+		try {
+			addFileToCrosswalk(PID, infoDto, fileBytes, contentURL, contentType);
+		}catch(Exception ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+		}
 		var userMapper = groupManagementService.mapUser();
 		var ownerMapper = groupManagementService.mapOwner();
 		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, false, userMapper, ownerMapper);
@@ -798,7 +800,8 @@ public class Crosswalk extends BaseMSCRController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content can only be edited in the DRAFT state.");
 			}
 	        
-			final String mappingPID = PIDService.mintPartIdentifier(pid);
+			final String mappingID = UUID.randomUUID().toString();
+			final String mappingPID = pid + "@mapping=" + mappingID;
 
 			Model crosswalkModel = null;
 			if(!jenaService.doesCrosswalkExist(pid+":content")) {
@@ -807,12 +810,15 @@ public class Crosswalk extends BaseMSCRController {
 			else {
 				crosswalkModel = jenaService.getCrosswalk(pid+":content");
 			}
-			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, pid);
+			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, mappingID, dto, pid);
+			
 			crosswalkModel.add(mappingModel);
+			
+
 			Resource crosswalkResource = crosswalkModel.getResource(pid);
 			crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
 			jenaService.putToCrosswalk(pid+":content", crosswalkModel);
-			return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
+			return mappingMapper.mapToMappingDTO(null, mappingPID, mappingModel);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -844,7 +850,7 @@ public class Crosswalk extends BaseMSCRController {
 			mappingPID = PIDService.mapToInternal(mappingPID);					
 			logger.info("Update Mapping {} for id {}", dto, mappingPID);
 			String crosswalkPID = mappingPID.substring(0, mappingPID.indexOf("@"));
-						
+			String mappingID = mappingPID.substring(mappingPID.indexOf("=") + 1);			
 	        var metadataModel = jenaService.getCrosswalk(crosswalkPID);
 	        if(metadataModel == null){
 	            throw new ResourceNotFoundException(crosswalkPID);
@@ -858,11 +864,11 @@ public class Crosswalk extends BaseMSCRController {
 				throw new ResourceNotFoundException(mappingPID);
 			}
 			jenaService.deleteMapping(crosswalkPID, mappingPID, crosswalkModel, false);
-			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, dto, crosswalkPID);
+			Model mappingModel = mappingMapper.mapToJenaModel(mappingPID, mappingID, dto, crosswalkPID);
 			
 			crosswalkModel.add(mappingModel);
 			jenaService.putToCrosswalk(crosswalkPID+":content", crosswalkModel);
-			return mappingMapper.mapToMappingDTO(mappingPID, mappingModel);
+			return mappingMapper.mapToMappingDTO(null, mappingPID, mappingModel);
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -900,13 +906,16 @@ public class Crosswalk extends BaseMSCRController {
 	        if(metadataModel == null){
 	            throw new ResourceNotFoundException(crosswalkPID);
 	        }		
+	        var ownerMapper = groupManagementService.mapOwner();			        
+	        CrosswalkInfoDTO crosswalkDTO = mapper.mapToCrosswalkDTO(crosswalkPID, metadataModel, null, ownerMapper);
+	        
 	        Model crosswalkModel = jenaService.getCrosswalk(crosswalkPID+":content");
 			
 	        if(!crosswalkModel.contains(crosswalkModel.createResource(mappingPID), RDF.type, MSCR.MAPPING)) {
 	            throw new ResourceNotFoundException(mappingPID);
 	        }
 			
-			return ResponseEntity.ok().body(mappingMapper.mapToMappingDTO(mappingPID, crosswalkModel));
+			return ResponseEntity.ok().body(mappingMapper.mapToMappingDTO(crosswalkDTO.getHandle(), mappingPID, crosswalkModel));
 		} catch (RuntimeException rex) {
 			throw rex;
 		} catch (Exception ex) {
@@ -961,8 +970,12 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping")
 	public ResponseEntity<Object> getMappings(
-			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat) {
-		return getMappings(pid, null, exportFormat); 
+			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat,
+			@RequestParam(name = "includeSource", required = false) String includeSource,			
+			@RequestParam(name = "includeTarget", required = false) String includeTarget			
+			
+			) {
+		return getMappings(pid, null, exportFormat, includeSource, includeTarget); 
 	}
 
 	@Hidden
@@ -971,7 +984,11 @@ public class Crosswalk extends BaseMSCRController {
 	public ResponseEntity<Object> getMappings(
 			@PathVariable String pid, 
 			@PathVariable String suffix, 
-			@RequestParam(name = "exportFormat", required = false) String exportFormat) {
+			@RequestParam(name = "exportFormat", required = false) String exportFormat,
+			@RequestParam(name = "includeSource", required = false) String includeSource,			
+			@RequestParam(name = "includeTarget", required = false) String includeTarget			
+			
+			) {
 		
 		// TODO: check that crosswalk exists
 		if (suffix != null) {
@@ -1021,6 +1038,7 @@ public class Crosswalk extends BaseMSCRController {
 				QuerySolution soln = mapi.next();
 				Resource mappingResource = soln.getResource("mapping");			
 				MappingInfoDTO dto = mappingMapper.mapToMappingDTO(
+						crosswalk.getHandle(),
 						mappingResource.getURI(), 
 						crosswalkModel);
 				mappings.add(dto);
@@ -1055,35 +1073,46 @@ public class Crosswalk extends BaseMSCRController {
 					
 					StringWriter writer = new StringWriter();
 	
+					if(includeSource != null && includeSource.equals("true")) {
+						model.add(jenaService.getSchemaContent(sourceSchemaInfo.getPID()));
+					}
+					if(includeTarget != null && includeTarget.equals("true")) {
+						model.add(jenaService.getSchemaContent(targetSchemaInfo.getPID()));
+					}
 					model.write(writer, "TURTLE");
-					return ResponseEntity.ok(writer.getBuffer().toString());
+					writer.flush();
+					String outputStr = writer.toString();
+					writer.close();
+					return ResponseEntity.ok(outputStr);
 				}
 				else if(exportFormat.equalsIgnoreCase("xslt")) {
 					
-					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.XSD) {
-						String r = xsltGenerator.generateXMLtoXML(mappings,jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalk.getSourceSchema(), jenaService.getSchemaContent(crosswalk.getTargetSchema()), crosswalk.getTargetSchema());
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.XSD || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.XSD) && (targetSchemaInfo.getFormat() == SchemaFormat.XSD || targetSchemaInfo.getOriginalFormat() == SchemaFormat.XSD)) {
+						String r = xsltGenerator.generateXMLtoXML(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
-					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.XSD) {
-						String r = xsltGenerator.generateJSONtoXML(mappings, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.XSD || targetSchemaInfo.getOriginalFormat() == SchemaFormat.XSD)) {
+						String r = xsltGenerator.generateJSONtoXML(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
-					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA) {
-						String r = xsltGenerator.generateJSONtoJSON(mappings,jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalk.getSourceSchema(), jenaService.getSchemaContent(crosswalk.getTargetSchema()), crosswalk.getTargetSchema());
-						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
-					}					
-					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA) {
-						String r = xsltGenerator.generateXMLtoJSON(mappings, jenaService.getSchemaContent(crosswalk.getSourceSchema()), targetSchemaContent, crosswalk.getTargetSchema());
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || targetSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA)) {
+						String r = xsltGenerator.generateJSONtoJSON(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
-
-					if(sourceSchemaInfo.getFormat() == SchemaFormat.XSD && targetSchemaInfo.getFormat() == SchemaFormat.CSV) {
-						String r = xsltGenerator.generateXMLtoCSV(mappings, crosswalkModel);
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.XSD || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.XSD) && (targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || targetSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA)) {
+						String r = xsltGenerator.generateXMLtoJSON(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
-					if(sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA && targetSchemaInfo.getFormat() == SchemaFormat.CSV) {
-						
-						String r = xsltGenerator.generateJSONtoCSV(mappings, crosswalkModel, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.XSD || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.XSD) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {
+						String r = xsltGenerator1.generateXMLtoCSV(mappings, crosswalkModel);
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
+						String r = xsltGenerator1.generateJSONtoCSV(mappings, crosswalkModel, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.CSV || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.CSV) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
+						String r = xsltGenerator.generateCSVtoCSV(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
 					
@@ -1092,17 +1121,27 @@ public class Crosswalk extends BaseMSCRController {
 					
 				}
 				else if(exportFormat.equalsIgnoreCase("rml")) {
-					if(
-						!List.of(SchemaFormat.RDFS, SchemaFormat.SHACL, SchemaFormat.OWL).contains(targetSchemaInfo.getFormat())
-						||
-						!List.of(SchemaFormat.CSV, SchemaFormat.XSD, SchemaFormat.JSONSCHEMA).contains(sourceSchemaInfo.getFormat())
-						) {
-						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RML generator is only available for crosswalk that are between CSV/XSD/JsonSchema and SHACL/RDFS/OWL schemas. Current source schema format " + sourceSchemaInfo.getFormat() + " and target schema format " + targetSchemaInfo.getFormat()); 
+					List<SchemaFormat> acceptedSources = List.of(SchemaFormat.CSV, SchemaFormat.XSD, SchemaFormat.JSONSCHEMA);
+					List<SchemaFormat> acceptedTargets = List.of(SchemaFormat.RDFS, SchemaFormat.SHACL);
+					if(!(
+							(acceptedSources.contains(sourceSchemaInfo.getFormat()) || acceptedSources.contains(sourceSchemaInfo.getOriginalFormat()))
+									&&
+							(acceptedTargets.contains(targetSchemaInfo.getFormat()) || acceptedTargets.contains(targetSchemaInfo.getOriginalFormat()))
+							
+						)) {
+						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "RML generator is only available for crosswalk that are between CSV/XSD/JsonSchema and SHACL/RDFS schemas. Current source schema format " + sourceSchemaInfo.getFormat() + " and target schema format " + targetSchemaInfo.getFormat()); 
 						
 					}
 					Model sourceModel = jenaService.getSchemaContent(crosswalk.getSourceSchema());
 					Model targetModel = jenaService.getSchemaContent(crosswalk.getTargetSchema());
-					Model rmlModel = rmlGenerator.generate(mappings, crosswalkModel, sourceModel, crosswalk.getSourceSchema(), targetModel);
+					Model rmlGeneratorInputModel = ModelFactory.createDefaultModel();
+					rmlGeneratorInputModel.add(crosswalkModel);
+					rmlGeneratorInputModel.add(sourceModel);
+					rmlGeneratorInputModel.add(targetModel);
+					rmlGeneratorInputModel.add(sourceSchemaModel);
+					rmlGeneratorInputModel.add(targetSchemaModel);
+					
+					Model rmlModel = rmlGenerator.generateRMLFromMSCRGraph(rmlGeneratorInputModel, crosswalk.getPID(), crosswalk.getSourceSchema());
 					StringWriter out = new StringWriter();
 					rmlModel.write(out, "TURTLE");
 					return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(out.toString());

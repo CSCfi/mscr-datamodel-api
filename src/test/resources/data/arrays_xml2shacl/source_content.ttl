@@ -1,0 +1,73 @@
+@prefix :      <mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771#> .
+
+<mscr:schema:b2973de1-f9e6-4778-9390-039a86cb0771>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "Person" ;
+        <http://www.w3.org/ns/shacl#closed>
+                true ;
+        <http://www.w3.org/ns/shacl#name>
+                "Person" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-age , :root-Root-lastName , :root-Root-firstName .
+
+:root-Root-age  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.age" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.age" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#description>
+                "Age in years which must be equal to or greater than zero." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#minInclusive>
+                "0"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "age" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-age .
+
+:root-Root-lastName  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.lastName" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.lastName" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The person's last name." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "lastName" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-lastName .
+
+:root-Root-firstName  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.firstName" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.firstName" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#description>
+                "The person's first name." ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "firstName" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-firstName .

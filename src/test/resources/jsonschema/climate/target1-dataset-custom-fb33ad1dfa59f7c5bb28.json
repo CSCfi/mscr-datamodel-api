@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
+    "description": "CMIP6 PID Kernel Information Profile for datasets",
+    "properties": {
+        "records": {
+            "items": {
+                "properties": {
+                    "aggregation_level": {
+                        "const": "DATASET",
+                        "description": "Data object type, dataset or file",
+                        "type": "string"
+                    },
+                    "drs_id": {
+                        "description": "CMIP6 data reference syntax, the dataset's drs_id",
+                        "type": "string"
+                    },
+                    "errata_ids": {
+                        "description": "errata information for dataset",
+                        "type": "string"
+                    },
+                    "fixed_content": {
+                        "const": "TRUE",
+                        "description": "Indicated that content will stay bit-equal, true or false",
+                        "type": "string"
+                    },
+                    "has_parts": {
+                        "description": "dataset has sub datasets, semicolon-separated list, with \"hdl:\" prepended. ",
+                        "type": "string"
+                    },
+                    "hosting_node": {
+                        "description": "original data node of this dataset (max 1), contains host and publication date, so that the most recent one can be used, HTML snippet",
+                        "type": "string"
+                    },
+                    "hs_admin": {
+                        "description": "admin information, JSON-ish",
+                        "type": "string"
+                    },
+                    "replaced_by": {
+                        "description": "handle of following version, pid with \"hdl:\" ",
+                        "type": "string"
+                    },
+                    "replaces": {
+                        "description": "handle of previous version, pid with \"hdl:\"  ",
+                        "type": "string"
+                    },
+                    "replica_node": {
+                        "description": "data node for replicas of this dataset, contains host and publication date, HTML snippet  ",
+                        "type": "string"
+                    },
+                    "unpublished_replicas": {
+                        "description": "data node for unpublished replicas of this dataset, contains host and publication date, HTML snippet",
+                        "type": "string"
+                    },
+                    "url": {
+                        "description": "handle id, landing page URL",
+                        "type": "string"
+                    },
+                    "version_number": {
+                        "description": "dataset version: YYYYMMDD",
+                        "type": "string"
+                    },
+                    "_added_errata_ids": {
+                        "description": "removed errata information, string and timestamp",
+                        "type": "string"
+                    },
+                    "_removed_errata_ids": {
+                        "description": "removed errata information, string and timestamp",
+                        "type": "string"
+                    },
+                    "_removed_hosts": {
+                        "description": "removed data nodes for original datasets, hostname and timestamp",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "URL",
+                    "AGGREGATION_LEVEL",
+                    "FIXED_CONTENT",
+                    "DRS_ID",
+                    "HAS_PARTS",
+                    "VERSION_NUMBER",
+                    "HS_ADMIN"
+                ],
+                "title": "CMIP6_KIP_DATASET",
+                "type": "object"
+            },
+            "title": "records",
+            "type": "array"
+        }
+    }
+}

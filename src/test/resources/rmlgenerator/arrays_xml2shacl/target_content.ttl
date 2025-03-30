@@ -1,0 +1,52 @@
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix shapes: <https://shacl-play.sparna.fr/shapes/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dash:  <http://datashapes.org/dash#> .
+
+<mscr:schema:4b02fd8c-5973-4386-8cfe-9baa10df7284>
+        <http://rdfs.org/ns/void#rootResource>
+                shapes:Thing , shapes:Vegetable .
+
+shapes:Thing_vegetable
+        a            sh:PropertyShape ;
+        sh:class     <http://schema.org/Vegetable> ;
+        sh:name      "vegetable"@en ;
+        sh:nodeKind  sh:IRI ;
+        sh:path      <http://schema.org/vegetable> .
+
+shapes:Thing_fruit  a  sh:PropertyShape ;
+        sh:datatype  xsd:string ;
+        sh:minCount  1 ;
+        sh:name      "fruit"@en ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      <http://schema.org/fruit> .
+
+shapes:Thing  a         sh:NodeShape ;
+        rdfs:label      "Thing"@en ;
+        sh:property     shapes:Thing_vegetable , shapes:Thing_fruit ;
+        sh:targetClass  <http://schema.org/Thing> .
+
+shapes:Vegetable  a     sh:NodeShape ;
+        rdfs:label      "Vegetable"@en ;
+        sh:property     shapes:Vegetable_veggieLike , shapes:Vegetable_veggieName ;
+        sh:targetClass  <http://schema.org/Vegetable> .
+
+shapes:Vegetable_veggieLike
+        a            sh:PropertyShape ;
+        sh:datatype  xsd:boolean ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "veggieLike"@en ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      <http://schema.org/veggieLike> .
+
+shapes:Vegetable_veggieName
+        a            sh:PropertyShape ;
+        sh:datatype  xsd:string ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "veggieName"@en ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      <http://schema.org/name> .

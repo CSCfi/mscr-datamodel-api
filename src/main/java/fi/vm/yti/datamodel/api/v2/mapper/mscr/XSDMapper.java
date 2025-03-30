@@ -79,12 +79,8 @@ public class XSDMapper {
 
 	public SchemaParserResultDTO loadSchema(String filePath) {
 		SchemaParserResultDTO r = new SchemaParserResultDTO();
-
-		//System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-//		        "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");		
 		Properties systemProperties = System.getProperties();
 		systemProperties.remove("javax.xml.parsers.DocumentBuilderFactory");
-//		systemProperties.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.xsltc.trax.TransformerFactoryImpl");
 		System.setProperties(systemProperties);
 		try {
 			XsdParser p = new XsdParser(filePath);
@@ -124,7 +120,7 @@ public class XSDMapper {
 		int index = 0;
 		for(XsdElement e: list) {
 			Set<Object> handledTypes = new HashSet<Object>();
-			handleElement(e, findSchema(e), jroot, handledTypes, index, 0);
+			handleElement(e, findSchema(e), jroot, handledTypes, index, 0, "");
 			index++;
 		};
 
@@ -145,15 +141,20 @@ public class XSDMapper {
 		}
 	}
 
-	void handleElement(XsdElement e, XsdSchema schema, ObjectNode parentObj, Set<Object> handledTypes, int index, int depth) {
+	void handleElement(XsdElement e, XsdSchema schema, ObjectNode parentObj, Set<Object> handledTypes, int index, int depth, String path) {
 		if (!handledTypes.contains(e)) {
 			ObjectNode obj = m.createObjectNode();
 			obj.put("order", index);
 			obj.put("depth", depth);
-				
+
+			
 			String elementNamespace = null;
 			String elementName = e.getName();
-			if (schema != null) {				
+			String newPath = path + "/" + elementName;
+			obj.put("instancePath", newPath);
+			obj.put("schemaPath", newPath);
+			
+ 			if (schema != null) {				
 				if (e.getXsdSchema() != null && e.getXsdSchema().getTargetNamespace() != null) {
 					elementNamespace = e.getXsdSchema().getTargetNamespace();
 				}				
@@ -170,7 +171,7 @@ public class XSDMapper {
 				handleSimpleType(e.getXsdSimpleType(), obj);				
 			} else if (e.getXsdComplexType() != null) {
 				handledTypes.add(e);
-				handleComplexType(schema, e.getXsdComplexType(), obj, handledTypes, depth);
+				handleComplexType(schema, e.getXsdComplexType(), obj, handledTypes, depth, newPath);
 			} else {
 				// just an element
 				obj.put("type", "string");
@@ -180,6 +181,8 @@ public class XSDMapper {
 				obj.put("namespace", elementNamespace);
 			}			
 			obj.put("title", e.getName());
+			
+			
 			handleCardinalities(e, obj);
 			ObjectNode properties = (ObjectNode)parentObj.get("properties");
 			properties.set(elementName, obj);
@@ -534,10 +537,12 @@ public class XSDMapper {
 		}
 	}
 
-	void handleAttribute(XsdAttribute attr, ObjectNode props) {
+	void handleAttribute(XsdAttribute attr, ObjectNode props, String path) {
 		ObjectNode obj = m.createObjectNode();
 		obj.put("sourceType", "attribute");
 		obj.put("name", attr.getName());
+		obj.put("schemaPath", path + "/" + attr.getName());
+		obj.put("instancePath", path + "/@" + attr.getName());
 		if(attr.getDefaultValue() != null) {
 			obj.put("default", attr.getDefaultValue());	
 		}
@@ -565,7 +570,7 @@ public class XSDMapper {
 		
 	}
 	void handleComplexType(XsdSchema schema, XsdComplexType e, ObjectNode obj,
-			Set<Object> handledTypes, int depth) {
+			Set<Object> handledTypes, int depth, String path) {
 		String ctypeName = e.getName();
 		if (!"".equals(ctypeName) && !handledTypes.contains(ctypeName)) {
 			obj.put("type", "object");
@@ -591,7 +596,7 @@ public class XSDMapper {
 						}
 						List<XsdAttribute> attrs = ext.getXsdAttributes().toList();
 						for(XsdAttribute attr : attrs) {
-							handleAttribute(attr, properties);
+							handleAttribute(attr, properties, path);
 						}
 					}
 					else {
@@ -606,7 +611,7 @@ public class XSDMapper {
 						}						
 					}
 					if (ext.getBaseAsComplexType() != null) {
-						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth);
+						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth, path);
 					}
 					
 
@@ -619,11 +624,11 @@ public class XSDMapper {
 				if (c.getXsdExtension() != null) {
 					XsdExtension ext = c.getXsdExtension();
 					if (ext.getBaseAsComplexType() != null) {
-						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth);
+						handleComplexType(schema, ext.getBaseAsComplexType(), obj, handledTypes, depth, path);
 					}
 					if (ext.getChildAsSequence() != null) {
 
-						handleMultipleElements(schema, ext.getChildAsSequence(), obj, handledTypes, depth);
+						handleMultipleElements(schema, ext.getChildAsSequence(), obj, handledTypes, depth, path);
 					}
 				}
 
@@ -631,24 +636,24 @@ public class XSDMapper {
 				List<XsdAttribute> attrs =  e.getAllXsdAttributes().toList();
 				for(int ia = 0; ia < attrs.size(); ia++) {
 					XsdAttribute attr = attrs.get(ia);
-					handleAttribute(attr, properties);
+					handleAttribute(attr, properties, path);
 				}
 			}			
 			try {
 				XsdSequence seq = e.getChildAsSequence();
-				handleMultipleElements(schema, seq, obj, handledTypes, depth);
+				handleMultipleElements(schema, seq, obj, handledTypes, depth, path);
 			} catch (Exception ex) {
 
 			}
 			try {
 				XsdAll a = e.getChildAsAll();
-				handleMultipleElements(schema, a, obj, handledTypes, depth);
+				handleMultipleElements(schema, a, obj, handledTypes, depth, path);
 			} catch (Exception ex) {
 
 			}
 			try {
 				XsdChoice c = e.getChildAsChoice();
-				handleMultipleElements(schema, c, obj, handledTypes, depth);
+				handleMultipleElements(schema, c, obj, handledTypes, depth, path);
 			} catch (Exception ex) {
 
 			}
@@ -656,7 +661,7 @@ public class XSDMapper {
 	}
 
 	private void handleMultipleElements(XsdSchema schema, XsdMultipleElements c, ObjectNode obj,
-			Set<Object> handledTypes, int depth) {
+			Set<Object> handledTypes, int depth, String path) {
 		List<XsdAbstractElement> aes = c.getXsdElements().collect(Collectors.toList());
 		int index = 0;
 		for (XsdAbstractElement ae : aes) {
@@ -665,18 +670,18 @@ public class XSDMapper {
 				XsdSchema newSchema = findSchema(ae);	
 				
 				if (newSchema != null) {
-					handleElement((XsdElement) ae, newSchema, obj, handledTypes, index, depth + 1);
+					handleElement((XsdElement) ae, newSchema, obj, handledTypes, index, depth + 1, path);
 				} else {
-					handleElement((XsdElement) ae, schema, obj, handledTypes, index, depth + 1);
+					handleElement((XsdElement) ae, schema, obj, handledTypes, index, depth + 1, path);
 				}
 			}
 			else if (ae instanceof XsdMultipleElements) {
-				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes, depth);
+				handleMultipleElements(schema, (XsdMultipleElements) ae, obj, handledTypes, depth, path);
 			}
 			
 			else if (ae instanceof XsdGroup) {
 				XsdGroup group = (XsdGroup)ae;
-				handleMultipleElements(schema, group.getChildElement(), obj, handledTypes, depth);
+				handleMultipleElements(schema, group.getChildElement(), obj, handledTypes, depth, path);
 			}
 			index++;
 		}

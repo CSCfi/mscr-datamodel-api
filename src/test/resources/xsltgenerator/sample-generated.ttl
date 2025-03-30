@@ -1,0 +1,631 @@
+@prefix :      <mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771#> .
+
+<mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "item" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://www.w3.org/ns/shacl#name>
+                "item" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-shipDate , :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-USPrice , :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-quantity , :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-productName , :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-partNum .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-shipDate
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                3 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items/item/shipDate" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items/item/shipDate" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                0 ;
+        <http://www.w3.org/ns/shacl#name>
+                "shipDate" ;
+        <http://www.w3.org/ns/shacl#order>
+                3 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-shipDate ;
+        <http://www.w3.org/ns/shacl#pattern>
+                "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$" .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-USPrice
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                3 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items/item/USPrice" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items/item/USPrice" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "USPrice" ;
+        <http://www.w3.org/ns/shacl#order>
+                2 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-USPrice .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-quantity
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                3 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items/item/quantity" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items/item/quantity" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minExclusive>
+                0 ;
+        <http://www.w3.org/ns/shacl#minInclusive>
+                0 ;
+        <http://www.w3.org/ns/shacl#name>
+                "quantity" ;
+        <http://www.w3.org/ns/shacl#order>
+                1 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-quantity .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-productName
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                3 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items/item/productName" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items/item/productName" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "productName" ;
+        <http://www.w3.org/ns/shacl#order>
+                0 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-productName .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-partNum
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items/item/@partNum" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items/item/partNum" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#sourceType>
+                <http://uri.suomi.fi/datamodel/ns/mscr#sourceType/Attribute> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "partNum" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item-partNum ;
+        <http://www.w3.org/ns/shacl#pattern>
+                "\\d{3}-[A-Z]{2}" .
+
+:root-Root-purchaseOrder
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                0 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "purchaseOrder" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-purchaseOrder-PurchaseOrder ;
+        <http://www.w3.org/ns/shacl#order>
+                0 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder .
+
+:root-Root-purchaseOrder-PurchaseOrder
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "purchaseOrder" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://www.w3.org/ns/shacl#name>
+                "purchaseOrder" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo , :root-Root-purchaseOrder-PurchaseOrder-items , :root-Root-purchaseOrder-PurchaseOrder-shipTo , :root-Root-purchaseOrder-PurchaseOrder-orderDate .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "billTo" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://www.w3.org/ns/shacl#name>
+                "billTo" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-zip , :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-street , :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-state , :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-name , :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-country , :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-city .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-zip
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo/zip" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo/zip" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "zip" ;
+        <http://www.w3.org/ns/shacl#order>
+                4 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-zip .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-street
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo/street" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo/street" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "street" ;
+        <http://www.w3.org/ns/shacl#order>
+                1 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-street .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-state
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo/state" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo/state" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "state" ;
+        <http://www.w3.org/ns/shacl#order>
+                3 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-state .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-name
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo/name" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo/name" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#order>
+                0 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-name .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-country
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo/@country" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo/country" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#sourceType>
+                <http://uri.suomi.fi/datamodel/ns/mscr#sourceType/Attribute> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "country" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-country .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-city
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo/city" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo/city" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "city" ;
+        <http://www.w3.org/ns/shacl#order>
+                2 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo-city .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-zip
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo/zip" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo/zip" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "zip" ;
+        <http://www.w3.org/ns/shacl#order>
+                4 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-zip .
+
+:root-Root-purchaseOrder-PurchaseOrder-billTo
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                1 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/billTo" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/billTo" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "billTo" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo-BillTo ;
+        <http://www.w3.org/ns/shacl#order>
+                1 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-billTo .
+
+:root-Root-purchaseOrder-PurchaseOrder-items
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                1 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "items" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items ;
+        <http://www.w3.org/ns/shacl#order>
+                2 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "items" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://www.w3.org/ns/shacl#name>
+                "items" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-state
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo/state" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo/state" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "state" ;
+        <http://www.w3.org/ns/shacl#order>
+                3 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-state .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-street
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo/street" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo/street" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "street" ;
+        <http://www.w3.org/ns/shacl#order>
+                1 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-street .
+
+:root-Root-purchaseOrder-PurchaseOrder-items-Items-item
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/items/item" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/items/item" ;
+        <http://www.w3.org/ns/shacl#minCount>
+                0 ;
+        <http://www.w3.org/ns/shacl#name>
+                "item" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item-Item ;
+        <http://www.w3.org/ns/shacl#order>
+                0 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-items-Items-item .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-purchaseOrder .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                1 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "shipTo" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo ;
+        <http://www.w3.org/ns/shacl#order>
+                0 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "shipTo" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://www.w3.org/ns/shacl#name>
+                "shipTo" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-zip , :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-state , :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-street , :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-name , :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-country , :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-city .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-name
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo/name" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo/name" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#order>
+                0 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-name .
+
+:root-Root-purchaseOrder-PurchaseOrder-orderDate
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/@orderDate" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/orderDate" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#sourceType>
+                <http://uri.suomi.fi/datamodel/ns/mscr#sourceType/Attribute> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "orderDate" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-orderDate ;
+        <http://www.w3.org/ns/shacl#pattern>
+                "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$" .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-country
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo/@country" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo/country" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#sourceType>
+                <http://uri.suomi.fi/datamodel/ns/mscr#sourceType/Attribute> ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "country" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-country .
+
+:root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-city
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#depth>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "/purchaseOrder/shipTo/city" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
+                <http://tempuri.org/po.xsd#> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "/purchaseOrder/shipTo/city" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "city" ;
+        <http://www.w3.org/ns/shacl#order>
+                2 ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-purchaseOrder-PurchaseOrder-shipTo-ShipTo-city .

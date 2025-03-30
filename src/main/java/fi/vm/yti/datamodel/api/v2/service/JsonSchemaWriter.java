@@ -235,7 +235,8 @@ public class JsonSchemaWriter {
 				while (results.hasNext()) {
 					QuerySolution soln = results.next();
 					if (soln.contains("root")) {
-						roots.add(soln.getResource("root").toString());
+						String root = soln.getResource("root").toString();
+						roots.add(root);
 					}
 
 				}
@@ -244,13 +245,14 @@ public class JsonSchemaWriter {
 		return roots;
 	}
 
-	private void handleProperties(Resource node, Model model, JsonObjectBuilder properties, JsonObjectBuilder definitions) {
+	private void handleProperties(String pid, Resource node, Model model, JsonObjectBuilder properties, JsonObjectBuilder definitions) {
 		String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 				+ "PREFIX mscr: <http://uri.suomi.fi/datamodel/ns/mscr#>\n"
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
 				+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
 				+ "PREFIX dcterms: <http://purl.org/dc/terms/>\n"
 				+ "PREFIX sh: <http://www.w3.org/ns/shacl#>\n"
+				+ "PREFIX : <" + pid + "#>\n"
 				+ "select ?prop\n"
 				+ "where {\n"
 				+ " <" + node.getURI() + "> sh:property ?prop .\n"
@@ -282,7 +284,7 @@ public class JsonSchemaWriter {
 				String pnamespace = propRes.getProperty(MSCR.namespace) != null ? propRes.getProperty(MSCR.namespace).getObject().asResource().getURI(): null;
 				Integer pmaxCount = propRes.getProperty(SH.maxCount) != null && !propRes.getProperty(SH.maxCount).getLiteral().getDatatypeURI().equals("http://www.w3.org/2001/XMLSchema#string") ? propRes.getProperty(SH.maxCount).getInt() : null;
 				Integer pminCount = propRes.getProperty(SH.minCount) != null ? propRes.getProperty(SH.minCount).getInt() : null;
-				String datatype = propRes.getProperty(SH.datatype).getResource().getURI();
+				String datatype = propRes.getProperty(SH.datatype) != null ? propRes.getProperty(SH.datatype).getResource().getURI() : null;
 				prop.add("qname", pqname);
 				if (pmaxCount != null) {
 					prop.add("maxCount", ""+pmaxCount);
@@ -293,12 +295,15 @@ public class JsonSchemaWriter {
 				if(pnamespace != null) {
 					prop.add("namespace", pnamespace);
 				}
-				prop.add("@type", datatype);
-				String jsonDatatype = DATATYPE_MAP.get(datatype);
-				if (jsonDatatype == null) {
-					jsonDatatype = getDTRDatatype(datatype);
+				if(datatype != null) {
+					prop.add("@type", datatype);
+					String jsonDatatype = DATATYPE_MAP.get(datatype);
+					if (jsonDatatype == null) {
+						jsonDatatype = getDTRDatatype(datatype);
+					}
+					prop.add("type", jsonDatatype);
+					
 				}
-				prop.add("type", jsonDatatype);
 
 				if(propRes.getProperty(MSCR.sourceType) !=null) {
 					prop.add("sourceType", propRes.getProperty(MSCR.sourceType).getObject().asResource().getURI());
@@ -323,6 +328,10 @@ public class JsonSchemaWriter {
 						valuesList.add(_value.asLiteral().getString());
 					}
 					prop.add("valuesIn", Json.createArrayBuilder(valuesList).build());
+				}
+				
+				if(propRes.hasProperty(MSCR.valuesFrom)) {
+					prop.add("valuesIn", propRes.getProperty(MSCR.valuesFrom).getResource().getURI());
 				}
 				
 				JsonObject propObj = prop.build();
@@ -367,13 +376,21 @@ public class JsonSchemaWriter {
 			
 			JsonObjectBuilder properties = Json.createObjectBuilder();
 			Resource node = objectPropRes.getPropertyResourceValue(SH.node);
-			handleProperties(node, model, properties, definitions);
+			handleProperties(modelID, node, model, properties, definitions);
 			
 			def.add("properties", properties.build());
 			definitions.add(objectPropRes.getURI().replace("/", "-"), def);
 		}
-		// add root last		
-		Resource rootResource = model.getResource(modelID + "#root/Root");
+		// add root last
+		Resource rootResource;
+		if(schemaFormat == SchemaFormat.JSONSCHEMA || schemaFormat == SchemaFormat.XSD) {
+			rootResource = model.getResource(modelID + "#root-Root");
+		}
+		else {
+			rootResource = model.getResource(modelID + "#root");
+		}
+		 		
+		
 		JsonObjectBuilder rootProperties = Json.createObjectBuilder();
 		/*
 		if(schemaFormat == SchemaFormat.CSV) {
@@ -401,13 +418,19 @@ public class JsonSchemaWriter {
 		if(rootResource.getProperty(SH.description) != null) {
 			rootDef.add("description", rootResource.getProperty(SH.description).getString());	
 		}
-		handleProperties(rootResource, model, rootProperties, definitions);
+		handleProperties(modelID, rootResource, model, rootProperties, definitions);
 		rootDef.add("properties", rootProperties.build());
 		if(rootResource.getProperty(SH.maxCount) != null) {
 			rootDef.add("maxCount", ""+rootResource.getProperty(SH.maxCount).getInt());
 		}
 		
-		definitions.add(modelID + "#root-Root", rootDef.build());
+		if(schemaFormat == SchemaFormat.JSONSCHEMA || schemaFormat == SchemaFormat.XSD) {
+			definitions.add(modelID + "#root-Root", rootDef.build());
+		}
+		else {
+			definitions.add(modelID + "#root", rootDef.build());	
+		}
+		
 		return definitions;
 
 	}
@@ -550,7 +573,7 @@ public class JsonSchemaWriter {
 			schema.add("type", "object");
 			if (definitionsObj != null) {
 				String rootDefinitionCandidate = roots.get(0);
-				String rootDefinition = rootDefinitionCandidate.replace("/", "-");
+				String rootDefinition = rootDefinitionCandidate;
 				// String lastPart =
 				// rootDefinitionCandidate.substring(rootDefinitionCandidate.lastIndexOf("/")+1);
 				// if(lastPart.equals("Root")) {
@@ -585,8 +608,10 @@ public class JsonSchemaWriter {
 					
 				}
 				else {
+					
 					properties.add(rootDefinition, rootObj);
-					schema.add("properties", properties.build());
+					JsonObject propertiesObj = properties.build();
+					schema.add("properties", propertiesObj);
 					
 				}
 				
@@ -1029,19 +1054,21 @@ public class JsonSchemaWriter {
 						if(typeQName != null) {
 							qname = typeQName;
 						}
-						if(title == null || "".equals(title)) {
-							if(typeQName != null) {
-								title = typeQName;	
-							}
-							else {
-								title = typeURI;
-							}
-							 
+						else {
+							qname = typeURI;
+						}
+						// check for rdfs:label - what else
+						if(typeNode.asResource().hasProperty(RDFS.label)) {
+							titles = MapperUtils.localizedPropertyToMap(typeNode.asResource(), RDFS.label);
+							title = titles.get("en");
+						}
+						else {
+							title = qname;
 						}
 						
 					}
 					
-
+					
 				}
 				//
 				shapeDef.put("properties", shapeProps);
@@ -1074,7 +1101,15 @@ public class JsonSchemaWriter {
 			Map<String, Object> psProps = new LinkedHashMap<String, Object>();
 			// System.out.println(ps.getPropertyResourceValue(SH.path).getLocalName());
 			// System.out.println(model.getNsURIPrefix(ps.getPropertyResourceValue(SH.path).getNameSpace()));
-			psProps.put("qname", ps.getPropertyResourceValue(SH.path).getURI());
+			String pathURI = ps.getPropertyResourceValue(SH.path).getURI();
+			String propQName = model.qnameFor(pathURI);
+			if(propQName != null ) {
+				psProps.put("qname", propQName);	
+			}
+			else {
+				psProps.put("qname", pathURI);
+			}
+			psProps.put("uri", pathURI);
 
 			Map<String, String> titles = MapperUtils.localizedPropertyToMap(ps, SH.name);
 			Map<String, String> descs = MapperUtils.localizedPropertyToMap(ps, SH.description);
@@ -1230,5 +1265,164 @@ public class JsonSchemaWriter {
 
 		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
 	}
+	
+	private String getTitleValue(Resource s, Model model) {
+		Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+		
+		String uri = s.getURI();
+		String qName = null;
+		if(uri == null) {
+			uri = s.getId().toString();
+		}
+		else {
+			qName = model.qnameFor(uri);
+		}
+		
+		
+		if(titles.get("en") != null) {
+			return titles.get("en");
+		}
+		else {
+			if(titles.get("eng") != null) {
+				return titles.get("eng");
+			}
+			else {
+				if(qName != null) {
+					return qName;	
+				}
+				else {
+					if(uri.contains("#")) {
+						return uri.substring(uri.lastIndexOf("#") + 1);
+					}
+					else {
+						return uri;
+					}
+				}
+				
+			}
+			
+		}
+
+	}
+
+
+	public String owlVocabulary(String pid, Model model, String string) throws Exception {
+		Map<String, Object> definitions = new HashMap<String, Object>();
+
+		Map<String, Object> rootDefinition = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new TreeMap<String, Object>();
+		rootDefinition.put("properties", rootProperties);
+
+		Map<String, Object> schema = new HashMap<String, Object>();
+		schema.put("definitions", definitions);
+		schema.put("$schema", "http://json-schema.org/draft-04/schema#");
+		schema.put("type", "object");
+
+		schema.put("properties", rootProperties);
+
+		Map<String, Object> dataProperties = new TreeMap<String, Object>();
+		Map<String, Object> objectProperties = new TreeMap<String, Object>();
+		Map<String, Object> classes = new TreeMap<String, Object>();
+		
+		model.listSubjectsWithProperty(RDF.type,  OWL.Class).forEach(obj -> {
+			Resource s = (Resource) obj;
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, Object> classDef = new HashMap<String, Object>();
+
+			String uri = s.getURI();
+			String qName = null;
+			if(uri == null) {
+				uri = s.getId().toString();
+			}else {
+				qName = model.qnameFor(uri);	
+			}
+			
+			
+			classDef.put("title", getTitleValue(s, model));
+			classDef.put("description", descs.get("en"));
+			classDef.put("qname", qName);
+			classDef.put("@id", uri);
+			
+			classDef.put("type", "object");
+			classDef.put("@type", uri);			
+			
+			classes.put(uri, classDef);
+			definitions.put(uri, classDef);
+			
+		});
+
+		model.listSubjectsWithProperty(RDF.type,  OWL.DatatypeProperty).forEach(obj -> {
+			Resource s = (Resource) obj;
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, Object> classDef = new HashMap<String, Object>();
+
+			String uri = s.getURI();
+			String qName = model.qnameFor(uri);
+			
+			classDef.put("title", getTitleValue(s, model));
+			classDef.put("description", descs.get("en"));
+			classDef.put("qname", qName);
+			classDef.put("@id", uri);			
+			classDef.put("type", "object");
+			
+			dataProperties.put(uri, classDef);
+			definitions.put(uri, classDef);
+
+		});
+
+		model.listSubjectsWithProperty(RDF.type,  OWL.ObjectProperty).forEach(obj -> {
+			Resource s = (Resource) obj;
+			Map<String, String> titles = MapperUtils.localizedPropertyToMap(s, RDFS.label);
+			Map<String, String> descs = MapperUtils.localizedPropertyToMap(s, RDFS.comment);
+			Map<String, Object> classDef = new HashMap<String, Object>();
+
+			String uri = s.getURI();
+			String qName = model.qnameFor(uri);
+			
+			classDef.put("title", getTitleValue(s, model));
+			classDef.put("description", descs.get("en"));
+			classDef.put("qname", qName);
+			classDef.put("@id", uri);
+			
+			classDef.put("type", "object");
+			
+			objectProperties.put(uri, classDef);			
+			definitions.put(uri, classDef);
+
+		});
+
+		
+		Map<String, Object> classesProp = new LinkedHashMap();
+		classesProp.put("title", "Classes");
+		classesProp.put("type", "object");
+		classesProp.put("qname", "mscr:classes");
+		classesProp.put("@id", "mscr:classes");
+		classesProp.put("properties", classes);		
+		rootProperties.put("mscr:classes", classesProp);
+		definitions.put("mscr:classes", classesProp);
+		
+		Map<String, Object> dataProps = new LinkedHashMap();
+		dataProps.put("title", "Data properties");
+		dataProps.put("type", "object");
+		dataProps.put("qname", "mscr:dataProps");
+		dataProps.put("@id", "mscr:dataProps");
+		dataProps.put("properties", dataProperties);		
+		rootProperties.put("mscr:dataProps", dataProps);
+		definitions.put("mscr:dataProps", dataProps);
+		
+		Map<String, Object> objectProps = new LinkedHashMap();
+		objectProps.put("title", "Object properties");
+		objectProps.put("type", "object");
+		objectProps.put("qname", "mscr:objectProps");
+		objectProps.put("@id", "mscr:objectProps");
+		objectProps.put("properties", objectProperties);		
+		rootProperties.put("mscr:objectProps", objectProps);
+		definitions.put("mscr:objectProps", objectProps);
+		
+		
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(schema);
+	}	
 
 }

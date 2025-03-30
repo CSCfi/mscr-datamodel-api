@@ -1,120 +1,196 @@
 @prefix dcap:  <http://purl.org/ws-mmi-dc/terms/> .
 @prefix iow:   <http://uri.suomi.fi/datamodel/ns/iow/> .
-@prefix pid1e20ca4266ce4233a3eeb8f61f6e5571: <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#> .
+@prefix :      <mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62#> .
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571>
+<mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62>
         a                           <http://uri.suomi.fi/datamodel/ns/mscr#Schema> ;
-        rdfs:comment                "string"@en ;
-        rdfs:label                  "string2"@en ;
-        dcterms:contributor         <urn:uuid:7d3a3c00-5a6b-489b-a3ed-63bb58c26a63> ;
-        dcterms:created             "2023-11-09T06:57:27.766Z"^^xsd:dateTime ;
-        dcterms:identifier          "urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571" ;
+        rdfs:label                  "simple nested"@en ;
+        dcterms:created             "2025-03-25T20:16:57.388Z"^^xsd:dateTime ;
+        dcterms:identifier          "mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62" ;
         dcterms:language            "en" ;
-        dcterms:modified            "2023-11-09T06:57:27.766Z"^^xsd:dateTime ;
-        dcap:preferredXMLNamespace  <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571> ;
+        dcterms:modified            "2025-03-25T20:16:57.388Z"^^xsd:dateTime ;
+        dcap:preferredXMLNamespace  <mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62> ;
         dcap:preferredXMLNamespacePrefix
-                "urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571" ;
-        <http://rdfs.org/ns/void#rootResource>
-                <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root> ;
-        iow:contentModified         "2023-11-09T06:57:27.761Z"^^xsd:dateTime ;
+                "mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62" ;
+        iow:contentModified         "2025-03-25T20:16:57.387Z"^^xsd:dateTime ;
         iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
         iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
+        iow:stateModified           "2025-03-25T20:16:57.387Z"^^xsd:dateTime ;
         <http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>
-                <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571> ;
+                <mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62> ;
         <http://uri.suomi.fi/datamodel/ns/mscr#format>
                 "JSONSCHEMA" ;
         <http://uri.suomi.fi/datamodel/ns/mscr#namespace>
                 <http://test.com> ;
         <http://uri.suomi.fi/datamodel/ns/mscr#owner>
-                "7d3a3c00-5a6b-489b-a3ed-63bb58c26a63" ;
+                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
         <http://uri.suomi.fi/datamodel/ns/mscr#state>
                 "DRAFT" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#subType>
+                "DATA_SCHEMA" ;
         <http://uri.suomi.fi/datamodel/ns/mscr#versionLabel>
                 "1" ;
         <http://uri.suomi.fi/datamodel/ns/mscr#visibility>
                 "PRIVATE" ;
         owl:versionInfo             "DRAFT" .
+        
+@prefix :      <mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62#> .
 
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/house_number>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:DatatypeProperty ;
-        sh:datatype   xsd:string ;
-        sh:maxCount   1 ;
-        sh:name       "house_number" ;
-        sh:path       <mscr:root/Root/address/Address/house_number> .
+<mscr:schema:a47357ec-e3ee-419c-a709-2490562e8d62>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
 
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:ObjectProperty ;
-        sh:name       "Address of the person" ;
-        sh:node       <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address> ;
-        sh:path       <mscr:root/Root/address> .
+:root-Root-address-Address-city
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.address.city" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.address.city" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "city" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-address-Address-city-City ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-address-Address-city .
 
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address>
-        a            sh:NodeShape ;
-        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
-                "address" ;
-        sh:name      "address" ;
-        sh:property  <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/house_number> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/street> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City/population>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:DatatypeProperty ;
-        sh:datatype   xsd:integer ;
-        sh:maxCount   1 ;
-        sh:name       "population" ;
-        sh:path       <mscr:root/Root/address/Address/city/City/population> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root>
-        a                    sh:NodeShape ;
-        dcterms:description  "simple schema with one object." ;
-        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
-                "root" ;
-        sh:closed            true ;
-        sh:name              "root" ;
-        sh:property          <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/lastName> , <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/firstName> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/lastName>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:DatatypeProperty ;
-        sh:datatype   xsd:string ;
-        sh:maxCount   1 ;
-        sh:name       "lastName" ;
-        sh:path       <mscr:root/Root/lastName> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/firstName>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:DatatypeProperty ;
-        sh:datatype   xsd:string ;
-        sh:maxCount   1 ;
-        sh:name       "firstName" ;
-        sh:path       <mscr:root/Root/firstName> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:ObjectProperty ;
-        sh:name       "city" ;
-        sh:node       <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City> ;
-        sh:path       <mscr:root/Root/address/Address/city> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/street>
-        a             sh:PropertyShape ;
-        dcterms:type  owl:DatatypeProperty ;
-        sh:datatype   xsd:string ;
-        sh:maxCount   1 ;
-        sh:name       "street" ;
-        sh:path       <mscr:root/Root/address/Address/street> .
-
-<urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City>
-        a            sh:NodeShape ;
+:root-Root-address-Address-city-City
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
         <http://uri.suomi.fi/datamodel/ns/mscr#localName>
                 "city" ;
-        sh:name      "city" ;
-        sh:property  <urn:IAMNOTAPID:1e20ca42-66ce-4233-a3ee-b8f61f6e5571#root/Root/address/Address/city/City/population> .
+        <http://www.w3.org/ns/shacl#name>
+                "city" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-address-Address-city-City-population .
+
+:root-Root-address-Address-house_number
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.address.house_number" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.address.house_number" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "house_number" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-address-Address-house_number .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#closed>
+                true ;
+        <http://www.w3.org/ns/shacl#description>
+                "simple schema with one object." ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-address , :root-Root-lastName , :root-Root-firstName .
+
+:root-Root-address  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.address" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.address" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "Address of the person" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-address-Address ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-address .
+
+:root-Root-lastName  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.lastName" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.lastName" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "lastName" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-lastName .
+
+:root-Root-firstName  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.firstName" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.firstName" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "firstName" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-firstName .
+
+:root-Root-address-Address-street
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.address.street" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.address.street" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "street" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-address-Address-street .
+
+:root-Root-address-Address
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "Address of the person" ;
+        <http://www.w3.org/ns/shacl#name>
+                "Address of the person" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-address-Address-city , :root-Root-address-Address-house_number , :root-Root-address-Address-street .
+
+:root-Root-address-Address-city-City-population
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.address.city.population" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.address.city.population" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#integer> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "population" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-address-Address-city-City-population .        
