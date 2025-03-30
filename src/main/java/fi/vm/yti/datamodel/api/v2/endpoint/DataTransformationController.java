@@ -381,6 +381,7 @@ public class DataTransformationController {
 			}
 			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
 				xslt = xsltGenerator.generateCSVtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
 			}
 			
 			/*
