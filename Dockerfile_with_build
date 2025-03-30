@@ -1,6 +1,6 @@
 #Build stage
 
-FROM image-registry.apps.2.rahti.csc.fi/mscr-test/gradle:jdk17-alpine AS BUILD
+FROM gradle:jdk17-alpine AS BUILD
 COPY --chown=gradle:gradle . /home/gradle
 COPY build.gradle settings.gradle gradlew .
 COPY src .
