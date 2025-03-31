@@ -91,6 +91,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -970,18 +971,20 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping")
 	public ResponseEntity<Object> getMappings(
+			final HttpServletResponse response,
 			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat,
 			@RequestParam(name = "includeSource", required = false) String includeSource,			
 			@RequestParam(name = "includeTarget", required = false) String includeTarget			
 			
 			) {
-		return getMappings(pid, null, exportFormat, includeSource, includeTarget); 
+		return getMappings(response, pid, null, exportFormat, includeSource, includeTarget); 
 	}
 
 	@Hidden
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/{suffix}/mapping")
 	public ResponseEntity<Object> getMappings(
+			final HttpServletResponse response,
 			@PathVariable String pid, 
 			@PathVariable String suffix, 
 			@RequestParam(name = "exportFormat", required = false) String exportFormat,
@@ -1083,6 +1086,7 @@ public class Crosswalk extends BaseMSCRController {
 					writer.flush();
 					String outputStr = writer.toString();
 					writer.close();
+					response.setContentType("text/turtle");
 					return ResponseEntity.ok(outputStr);
 				}
 				else if(exportFormat.equalsIgnoreCase("xslt")) {
