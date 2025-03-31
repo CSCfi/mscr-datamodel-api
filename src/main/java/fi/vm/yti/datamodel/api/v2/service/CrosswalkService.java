@@ -1,6 +1,7 @@
 package fi.vm.yti.datamodel.api.v2.service;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -19,10 +20,17 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVReaderHeaderAwareBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.CSVWriterBuilder;
+import com.opencsv.ICSVWriter;
 
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
+import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
 
 @Service
@@ -115,6 +123,75 @@ public class CrosswalkService {
                        
 		}	
 		return m;
+	}
+
+	public String exportAsSSSOM(CrosswalkInfoDTO crosswalk, List<MappingInfoDTO> mappings, SchemaInfoDTO sourceSchemaInfo,
+			SchemaInfoDTO targetSchemaInfo) throws Exception {
+		// generate header 
+		String header =
+"""
+#curie_map:
+#  skos: http://www.w3.org/2004/02/skos/core#
+#mapping_set_id: %s
+#mapping_set_description: %s
+#mapping_tool: MSCR
+
+#license: %s
+#mapping_date: %s
+""".formatted(
+			crosswalk.getHandle() != null ? crosswalk.getHandle() : crosswalk.getPID(),
+			crosswalk.getLabel().get("en") + "." + crosswalk.getDescription().get("en"),
+			"",
+			crosswalk.getCreated()				
+		);
+		
+		try(StringWriter strWriter = new StringWriter();ICSVWriter writer = new CSVWriterBuilder(strWriter).withSeparator('\t').build() ) {
+			writer.writeNext(new String[] { "subject_id", "subject_label", "subject_type", "predicate_id", "object_id", "object_label", "object_type", "mapping_justification", "confidence", "comment"});
+			for(MappingInfoDTO mapping : mappings) {
+				
+				for(NodeInfo sourceNode : mapping.getSource()) {
+					for(NodeInfo targetNode: mapping.getTarget()) {
+						String subjectId = "";
+						String subjectType = "";
+						String objectId = "";
+						String objectType = "";
+						if(sourceSchemaInfo.getFormat() == SchemaFormat.ENUM) {
+							subjectType = "rdfs literal";							
+						}
+						else {
+							subjectId = sourceNode.getUri();
+						}
+						if(targetSchemaInfo.getFormat() == SchemaFormat.ENUM) {
+							objectType = "rdfs literal";							
+						}
+						else {
+							objectId = sourceNode.getUri();
+						}
+						writer.writeNext(new String[] { 
+								subjectId,
+								sourceNode.getLabel(),
+								subjectType,
+								mapping.getPredicate(),
+								objectId,
+								targetNode.getLabel(),
+								objectType,
+								mapping.getJustification(),
+								mapping.getConfidence(),
+								mapping.getNotes()});
+
+					}
+				}
+				strWriter.flush();
+				String content = strWriter.toString();
+				return header + content;
+				
+			}
+			return "";
+
+		}
+		
+		
+		
 	}
 	
 }

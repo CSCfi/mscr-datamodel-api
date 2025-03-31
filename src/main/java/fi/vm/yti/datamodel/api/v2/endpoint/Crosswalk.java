@@ -1159,6 +1159,19 @@ public class Crosswalk extends BaseMSCRController {
 						return ResponseEntity.status(200).contentType(MediaType.TEXT_PLAIN).body(r);						
 					}					
 				}
+				else if(exportFormat.equalsIgnoreCase("sssom")) {
+					Set<SchemaFormat> acceptedFormat = Set.of(SchemaFormat.ENUM, SchemaFormat.SKOSRDF, SchemaFormat.OWL, SchemaFormat.RDFS);
+					if(
+						acceptedFormat.contains(sourceSchemaInfo.getFormat() == SchemaFormat.MSCR ? sourceSchemaInfo.getOriginalFormat() : sourceSchemaInfo.getFormat())
+						&&
+						acceptedFormat.contains(targetSchemaInfo.getFormat() == SchemaFormat.MSCR ? targetSchemaInfo.getOriginalFormat() : targetSchemaInfo.getFormat())
+							
+						) {
+						String sssom = crosswalkService.exportAsSSSOM(crosswalk, mappings, sourceSchemaInfo, targetSchemaInfo);
+						return ResponseEntity.status(200).contentType(MediaType.valueOf("text/plain;charset=UTF-8")).body(sssom);
+						
+					}
+				}
 			}
 			
 			return ResponseEntity.ok(mappings);
