@@ -69,6 +69,7 @@ public class CrosswalkMapper {
 	
 	private static Set<SchemaFormat> xsltSources = Set.of(SchemaFormat.CSV, SchemaFormat.XSD, SchemaFormat.JSONSCHEMA);
 
+	private static Set<SchemaFormat> sssomSources = Set.of(SchemaFormat.ENUM, SchemaFormat.SKOSRDF, SchemaFormat.OWL, SchemaFormat.RDFS);
     
 	public CrosswalkMapper(
 			CoreRepository coreRepository,
@@ -318,7 +319,7 @@ public class CrosswalkMapper {
 		if(dto.getFormat() == CrosswalkFormat.MSCR) {
 			List<GeneratedFileMetadata> gf = new ArrayList<GeneratedFileMetadata>();
 			// every MSCR crosswalk have a mapping files (json & ttl)
-			gf.add(new GeneratedFileMetadata("mappings graph", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping/internal"));
+			gf.add(new GeneratedFileMetadata("mappings graph", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=mscr"));
 			gf.add(new GeneratedFileMetadata("mappings", "application/json", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping"));
 			
 			if(
@@ -343,9 +344,19 @@ public class CrosswalkMapper {
 					(targetSchemaDTO.getFormat() == SchemaFormat.SHACL || (targetSchemaDTO.getOriginalFormat() != null && targetSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL))
 					) {
 					gf.add(new GeneratedFileMetadata("RML", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=rml"));
-				}			
+				}
+			if(
+					(sssomSources.contains(sourceSchemaDTO.getFormat() == SchemaFormat.MSCR ? sourceSchemaDTO.getOriginalFormat() : sourceSchemaDTO.getFormat()))
+					&&
+					(sssomSources.contains(targetSchemaDTO.getFormat() == SchemaFormat.MSCR ? targetSchemaDTO.getOriginalFormat() : sourceSchemaDTO.getFormat()))
+					
+					) {
+				gf.add(new GeneratedFileMetadata("SSSOM", "text/plain", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=sssom"));
+				
+			}
 			dto.setGeneratedFileMetadata(gf);
 		}
+		
 		return dto;
 	}
 	
