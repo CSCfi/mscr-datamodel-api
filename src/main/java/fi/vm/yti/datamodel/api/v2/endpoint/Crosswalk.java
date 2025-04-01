@@ -1172,6 +1172,10 @@ public class Crosswalk extends BaseMSCRController {
 						
 					}
 				}
+				else if(exportFormat.equalsIgnoreCase("mscr")) {					
+					crosswalkModel.write(response.getWriter(), "TURTLE");
+					return ResponseEntity.status(200).contentType(MediaType.valueOf("text/turtle;charset=UTF-8")).build();
+				}
 			}
 			
 			return ResponseEntity.ok(mappings);
