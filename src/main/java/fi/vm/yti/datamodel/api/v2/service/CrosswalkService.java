@@ -93,8 +93,8 @@ public class CrosswalkService {
         	if(!targetModel.containsResource(objectResource)) {
         		throw new RuntimeException("Object id " + (objectId != null ? objectId : objectLabel)  + " not found in the target schema.");
         	}
-            
-            String mappingPID = pid + "@mapping=" + UUID.randomUUID();
+            String mappingID = UUID.randomUUID().toString();
+            String mappingPID = pid + "@mapping=" + mappingID;
             MappingDTO dto = new MappingDTO();
             
             List<NodeInfo> sources = new ArrayList<NodeInfo>();
@@ -118,7 +118,7 @@ public class CrosswalkService {
             dto.setTarget(targets);
             dto.setPredicate(predicateId);
             dto.setNotes(comment);
-            m.add(mappingMapper.mapToJenaModel(null, mappingPID, dto, pid));
+            m.add(mappingMapper.mapToJenaModel(mappingPID, mappingID, dto, pid));
             crosswalkResource.addProperty(MSCR.mappings, ResourceFactory.createResource(mappingPID));
                        
 		}	
@@ -145,7 +145,7 @@ public class CrosswalkService {
 			crosswalk.getCreated()				
 		);
 		
-		try(StringWriter strWriter = new StringWriter();ICSVWriter writer = new CSVWriterBuilder(strWriter).withSeparator('\t').build() ) {
+		try(StringWriter strWriter = new StringWriter();ICSVWriter writer = new CSVWriterBuilder(strWriter).withSeparator(';').build() ) {
 			writer.writeNext(new String[] { "subject_id", "subject_label", "subject_type", "predicate_id", "object_id", "object_label", "object_type", "mapping_justification", "confidence", "comment"});
 			for(MappingInfoDTO mapping : mappings) {
 				
