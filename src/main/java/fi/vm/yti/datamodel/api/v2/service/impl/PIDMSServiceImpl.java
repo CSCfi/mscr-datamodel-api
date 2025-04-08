@@ -42,7 +42,7 @@ public class PIDMSServiceImpl implements PIDService {
 			con.addRequestProperty("apikey", apikey);
 			con.addRequestProperty("Content-type", "application/json");
 			con.setDoOutput(true);
-			String generatedUrl = mscrUrl + "/v2/resolve?iri=" + id;
+			String generatedUrl = mscrUrl + "/datamodel-api/v2/resolve?iri=" + id;
   			String body = "{ \"url\": \"" + generatedUrl + "\", \"type\": \"Handle\", \"persist\": \"0\"}";
   			
   			OutputStream os = con.getOutputStream();
