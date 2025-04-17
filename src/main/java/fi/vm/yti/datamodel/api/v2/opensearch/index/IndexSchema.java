@@ -40,9 +40,29 @@ public class IndexSchema extends IndexBase {
     private String handle;
     private String sourceURL;
     private String subType;
+    private List<String> identifiers;
+    private String license;
     
     
-    public String getSubType() {
+    
+    
+    public List<String> getIdentifiers() {
+		return identifiers;
+	}
+
+	public void setIdentifiers(List<String> identifiers) {
+		this.identifiers = identifiers;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public String getSubType() {
 		return subType;
 	}
 

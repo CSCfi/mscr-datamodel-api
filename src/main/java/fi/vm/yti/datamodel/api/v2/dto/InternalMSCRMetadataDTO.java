@@ -1,0 +1,54 @@
+package fi.vm.yti.datamodel.api.v2.dto;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public interface InternalMSCRMetadataDTO {
+	public String getCreated();
+	public void setCreated(String dateSubmitted);
+	public String getModified();
+	public void setModified(String modified);
+	public String getSourceURL();
+	public void setSourceURL(String source);
+	//public String getDownloadUrl();
+	//public void setDownloadUrl(String downloadUrl);
+	//public String getPreviousVersion();
+	//public void setPreviousVersion(String previousVersion);
+	public MSCRState getState();
+	public void setState(MSCRState state);
+	public String getVersionLabel();
+	public void setVersionLabel(String versionLabel);
+	public String getContact();
+	public void setContact(String contactPoint);
+	public Map<String, String> getLabel();
+	public void setLabel(Map<String, String> title);
+	public Map<String, String> getDescription();
+	public void setDescription(Map<String, String> description);
+	public Set<String> getLanguages();
+	public void setLanguages(Set<String> language);
+	public String getDomain();
+	public void setDomain(String domain);
+	public List<String> getDctCreators();
+	public void setDctCreators(List<String> creator);
+	public List<String> getDctContributors();
+	public void setDctContributors(List<String> contributor);
+	public List<String> getDctIdentifiers();
+	public void setDctIdentifiers(List<String> identifier);
+	public String getDctIssued();
+	public void setDctIssued(String issued);
+	public String getDctLicense();
+	public void setDctLicense(String license);
+	public String getDctPublisher();
+	public void setDctPublisher(String publisher);
+	public List<String> getDctRelations();
+	public void setDctRelations(List<String> relation);
+	public String getMediaType();
+	public void setMediaType(String format);
+//	public String getType();
+//	public void setType(String type);
+	public List<String> getDcatKeywords();
+	public void setDcatKeywords(List<String> keyword);
+	public MSCRVisibility getVisibility();
+	public void setVisibility(MSCRVisibility value);
+}

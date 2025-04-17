@@ -7,40 +7,57 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
-public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
+public class SchemaInfoDTO extends CommonSchemaDTO implements MSCRCommonMetadata, InternalSchemaMetadataDTO {
  
-	private MSCRState state;
-	private MSCRVisibility visibility;
-
 	private Set<FileMetadata> fileMetadata = Set.of();
-	private String PID;
-
-	private SchemaFormat format;
-	private SchemaFormat originalFormat;
-	private String namespace;
-	private String versionLabel;
 	private String revisionOf;	
-
-	private String aggregationKey;
 	private List<String> hasRevisions;
 
 	private List<Revision> revisions;
 	private List<Variant> variants;
 	private Map<String, List<Variant>> variants2;
-	private Set<String> owner;
 	private Set<OwnerDTO> ownerMetadata;
-	private String sourceURL;
 	private String customRoot;
-	private MSCRSubType subType;
 	
-	public MSCRSubType getSubType() {
-		return subType;
+	private String ID;
+	private String aggregationKey;
+	private String handle;
+
+    private Set<OrganizationDTO> organizations = Set.of();
+
+	public Set<OrganizationDTO> getOrganizations() {
+		return organizations;
 	}
 
-	public void setSubType(MSCRSubType subType) {
-		this.subType = subType;
+	public void setOrganizations(Set<OrganizationDTO> organizations) {
+		this.organizations = organizations;
 	}
+
 	
+	public String getID() {
+		return ID;
+	}
+
+	public void setID(String ID) {
+		this.ID = ID;
+	}
+
+	public String getAggregationKey() {
+		return aggregationKey;
+	}
+
+	public void setAggregationKey(String aggregationKey) {
+		this.aggregationKey = aggregationKey;
+	}
+
+	public String getHandle() {
+		return handle;
+	}
+
+	public void setHandle(String handle) {
+		this.handle = handle;
+	}
+
 	public String getCustomRoot() {
 		return customRoot;
 	}
@@ -49,75 +66,12 @@ public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadat
 		this.customRoot = customRoot;
 	}
 
-	public String getSourceURL() {
-		return sourceURL;
-	}
-
-	public void setSourceURL(String sourceURL) {
-		this.sourceURL = sourceURL;
-	}	
-	
-
 	public Set<OwnerDTO> getOwnerMetadata() {
 		return ownerMetadata;
 	}
 
 	public void setOwnerMetadata(Set<OwnerDTO> owners) {
 		this.ownerMetadata = owners;
-	}
-
-	public Set<String> getOwner() {
-		return owner;
-	}
-
-	public void setOwner(Set<String> owner) {
-		this.owner = owner;
-	}
-	
-	public MSCRVisibility getVisibility() {
-		return visibility;
-	}
-	public void setVisibility(MSCRVisibility visibility) {
-		this.visibility = visibility;
-	}
-	
-	public MSCRState getState() {
-		return state;
-	}
-
-	public void setState(MSCRState state) {
-		this.state = state;
-	}	
-
-	public String getPID() {
-		return PID;
-	}
-	public void setPID(String pID) {
-		PID = pID;
-	}
-	
-	public SchemaFormat getFormat() {
-		return format;
-	}
-
-	public void setFormat(SchemaFormat type) {
-		this.format = type;
-	}
-
-	public String getNamespace() {
-		return namespace;
-	}
-
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	public String getVersionLabel() {
-		return versionLabel;
-	}
-
-	public void setVersionLabel(String versionLabel) {
-		this.versionLabel = versionLabel;
 	}
 	
 	public String getRevisionOf() {
@@ -128,14 +82,6 @@ public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadat
 		this.revisionOf = revisionOf;
 	}
 	
-	public String getAggregationKey() {
-		return aggregationKey;
-	}
-
-	public void setAggregationKey(String aggregationKey) {
-		this.aggregationKey = aggregationKey;
-	}
-  
 	public Set<FileMetadata> getFileMetadata() {
 		return fileMetadata;
 	}
@@ -173,16 +119,11 @@ public class SchemaInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadat
 	public void setVariants2(Map<String, List<Variant>> variants2) {
 		this.variants2 = variants2;
 	}
-	public SchemaFormat getOriginalFormat() {
-		return originalFormat;
-	}
 
-	public void setOriginalFormat(SchemaFormat originalFormat) {
-		this.originalFormat = originalFormat;
-	}
 
 	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
-    }	
+    }
+
 }

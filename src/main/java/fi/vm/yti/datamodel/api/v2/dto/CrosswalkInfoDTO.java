@@ -6,37 +6,45 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO.CrosswalkSchemaInfo;
+
+public class CrosswalkInfoDTO extends CommonCrosswalkDTO implements MSCRCommonMetadata, InternalCrosswalkMetadataDTO {
 	
 	public record CrosswalkSchemaInfo(String id, String handle, String name, String versionLabel, int versionIndex, String format) {}
 	
-	private MSCRState state;
-	private MSCRVisibility visibility;
-
-	private String PID;
-	
-	private CrosswalkFormat format;
+	private String ID;
 	private String aggregationKey;
+	private String handle;
+	
 	private Set<FileMetadata> fileMetadata = Set.of();	
 	private List<GeneratedFileMetadata> generatedFileMetadata = List.of();	
+	private CrosswalkSchemaInfo sourceSchemaInfo;
+	private CrosswalkSchemaInfo targetSchemaInfo;
 
-	private String sourceSchema;
-	private String targetSchema;
-	private Set<String> owner;
-	private List<MappingDTO> mappings;
+	private List<MappingDTO> mappings;	
+	private Set<OwnerDTO> ownerMetadata;
 	
-	private String versionLabel;
 	private String revisionOf;		
 	private List<String> hasRevisions;
 	private List<Revision> revisions;
-	
-	private Set<OwnerDTO> ownerMetadata;
-	private String sourceURL;
-	private MSCRSubType subType;
-	
-	private CrosswalkSchemaInfo sourceSchemaInfo;
-	private CrosswalkSchemaInfo targetSchemaInfo;
-	
+    private Set<OrganizationDTO> organizations = Set.of();
+
+	public Set<OrganizationDTO> getOrganizations() {
+		return organizations;
+	}
+
+	public void setOrganizations(Set<OrganizationDTO> organizations) {
+		this.organizations = organizations;
+	}
+
+	public String getHandle() {
+		return handle;
+	}
+
+	public void setHandle(String handle) {
+		this.handle = handle;
+	}
+
 	public CrosswalkSchemaInfo getSourceSchemaInfo() {
 		return sourceSchemaInfo;
 	}
@@ -51,22 +59,6 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 
 	public void setTargetSchemaInfo(CrosswalkSchemaInfo targetSchemaInfo) {
 		this.targetSchemaInfo = targetSchemaInfo;
-	}
-
-	public MSCRSubType getSubType() {
-		return subType;
-	}
-
-	public void setSubType(MSCRSubType subType) {
-		this.subType = subType;
-	}	
-	
-	public String getSourceURL() {
-		return sourceURL;
-	}
-
-	public void setSourceURL(String sourceURL) {
-		this.sourceURL = sourceURL;
 	}
 
 	public Set<OwnerDTO> getOwnerMetadata() {
@@ -85,55 +77,13 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 		this.mappings = mappings;
 	}
 
-	public Set<String> getOwner() {
-		return owner;
-	}
 
-	public void setOwner(Set<String> owner) {
-		this.owner = owner;
-	}
 
-	public MSCRState getState() {
-		return state;
+	public String getID() {
+		return ID;
 	}
-
-	public void setState(MSCRState state) {
-		this.state = state;
-	}
-	
-	public MSCRVisibility getVisibility() {
-		return visibility;
-	}
-	public void setVisibility(MSCRVisibility visibility) {
-		this.visibility = visibility;
-	}
-	
-	public String getSourceSchema() {
-		return sourceSchema;
-	}
-	public void setSourceSchema(String sourceSchema) {
-		this.sourceSchema = sourceSchema;
-	}
-	public String getTargetSchema() {
-		return targetSchema;
-	}
-	public void setTargetSchema(String targetSchema) {
-		this.targetSchema = targetSchema;
-	}	
-
-	public String getPID() {
-		return PID;
-	}
-	public void setPID(String pID) {
-		PID = pID;
-	}
-	
-	public CrosswalkFormat getFormat() {
-		return format;
-	}
-
-	public void setFormat(CrosswalkFormat type) {
-		this.format = type;
+	public void setID(String pID) {
+		ID = pID;
 	}
 	
     public String getAggregationKey() {
@@ -151,14 +101,6 @@ public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMeta
 	public void setFileMetadata(Set<FileMetadata> fileMetadata) {
 		this.fileMetadata = fileMetadata;
 	}	
-	
-	public String getVersionLabel() {
-		return versionLabel;
-	}
-
-	public void setVersionLabel(String versionLabel) {
-		this.versionLabel = versionLabel;
-	}
 	
 	public String getRevisionOf() {
 		return revisionOf;
