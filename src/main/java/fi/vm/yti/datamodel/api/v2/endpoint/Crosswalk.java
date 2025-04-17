@@ -101,6 +101,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -1160,6 +1161,7 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping")
 	public ResponseEntity<Object> getMappings(
+			final HttpServletResponse response,
 			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat,
 			@RequestParam(name = "includeSource", required = false) String includeSource,			
 			@RequestParam(name = "includeTarget", required = false) String includeTarget			
@@ -1286,6 +1288,7 @@ public class Crosswalk extends BaseMSCRController {
 					writer.flush();
 					String outputStr = writer.toString();
 					writer.close();
+					response.setContentType("text/turtle");
 					return ResponseEntity.ok(outputStr);
 				}
 				else if(exportFormat.equalsIgnoreCase("xslt")) {
@@ -1312,6 +1315,10 @@ public class Crosswalk extends BaseMSCRController {
 					}
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
 						String r = xsltGenerator1.generateJSONtoCSV(mappings, crosswalkModel, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.CSV || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.CSV) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
+						String r = xsltGenerator.generateCSVtoCSV(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
 					
@@ -1353,6 +1360,23 @@ public class Crosswalk extends BaseMSCRController {
 								jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.TEXT_PLAIN).body(r);						
 					}					
+				}
+				else if(exportFormat.equalsIgnoreCase("sssom")) {
+					Set<SchemaFormat> acceptedFormat = Set.of(SchemaFormat.ENUM, SchemaFormat.SKOSRDF, SchemaFormat.OWL, SchemaFormat.RDFS);
+					if(
+						acceptedFormat.contains(sourceSchemaInfo.getFormat() == SchemaFormat.MSCR ? sourceSchemaInfo.getOriginalFormat() : sourceSchemaInfo.getFormat())
+						&&
+						acceptedFormat.contains(targetSchemaInfo.getFormat() == SchemaFormat.MSCR ? targetSchemaInfo.getOriginalFormat() : targetSchemaInfo.getFormat())
+							
+						) {
+						String sssom = crosswalkService.exportAsSSSOM(crosswalk, mappings, sourceSchemaInfo, targetSchemaInfo);
+						return ResponseEntity.status(200).contentType(MediaType.valueOf("text/plain;charset=UTF-8")).body(sssom);
+						
+					}
+				}
+				else if(exportFormat.equalsIgnoreCase("mscr")) {					
+					crosswalkModel.write(response.getWriter(), "TURTLE");
+					return ResponseEntity.status(200).contentType(MediaType.valueOf("text/turtle;charset=UTF-8")).build();
 				}
 			}
 			

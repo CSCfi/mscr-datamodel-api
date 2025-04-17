@@ -131,7 +131,7 @@ class XSLTGenerator2Test {
 		
 		try {
 			String xslt = g.generateJSONtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
-			System.out.println(xslt);
+
 			String result = transform(personJSONData, xslt, "xml");
 			String expectedResult = """
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -421,9 +421,8 @@ class XSLTGenerator2Test {
 
 		try {
 			String xslt = g.generateJSONtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
-			System.out.println(xslt);
+
 			String result = transform(arraysJSONData, xslt, "xml");
-			
 			String expectedResult = """
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns:f="http://www.w3.org/2005/xpath-functions">
@@ -442,8 +441,9 @@ class XSLTGenerator2Test {
 		              .withTest(Input.fromString(result))
 		              .ignoreWhitespace()
 		              .build();
+			System.out.println(d.fullDescription());
 			assertFalse(d.hasDifferences());	
-
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -459,8 +459,7 @@ class XSLTGenerator2Test {
 		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/arrays-json.ttl") ;
 		
 		try {
-			String xslt = g.generateXMLtoJSON(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
-			System.out.println(xslt);
+			String xslt = g.generateXMLtoJSON(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);			
 			String result = transform(arraysXMLData, xslt, "text");
 			String expectedResult = """
 {
@@ -499,7 +498,6 @@ class XSLTGenerator2Test {
 		
 		try {
 			String xslt = g.generateJSONtoJSON(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
-			System.out.println(xslt);
 			String result = transform(arraysJSONData, xslt, "text");
 			String expectedResult = """
 {
@@ -528,7 +526,6 @@ class XSLTGenerator2Test {
 
 		try {
 			String xslt = g.generateJSONtoJSON(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
-			System.out.println(xslt);
 			
 			String inputData = """
 <data>
@@ -550,7 +547,6 @@ class XSLTGenerator2Test {
 </data>				
 								""";			
 			String result = transform(inputData, xslt, "text");
-			System.out.println(result);
 			String expectedResult = """
 {
     "records": [
@@ -582,7 +578,6 @@ class XSLTGenerator2Test {
 			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
 			String inputData = getStringFromPath("zbmath/input-data.xml") ;			
 			String result = transform(inputData, xslt, "xml");
-
 			String expectedResult = getStringFromPath("zbmath/output-data.xml") ;
 			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
 		              .withTest(Input.fromString(result))
@@ -597,4 +592,201 @@ class XSLTGenerator2Test {
 			e.printStackTrace();
 		}		
 	}
+	
+	@Test
+	public void testSample() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void testSample2() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk2.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+   <items>
+	  <item partNum="partNum1">
+		<productName>productName1</productName>
+	  </item>
+	  <item partNum="partNum2">
+		<productName>productName2</productName>
+	  </item>
+   </items>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	
+	
+	@Test
+	public void testSample3() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk3.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+   <items>
+	  <item partNum="partNum1">
+	  </item>
+	  <item partNum="partNum2">
+	  </item>
+   </items>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	
+	@Test
+	public void testSample4() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk4.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
+		try {
+			String xslt = g.generateXMLtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData = getStringFromPath("xsltgenerator/sample-input-data.xml") ;			
+			String result = transform(inputData, xslt, "xml");
+			String expectedResult = """
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<purchaseOrder xmlns=\"http://tempuri.org/po.xsd#\">
+   <shipTo country="US">
+      <zip>-868.126</zip>
+   </shipTo>
+   <items>
+	  <item>
+		<productName>productName1</productName>
+	  </item>
+	  <item>
+		<productName>productName2</productName>
+	  </item>
+   </items>
+</purchaseOrder>										
+					""";
+
+			Diff d = DiffBuilder.compare(Input.fromString(expectedResult))
+		              .withTest(Input.fromString(result))
+		              .ignoreWhitespace()
+		              .build();
+			if(d.hasDifferences()) {
+				System.out.println(d.fullDescription());
+			}
+			assertFalse(d.hasDifferences());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	
+	@Test
+	public void testCSVtoCSV() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:eddcc67e-6c5d-494d-973a-65a2024d2acd";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/csv1-crosswalk.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/csv1-source.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/csv1-target.ttl") ;
+		try {
+			String xslt = g.generateCSVtoCSV(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData =
+"""
+<data>firstName;lastName;test
+Jane;Doe;"value; with a semicolon"
+Test; Tester; testing
+</data>
+""".trim();
+			String result = transform(inputData, xslt, "text");
+			String expectedResult = 
+"""
+name;test
+"Doe Jane";"value; with a semicolon"
+" Tester Test";" testing"
+""".trim();
+
+			assertEquals(expectedResult, result);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}		
+		
 }

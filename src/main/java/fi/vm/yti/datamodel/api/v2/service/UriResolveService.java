@@ -35,21 +35,13 @@ public class UriResolveService {
         if (!checkIRI(iriFactory.create(iri))) {
             return ResponseEntity.badRequest().build();
         }
+        var parts = iri.split(":");
 
-        String resourcePath = iri.substring(ModelConstants.SUOMI_FI_NAMESPACE.length());
-        var parts = resourcePath.split("\\W");
-        String resource = null;
-
-        if (parts.length == 0) {
+        if (parts.length == 0 || parts.length != 3) {
             return ResponseEntity.badRequest().build();
         }
 
-        var modelPrefix = parts[0];
-        if (parts.length == 2) {
-            // single resource
-            resource = parts[1];
-        }
-
+        var contentType = parts[1];
         var currentUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
         var redirectURL = new StringBuilder();
         redirectURL.append(currentUrl.getScheme())
@@ -57,18 +49,33 @@ public class UriResolveService {
                 .append(currentUrl.getHost())
                 .append(currentUrl.getHost().equals("localhost") ? ":3000" : "");
 
-        if (accept != null && accept.contains(MimeTypeUtils.TEXT_HTML_VALUE)) {
+        if (accept == null || (accept != null && accept.contains(MimeTypeUtils.TEXT_HTML_VALUE))) {
             // redirect to the site
             redirectURL
-                    .append("/model/")
-                    .append(modelPrefix);
-            appendResource(redirectURL, modelPrefix, resource);
+                    .append("/")
+                    .append(contentType)
+                    .append("/")
+                    .append(iri);
         } else {
             // redirect to serialized resource
-            redirectURL
-                    .append("/datamodel-api/v2/export/")
-                    .append(modelPrefix)
-                    .append(resource != null ? "/" + resource : "");
+        	if(iri.indexOf("@mapping") > 0) {
+                redirectURL
+                .append("/datamodel-api/v2/")
+                .append(contentType)
+                .append("/")
+                .append(iri.substring(0,iri.indexOf("@")))
+                .append("/")
+                .append("mapping");
+        		
+        	}
+        	else {
+                redirectURL
+                .append("/datamodel-api/v2/")
+                .append(contentType)
+                .append("/")
+                .append(iri);
+        		
+        	}
         }
         return ResponseEntity
                 .status(HttpStatus.SEE_OTHER)
@@ -76,35 +83,7 @@ public class UriResolveService {
                 .build();
     }
 
-    private void appendResource(StringBuilder redirectURL, String modelPrefix, String resource) {
-        if (resource != null) {
-            var modelURI = ModelConstants.SUOMI_FI_NAMESPACE + modelPrefix;
-            Model dataModel;
-            try {
-                dataModel = coreRepository.fetch(modelURI);
-            } catch (Exception e) {
-                return;
-            }
-
-            var dataModelResource = dataModel.getResource(modelURI + ModelConstants.RESOURCE_SEPARATOR + resource);
-
-            if (MapperUtils.hasType(dataModelResource, OWL.Class, SH.NodeShape)) {
-                redirectURL.append("/class/");
-            } else if (MapperUtils.hasType(dataModelResource, OWL.DatatypeProperty)) {
-                redirectURL.append("/attribute/");
-            } else if (MapperUtils.hasType(dataModelResource, OWL.ObjectProperty)) {
-                redirectURL.append("/association/");
-            } else {
-                logger.warn("No valid type found from resource {}, {}", dataModelResource.getURI(),
-                        dataModelResource.getProperty(RDF.type));
-                return;
-            }
-            redirectURL.append(resource);
-        }
-    }
-
     private static boolean checkIRI(IRI iri) {
-        return !iri.hasViolation(false)
-                && iri.toString().startsWith(ModelConstants.SUOMI_FI_NAMESPACE);
+        return iri.toString().startsWith("mscr:");
     }
 }

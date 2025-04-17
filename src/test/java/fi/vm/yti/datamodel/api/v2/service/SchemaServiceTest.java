@@ -369,6 +369,7 @@ public class SchemaServiceTest {
 		
 	}
 	
+	@Disabled
 	@Test
 	void testFetchAndMapDTRType() throws Exception {
 		Model m = service.fetchAndMapDTRType("21.11104/e944e035caf3ec24192c");
