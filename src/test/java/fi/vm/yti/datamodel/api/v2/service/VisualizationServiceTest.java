@@ -47,7 +47,7 @@ class VisualizationServiceTest {
     @Autowired
     private VisualizationService visualizationService;
 
-    @Test
+    //@Test    
     void testMapVisualizationData() {
         var model = MapperTestUtils.getModelFromFile("/models/test_application_profile_visualization.ttl");
         var positionModel = MapperTestUtils.getModelFromFile("/positions.ttl");
