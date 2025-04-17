@@ -1,0 +1,49 @@
+@prefix :      <mscr:schema:7b2c7d6d-d989-4f07-af79-fdb88ef7809b#> .
+
+<mscr:schema:7b2c7d6d-d989-4f07-af79-fdb88ef7809b>
+        <http://rdfs.org/ns/void#rootResource>
+                :root .
+
+:a9a2b837-a4e2-40b9-a09e-48df3f228e5a
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#column>
+                2 ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "test" ;
+        <http://www.w3.org/ns/shacl#order>
+                2 ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:column_2> .
+
+:root   a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :a9a2b837-a4e2-40b9-a09e-48df3f228e5a , :b3d827be-2c4d-4637-9487-ddf098bd3b13 .
+
+:b3d827be-2c4d-4637-9487-ddf098bd3b13
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#column>
+                1 ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#order>
+                1 ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:column_1> .

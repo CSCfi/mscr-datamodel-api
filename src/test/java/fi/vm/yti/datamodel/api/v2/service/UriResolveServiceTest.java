@@ -36,50 +36,66 @@ class UriResolveServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
     @Test
-    void testRedirectSiteModel() {
+    void testRedirectSchema() {
         var accept = "text/html";
-        var response = service.resolve("http://uri.suomi.fi/datamodel/ns/test", accept);
+        var response = service.resolve("mscr:schema:12312312321", accept);
         assertTrue(response.getStatusCode().is3xxRedirection());
         assertNotNull(response.getHeaders().getLocation());
-        assertTrue(response.getHeaders().getLocation().toString().endsWith("/model/test"));
+        assertTrue(response.getHeaders().getLocation().toString().endsWith("/schema/mscr:schema:12312312321"));
     }
-
+    
     @Test
-    void testRedirectSiteResource() {
-        var model = MapperTestUtils.getModelFromFile("/models/test_datamodel_library_with_resources.ttl");
-        when(coreRepository.fetch(anyString())).thenReturn(model);
-
-
-        var pathMap = Map.of(
-                "http://uri.suomi.fi/datamodel/ns/test/TestClass", "/model/test/class/TestClass",
-                "http://uri.suomi.fi/datamodel/ns/test/TestAttribute", "/model/test/attribute/TestAttribute",
-                "http://uri.suomi.fi/datamodel/ns/test/TestAssociation", "/model/test/association/TestAssociation"
-        );
+    void testRedirectCrosswalk() {
         var accept = "text/html";
-        for (var key : pathMap.keySet()) {
-            var response = service.resolve(key, accept);
-            assertTrue(response.getStatusCode().is3xxRedirection());
-            assertNotNull(response.getHeaders().getLocation());
-            assertTrue(response.getHeaders().getLocation().toString().endsWith(pathMap.get(key)));
-        }
-    }
-
-    @Test
-    void testRedirectSerializedResource() {
-        var model = MapperTestUtils.getModelFromFile("/models/test_datamodel_library_with_resources.ttl");
-        when(coreRepository.fetch(anyString())).thenReturn(model);
-
-        var accept = "text/turtle";
-        var response = service.resolve("http://uri.suomi.fi/datamodel/ns/test/TestClass", accept);
+        var response = service.resolve("mscr:crosswalk:12312312321", accept);
         assertTrue(response.getStatusCode().is3xxRedirection());
         assertNotNull(response.getHeaders().getLocation());
-        assertTrue(response.getHeaders().getLocation().toString().endsWith("/datamodel-api/v2/export/test/TestClass"));
+        assertTrue(response.getHeaders().getLocation().toString().endsWith("/crosswalk/mscr:crosswalk:12312312321"));
+    }  
+
+    @Test
+    void testRedirectSchemaJSON() {
+        var accept = "application/json";
+        var response = service.resolve("mscr:schema:12312312321", accept);
+        assertTrue(response.getStatusCode().is3xxRedirection());
+        assertNotNull(response.getHeaders().getLocation());
+        assertTrue(response.getHeaders().getLocation().toString().endsWith("/datamodel-api/v2/schema/mscr:schema:12312312321"));
+    }
+    
+    @Test
+    void testRedirectCrosswalkJSON() {
+        var accept = "application/json";
+        var response = service.resolve("mscr:crosswalk:12312312321", accept);
+        System.out.println(response.getHeaders().getLocation().toString());
+        assertTrue(response.getStatusCode().is3xxRedirection());
+        assertNotNull(response.getHeaders().getLocation());
+        assertTrue(response.getHeaders().getLocation().toString().endsWith("/datamodel-api/v2/crosswalk/mscr:crosswalk:12312312321"));
+    }   
+    
+    @Test
+    void testRedirectMappingJSON() {
+        var accept = "application/json";
+        var response = service.resolve("mscr:crosswalk:12312312321@mapping=test", accept);
+        System.out.println(response.getHeaders().getLocation().toString());
+        assertTrue(response.getStatusCode().is3xxRedirection());
+        assertNotNull(response.getHeaders().getLocation());
+        assertTrue(response.getHeaders().getLocation().toString().endsWith("/crosswalk/mscr:crosswalk:12312312321/mapping"));
+    }     
+    
+    @Test
+    void testRedirectRandom() {
+        var accept = "text/html";
+        var response = service.resolve("random_string", accept);
+        assertTrue(response.getStatusCode().is4xxClientError());
     }
 
     @Test
-    void testInvalidIRI() {
-        var accept = "text/turtle";
-        var response = service.resolve("http://invalid.com", accept);
-        assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
+    void testRedirectError() {
+        var accept = "text/html";
+        var response = service.resolve("test:test:test", accept);
+        assertTrue(response.getStatusCode().is4xxClientError());
     }
+    
+ 
+
 }
