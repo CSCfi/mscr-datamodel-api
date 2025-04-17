@@ -1167,7 +1167,7 @@ public class Crosswalk extends BaseMSCRController {
 			@RequestParam(name = "includeTarget", required = false) String includeTarget			
 			
 			) {
-		return getMappingsFrontend(pid, null, exportFormat, includeSource, includeTarget); 
+		return getMappingsFrontend(response, pid, null, exportFormat, includeSource, includeTarget); 
 	}
 	
 	@Tag(name = "Frontend")
@@ -1175,18 +1175,20 @@ public class Crosswalk extends BaseMSCRController {
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/frontend/crosswalk/{pid}/mapping")
 	public ResponseEntity<Object> getMappingsFrontend(
+			final HttpServletResponse response,
 			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat,
 			@RequestParam(name = "includeSource", required = false) String includeSource,			
 			@RequestParam(name = "includeTarget", required = false) String includeTarget			
 			
 			) {
-		return getMappingsFrontend(pid, null, exportFormat, includeSource, includeTarget); 
+		return getMappingsFrontend(response, pid, null, exportFormat, includeSource, includeTarget); 
 	}	
 
 	@Hidden
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/{suffix}/mapping")
 	public ResponseEntity<Object> getMappingsFrontend(
+			final HttpServletResponse response,
 			@PathVariable String pid, 
 			@PathVariable String suffix, 
 			@RequestParam(name = "exportFormat", required = false) String exportFormat,

@@ -140,7 +140,7 @@ public class CrosswalkService {
 #license: %s
 #mapping_date: %s
 """.formatted(
-			crosswalk.getHandle() != null ? crosswalk.getHandle() : crosswalk.getPID(),
+			crosswalk.getHandle() != null ? crosswalk.getHandle() : crosswalk.getID(),
 			crosswalk.getLabel().get("en") + "." + crosswalk.getDescription().get("en"),
 			"",
 			crosswalk.getCreated()				
