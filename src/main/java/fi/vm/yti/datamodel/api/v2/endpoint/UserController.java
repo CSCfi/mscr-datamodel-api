@@ -6,6 +6,7 @@ import fi.vm.yti.datamodel.api.v2.service.FrontendService;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import fi.vm.yti.security.YtiUser;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "Users")
+@Tag(name = "Frontend")
 public class UserController {
 
     private final AuthenticatedUserProvider userProvider;
@@ -32,14 +33,16 @@ public class UserController {
         this.frontendService = frontendService;
     }
 
+    
     @GetMapping("v2/user_old")    
     @Operation(description = "Get authenticated user")
     @ApiResponse(responseCode = "200", description = "User object")
+    @Hidden
     public YtiUser getUser() {
         return userProvider.getUser();
     }
     
-    @GetMapping("v2/user")    
+    @GetMapping("v2/frontend/user")    
     @Operation(description = "Get authenticated MSCR user")
     @ApiResponse(responseCode = "200", description = "MSCR User object")
     public MSCRUser getMSCRUser() {
