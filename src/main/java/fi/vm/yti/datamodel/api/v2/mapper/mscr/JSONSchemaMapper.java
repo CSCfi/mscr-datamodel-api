@@ -174,6 +174,7 @@ public class JSONSchemaMapper {
 	 */
 	private Resource addObjectProperty(String propID, JsonNode node, Model model, String schemaPID,
 			String targetShape) {
+		propID = URLEncoder.encode(propID);		
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.ObjectProperty);
@@ -252,7 +253,6 @@ public class JSONSchemaMapper {
 			propertyShape = handleDatatypeProperty(propIDCapitalised, entry, key, model, schemaPID, nodeShapeResource, false, true);
 		}					
 		else {
-			key = URLEncoder.encode(key);
 			propertyShape = addObjectProperty(propIDCapitalised + "-" + key, entry, model, schemaPID,
 					schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key));
 			
