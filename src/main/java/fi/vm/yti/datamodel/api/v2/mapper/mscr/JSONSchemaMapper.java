@@ -252,7 +252,7 @@ public class JSONSchemaMapper {
 			propertyShape = handleDatatypeProperty(propIDCapitalised, entry, key, model, schemaPID, nodeShapeResource, false, true);
 		}					
 		else {
-			
+			key = URLEncoder.encode(key);
 			propertyShape = addObjectProperty(propIDCapitalised + "-" + key, entry, model, schemaPID,
 					schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key));
 			
