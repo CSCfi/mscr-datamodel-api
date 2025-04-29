@@ -22,6 +22,7 @@ public class InternalSchemaMetadataToExternalConverter extends AbstractInternalM
 		
 		PublicSchemaMetadataInfoDTO p = new PublicSchemaMetadataInfoDTO();
 		
+		convert(p, s);
 		p.setInternalID(s.getID());
 		p.setHandle(s.getHandle());
 		p.setFormat(s.getFormat().name());
