@@ -111,8 +111,8 @@ public class SubscriptionController {
 
     } 
     
-    @GetMapping(path = "/info", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<UserInfo> getUserInfo(@RequestBody GetSubscription action, HttpServletRequest request) throws Exception {
+    @GetMapping(path = "", produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<UserInfo> getUserInfo(HttpServletRequest request) throws Exception {
 		return webClient.get()
 				.uri(messageAPIUrl + "user")
 				.accept(MediaType.ALL)
