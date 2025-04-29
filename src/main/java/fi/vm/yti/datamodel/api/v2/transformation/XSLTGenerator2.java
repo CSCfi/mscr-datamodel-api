@@ -1,11 +1,14 @@
 package fi.vm.yti.datamodel.api.v2.transformation;
 
 import java.io.StringWriter;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -38,6 +41,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.VOID;
+import org.opensearch.client.opensearch.core.SearchResponse;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
 import org.w3c.dom.Document;
@@ -45,11 +49,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
+import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2.IteratorData;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator.TreeNode2;
 
@@ -60,6 +69,18 @@ public class XSLTGenerator2 {
 	public static final String xsNS = "http://www.w3.org/2001/XMLSchema";
 	public static final String funcNS = "http://www.w3.org/2005/xpath-functions";
 
+	private final JenaService jenaService;
+	private final SearchIndexService searchService;
+	
+	public XSLTGenerator2() {		
+		this.jenaService = null;
+		this.searchService = null;
+	}
+	
+	public XSLTGenerator2(JenaService jenaService, SearchIndexService searchService) {		
+		this.jenaService = jenaService;
+		this.searchService = searchService;
+	}
 	record TreeNode(Map<Integer, TreeNode> children, String targetPropertyURI, String mappingURI, String targetElementName,
 			String targetElementNamespace, boolean isAttribute, String datatype) {
 	};
@@ -567,7 +588,7 @@ where {
 		if(prop.hasProperty(SH.maxCount)) {
 			int count = prop.getProperty(SH.maxCount).getObject().asLiteral().getInt();
 			return count > 1;
-		}
+		}		
 		return true;
 	}
 	
@@ -823,7 +844,13 @@ where {
 				withParam.setAttribute("select", "fn:getTokens(.)");
 			}
 			else {
-				withParam.setAttribute("select", ".");	
+				if(isParentRepeatable) {
+					withParam.setAttribute("select", ".");	
+				}
+				else {
+					withParam.setAttribute("select", "$node");	
+				}
+					
 			}
 				
 			System.out.println(target.targetPropertyURI);
@@ -926,7 +953,7 @@ where {
 			mappingOutputVariable.setAttribute("select", "$mapping_func_input[" + sourceIndex + "]");
 		}
 		else {
-			mappingOutputVariable.setAttribute("select", getFunctionSelect(templateElement, "$mapping_func_input", mappingInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
+			mappingOutputVariable.setAttribute("select", getFunctionSelect(templateElement, "$mapping_func_input", mappingInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, targetSchemaModel, mappingInfo, isJSONSource));
 		}
 		templateElement.appendChild(mappingOutputVariable);
 		NodeInfo targetNodeInfo = mappingInfo.getTarget().get(targetNodeIndex);
@@ -971,7 +998,7 @@ where {
 				targetValueOf.setAttribute("select", "$mapping_func_output[" + (targetNodeIndex + 1) + "]");	
 			}
 			else {
-				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, "$mapping_func_output[" + (targetNodeIndex + 1) + "]", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
+				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, "$mapping_func_output[" + (targetNodeIndex + 1) + "]", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, targetSchemaModel, mappingInfo, isJSONSource));
 			}
 			
 			targetElement.appendChild(targetValueOf);
@@ -1027,7 +1054,7 @@ where {
 				targetValueOf.setAttribute("select", ".");	
 			}
 			else {
-				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, ".", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
+				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, ".", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, targetSchemaModel, mappingInfo, isJSONSource));
 			}
 			
 			if(isCSVTarget) {
@@ -1050,7 +1077,7 @@ where {
 		*/	
 	}
 
-	private String getFunctionSelect(Element e, String valueSource, ProcessingInfo pi, String sourceSchemaURI, Model sourceSchemaModel, MappingInfoDTO mapping, boolean isJSONSource) {
+	private String getFunctionSelect(Element e, String valueSource, ProcessingInfo pi, String sourceSchemaURI, Model sourceSchemaModel, Model targetSchemaModel, MappingInfoDTO mapping, boolean isJSONSource) {
 		String id = pi.getId();
 		if(id.equals("http://uri.suomi.fi/datamodel/ns/mscr#toString")) {
 			return "string(" + valueSource + ")";
@@ -1151,7 +1178,75 @@ where {
 			
 
 
-		}		
+		}	
+		if(id.equals("http://uri.suomi.fi/datamodel/ns/mscr#mapVocabulariesFunc")) {
+			// get source and target vocabularies 
+			// using just the first property for now
+			Resource sourceProperty = sourceSchemaModel.getResource(mapping.getSource().get(0).getUri());
+			Resource targetProperty = targetSchemaModel.getResource(mapping.getTarget().get(0).getUri());
+			
+			if(!sourceProperty.hasProperty(MSCR.valuesFrom)) {
+				throw new RuntimeException("Source property is missing valuesFrom property.");
+			}
+			if(!targetProperty.hasProperty(MSCR.valuesFrom)) {
+				throw new RuntimeException("Target property is missing valuesFrom property.");
+			}
+			Resource sourceValueVoc = sourceProperty.getPropertyResourceValue(MSCR.valuesFrom);
+			Resource targetValueVoc = targetProperty.getPropertyResourceValue(MSCR.valuesFrom);
+			
+			// find crosswalk 
+			MSCRSearchRequest sr = new MSCRSearchRequest();
+			sr.setSourceSchemas(Set.of(sourceValueVoc.getURI()));
+			sr.setTargetSchemas(Set.of(targetValueVoc.getURI()));
+			SearchResponse<ObjectNode> response = searchService.mscrSearch(sr, true);
+			if(response == null || response.hits().hits().size() == 0) {
+				throw new RuntimeException("No crosswalk found between the value vocabularies");
+			}
+			String crosswalkID = URLDecoder.decode(response.hits().hits().get(0).id());
+			
+			Model sourceVocModel = jenaService.getSchemaContent(sourceValueVoc.getURI());
+			Model targetVocModel = jenaService.getSchemaContent(targetValueVoc.getURI());
+									
+			// generate named template that transforms values 			
+			// assuming that source and target of subtype vocabulary - SKOS
+			Map<String, String> valueMappings = new HashMap<String, String>();
+			Model valueModel = jenaService.getCrosswalkContent(crosswalkID);
+			valueModel.add(sourceVocModel);
+			valueModel.add(targetVocModel);
+			
+			String valueQuery = """
+PREFIX : <http://uri.suomi.fi/datamodel/ns/mscr#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+select ?sourceValue ?targetValue 
+where {
+  ?sourceProp <http://www.w3.org/2004/02/skos/core#prefLabel> ?sourceValue .
+  ?source :uri ?sourceProp .
+  ?mapping :source/rdf:_1 ?source .
+  ?mapping :target/rdf:_1 ?target .
+  ?target :uri ?targetProp .
+  ?targetProp <http://www.w3.org/2004/02/skos/core#prefLabel> ?targetValue .  
+  
+}					
+					""";
+			QueryExecution qe = QueryExecutionFactory.create(valueQuery, valueModel);
+			ResultSet results = qe.execSelect();
+
+			Element mappingVar = e.getOwnerDocument().createElementNS(xslNS, "xsl:variable");
+			mappingVar.setAttribute("name", "mapping");
+
+			while (results.hasNext()) {
+				QuerySolution res = results.next();
+				Element mappingEntry = e.getOwnerDocument().createElement("entry");
+				mappingEntry.setAttribute("key", res.get("sourceValue").asLiteral().getString());
+				mappingEntry.setTextContent(res.get("targetValue").asLiteral().getString());
+				mappingVar.appendChild(mappingEntry);
+			}
+
+			e.appendChild(mappingVar);
+			
+			// select var value
+			return "$mapping/entry[@key=" + valueSource +"]";
+		}
 		
 		throw new RuntimeException("No handler found for processing function " + pi.getId());
 
@@ -1222,7 +1317,7 @@ where {
 			valuePath = valuePath + sourceProperty.getProperty(MSCR.instancePath).getString();
 		}
 		if(sourceNode.getProcessing() != null) {
-			return getFunctionSelect(e, valuePath, sourceNode.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource);
+			return getFunctionSelect(e, valuePath, sourceNode.getProcessing(), sourceSchemaURI, sourceSchemaModel, null, mappingInfo, isJSONSource);
 
 		}
 
@@ -1476,6 +1571,9 @@ where {
 				}
 				node.setAttribute("namespace", namespace);
 				node.setAttribute("order", order);
+				
+
+				
 				if(candidatePath.equals(path)) {
 					node.setAttribute("propertyURI", targetInfo.propertyURI.getURI());
 					node.setAttribute("mappingURI", targetInfo.mappingURI.getURI());
@@ -1487,6 +1585,7 @@ where {
 				else {
 					boolean isAttribute = r.hasProperty(MSCR.sourceType) && r.getRequiredProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI());
 					node.setAttribute("isAttribute", ""+isAttribute);
+					node.setAttribute("propertyURI", r.getURI());
 				}
 			}
 		}

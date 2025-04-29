@@ -1,0 +1,58 @@
+{
+    "took": 14,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 1,
+        "relation": "eq"
+      },
+      "max_score": 1,
+      "hits": [
+        {
+          "_index": "crosswalks_v2",
+          "_id": "mscr%3Acrosswalk%3A7328a9ca-1062-408c-8c22-60a8c05bb7e7",
+          "_score": 1,
+          "_source": {
+            "id": "mscr:crosswalk:7328a9ca-1062-408c-8c22-60a8c05bb7e7",
+            "label": {
+              "en": "vocabulary map"
+            },
+            "status": "DRAFT",
+            "modified": "2025-04-17T12:03:12.066Z",
+            "created": "2025-04-17T12:03:12.066Z",
+            "contentModified": "2025-04-17T12:03:12.065Z",
+            "stateModified": "2025-04-17T12:03:12.065Z",
+            "type": "CROSSWALK",
+            "state": "DRAFT",
+            "visibility": "PRIVATE",
+            "prefix": "mscr:crosswalk:7328a9ca-1062-408c-8c22-60a8c05bb7e7",
+            "comment": {
+  
+            },
+            "contributor": [],
+            "organizations": [],
+            "isPartOf": [],
+            "language": [
+              "en"
+            ],
+            "aggregationKey": "mscr:crosswalk:7328a9ca-1062-408c-8c22-60a8c05bb7e7",
+            "hasRevision": "false",
+            "numberOfRevisions": 1,
+            "owner": [
+              "4ce70937-6fa4-49af-a229-b5f10328adb8"
+            ],
+            "versionLabel": "1",
+            "subType": "SEMANTIC_MAPPING",
+            "sourceSchema": "mscr:schema:cf8f2bd6-47d0-4504-a07d-1c2f998a6f78",
+            "targetSchema": "mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a"
+          }
+        }
+      ]
+    }
+  }
