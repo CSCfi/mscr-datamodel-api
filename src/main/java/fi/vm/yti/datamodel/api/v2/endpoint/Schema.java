@@ -244,19 +244,34 @@ public class Schema extends BaseMSCRController {
 		// - organization
 		// - format
 		// - versionLabel - defaults to ""
-		s.setState(
-				inputSchema != null && inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
-		s.setVisibility(inputSchema != null && inputSchema.getVisibility() != null ? inputSchema.getVisibility()
-				: prevSchema.getVisibility());
-		s.setLabel(inputSchema != null && !inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
-		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription()
-				: prevSchema.getDescription());
-		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages()
-				: prevSchema.getLanguages());
-		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace()
-				: prevSchema.getNamespace());
-		s.setContact(inputSchema != null && inputSchema.getContact() != null ? inputSchema.getContact()
-				: prevSchema.getContact());
+		if(inputSchema != null) {
+			s.setState(inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
+			s.setVisibility(inputSchema.getVisibility() != null ? inputSchema.getVisibility()
+					: prevSchema.getVisibility());
+			s.setLabel(!inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
+			s.setDescription(inputSchema.getDescription() != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription()
+					: prevSchema.getDescription());
+			s.setLanguages(inputSchema.getLanguages() != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages()
+					: prevSchema.getLanguages());
+			s.setNamespace(inputSchema.getNamespace() != null ? inputSchema.getNamespace()
+					: prevSchema.getNamespace());
+			s.setContact(inputSchema.getContact() != null ? inputSchema.getContact()
+					: prevSchema.getContact());
+			s.setDcatKeywords(inputSchema.getDcatKeywords() != null ? inputSchema.getDcatKeywords(): prevSchema.getDcatKeywords());		
+			s.setDctContributors(inputSchema.getDctContributors() != null ? inputSchema.getDctContributors() : prevSchema.getDctContributors());
+			s.setDctCreators(inputSchema.getDctCreators() != null ? inputSchema.getDctCreators() : prevSchema.getDctCreators());
+			s.setDctIdentifiers(inputSchema.getDctIdentifiers() != null ? inputSchema.getDctIdentifiers() : prevSchema.getDctIdentifiers());
+			s.setDctIssued(inputSchema.getDctIssued() != null ? inputSchema.getDctIssued(): prevSchema.getDctIssued());
+			s.setDctLicense(inputSchema.getDctLicense() != null ? inputSchema.getDctLicense(): prevSchema.getDctLicense());
+			s.setDctPublisher(inputSchema.getDctPublisher() != null ? inputSchema.getDctPublisher() : prevSchema.getDctPublisher());
+			s.setDctRelations(inputSchema.getDctRelations() != null ? inputSchema.getDctRelations(): prevSchema.getDctRelations());
+			s.setDomain(inputSchema.getDomain() != null ? inputSchema.getDomain(): prevSchema.getDomain());
+			
+			s.setSourceURL(inputSchema.getSourceURL());
+
+		}
+
+		
 		if (action == CONTENT_ACTION.revisionOf || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
 			s.setOrganizations(prevSchema.getOrganizations().stream().map(org -> UUID.fromString(org.getId()))
 					.collect(Collectors.toSet()));
@@ -279,7 +294,6 @@ public class Schema extends BaseMSCRController {
 		else {
 			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		}
-		s.setSourceURL(inputSchema.getSourceURL());
 		s.setSubType(prevSchema.getSubType());
 		
 		

@@ -223,11 +223,30 @@ public class Crosswalk extends BaseMSCRController {
 	
 	private CrosswalkDTO mergeMetadata(CrosswalkInfoDTO prev, CrosswalkDTO input, CONTENT_ACTION action) {				
 		CrosswalkDTO s = new CrosswalkDTO();
-		s.setState(input != null && input.getState() != null ? input.getState() : prev.getState());
-		s.setVisibility(input != null && input.getVisibility() != null ? input.getVisibility() : prev.getVisibility());
-		s.setLabel(input != null && !input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
-		s.setDescription(input != null && !input.getDescription().isEmpty() ? input.getDescription() : prev.getDescription());
-		s.setLanguages(!input.getLanguages().isEmpty() ? input.getLanguages() : prev.getLanguages());
+		if(input != null) {
+			s.setState(input.getState() != null ? input.getState() : prev.getState());
+			s.setVisibility(input.getVisibility() != null ? input.getVisibility()
+					: prev.getVisibility());
+			s.setLabel(!input.getLabel().isEmpty() ? input.getLabel() : prev.getLabel());
+			s.setDescription(input.getDescription() != null && !input.getDescription().isEmpty() ? input.getDescription()
+					: prev.getDescription());
+			s.setLanguages(input.getLanguages() != null && !input.getLanguages().isEmpty() ? input.getLanguages()
+					: prev.getLanguages());
+			s.setContact(input.getContact() != null ? input.getContact()
+					: prev.getContact());
+			s.setDcatKeywords(input.getDcatKeywords() != null ? input.getDcatKeywords(): prev.getDcatKeywords());		
+			s.setDctContributors(input.getDctContributors() != null ? input.getDctContributors() : prev.getDctContributors());
+			s.setDctCreators(input.getDctCreators() != null ? input.getDctCreators() : prev.getDctCreators());
+			s.setDctIdentifiers(input.getDctIdentifiers() != null ? input.getDctIdentifiers() : prev.getDctIdentifiers());
+			s.setDctIssued(input.getDctIssued() != null ? input.getDctIssued(): prev.getDctIssued());
+			s.setDctLicense(input.getDctLicense() != null ? input.getDctLicense(): prev.getDctLicense());
+			s.setDctPublisher(input.getDctPublisher() != null ? input.getDctPublisher() : prev.getDctPublisher());
+			s.setDctRelations(input.getDctRelations() != null ? input.getDctRelations(): prev.getDctRelations());
+			s.setDomain(input.getDomain() != null ? input.getDomain(): prev.getDomain());
+			
+			s.setSourceURL(input.getSourceURL());
+
+		}				
 		if (action == CONTENT_ACTION.revisionOf || input == null || input.getOrganizations().isEmpty()) {
 			s.setOrganizations(prev.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
 		}	
@@ -248,7 +267,6 @@ public class Crosswalk extends BaseMSCRController {
 		}
 		s.setSourceSchema(prev.getSourceSchema());
 		s.setTargetSchema(prev.getTargetSchema());
-		s.setSourceURL(input.getSourceURL());
 		return s;
 		
 	}	
