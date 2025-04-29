@@ -98,7 +98,7 @@ public class SubscriptionController {
 
     }    
     
-    @GetMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<SubscriptionResponse> get(@RequestBody GetSubscription action, HttpServletRequest request) throws Exception { 
 		return webClient.post()
 				.uri(messageAPIUrl + "subscriptions")
