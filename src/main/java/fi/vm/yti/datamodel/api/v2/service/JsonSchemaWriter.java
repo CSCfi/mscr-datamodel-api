@@ -745,7 +745,9 @@ public class JsonSchemaWriter {
 	}
 
 	private boolean hasChildren(Resource r, Model model) {
-		return r.hasProperty(SKOS.narrower) && !model.listSubjectsWithProperty(SKOS.narrower, r).hasNext();
+		return 
+			r.hasProperty(SKOS.narrower) ||
+			model.listSubjectsWithProperty(SKOS.broader, r).hasNext();
 
 	}
 
