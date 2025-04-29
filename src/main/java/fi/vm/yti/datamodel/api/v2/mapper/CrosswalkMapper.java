@@ -359,6 +359,7 @@ public class CrosswalkMapper extends MSCRMapper {
 			}
 			dto.setGeneratedFileMetadata(gf);
 		}
+		mapToMSCRModelDTO(dto, modelResource);
 		return dto;
 	}
 	
