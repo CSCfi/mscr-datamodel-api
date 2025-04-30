@@ -236,6 +236,10 @@ public class SchemaMapper extends MSCRMapper {
 			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));			
 		}
 		
+		// for compatibility reasons
+		modelResource.removeAll(MSCR.id);
+		modelResource.addProperty(MSCR.id, pid);
+		
 		mapToUpdateJenaModel(dto, modelResource);
 		
 		return model;
@@ -402,7 +406,7 @@ public class SchemaMapper extends MSCRMapper {
 			schemaInfoDTO.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
 		}
 		
-		mapToMSCRModelDTO(schemaInfoDTO, modelResource);
+		mapToMSCRModelDTO(schemaInfoDTO, modelResource, PID);
 
 		return schemaInfoDTO;
 	}

@@ -359,7 +359,7 @@ public class CrosswalkMapper extends MSCRMapper {
 			}
 			dto.setGeneratedFileMetadata(gf);
 		}
-		mapToMSCRModelDTO(dto, modelResource);
+		mapToMSCRModelDTO(dto, modelResource, PID);
 		return dto;
 	}
 	
@@ -442,6 +442,10 @@ public class CrosswalkMapper extends MSCRMapper {
 			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));
 			
 		}
+		
+		// for compatibility reasons
+		modelResource.removeAll(MSCR.id);
+		modelResource.addProperty(MSCR.id, pid);
 		
 		mapToUpdateJenaModel(dto, modelResource);
         return model;

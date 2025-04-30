@@ -16,8 +16,9 @@ public abstract class MSCRMapper {
         indexModel.setLicense(MapperUtils.propertyToString(resource, DCTerms.license));		
 	}
 	
-	protected void mapToMSCRModelDTO(MSCRModelDTO dto, Resource modelResource) {
-		dto.setDctIdentifiers(MapperUtils.arrayPropertyToList(modelResource, DCTerms.identifier));
+	protected void mapToMSCRModelDTO(MSCRModelDTO dto, Resource modelResource, String id) {
+		// filter out internal identifier
+		dto.setDctIdentifiers(MapperUtils.arrayPropertyToList(modelResource, DCTerms.identifier).stream().filter(p -> !p.equals(id)).toList());
 		dto.setDctCreators(MapperUtils.arrayPropertyToList(modelResource, DCTerms.creator));
 		dto.setDomain(MapperUtils.propertyToString(modelResource, MSCR.domain));
 		dto.setDctLicense(MapperUtils.propertyToString(modelResource, DCTerms.license));
