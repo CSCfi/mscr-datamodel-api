@@ -27,8 +27,6 @@
         dcap:preferredXMLNamespace  <urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69> ;
         dcap:preferredXMLNamespacePrefix
                 "urn:IAMNOTAPID:3cbbd7ed-11f7-401d-bad0-69114fbd2c69" ;
-        <http://rdfs.org/ns/void#rootResource>
-                okm:conceptscheme ;
         iow:contentModified         "2023-11-22T12:15:03.66Z"^^xsd:dateTime ;
         iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
         iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;

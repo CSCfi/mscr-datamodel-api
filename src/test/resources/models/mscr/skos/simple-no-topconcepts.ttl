@@ -96,8 +96,6 @@ mts:m611  a             skos:Concept ;
         dcap:preferredXMLNamespace  <urn:IAMNOTAPID:c56b17f1-d325-489e-b50c-3728709b0c4f> ;
         dcap:preferredXMLNamespacePrefix
                 "urn:IAMNOTAPID:c56b17f1-d325-489e-b50c-3728709b0c4f" ;
-        <http://rdfs.org/ns/void#rootResource>
-                mts: ;
         iow:contentModified         "2023-11-22T09:04:35.018Z"^^xsd:dateTime ;
         iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
         iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
