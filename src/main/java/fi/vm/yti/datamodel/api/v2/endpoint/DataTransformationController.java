@@ -56,7 +56,6 @@ import fi.vm.yti.datamodel.api.v2.service.PIDService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2;
-import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator2;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import fi.vm.yti.security.YtiUser;
@@ -82,7 +81,6 @@ public class DataTransformationController {
 	private final CrosswalkMapper mapper;
 	private final RMLGenerator2 rmlGenerator;
 	private final XSLTGenerator2 xsltGenerator;
-	private final XSLTGenerator xsltGenerator1;
 	private final WebClient webClient;
 	private final GroupManagementService groupManagementService;
 	private final AuthenticatedUserProvider userProvider;
@@ -104,7 +102,6 @@ public class DataTransformationController {
 			CrosswalkMapper mapper,
 			RMLGenerator2 rmlGenerator,
 			XSLTGenerator2 xsltGenerator,
-			XSLTGenerator xsltGenerator1,
 			WebClient.Builder webClientBuilder,
 			GroupManagementService groupManagementService,
 			AuthenticatedUserProvider userProvider,
@@ -118,7 +115,6 @@ public class DataTransformationController {
 		this.mapper = mapper;
 		this.rmlGenerator = rmlGenerator;
 		this.xsltGenerator = xsltGenerator;
-		this.xsltGenerator1 = xsltGenerator1;
 		this.webClient = webClientBuilder.build();
 		this.groupManagementService = groupManagementService;
 		this.userProvider = userProvider;
@@ -302,8 +298,8 @@ public class DataTransformationController {
 		CrosswalkInfoDTO metadata = mapper.mapToCrosswalkDTO(crosswalkInternalID, crosswalkMetadataModel, false, true, userMapper, ownerMapper);
 		// validate transformation and figure out what to generate
 		
-		String sourceFormat = metadata.getSourceSchemaInfo().format();
-		String targetFormat = metadata.getTargetSchemaInfo().format();
+		String sourceFormat = metadata.getSourceSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getSourceSchemaInfo().originalFormat() : metadata.getSourceSchemaInfo().format();
+		String targetFormat = metadata.getTargetSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getTargetSchemaInfo().originalFormat() : metadata.getTargetSchemaInfo().format() ;
 		
 		return transformInternal(crosswalkInternalID, inputFile.getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
 		
