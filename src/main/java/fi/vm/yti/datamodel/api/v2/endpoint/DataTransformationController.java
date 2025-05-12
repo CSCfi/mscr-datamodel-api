@@ -153,8 +153,8 @@ public class DataTransformationController {
 			CrosswalkInfoDTO metadata = mapper.mapToCrosswalkDTO(pid, crosswalkMetadataModel, false, true, userMapper, ownerMapper);
 
 			ResponseEntity sample = generateSample(metadata.getSourceSchema());
-			String sourceFormat = metadata.getSourceSchemaInfo().format();
-			String targetFormat = metadata.getTargetSchemaInfo().format();
+			String sourceFormat = metadata.getSourceSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getSourceSchemaInfo().originalFormat() : metadata.getSourceSchemaInfo().format();
+			String targetFormat = metadata.getTargetSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getTargetSchemaInfo().originalFormat() : metadata.getTargetSchemaInfo().format() ;
 
 			return transformInternal(pid, ((String)sample.getBody()).getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
 			
