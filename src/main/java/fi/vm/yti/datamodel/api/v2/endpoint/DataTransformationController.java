@@ -366,7 +366,7 @@ public class DataTransformationController {
 			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
 				xslt = xsltGenerator.generateXMLtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}			
-			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (sourceFormat.equals(SchemaFormat.CSV.name()))) {
+			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
 				xslt = xsltGenerator.generateXMLtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}
 			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
@@ -377,7 +377,7 @@ public class DataTransformationController {
 				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
 				xslt = xsltGenerator.generateJSONtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}
-			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (sourceFormat.equals(SchemaFormat.CSV.name()))) {
+			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
 				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
 				xslt = xsltGenerator.generateJSONtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}			
