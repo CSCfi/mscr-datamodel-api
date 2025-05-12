@@ -37,7 +37,6 @@ import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.VOID;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
 import org.w3c.dom.Document;
@@ -50,7 +49,6 @@ import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
-import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2.IteratorData;
 
 @Service
 public class XSLTGenerator2 {
@@ -269,6 +267,10 @@ public class XSLTGenerator2 {
 	private void addRootCSVOutputTemplate(Element rootTemplate, Element stylesheet, Collection<TreeNode> cols) {
 		Document doc = stylesheet.getOwnerDocument();
 
+		Element output = doc.createElementNS(xslNS, "output");
+		stylesheet.appendChild(output);
+		output.setAttribute("method", "text");
+
 		// generate target cols 
 		Element headerText = doc.createElementNS(xslNS, "text");
 		List<String> cols2 = new ArrayList<String>();
@@ -305,9 +307,6 @@ public class XSLTGenerator2 {
 		
 		stylesheet.appendChild(func);
 		
-		Element output = doc.createElementNS(xslNS, "output");
-		stylesheet.appendChild(output);
-		output.setAttribute("method", "text");
 
 		//Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
 		//rootTemplate.setAttribute("match", "/");

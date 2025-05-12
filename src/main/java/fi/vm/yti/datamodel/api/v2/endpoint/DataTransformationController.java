@@ -363,31 +363,37 @@ public class DataTransformationController {
 			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
 				xslt = xsltGenerator.generateXMLtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}
-			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
-				xslt = xsltGenerator.generateJSONtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
-				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
+			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
+				xslt = xsltGenerator.generateXMLtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}			
+			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (sourceFormat.equals(SchemaFormat.CSV.name()))) {
+				xslt = xsltGenerator.generateXMLtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}
 			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
 				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
-
 				xslt = xsltGenerator.generateJSONtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
-			}
-			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
-				xslt = xsltGenerator.generateXMLtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
-			}
-			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
-				xslt = xsltGenerator.generateCSVtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
-				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
-			}
-			
-			/*
-			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (sourceFormat.equals(SchemaFormat.CSV.name()))) {
-				xslt = xsltGenerator1.generateXMLtoCSV(mappings, crosswalkModel);
+			}	
+			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
+				xslt = xsltGenerator.generateJSONtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
 			}
 			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (sourceFormat.equals(SchemaFormat.CSV.name()))) {
-				xslt = xsltGenerator1.generateXMLtoCSV(mappings, crosswalkModel);
-			}
-			*/
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
+				xslt = xsltGenerator.generateJSONtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}			
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
+				xslt = xsltGenerator.generateCSVtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}					
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
+				xslt = xsltGenerator.generateCSVtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}					
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
+				xslt = xsltGenerator.generateCSVtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}					
+			
 			if(xslt != null) {
 				formData.add("inputData", inputDoc);
 				
