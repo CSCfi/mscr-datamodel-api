@@ -193,7 +193,7 @@ public class DataTransformationController {
 			List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
 			StoredFile file = files.get(0); // there is currently always only one file
 
-			if(dto.getFormat() == SchemaFormat.JSONSCHEMA) {
+			if(dto.getFormat() == SchemaFormat.JSONSCHEMA || dto.getOriginalFormat() == SchemaFormat.JSONSCHEMA) {
 				JsonElement json = JsonElement.readFrom(new String(file.data(), "UTF-8"));
 				io.apptik.json.schema.Schema schema = new SchemaV4().wrap(json.asJsonObject());
 				JsonGeneratorConfig gConf = new JsonGeneratorConfig();
@@ -203,7 +203,7 @@ public class DataTransformationController {
 				return new ResponseEntity(result.toString(), HttpStatusCode.valueOf(200));
 				
 			}
-			else if(dto.getFormat() == SchemaFormat.XSD) {
+			else if(dto.getFormat() == SchemaFormat.XSD || dto.getOriginalFormat() == SchemaFormat.XSD) {
 				// determine the root element
 				Model contentModel = jenaService.getSchemaContent(pid);
 				Resource root = contentModel.getResource(pid + "#root-Root").getPropertyResourceValue(SH.property).getPropertyResourceValue(SH.node);
@@ -236,7 +236,7 @@ public class DataTransformationController {
 				
 				return new ResponseEntity(response, HttpStatusCode.valueOf(200));
 			}
-			else if(dto.getFormat() == SchemaFormat.CSV) {
+			else if(dto.getFormat() == SchemaFormat.CSV || dto.getOriginalFormat() == SchemaFormat.CSV) {
 				InputStream input = new ByteArrayInputStream(file.data());
 				CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
 				CSVReader reader = new CSVReaderBuilder(new InputStreamReader(input)).withCSVParser(parser).build();
