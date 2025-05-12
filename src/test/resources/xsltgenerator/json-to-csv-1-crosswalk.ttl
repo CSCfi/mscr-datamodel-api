@@ -1,0 +1,105 @@
+<mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1>
+        <http://uri.suomi.fi/datamodel/ns/mscr#mappings>
+                <mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1@mapping=e1bf9418-8e33-4be2-8448-063f497fede6> , <mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1@mapping=97681d6d-ae24-4e10-9b91-7b49105f0126> .
+
+<mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1@mapping=e1bf9418-8e33-4be2-8448-063f497fede6>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "e1bf9418-8e33-4be2-8448-063f497fede6" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-05-06T09:25:23.384Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#processing>
+                [ <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                          "http://uri.suomi.fi/datamodel/ns/mscr#concatFunc" ;
+                  <http://uri.suomi.fi/datamodel/ns/mscr#processingParams>
+                          [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "input" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              "self"
+                                    ] ;
+                            <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                                    [ <http://uri.suomi.fi/datamodel/ns/mscr#key>
+                                              "delimiter" ;
+                                      <http://uri.suomi.fi/datamodel/ns/mscr#value>
+                                              ", "
+                                    ]
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#root-Root-document-Document-author-Author-lastname" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "lastname" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#root-Root-document-Document-author-Author-lastname>
+                          ] ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#root-Root-document-Document-author-Author-firstname" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "firstname" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#root-Root-document-Document-author-Author-firstname>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:6f9579d5-b904-44a1-b886-a387cdbcfdc7#0bbde2b8-6a07-445f-86e7-bdfd1c435cb4" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "name" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:6f9579d5-b904-44a1-b886-a387cdbcfdc7#0bbde2b8-6a07-445f-86e7-bdfd1c435cb4>
+                          ]
+                ] .
+
+<mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1@mapping=97681d6d-ae24-4e10-9b91-7b49105f0126>
+        a       <http://uri.suomi.fi/datamodel/ns/mscr#Mapping> ;
+        <http://purl.org/dc/terms/identifier>
+                "97681d6d-ae24-4e10-9b91-7b49105f0126" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <mscr:crosswalk:8ce32362-a774-43aa-a0a0-b2e9b18129c1> ;
+        <http://uri.suomi.fi/datamodel/ns/iow/contentModified>
+                "2025-05-06T09:25:31.834Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#notes>
+                "" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#predicate>
+                <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#source>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Source> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#root-Root-document-Document-header" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "header" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#root-Root-document-Document-header>
+                          ]
+                ] ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#target>
+                [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> ;
+                  <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+                          [ a       <http://uri.suomi.fi/datamodel/ns/mscr#Target> ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#id>
+                                    "mscr:schema:6f9579d5-b904-44a1-b886-a387cdbcfdc7#75c6f0c3-dc09-46a8-9af1-fa7eba68be99" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#label>
+                                    "test" ;
+                            <http://uri.suomi.fi/datamodel/ns/mscr#uri>
+                                    <mscr:schema:6f9579d5-b904-44a1-b886-a387cdbcfdc7#75c6f0c3-dc09-46a8-9af1-fa7eba68be99>
+                          ]
+                ] .

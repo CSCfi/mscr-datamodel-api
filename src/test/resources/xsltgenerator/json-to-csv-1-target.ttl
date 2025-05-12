@@ -1,0 +1,53 @@
+@prefix :      <mscr:schema:6f9579d5-b904-44a1-b886-a387cdbcfdc7#> .
+
+<mscr:schema:6f9579d5-b904-44a1-b886-a387cdbcfdc7>
+        <http://rdfs.org/ns/void#rootResource>
+                :root .
+
+:root   a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :75c6f0c3-dc09-46a8-9af1-fa7eba68be99 , :0bbde2b8-6a07-445f-86e7-bdfd1c435cb4 .
+
+:75c6f0c3-dc09-46a8-9af1-fa7eba68be99
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#column>
+                2 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "[2]" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "test" ;
+        <http://www.w3.org/ns/shacl#order>
+                2 ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:column_2> .
+
+:0bbde2b8-6a07-445f-86e7-bdfd1c435cb4
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#column>
+                1 ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "[1]" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#minCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "name" ;
+        <http://www.w3.org/ns/shacl#order>
+                1 ;
+        <http://www.w3.org/ns/shacl#path>
+                <mscr:column_1> .
