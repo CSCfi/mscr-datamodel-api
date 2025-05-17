@@ -90,6 +90,7 @@ public class XSLTGenerator2 {
 		Document targetDoc = docBuilder.newDocument();
 
 		generateTargetTree(targetDoc, namespaces, ModelFactory.createUnion(crosswalkModel, targetSchemaModel), isJSONOutput, isJSONInput, isCSVOutput, isCSVInput);
+		System.out.println("target doc");
 		System.out.println(toString(targetDoc));
 		Element treeRoot = (Element)targetDoc.getDocumentElement().getFirstChild();
 		return generateTargetMap(treeRoot, isJSONOutput, isCSVOutput); // make another version of the target tree with ordered elements
@@ -170,7 +171,6 @@ public class XSLTGenerator2 {
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 
 		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, true, true, false, false); 
-
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "3.0");
 		stylesheet.setAttribute("xmlns:f", funcNS);
