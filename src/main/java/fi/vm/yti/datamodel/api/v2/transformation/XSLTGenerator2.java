@@ -60,7 +60,6 @@ import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2.IteratorData;
-import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator.TreeNode2;
 
 @Service
 public class XSLTGenerator2 {
