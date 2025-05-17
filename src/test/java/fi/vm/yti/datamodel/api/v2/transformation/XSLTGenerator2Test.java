@@ -913,7 +913,33 @@ name;test
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}		
+	}	
 	
+	@Test
+	void testSimpleJSONtoJSONNoArrays() {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:d9c7641a-5a41-4c70-b771-2a8db0cd1c0e";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/noarrays-json2json-crosswalk.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/noarrays-source-json.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/noarrays-target-json.ttl") ;
+		
+		try {
+			String xslt = g.generateJSONtoJSON(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			System.out.println(xslt);
+			String inputDocument = """
+<data>{"book":{"title":"kE"}}</data>									
+					""";
+			String result = transform(inputDocument, xslt, "text");
+			System.out.println(result);
+			String expectedResult = """
+{"document":{"header":"kE"}}										
+					""";
+			JSONAssert.assertEquals(expectedResult, result, false);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	 	
+		
 		
 }
