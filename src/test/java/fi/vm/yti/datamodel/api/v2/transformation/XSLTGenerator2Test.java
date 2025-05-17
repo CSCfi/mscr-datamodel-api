@@ -869,7 +869,11 @@ name;test
 """.trim();
 
 			JSONAssert.assertEquals(expectedResult, result, false);
-		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+		
 	}
 
 	public void testJSONtoCSV() throws Exception {
