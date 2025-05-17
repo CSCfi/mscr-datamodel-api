@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrosswalkInfoDTO extends DataModelInfoDTO implements MSCRCommonMetadata {
 	
-	public record CrosswalkSchemaInfo(String id, String handle, String name, String versionLabel, int versionIndex, String format) {}
+	public record CrosswalkSchemaInfo(String id, String handle, String name, String versionLabel, int versionIndex, String format, String originalFormat) {}
 	
 	private MSCRState state;
 	private MSCRVisibility visibility;

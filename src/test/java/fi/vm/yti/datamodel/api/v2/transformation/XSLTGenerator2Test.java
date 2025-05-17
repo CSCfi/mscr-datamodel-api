@@ -869,6 +869,41 @@ name;test
 """.trim();
 
 			JSONAssert.assertEquals(expectedResult, result, false);
+		}
+	}
+
+	public void testJSONtoCSV() throws Exception {
+		XSLTGenerator2 g = new XSLTGenerator2();
+		String sourceSchemaURI = "mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/json-to-csv-1-crosswalk.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/json-to-csv-1-source.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/json-to-csv-1-target.ttl") ;
+		try {
+			String xslt = g.generateJSONtoCSV(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			System.out.println(xslt);
+			String inputData =
+"""
+<data>
+	{
+    "document": {
+        "author": {
+            "firstname": "Joe",
+            "lastname": "Doe"
+        },
+        "editor": "editor",
+        "header": "header"
+    }
+}
+</data>
+""".trim();
+			String result = transform(inputData, xslt, "text");
+			String expectedResult = 
+"""
+name;test
+"Doe, Joe";"header"
+""".trim();
+
+			assertEquals(expectedResult, result);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
