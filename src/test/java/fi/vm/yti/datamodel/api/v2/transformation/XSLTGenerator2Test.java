@@ -1,6 +1,11 @@
 package fi.vm.yti.datamodel.api.v2.transformation;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,11 +19,24 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.jupiter.api.Test;
+import org.opensearch.client.opensearch.core.SearchResponse;
+import org.opensearch.client.opensearch.core.search.TotalHitsRelation;
+import org.opensearch.client.util.ObjectBuilder;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import fi.vm.yti.datamodel.api.v2.dto.DataModelInfoDTO;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.SearchResponseDTO;
+import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexCrosswalk;
+import fi.vm.yti.datamodel.api.v2.service.DataModelService;
+import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.Xslt30Transformer;
@@ -27,6 +45,16 @@ import net.sf.saxon.s9api.XsltExecutable;
 
 class XSLTGenerator2Test {
 	
+	
+    @MockBean
+    private JenaService jenaService = mock(JenaService.class);
+    
+    @MockBean
+    private SearchIndexService searchService = mock(SearchIndexService.class);
+    
+    
+    
+    
 	public static String arraysXMLData = """
 <?xml version="1.0" encoding="UTF-8" ?>
  <root>
@@ -131,8 +159,9 @@ class XSLTGenerator2Test {
 		
 		try {
 			String xslt = g.generateJSONtoXML(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
-
+			System.out.println(xslt);
 			String result = transform(personJSONData, xslt, "xml");
+			System.out.println(result);
 			String expectedResult = """
 <?xml version="1.0" encoding="UTF-8" ?>
  <root>
@@ -790,6 +819,63 @@ name;test
 	}		
 	
 	@Test
+	public void testVocabularyMappingFunc() throws Exception {
+		when(jenaService.getCrosswalkContent(anyString())).thenReturn(RDFDataMgr.loadModel("xsltgenerator/vocmap/crosswalk1-valueCrosswalk.ttl"));
+		when(jenaService.getSchemaContent("mscr:schema:cf8f2bd6-47d0-4504-a07d-1c2f998a6f78")).thenReturn(RDFDataMgr.loadModel("xsltgenerator/vocmap/crosswalk1-valueSource.ttl"));
+		when(jenaService.getSchemaContent("mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a")).thenReturn(RDFDataMgr.loadModel("xsltgenerator/vocmap/crosswalk1-valueTarget.ttl"));
+		
+		SearchResponse<ObjectNode> sr = SearchResponse.searchResponseOf(s -> s
+			.took(2000l)
+			.timedOut(false)
+			.shards(sh -> sh
+                    .total(1)
+                    .failed(0)
+                    .successful(1)
+            )			
+			.hits(h -> h
+					.total(t -> t.value(1).relation(TotalHitsRelation.Eq))
+					.hits(hit -> hit
+						.index("test")
+						.id("test")
+				)
+				));
+		
+		when(searchService.mscrSearch(any(), anyBoolean())).thenReturn(sr);	
+		XSLTGenerator2 g = new XSLTGenerator2(jenaService, searchService);
+		String sourceSchemaURI = "mscr:schema:f3ae1aee-0a18-4109-9c6c-b87d3f6eb791";
+		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/vocmap/crosswalk1.ttl") ;
+		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/vocmap/source1.ttl") ;
+		Model targetSchemaModel = RDFDataMgr.loadModel("xsltgenerator/vocmap/target1.ttl") ;
+		try {
+			String xslt = g.generateJSONtoJSON(sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel);
+			String inputData =
+"""
+<data>{
+  "person": {
+    "code": "2"
+  }
+}</data>
+""".trim();
+			System.out.println(xslt);
+			String result = transform(inputData, xslt, "text");
+			System.out.println(result);
+			String expectedResult = 
+"""
+{
+  "person": {
+    "code": "second"
+  }
+}
+""".trim();
+
+			JSONAssert.assertEquals(expectedResult, result, false);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+		
+	}
+
 	public void testJSONtoCSV() throws Exception {
 		XSLTGenerator2 g = new XSLTGenerator2();
 		String sourceSchemaURI = "mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed";
@@ -827,6 +913,7 @@ name;test
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
+	}		
+	
 		
 }
