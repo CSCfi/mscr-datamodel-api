@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.SKOS;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class CrosswalkService {
 		this.mappingMapper = mappingMapper;
 	}
 	
-	public Model transformSSSOMToInternal(String pid, byte[] fileInBytes, String sourcePID, String sourceFormat, Model sourceModel, String targetPID, String targetFormat, Model targetModel) throws Exception {
+	public Model transformSSSOMToInternal(String handle, String pid, byte[] fileInBytes, String sourcePID, String sourceFormat, Model sourceModel, String targetPID, String targetFormat, Model targetModel) throws Exception {
 		Model m = ModelFactory.createDefaultModel();
 		StringReader sr = new StringReader(new String(fileInBytes, StandardCharsets.UTF_8));
 		
@@ -139,7 +140,7 @@ public class CrosswalkService {
 #license: %s
 #mapping_date: %s
 """.formatted(
-			crosswalk.getHandle() != null ? crosswalk.getHandle() : crosswalk.getPID(),
+			crosswalk.getHandle() != null ? crosswalk.getHandle() : crosswalk.getID(),
 			crosswalk.getLabel().get("en") + "." + crosswalk.getDescription().get("en"),
 			"",
 			crosswalk.getCreated()				

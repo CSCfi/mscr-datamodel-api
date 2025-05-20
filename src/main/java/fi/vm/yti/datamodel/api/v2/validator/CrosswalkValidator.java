@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 public class CrosswalkValidator extends BaseValidator implements
         ConstraintValidator<ValidCrosswalk, CrosswalkDTO> {
@@ -24,7 +25,6 @@ public class CrosswalkValidator extends BaseValidator implements
     @Override
     public boolean isValid(CrosswalkDTO dto, ConstraintValidatorContext context) {
         setConstraintViolationAdded(false);
-        checkStatus(context, dto.getStatus());
         checkLanguages(context, dto);
         checkLabels(context, dto);
         checkDescription(context, dto);

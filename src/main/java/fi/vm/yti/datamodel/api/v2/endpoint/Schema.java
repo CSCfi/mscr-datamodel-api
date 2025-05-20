@@ -23,6 +23,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -49,6 +50,8 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
+import fi.vm.yti.datamodel.api.v2.dto.PublicSchemaMetadataDTO;
+import fi.vm.yti.datamodel.api.v2.dto.PublicSchemaMetadataInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
@@ -57,6 +60,8 @@ import fi.vm.yti.datamodel.api.v2.endpoint.error.MappingError;
 import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.ExternalSchemaMetadataToInternalConverter;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.InternalSchemaMetadataToExternalConverter;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.JSONValidationService;
@@ -65,6 +70,7 @@ import fi.vm.yti.datamodel.api.v2.service.PIDService;
 import fi.vm.yti.datamodel.api.v2.service.SchemaService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
+import fi.vm.yti.datamodel.api.v2.service.TransformationService;
 import fi.vm.yti.datamodel.api.v2.service.ValidationRecord;
 import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.validator.ValidSchema;
@@ -77,7 +83,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("v2")
-@Tag(name = "Schema")
 @Validated
 public class Schema extends BaseMSCRController {
 
@@ -100,11 +105,19 @@ public class Schema extends BaseMSCRController {
 	private final AuthenticatedUserProvider userProvider;
 
 	private final GroupManagementService groupManagementService;
+	
+	private final TransformationService transformationService;
 
+	@Autowired
+	private InternalSchemaMetadataToExternalConverter convertToExternal;
+	
+	@Autowired
+	private ExternalSchemaMetadataToInternalConverter convertToInternal;
+	
 	public Schema(JenaService jenaService, AuthorizationManager authorizationManager,
 			OpenSearchIndexer openSearchIndexer, SchemaMapper schemaMapper, SchemaService schemaService,
 			PIDService PIDService, PostgresStorageService storageService, AuthenticatedUserProvider userProvider,
-			GroupManagementService groupManagementService) {
+			GroupManagementService groupManagementService, TransformationService transformationService) {
 
 		this.jenaService = jenaService;
 		this.openSearchIndexer = openSearchIndexer;
@@ -115,6 +128,8 @@ public class Schema extends BaseMSCRController {
 		this.storageService = storageService;
 		this.userProvider = userProvider;
 		this.groupManagementService = groupManagementService;
+		this.transformationService = transformationService;
+		
 	}
 
 	private byte[] validateFileUpload(byte[] fileInBytes, SchemaFormat format, boolean skipProcessing) {
@@ -229,21 +244,34 @@ public class Schema extends BaseMSCRController {
 		// - organization
 		// - format
 		// - versionLabel - defaults to ""
-		s.setStatus(inputSchema != null && inputSchema.getStatus() != null ? inputSchema.getStatus()
-				: prevSchema.getStatus());
-		s.setState(
-				inputSchema != null && inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
-		s.setVisibility(inputSchema != null && inputSchema.getVisibility() != null ? inputSchema.getVisibility()
-				: prevSchema.getVisibility());
-		s.setLabel(inputSchema != null && !inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
-		s.setDescription(inputSchema != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription()
-				: prevSchema.getDescription());
-		s.setLanguages(inputSchema != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages()
-				: prevSchema.getLanguages());
-		s.setNamespace(inputSchema != null && inputSchema.getNamespace() != null ? inputSchema.getNamespace()
-				: prevSchema.getNamespace());
-		s.setContact(inputSchema != null && inputSchema.getContact() != null ? inputSchema.getContact()
-				: prevSchema.getContact());
+		if(inputSchema != null) {
+			s.setState(inputSchema.getState() != null ? inputSchema.getState() : prevSchema.getState());
+			s.setVisibility(inputSchema.getVisibility() != null ? inputSchema.getVisibility()
+					: prevSchema.getVisibility());
+			s.setLabel(!inputSchema.getLabel().isEmpty() ? inputSchema.getLabel() : prevSchema.getLabel());
+			s.setDescription(inputSchema.getDescription() != null && !inputSchema.getDescription().isEmpty() ? inputSchema.getDescription()
+					: prevSchema.getDescription());
+			s.setLanguages(inputSchema.getLanguages() != null && !inputSchema.getLanguages().isEmpty() ? inputSchema.getLanguages()
+					: prevSchema.getLanguages());
+			s.setNamespace(inputSchema.getNamespace() != null ? inputSchema.getNamespace()
+					: prevSchema.getNamespace());
+			s.setContact(inputSchema.getContact() != null ? inputSchema.getContact()
+					: prevSchema.getContact());
+			s.setDcatKeywords(inputSchema.getDcatKeywords() != null ? inputSchema.getDcatKeywords(): prevSchema.getDcatKeywords());		
+			s.setDctContributors(inputSchema.getDctContributors() != null ? inputSchema.getDctContributors() : prevSchema.getDctContributors());
+			s.setDctCreators(inputSchema.getDctCreators() != null ? inputSchema.getDctCreators() : prevSchema.getDctCreators());
+			s.setDctIdentifiers(inputSchema.getDctIdentifiers() != null ? inputSchema.getDctIdentifiers() : prevSchema.getDctIdentifiers());
+			s.setDctIssued(inputSchema.getDctIssued() != null ? inputSchema.getDctIssued(): prevSchema.getDctIssued());
+			s.setDctLicense(inputSchema.getDctLicense() != null ? inputSchema.getDctLicense(): prevSchema.getDctLicense());
+			s.setDctPublisher(inputSchema.getDctPublisher() != null ? inputSchema.getDctPublisher() : prevSchema.getDctPublisher());
+			s.setDctRelations(inputSchema.getDctRelations() != null ? inputSchema.getDctRelations(): prevSchema.getDctRelations());
+			s.setDomain(inputSchema.getDomain() != null ? inputSchema.getDomain(): prevSchema.getDomain());
+			
+			s.setSourceURL(inputSchema.getSourceURL());
+
+		}
+
+		
 		if (action == CONTENT_ACTION.revisionOf || inputSchema == null || inputSchema.getOrganizations().isEmpty()) {
 			s.setOrganizations(prevSchema.getOrganizations().stream().map(org -> UUID.fromString(org.getId()))
 					.collect(Collectors.toSet()));
@@ -266,7 +294,6 @@ public class Schema extends BaseMSCRController {
 		else {
 			s.setFormat(inputSchema !=null && inputSchema.getFormat() != null ? inputSchema.getFormat() : prevSchema.getFormat());
 		}
-		s.setSourceURL(inputSchema.getSourceURL());
 		s.setSubType(prevSchema.getSubType());
 		
 		
@@ -295,11 +322,30 @@ public class Schema extends BaseMSCRController {
 		return model;
 	}	
 	
+	@Tag(name = "Schema")
 	@Operation(summary = "Create schema metadata")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO,
+	public PublicSchemaMetadataInfoDTO createSchema(@ValidSchema() @RequestBody(required = false) PublicSchemaMetadataDTO schemaDTO,
+			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
+			@RequestParam(name = "target", required = false) String target,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
+		return convertToExternal.convert(
+				createSchemaFrontend(
+						(SchemaDTO)convertToInternal.convert(schemaDTO), 
+						action, 
+						target, 
+						skipProcessing));
+	}
+
+		
+	@Tag(name = "Frontend")
+	@Operation(summary = "Create schema metadata")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/frontend/schema", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO createSchemaFrontend(@ValidSchema() @RequestBody(required = false) SchemaDTO schemaDTO,
 			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
 			@RequestParam(name = "target", required = false) String target,
 			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
@@ -317,24 +363,24 @@ public class Schema extends BaseMSCRController {
 			schemaDTO = mergeSchemaMetadata(prevSchema, schemaDTO, action);
 			if (action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if(prevSchema.getRevisions() != null && prevSchema.getRevisions().size() > 0 && !prevSchema.getRevisions().get(prevSchema.getRevisions().size() -1).getPid().equals(prevSchema.getPID()) ) {
+				if(prevSchema.getRevisions() != null && prevSchema.getRevisions().size() > 0 && !prevSchema.getRevisions().get(prevSchema.getRevisions().size() -1).getPid().equals(prevSchema.getID()) ) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 							"Revisions can only be created from the latest revision. Check your target PID.");
 				}
 				aggregationKey = prevSchema.getAggregationKey();
 				if(prevSchema.getFormat() == SchemaFormat.MSCR) {
-					if(jenaService.doesSchemaExist(prevSchema.getPID() + ":content")) {
+					if(jenaService.doesSchemaExist(prevSchema.getID() + ":content")) {
 						// This is really hacky!
 						File tempFile = File.createTempFile("model", ".ttl");
-						Model tempModel = jenaService.getSchemaContent(prevSchema.getPID());
+						Model tempModel = jenaService.getSchemaContent(prevSchema.getID());
 						FileOutputStream fos = new FileOutputStream(tempFile);						
 						RDFDataMgr.write(fos, tempModel, Lang.TTL);
 						
 						String fileContent = FileUtils.readFileToString(tempFile);
 						fileContent = 
 								fileContent
-								.replaceFirst("<" + prevSchema.getPID() + "#", "<" + PID + "#")
-								.replaceFirst("<" + prevSchema.getPID() + ">", "<" + PID + ">");
+								.replaceFirst("<" + prevSchema.getID() + "#", "<" + PID + "#")
+								.replaceFirst("<" + prevSchema.getID() + ">", "<" + PID + ">");
 						StringReader r = new StringReader(fileContent);
 						contentModel.read(r, null, "TURTLE");
 						r.close();
@@ -430,17 +476,19 @@ public class Schema extends BaseMSCRController {
 
 	}
 
+
+	@Tag(name = "Frontend")
 	@Operation(summary = "Upload and associate a schema description file to an existing schema")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	@PutMapping(path = "/frontend/schema/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO uploadSchemaFile(@PathVariable String pid, @RequestParam("file") MultipartFile file, @RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) {
 		return uploadSchemaFile(pid, null, file, skipProcessing);
 	}
 
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/schema/{pid}/{suffix}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	@PutMapping(path = "/frontend/schema/{pid}/{suffix}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public SchemaInfoDTO uploadSchemaFile(
 			@PathVariable String pid,
 			@PathVariable String suffix, 
@@ -482,11 +530,36 @@ public class Schema extends BaseMSCRController {
 		}
 	}
 
+	@Tag(name = "Schema")
 	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public SchemaInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
+	public PublicSchemaMetadataInfoDTO createSchemaFull(@RequestParam("metadata") String metadataString,
+			@RequestParam(name = "contentURL", required = false) String contentURL,
+			@RequestParam(name = "file", required = false) MultipartFile file,
+			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
+			@RequestParam(name = "target", required = false) String target,
+			@RequestParam(name = "skipProcessing", required = false, defaultValue = "false") boolean skipProcessing) throws Exception {
+		
+		ObjectMapper m = new ObjectMapper();
+		PublicSchemaMetadataDTO schemaDTO = m.readValue(metadataString, PublicSchemaMetadataDTO.class);
+		return convertToExternal.convert(
+				createSchemaFullFrontend(
+						m.writeValueAsString((SchemaDTO)convertToInternal.convert(schemaDTO)), 
+						contentURL, 
+						file,
+						action,
+						target,
+						skipProcessing));
+	}
+
+	@Tag(name = "Frontend")	
+	@Operation(summary = "Create schema by uploading metadata and files in one multipart request")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/frontend/schemaFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public SchemaInfoDTO createSchemaFullFrontend(@RequestParam("metadata") String metadataString,
 			@RequestParam(name = "contentURL", required = false) String contentURL,
 			@RequestParam(name = "file", required = false) MultipartFile file,
 			@RequestParam(name = "action", required = false) CONTENT_ACTION action,
@@ -526,8 +599,8 @@ public class Schema extends BaseMSCRController {
 		
 		SchemaInfoDTO dto = null;
 		try {
-			dto = createSchema(schemaDTO, action, target, skipProcessing);
-			final String PID = dto.getPID();
+			dto = createSchemaFrontend(schemaDTO, action, target, skipProcessing);
+			final String PID = dto.getID();
 
 			if (!schemaDTO.getOrganizations().isEmpty()) {
 				Collection<UUID> orgs = schemaDTO.getOrganizations();
@@ -539,12 +612,12 @@ public class Schema extends BaseMSCRController {
 			// revert any possible metadata changes
 			if(dto != null) {
 				try {
-					jenaService.deleteFromSchema(dto.getPID());
+					jenaService.deleteFromSchema(dto.getID());
 				} catch (Exception _ex) {
 					//logger.error(_ex.getMessage(), _ex);
 				}
 				try {
-					openSearchIndexer.deleteSchemaFromIndex(dto.getPID());
+					openSearchIndexer.deleteSchemaFromIndex(dto.getID());
 				} catch (Exception _ex) {
 					//logger.error(_ex.getMessage(), _ex);
 				}				
@@ -556,18 +629,41 @@ public class Schema extends BaseMSCRController {
 
 	}
 
+	@Tag(name = "Schema")
 	@Operation(summary = "Modify schema")
 	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
 	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
 	@PatchMapping(path = "/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO, @PathVariable String pid) {
+	public PublicSchemaMetadataInfoDTO updateModel(@RequestBody PublicSchemaMetadataDTO schemaDTO, @PathVariable String pid) {
 		return updateModel(schemaDTO, pid, null);
+	}
+	
+	@Hidden
+	@Operation(summary = "Modify schema")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
+	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+	@PatchMapping(path = "/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public PublicSchemaMetadataInfoDTO updateModel(@RequestBody PublicSchemaMetadataDTO schemaDTO, @PathVariable String pid,
+			@PathVariable String suffix) {
+		return convertToExternal.convert(
+					updateModelFrontend(
+						(SchemaDTO)convertToInternal.convert(schemaDTO), pid, suffix)
+					);				
+	}	
+	
+	@Tag(name = "Frontend")	
+	@Operation(summary = "Modify schema")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new schema node")
+	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+	@PatchMapping(path = "/frontend/schema/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO updateModelFrontend(@RequestBody SchemaDTO schemaDTO, @PathVariable String pid) {
+		return updateModelFrontend(schemaDTO, pid, null);
 	}
 
 	@Hidden
 	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
-	@PatchMapping(path = "/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO updateModel(@RequestBody SchemaDTO schemaDTO, @PathVariable String pid,
+	@PatchMapping(path = "/frontend/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO updateModelFrontend(@RequestBody SchemaDTO schemaDTO, @PathVariable String pid,
 			@PathVariable String suffix) {
 		logger.info("Updating schema {}", schemaDTO);
 		if (suffix != null) {
@@ -612,19 +708,39 @@ public class Schema extends BaseMSCRController {
 		}
 
 	}
-
+	
+	@Tag(name = "Schema")	
 	@Operation(summary = "Get a schema metadata")
 	@ApiResponse(responseCode = "200", description = "")
 	@GetMapping(value = "/schema/{pid}", produces = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid,
+	public PublicSchemaMetadataInfoDTO getSchemaMetadata(@PathVariable(name = "pid") String pid) {
+		return getSchemaMetadata(pid, null);
+	
+	}	
+	
+	@Hidden
+	@GetMapping(value = "/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
+	public PublicSchemaMetadataInfoDTO getSchemaMetadata(
+			@PathVariable String pid,
+			@PathVariable String suffix) {
+		return convertToExternal.convert(
+				getSchemaMetadataFrontend(pid, suffix, "false", "false")
+				);	
+	}	
+
+	@Tag(name = "Frontend")
+	@Operation(summary = "Get a schema metadata in internal format")
+	@ApiResponse(responseCode = "200", description = "")
+	@GetMapping(value = "/frontend/schema/{pid}", produces = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO getSchemaMetadataFrontend(@PathVariable(name = "pid") String pid,
 			@RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo,
 			@RequestParam(name = "includeVariantInfo", defaultValue = "false") String includeVariantInfo) {
-		return getSchemaMetadata(pid, null, includeVersionInfo, includeVariantInfo);
+		return getSchemaMetadataFrontend(pid, null, includeVersionInfo, includeVariantInfo);
 	}
 
 	@Hidden
-	@GetMapping(value = "/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
-	public SchemaInfoDTO getSchemaMetadata(
+	@GetMapping(value = "/frontend/schema/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
+	public SchemaInfoDTO getSchemaMetadataFrontend(
 			@PathVariable String pid,
 			@PathVariable String suffix,
 			@RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo,
@@ -647,18 +763,38 @@ public class Schema extends BaseMSCRController {
 		}
 	}
 	
+	@Tag(name = "Schema")	
     @Operation(summary = "Delete schema metadata and content")
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "")
     @DeleteMapping(value = "/schema/{pid}")
     public ResponseEntity<DeleteResponseDTO> deleteSchema(@PathVariable String pid){
-    	return deleteSchema(pid, null);
+    	return deleteSchemaFrontend(pid, null);
     }
     
     @Hidden
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping(value = "/schema/{pid}/{suffix}")
     public ResponseEntity<DeleteResponseDTO> deleteSchema(
+    		@PathVariable String pid, 
+    		@PathVariable(name = "suffix") String suffix){
+    	return deleteSchemaFrontend(pid, suffix);
+    	
+    }
+    
+	@Tag(name = "Frontend")	
+    @Operation(summary = "Delete schema metadata and content")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ApiResponse(responseCode = "200", description = "")
+    @DeleteMapping(value = "/frontend/schema/{pid}")
+    public ResponseEntity<DeleteResponseDTO> deleteSchemaFrontend(@PathVariable String pid){
+    	return deleteSchemaFrontend(pid, null);
+    }
+    
+    @Hidden
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping(value = "/frontend/schema/{pid}/{suffix}")
+    public ResponseEntity<DeleteResponseDTO> deleteSchemaFrontend(
     		@PathVariable String pid, 
     		@PathVariable(name = "suffix") String suffix){
 		if (suffix != null) {
@@ -742,16 +878,33 @@ public class Schema extends BaseMSCRController {
 		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid));
     }
 
+    @Tag(name = "Schema")
 	@Operation(summary = "Get original file version of the schema (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
 	@ApiResponse(responseCode = "200", description = "")
 	@GetMapping(path = "/schema/{pid}/original")
 	public ResponseEntity<byte[]> exportOriginalFile(@PathVariable("pid") String pid) {
-		return exportOriginalFile(pid, null);
+		return exportOriginalFileFrontend(pid, null);
 	}
-
+	
 	@Hidden
 	@GetMapping(path = "/schema/{pid}/{suffix}/original")
 	public ResponseEntity<byte[]> exportOriginalFile(
+			@PathVariable String pid,
+			@PathVariable String suffix) {
+		return exportOriginalFileFrontend(pid, suffix);
+	}
+	
+    @Tag(name = "Frontend")
+	@Operation(summary = "Get original file version of the schema (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
+	@ApiResponse(responseCode = "200", description = "")
+	@GetMapping(path = "/frontend/schema/{pid}/original")
+	public ResponseEntity<byte[]> exportOriginalFileFrontend(@PathVariable("pid") String pid) {
+		return exportOriginalFileFrontend(pid, null);
+	}	
+
+	@Hidden
+	@GetMapping(path = "/frontend/schema/{pid}/{suffix}/original")
+	public ResponseEntity<byte[]> exportOriginalFileFrontend(
 			@PathVariable String pid,
 			@PathVariable String suffix) {
 		if (suffix != null) {
@@ -771,18 +924,37 @@ public class Schema extends BaseMSCRController {
 		}
 
 	}
-
+	
+	@Tag(name = "Schema")
 	@Operation(summary = "Download schema related file with a given id.")
 	@ApiResponse(responseCode = "200")
 	@GetMapping(path = "/schema/{pid}/files/{fileID}")
 	public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID,
 			@RequestParam(name = "download", defaultValue = "false") String download) {
-		return downloadFile(pid, null, fileID, download);
-	}
-
+		return downloadFileFrontend(pid, null, fileID, download);
+	}	
+	
 	@Hidden
 	@GetMapping(path = "/schema/{pid}/{suffix}/files/{fileID}")
 	public ResponseEntity<byte[]> downloadFile(
+			@PathVariable String pid,
+			@PathVariable String suffix, @PathVariable String fileID,
+			@RequestParam(name = "download", defaultValue = "false") String download) {
+		return downloadFileFrontend(pid, suffix, fileID, download);
+	}
+
+	@Tag(name = "Frontend")
+	@Operation(summary = "Download schema related file with a given id.")
+	@ApiResponse(responseCode = "200")
+	@GetMapping(path = "/frontend/schema/{pid}/files/{fileID}")
+	public ResponseEntity<byte[]> downloadFileFrontend(@PathVariable String pid, @PathVariable String fileID,
+			@RequestParam(name = "download", defaultValue = "false") String download) {
+		return downloadFileFrontend(pid, null, fileID, download);
+	}
+
+	@Hidden
+	@GetMapping(path = "/frontend/schema/{pid}/{suffix}/files/{fileID}")
+	public ResponseEntity<byte[]> downloadFileFrontend(
 			@PathVariable String pid,
 			@PathVariable String suffix, @PathVariable String fileID,
 			@RequestParam(name = "download", defaultValue = "false") String download) {
@@ -806,18 +978,38 @@ public class Schema extends BaseMSCRController {
 
 	}
 
+	@Tag(name = "Schema")
 	@Operation(summary = "Delete file")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path = "/schema/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<DeleteResponseDTO> deleteFile(@PathVariable String pid, @PathVariable Long fileID) {
-		return deleteFile(pid, null, fileID);
+		return deleteFileFrontend(pid, null, fileID);
 	}
-
+	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path = "/schema/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<DeleteResponseDTO> deleteFile(
+			@PathVariable String pid, 
+			@PathVariable String suffix,
+			@PathVariable Long fileID) {
+		return deleteFileFrontend(pid, suffix, fileID);
+	}
+
+	@Tag(name = "Frontend")
+	@Operation(summary = "Delete file")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path = "/frontend/schema/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<DeleteResponseDTO> deleteFileFrontend(@PathVariable String pid, @PathVariable Long fileID) {
+		return deleteFileFrontend(pid, null, fileID);
+	}
+	
+	@Hidden
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path = "/frontend/schema/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<DeleteResponseDTO> deleteFileFrontend(
 			@PathVariable String pid, 
 			@PathVariable String suffix,
 			@PathVariable Long fileID) {
@@ -847,6 +1039,7 @@ public class Schema extends BaseMSCRController {
 
 	}
 
+	@Tag(name = "Schema")
 	@Operation(summary = "Get SHACL version of the schema")
 	@ApiResponse(responseCode = "200", description = "")
 	@GetMapping(path = "/schema/{pid}/internal", produces = "text/turtle")
@@ -883,10 +1076,11 @@ public class Schema extends BaseMSCRController {
 	}
 
 	
+	@Tag(name = "Frontend")
 	@Operation(summary = "Search DTR type API")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@GetMapping(path = "/dtr/searchBasicInfoTypes", produces = "application/json")
+	@GetMapping(path = "/frontend/searchBasicInfoTypes", produces = "application/json")
 	public ResponseEntity<String> dtrSearch(@RequestParam(name="query") String query, @RequestParam(name="page") int page, @RequestParam(name="pageSize") int pageSize) {
 		try {
 			if(userProvider.getUser().isAnonymous()) {
@@ -899,17 +1093,18 @@ public class Schema extends BaseMSCRController {
 		}
 	}	
 
+	@Tag(name = "Frontend")
 	@Operation(summary = "Update property")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/schema/{schemaID}/properties", produces = "application/json")
+	@PatchMapping(path = "/frontend/schema/{schemaID}/properties", produces = "application/json")
 	public UpdateResponseDTO updateProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
 		return updateProperty(null, schemaID, target, datatype, valuesFrom);
 	}	
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	@PatchMapping(path = "/frontend/schema/{prefix}/{schemaID}/properties", produces = "application/json")
 	public UpdateResponseDTO updateProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
 		if (prefix != null) {
 			schemaID = prefix + "/" + schemaID;
@@ -961,32 +1156,34 @@ public class Schema extends BaseMSCRController {
 		}		
 	}	
 	
+	@Tag(name = "Frontend")
 	@Operation(summary = "Update data type of a SHACL property")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/dtr/schema/{schemaID}/properties", produces = "application/json")
+	@PatchMapping(path = "/frontend/dtr/schema/{schemaID}/properties", produces = "application/json")
 	public UpdateResponseDTO updateDTRProperty(@PathVariable(name = "schemaID") String schemaID, @RequestParam(name="target") String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
 		return updateProperty(null, schemaID, target, datatype, valuesFrom);
 	}	
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
+	@PatchMapping(path = "/frontend/dtr/schema/{prefix}/{schemaID}/properties", produces = "application/json")
 	public UpdateResponseDTO updateDTRProperty(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam String target, @RequestParam(name="datatype", defaultValue = "", required = false) String datatype, @RequestParam(name="valuesFrom", defaultValue = "", required = false) String valuesFrom) {
 		return updateProperty(prefix, schemaID, target, datatype, valuesFrom);
 	}
 	
+	@Tag(name = "Frontend")
 	@Operation(summary = "Update root resource")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/schema/{schemaID}/rootResource", produces = "application/json")
+	@PatchMapping(path = "/frontend/schema/{schemaID}/rootResource", produces = "application/json")
 	public UpdateResponseDTO updateRootResource(@PathVariable(name = "schemaID") String schemaID, @RequestParam(required = false, name="value") String rootResource) {
 		return updateRootResource(null, schemaID, rootResource);
 	}	
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PatchMapping(path = "/schema/{prefix}/{schemaID}/rootResource", produces = "application/json")
+	@PatchMapping(path = "/frontend/schema/{prefix}/{schemaID}/rootResource", produces = "application/json")
 	public UpdateResponseDTO updateRootResource(@PathVariable String prefix, @PathVariable String schemaID, @RequestParam(required = false, name="value") String rootResource) {
 		if (prefix != null) {
 			schemaID = prefix + "/" + schemaID;
