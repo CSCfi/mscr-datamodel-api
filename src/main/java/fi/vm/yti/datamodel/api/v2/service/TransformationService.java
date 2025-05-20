@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2;
-import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator2;
 
 @Service
@@ -24,7 +23,6 @@ public class TransformationService {
 	private final JenaService jenaService;
 	private final RMLGenerator2 rmlGenerator;
 	private final XSLTGenerator2 xsltGenerator;
-	private final XSLTGenerator xsltGenerator1;
 	private final WebClient webClient;
 
 	
@@ -38,14 +36,12 @@ public class TransformationService {
 			JenaService jenaService,
 			RMLGenerator2 rmlGenerator,
 			XSLTGenerator2 xsltGenerator,
-			XSLTGenerator xsltGenerator1,
 			WebClient.Builder webClientBuilder
 
 			) {
 		this.jenaService = jenaService;
 		this.rmlGenerator = rmlGenerator;
 		this.xsltGenerator = xsltGenerator;
-		this.xsltGenerator1 = xsltGenerator1;
 		this.webClient = webClientBuilder.build();
 
 	}

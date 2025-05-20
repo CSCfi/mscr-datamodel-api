@@ -90,6 +90,12 @@ public class DataTransformationController {
 	private final SchemaMapper schemaMapper;
 	private final TransformationService transformationService;
 	
+	@Value("${transformation.xslt.url}")
+	private String xsltTransformationServiceUrl;
+
+	@Value("${transformation.rml.url}")
+	private String rmlTransformationServiceUrl;
+
 	
 	public DataTransformationController(
 			CrosswalkService crosswalkService,
