@@ -1,0 +1,57 @@
+@prefix :      <mscr:schema:4f6b9ab8-e5d8-4373-8722-d6367c3fe358#> .
+
+:root-Root-person-Person
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "person" ;
+        <http://www.w3.org/ns/shacl#name>
+                "person" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-person-Person-code .
+
+:root-Root-person-Person-code
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.person.code" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.person.code" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#valuesFrom>
+                <mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "code" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-person-Person-code .
+
+<mscr:schema:4f6b9ab8-e5d8-4373-8722-d6367c3fe358>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-person .
+
+:root-Root-person  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.person" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.person" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                "1"^^<http://www.w3.org/2001/XMLSchema#int> ;
+        <http://www.w3.org/ns/shacl#name>
+                "person" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-person-Person ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-person .

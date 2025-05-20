@@ -1,11 +1,14 @@
 package fi.vm.yti.datamodel.api.v2.transformation;
 
 import java.io.StringWriter;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -38,6 +41,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.VOID;
+import org.opensearch.client.opensearch.core.SearchResponse;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.vocabulary.SH;
 import org.w3c.dom.Document;
@@ -45,13 +49,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.NodeInfo;
 import fi.vm.yti.datamodel.api.v2.dto.ProcessingInfo;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
+import fi.vm.yti.datamodel.api.v2.opensearch.dto.MSCRSearchRequest;
+import fi.vm.yti.datamodel.api.v2.service.JenaService;
+import fi.vm.yti.datamodel.api.v2.service.SearchIndexService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2.IteratorData;
-import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator.TreeNode2;
 
 @Service
 public class XSLTGenerator2 {
@@ -60,6 +68,18 @@ public class XSLTGenerator2 {
 	public static final String xsNS = "http://www.w3.org/2001/XMLSchema";
 	public static final String funcNS = "http://www.w3.org/2005/xpath-functions";
 
+	private final JenaService jenaService;
+	private final SearchIndexService searchService;
+	
+	public XSLTGenerator2() {		
+		this.jenaService = null;
+		this.searchService = null;
+	}
+	
+	public XSLTGenerator2(JenaService jenaService, SearchIndexService searchService) {		
+		this.jenaService = jenaService;
+		this.searchService = searchService;
+	}
 	record TreeNode(Map<Integer, TreeNode> children, String targetPropertyURI, String mappingURI, String targetElementName,
 			String targetElementNamespace, boolean isAttribute, String datatype) {
 	};
@@ -70,6 +90,7 @@ public class XSLTGenerator2 {
 		Document targetDoc = docBuilder.newDocument();
 
 		generateTargetTree(targetDoc, namespaces, ModelFactory.createUnion(crosswalkModel, targetSchemaModel), isJSONOutput, isJSONInput, isCSVOutput, isCSVInput);
+		System.out.println("target doc");
 		System.out.println(toString(targetDoc));
 		Element treeRoot = (Element)targetDoc.getDocumentElement().getFirstChild();
 		return generateTargetMap(treeRoot, isJSONOutput, isCSVOutput); // make another version of the target tree with ordered elements
@@ -88,9 +109,13 @@ public class XSLTGenerator2 {
 		stylesheet.setAttribute("version", "3.0");
 		doc.appendChild(stylesheet);
 		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false, false, false, false);
-		addRootTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		
+		addRootTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);
 	}
+	
 	
 	public String generateJSONtoXML(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -107,7 +132,10 @@ public class XSLTGenerator2 {
 		stylesheet.setAttribute("xmlns:f", funcNS);
 		doc.appendChild(stylesheet);
 		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, true, false, false, false, false);
-		addRootJSONInputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		
+		addRootJSONInputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);	
 	}
 	
@@ -126,9 +154,13 @@ public class XSLTGenerator2 {
 		stylesheet.setAttribute("xmlns:f", funcNS);
 		doc.appendChild(stylesheet);
 		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, namespaces, sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, true, false, false, false);
-		addRootJSONOutputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet);		
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		
+		addRootJSONOutputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet);		
 		return toString(doc);	
 	}	
+	
 	
 	public String generateJSONtoJSON(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -139,7 +171,6 @@ public class XSLTGenerator2 {
 		namespaces.addAll(getNamespaces(targetSchemaModel));
 
 		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, true, true, false, false); 
-
 		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
 		stylesheet.setAttribute("version", "3.0");
 		stylesheet.setAttribute("xmlns:f", funcNS);
@@ -161,11 +192,122 @@ public class XSLTGenerator2 {
 		stylesheet.setAttribute("xmlns:fn", "fn");
 		doc.appendChild(stylesheet);
 		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, List.of(), sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false, true, true, false);
-		addRootCSVInputTemplate(geTemplateNameFromRootElement(rootElement), stylesheet, targetTreeMap.children.values());		
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		addRootCSVOutputTemplate(rootTemplate, stylesheet, targetTreeMap.children.values());
+		
+		addRootCSVInputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet, targetTreeMap.children.values());
+		
 		return toString(doc);
 
 	}
-	private void addRootCSVInputTemplate(String rootTemplateName, Element stylesheet, Collection<TreeNode> cols) {
+	
+	public String generateCSVtoJSON(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, List.of(), crosswalkModel, targetSchemaModel, true, false, false, true); 
+
+		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
+		stylesheet.setAttribute("version", "3.0");
+		stylesheet.setAttribute("xmlns:xs", xsNS);
+		stylesheet.setAttribute("xmlns:fn", "fn");
+		doc.appendChild(stylesheet);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, List.of(), sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, true, true, false, false);
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		addRootJSONOutputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet);
+		
+		addRootCSVInputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet, targetTreeMap.children.values());
+		
+		return toString(doc);
+
+	}	
+	
+	public String generateJSONtoCSV(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, List.of(), crosswalkModel, targetSchemaModel, false, true, true, false); 
+
+		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
+		stylesheet.setAttribute("version", "3.0");
+		stylesheet.setAttribute("xmlns:xs", xsNS);
+		stylesheet.setAttribute("xmlns:fn", "fn");
+		doc.appendChild(stylesheet);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, List.of(), sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, true, false, false, true, false);
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		addRootCSVOutputTemplate(rootTemplate, stylesheet, targetTreeMap.children.values());
+
+		addRootJSONInputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet);		
+		return toString(doc);
+	}
+
+	public String generateXMLtoCSV(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, List.of(), crosswalkModel, targetSchemaModel, false, false, true, false); 
+
+		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
+		stylesheet.setAttribute("version", "3.0");
+		stylesheet.setAttribute("xmlns:xs", xsNS);
+		stylesheet.setAttribute("xmlns:fn", "fn");
+		doc.appendChild(stylesheet);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, List.of(), sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false, false, true, false);
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		addRootCSVOutputTemplate(rootTemplate, stylesheet, targetTreeMap.children.values());
+		addRootTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet);		
+
+		return toString(doc);
+	}
+	
+	public String generateCSVtoXML(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel) throws Exception {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.newDocument();
+
+		TreeNode targetTreeMap = generateTreeMap(docBuilder, List.of(), crosswalkModel, targetSchemaModel, false, false, false, true); 
+
+		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
+		stylesheet.setAttribute("version", "3.0");
+		stylesheet.setAttribute("xmlns:xs", xsNS);
+		stylesheet.setAttribute("xmlns:fn", "fn");
+		doc.appendChild(stylesheet);
+		Element rootElement = addTemplatesXMLtoXML(stylesheet, targetTreeMap, List.of(), sourceSchemaURI, sourceSchemaModel, crosswalkModel, targetSchemaModel, null, false, false, true, false, false);
+		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		rootTemplate.setAttribute("match", "/");
+		addRootCSVInputTemplate(rootTemplate, geTemplateNameFromRootElement(rootElement), stylesheet, targetTreeMap.children.values());
+
+		return toString(doc);
+	}	
+	
+	private void addRootCSVOutputTemplate(Element rootTemplate, Element stylesheet, Collection<TreeNode> cols) {
+		Document doc = stylesheet.getOwnerDocument();
+
+		Element output = doc.createElementNS(xslNS, "output");
+		stylesheet.appendChild(output);
+		output.setAttribute("method", "text");
+
+		// generate target cols 
+		Element headerText = doc.createElementNS(xslNS, "text");
+		List<String> cols2 = new ArrayList<String>();
+		cols.forEach(c -> { cols2.add(c.targetElementName);});
+		headerText.setTextContent(String.join(";", cols2));
+		
+		
+		rootTemplate.appendChild(headerText);
+		Element newLine = doc.createElementNS(xslNS, "xsl:value-of");				
+		newLine.setAttribute("select", "concat('', '\n')");
+		rootTemplate.appendChild(newLine);
+
+	}
+	private void addRootCSVInputTemplate(Element rootTemplate, String rootTemplateName, Element stylesheet, Collection<TreeNode> cols) {
 		Document doc = stylesheet.getOwnerDocument();
 		
 		Element func = doc.createElementNS(xslNS, "xsl:function");
@@ -188,12 +330,9 @@ public class XSLTGenerator2 {
 		
 		stylesheet.appendChild(func);
 		
-		Element output = doc.createElementNS(xslNS, "output");
-		stylesheet.appendChild(output);
-		output.setAttribute("method", "text");
 
-		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
-		rootTemplate.setAttribute("match", "/");
+		//Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		//rootTemplate.setAttribute("match", "/");
 		
 		Element dataVar = doc.createElementNS(xslNS, "variable");
 		dataVar.setAttribute("name", "csv");
@@ -205,17 +344,6 @@ public class XSLTGenerator2 {
 		linesVar.setAttribute("select", "tokenize($csv, '\\r?\\n')");
 		rootTemplate.appendChild(linesVar);
 
-		// generate target cols 
-		Element headerText = doc.createElementNS(xslNS, "text");
-		List<String> cols2 = new ArrayList<String>();
-		cols.forEach(c -> { cols2.add(c.targetElementName);});
-		headerText.setTextContent(String.join(";", cols2));
-		
-		
-		rootTemplate.appendChild(headerText);
-		Element newLine = doc.createElementNS(xslNS, "xsl:value-of");				
-		newLine.setAttribute("select", "concat('', '\n')");
-		rootTemplate.appendChild(newLine);
 		
 		Element callTemplate = doc.createElementNS(xslNS, "call-template");
 		callTemplate.setAttribute("name", rootTemplateName);
@@ -224,92 +352,11 @@ public class XSLTGenerator2 {
 		withParam.setAttribute("name", "node");
 		withParam.setAttribute("select", "$lines[position() > 1][. != '']");
 		callTemplate.appendChild(withParam);
-		stylesheet.appendChild(rootTemplate);		
+		stylesheet.appendChild(rootTemplate);	
+		
 		
 	}
-	public String generateXMLtoCSV(String sourceSchemaURI, Model sourceSchemaModel, Model crosswalkModel, Model targetSchemaModel, List<MappingInfoDTO> mappings) throws Exception {
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-		Document doc = docBuilder.newDocument();
-
-		final List<String> namespaces = getNamespaces(sourceSchemaModel);
-		namespaces.addAll(getNamespaces(targetSchemaModel));
-
-		TreeNode targetTreeMap = generateTreeMap(docBuilder, namespaces, crosswalkModel, targetSchemaModel, false, false, true ,false); 
-
-		Element stylesheet = doc.createElementNS(xslNS, "xsl:stylesheet");
-		stylesheet.setAttribute("version", "2.0");
-		doc.appendChild(stylesheet);
-		
-		String defaultSeparator = ";";
-		String defaultNewline = "\n";
-		Element output = doc.createElementNS(xslNS, "output");
-		stylesheet.appendChild(output);
-		output.setAttribute("method", "text");
-		Element separatorVariable = doc.createElementNS(xslNS, "variable");
-		stylesheet.appendChild(separatorVariable);
-		separatorVariable.setAttribute("name", "separator");
-		separatorVariable.setAttribute("select", "'" + defaultSeparator + "'");
-		Element newlineVariable = doc.createElementNS(xslNS, "variable");
-		stylesheet.appendChild(newlineVariable);
-		newlineVariable.setAttribute("name", "newline");
-		newlineVariable.setAttribute("select", "'" + defaultNewline + "'");
-		
-		Element rootTemplate = doc.createElementNS(xslNS, "template");
-		stylesheet.appendChild(rootTemplate);
-		rootTemplate.setAttribute("match", "/");
-		
-		// generate header row
-		List<String> cols = new ArrayList<String>();
-		for (MappingInfoDTO m : mappings) {
-			String colLabel = m.getTarget().get(0).getLabel();
-			if (!colLabel.startsWith("iterator source")) { // remove this!
-				cols.add("'" + colLabel + "'");
-				cols.add("$separator");
-			}
-
-		}
-		Element headerValueOf = doc.createElementNS(xslNS, "value-of");
-		headerValueOf.setAttribute("select", "concat(" + String.join(",", cols) + ")");
-		rootTemplate.appendChild(headerValueOf);
-		Element newLineValue = doc.createElementNS(xslNS, "value-of");
-		newLineValue.setAttribute("select", "$newline");
-		rootTemplate.appendChild(newLineValue);
-		
-		
-		List<IteratorData> rowIterators = getIterators(crosswalkModel);
-		for (IteratorData iteratorData : rowIterators) {
-			Element forEach = doc.createElementNS(xslNS, "for-each");
-			Resource iteratorSourceProperty = sourceSchemaModel.getResource(iteratorData.sourcePropertyURI);
-			String iteratorPath = iteratorSourceProperty.getProperty(MSCR.instancePath).getString();
-			rootTemplate.appendChild(forEach);
-			forEach.setAttribute("select", "$data" + iteratorPath);
-			for (MappingInfoDTO mappingInfo : mappings) {
-				String sourceValuePath = null;
-				if(mappingInfo.getProcessing() == null && 
-						mappingInfo.getSource().stream().filter(NodeInfo::hasProcessing).collect(Collectors.toList()).isEmpty() &&
-						mappingInfo.getTarget().stream().filter(NodeInfo::hasProcessing).collect(Collectors.toList()).isEmpty()) {
-					
-					NodeInfo sourceNode = mappingInfo.getSource().get(0);
-					Resource sourceProperty = sourceSchemaModel.getResource(sourceNode.getUri());
-					String instancePath = sourceProperty.getProperty(MSCR.instancePath).getString();
-					sourceValuePath = instancePath.substring(iteratorPath.length());
-				}
-				Element valueOf = doc.createElementNS(xslNS, "value-of");
-				valueOf.setAttribute("select", sourceValuePath);
-				forEach.appendChild(valueOf);
-				Element valueOf2 = doc.createElementNS(xslNS, "value-of");
-				valueOf2.setAttribute("select", "$separator");
-				forEach.appendChild(valueOf2);
-			}
-			Element newLineValue2 = doc.createElementNS(xslNS, "value-of");
-			newLineValue2.setAttribute("select", "$newline");
-			forEach.appendChild(newLineValue2);
-		}		
-		
-		
-		return toString(doc);	
-	}	
+	
 	
 	private List<IteratorData> getIterators(Model inputModel) {
 		String q ="""
@@ -344,10 +391,10 @@ where {
 		return list;
 	}
 	
-	private void addRootJSONInputTemplate(String rootTemplateName, Element stylesheet) {
+	private void addRootJSONInputTemplate(Element rootTemplate, String rootTemplateName, Element stylesheet) {
 		Document doc = stylesheet.getOwnerDocument();
-		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
-		rootTemplate.setAttribute("match", "/");
+		//Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		//rootTemplate.setAttribute("match", "/");
 		Element callTemplate = doc.createElementNS(xslNS, "call-template");
 		callTemplate.setAttribute("name", rootTemplateName);
 		rootTemplate.appendChild(callTemplate);
@@ -358,7 +405,7 @@ where {
 		stylesheet.appendChild(rootTemplate);
 	}
 	
-	private void addRootJSONOutputTemplate(String rootTemplateName, Element stylesheet) {
+	private void addRootJSONOutputTemplate(Element rootTemplate, String rootTemplateName, Element stylesheet) {
 		Document doc = stylesheet.getOwnerDocument();
 		Element output = doc.createElementNS(xslNS, "xsl:output");
 		output.setAttribute("method", "text");
@@ -369,8 +416,8 @@ where {
 		Element variable = doc.createElementNS(xslNS, "xsl:variable");
 		variable.setAttribute("name", "jsonoutput");
 		
-		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
-		rootTemplate.setAttribute("match", "/");
+		//Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		//rootTemplate.setAttribute("match", "/");
 		Element callTemplate = doc.createElementNS(xslNS, "call-template");
 		callTemplate.setAttribute("name", rootTemplateName);
 		
@@ -504,10 +551,10 @@ where {
 		throw new RuntimeException("No root template name found");
 	}
 	
-	private void addRootTemplate(String rootTemplateName, Element stylesheet) {
+	private void addRootTemplate(Element rootTemplate, String rootTemplateName, Element stylesheet) {
 		Document doc = stylesheet.getOwnerDocument();
-		Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
-		rootTemplate.setAttribute("match", "/");
+		//Element rootTemplate = doc.createElementNS(xslNS, "xsl:template");
+		//rootTemplate.setAttribute("match", "/");
 		Element callTemplate = doc.createElementNS(xslNS, "call-template");
 		callTemplate.setAttribute("name", rootTemplateName);
 		rootTemplate.appendChild(callTemplate);
@@ -567,7 +614,7 @@ where {
 		if(prop.hasProperty(SH.maxCount)) {
 			int count = prop.getProperty(SH.maxCount).getObject().asLiteral().getInt();
 			return count > 1;
-		}
+		}		
 		return true;
 	}
 	
@@ -823,7 +870,13 @@ where {
 				withParam.setAttribute("select", "fn:getTokens(.)");
 			}
 			else {
-				withParam.setAttribute("select", ".");	
+				if(isParentRepeatable) {
+					withParam.setAttribute("select", ".");	
+				}
+				else {
+					withParam.setAttribute("select", "$node");	
+				}
+					
 			}
 				
 			System.out.println(target.targetPropertyURI);
@@ -926,7 +979,7 @@ where {
 			mappingOutputVariable.setAttribute("select", "$mapping_func_input[" + sourceIndex + "]");
 		}
 		else {
-			mappingOutputVariable.setAttribute("select", getFunctionSelect(templateElement, "$mapping_func_input", mappingInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
+			mappingOutputVariable.setAttribute("select", getFunctionSelect(templateElement, "$mapping_func_input", mappingInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, targetSchemaModel, mappingInfo, isJSONSource));
 		}
 		templateElement.appendChild(mappingOutputVariable);
 		NodeInfo targetNodeInfo = mappingInfo.getTarget().get(targetNodeIndex);
@@ -971,7 +1024,7 @@ where {
 				targetValueOf.setAttribute("select", "$mapping_func_output[" + (targetNodeIndex + 1) + "]");	
 			}
 			else {
-				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, "$mapping_func_output[" + (targetNodeIndex + 1) + "]", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
+				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, "$mapping_func_output[" + (targetNodeIndex + 1) + "]", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, targetSchemaModel, mappingInfo, isJSONSource));
 			}
 			
 			targetElement.appendChild(targetValueOf);
@@ -1027,7 +1080,7 @@ where {
 				targetValueOf.setAttribute("select", ".");	
 			}
 			else {
-				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, ".", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource));
+				targetValueOf.setAttribute("select", getFunctionSelect(targetElement, ".", targetNodeInfo.getProcessing(), sourceSchemaURI, sourceSchemaModel, targetSchemaModel, mappingInfo, isJSONSource));
 			}
 			
 			if(isCSVTarget) {
@@ -1050,7 +1103,7 @@ where {
 		*/	
 	}
 
-	private String getFunctionSelect(Element e, String valueSource, ProcessingInfo pi, String sourceSchemaURI, Model sourceSchemaModel, MappingInfoDTO mapping, boolean isJSONSource) {
+	private String getFunctionSelect(Element e, String valueSource, ProcessingInfo pi, String sourceSchemaURI, Model sourceSchemaModel, Model targetSchemaModel, MappingInfoDTO mapping, boolean isJSONSource) {
 		String id = pi.getId();
 		if(id.equals("http://uri.suomi.fi/datamodel/ns/mscr#toString")) {
 			return "string(" + valueSource + ")";
@@ -1151,7 +1204,75 @@ where {
 			
 
 
-		}		
+		}	
+		if(id.equals("http://uri.suomi.fi/datamodel/ns/mscr#mapVocabulariesFunc")) {
+			// get source and target vocabularies 
+			// using just the first property for now
+			Resource sourceProperty = sourceSchemaModel.getResource(mapping.getSource().get(0).getUri());
+			Resource targetProperty = targetSchemaModel.getResource(mapping.getTarget().get(0).getUri());
+			
+			if(!sourceProperty.hasProperty(MSCR.valuesFrom)) {
+				throw new RuntimeException("Source property is missing valuesFrom property.");
+			}
+			if(!targetProperty.hasProperty(MSCR.valuesFrom)) {
+				throw new RuntimeException("Target property is missing valuesFrom property.");
+			}
+			Resource sourceValueVoc = sourceProperty.getPropertyResourceValue(MSCR.valuesFrom);
+			Resource targetValueVoc = targetProperty.getPropertyResourceValue(MSCR.valuesFrom);
+			
+			// find crosswalk 
+			MSCRSearchRequest sr = new MSCRSearchRequest();
+			sr.setSourceSchemas(Set.of(sourceValueVoc.getURI()));
+			sr.setTargetSchemas(Set.of(targetValueVoc.getURI()));
+			SearchResponse<ObjectNode> response = searchService.mscrSearch(sr, true);
+			if(response == null || response.hits().hits().size() == 0) {
+				throw new RuntimeException("No crosswalk found between the value vocabularies");
+			}
+			String crosswalkID = URLDecoder.decode(response.hits().hits().get(0).id());
+			
+			Model sourceVocModel = jenaService.getSchemaContent(sourceValueVoc.getURI());
+			Model targetVocModel = jenaService.getSchemaContent(targetValueVoc.getURI());
+									
+			// generate named template that transforms values 			
+			// assuming that source and target of subtype vocabulary - SKOS
+			Map<String, String> valueMappings = new HashMap<String, String>();
+			Model valueModel = jenaService.getCrosswalkContent(crosswalkID);
+			valueModel.add(sourceVocModel);
+			valueModel.add(targetVocModel);
+			
+			String valueQuery = """
+PREFIX : <http://uri.suomi.fi/datamodel/ns/mscr#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+select ?sourceValue ?targetValue 
+where {
+  ?sourceProp <http://www.w3.org/2004/02/skos/core#prefLabel> ?sourceValue .
+  ?source :uri ?sourceProp .
+  ?mapping :source/rdf:_1 ?source .
+  ?mapping :target/rdf:_1 ?target .
+  ?target :uri ?targetProp .
+  ?targetProp <http://www.w3.org/2004/02/skos/core#prefLabel> ?targetValue .  
+  
+}					
+					""";
+			QueryExecution qe = QueryExecutionFactory.create(valueQuery, valueModel);
+			ResultSet results = qe.execSelect();
+
+			Element mappingVar = e.getOwnerDocument().createElementNS(xslNS, "xsl:variable");
+			mappingVar.setAttribute("name", "mapping");
+
+			while (results.hasNext()) {
+				QuerySolution res = results.next();
+				Element mappingEntry = e.getOwnerDocument().createElement("entry");
+				mappingEntry.setAttribute("key", res.get("sourceValue").asLiteral().getString());
+				mappingEntry.setTextContent(res.get("targetValue").asLiteral().getString());
+				mappingVar.appendChild(mappingEntry);
+			}
+
+			e.appendChild(mappingVar);
+			
+			// select var value
+			return "$mapping/entry[@key=" + valueSource +"]";
+		}
 		
 		throw new RuntimeException("No handler found for processing function " + pi.getId());
 
@@ -1222,7 +1343,7 @@ where {
 			valuePath = valuePath + sourceProperty.getProperty(MSCR.instancePath).getString();
 		}
 		if(sourceNode.getProcessing() != null) {
-			return getFunctionSelect(e, valuePath, sourceNode.getProcessing(), sourceSchemaURI, sourceSchemaModel, mappingInfo, isJSONSource);
+			return getFunctionSelect(e, valuePath, sourceNode.getProcessing(), sourceSchemaURI, sourceSchemaModel, null, mappingInfo, isJSONSource);
 
 		}
 
@@ -1427,6 +1548,9 @@ where {
 			return node;
 		}
 		String path = targetInfo.schemaPath;
+		if(path == null) {
+			return null;
+		}
 		if(isJSONOutput) {
 			path = path.replaceAll("\\$", "").replaceAll("\\.", "/").replaceAll("\\[\\*\\]", "");
 		}
@@ -1476,6 +1600,9 @@ where {
 				}
 				node.setAttribute("namespace", namespace);
 				node.setAttribute("order", order);
+				
+
+				
 				if(candidatePath.equals(path)) {
 					node.setAttribute("propertyURI", targetInfo.propertyURI.getURI());
 					node.setAttribute("mappingURI", targetInfo.mappingURI.getURI());
@@ -1487,6 +1614,7 @@ where {
 				else {
 					boolean isAttribute = r.hasProperty(MSCR.sourceType) && r.getRequiredProperty(MSCR.sourceType).getResource().getURI().equals(MSCR.sourceTypeAttribute.getURI());
 					node.setAttribute("isAttribute", ""+isAttribute);
+					node.setAttribute("propertyURI", r.getURI());
 				}
 			}
 		}

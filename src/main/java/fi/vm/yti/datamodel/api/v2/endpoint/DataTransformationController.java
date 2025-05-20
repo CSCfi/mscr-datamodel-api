@@ -57,7 +57,6 @@ import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
 import fi.vm.yti.datamodel.api.v2.service.TransformationService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2;
-import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator2;
 import fi.vm.yti.security.AuthenticatedUserProvider;
 import fi.vm.yti.security.YtiUser;
@@ -81,6 +80,9 @@ public class DataTransformationController {
 	private final CrosswalkService crosswalkService;
 	private final JenaService jenaService;
 	private final CrosswalkMapper mapper;
+	private final RMLGenerator2 rmlGenerator;
+	private final XSLTGenerator2 xsltGenerator;
+	private final WebClient webClient;
 	private final GroupManagementService groupManagementService;
 	private final AuthenticatedUserProvider userProvider;
 	private final PIDService PIDService;
@@ -93,6 +95,9 @@ public class DataTransformationController {
 			CrosswalkService crosswalkService,
 			JenaService jenaService,
 			CrosswalkMapper mapper,
+			RMLGenerator2 rmlGenerator,
+			XSLTGenerator2 xsltGenerator,
+			WebClient.Builder webClientBuilder,
 			GroupManagementService groupManagementService,
 			AuthenticatedUserProvider userProvider,
 			PIDService PIDService,
@@ -104,6 +109,9 @@ public class DataTransformationController {
 		this.crosswalkService = crosswalkService;
 		this.jenaService = jenaService;
 		this.mapper = mapper;
+		this.rmlGenerator = rmlGenerator;
+		this.xsltGenerator = xsltGenerator;
+		this.webClient = webClientBuilder.build();
 		this.groupManagementService = groupManagementService;
 		this.userProvider = userProvider;
 		this.PIDService = PIDService;
@@ -142,8 +150,8 @@ public class DataTransformationController {
 			CrosswalkInfoDTO metadata = mapper.mapToCrosswalkDTO(pid, crosswalkMetadataModel, false, true, userMapper, ownerMapper);
 
 			ResponseEntity sample = generateSample(metadata.getSourceSchema());
-			String sourceFormat = metadata.getSourceSchemaInfo().format();
-			String targetFormat = metadata.getTargetSchemaInfo().format();
+			String sourceFormat = metadata.getSourceSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getSourceSchemaInfo().originalFormat() : metadata.getSourceSchemaInfo().format();
+			String targetFormat = metadata.getTargetSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getTargetSchemaInfo().originalFormat() : metadata.getTargetSchemaInfo().format() ;
 
 			return transformationService.transformInternal(pid, ((String)sample.getBody()).getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
 			
@@ -182,7 +190,7 @@ public class DataTransformationController {
 			List<StoredFile> files = storageService.retrieveAllSchemaFiles(pid);
 			StoredFile file = files.get(0); // there is currently always only one file
 
-			if(dto.getFormat() == SchemaFormat.JSONSCHEMA) {
+			if(dto.getFormat() == SchemaFormat.JSONSCHEMA || dto.getOriginalFormat() == SchemaFormat.JSONSCHEMA) {
 				JsonElement json = JsonElement.readFrom(new String(file.data(), "UTF-8"));
 				io.apptik.json.schema.Schema schema = new SchemaV4().wrap(json.asJsonObject());
 				JsonGeneratorConfig gConf = new JsonGeneratorConfig();
@@ -192,7 +200,7 @@ public class DataTransformationController {
 				return new ResponseEntity(result.toString(), HttpStatusCode.valueOf(200));
 				
 			}
-			else if(dto.getFormat() == SchemaFormat.XSD) {
+			else if(dto.getFormat() == SchemaFormat.XSD || dto.getOriginalFormat() == SchemaFormat.XSD) {
 				// determine the root element
 				Model contentModel = jenaService.getSchemaContent(pid);
 				Resource root = contentModel.getResource(pid + "#root-Root").getPropertyResourceValue(SH.property).getPropertyResourceValue(SH.node);
@@ -225,7 +233,7 @@ public class DataTransformationController {
 				
 				return new ResponseEntity(response, HttpStatusCode.valueOf(200));
 			}
-			else if(dto.getFormat() == SchemaFormat.CSV) {
+			else if(dto.getFormat() == SchemaFormat.CSV || dto.getOriginalFormat() == SchemaFormat.CSV) {
 				InputStream input = new ByteArrayInputStream(file.data());
 				CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
 				CSVReader reader = new CSVReaderBuilder(new InputStreamReader(input)).withCSVParser(parser).build();
@@ -287,13 +295,122 @@ public class DataTransformationController {
 		CrosswalkInfoDTO metadata = mapper.mapToCrosswalkDTO(crosswalkInternalID, crosswalkMetadataModel, false, true, userMapper, ownerMapper);
 		// validate transformation and figure out what to generate
 		
-		String sourceFormat = metadata.getSourceSchemaInfo().format();
-		String targetFormat = metadata.getTargetSchemaInfo().format();
+		String sourceFormat = metadata.getSourceSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getSourceSchemaInfo().originalFormat() : metadata.getSourceSchemaInfo().format();
+		String targetFormat = metadata.getTargetSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getTargetSchemaInfo().originalFormat() : metadata.getTargetSchemaInfo().format() ;
 		
 		return transformationService.transformInternal(crosswalkInternalID, inputFile.getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
 		
 	}
 	
+	private ResponseEntity transformInternal(String crosswalkInternalID, byte[] data, String sourceSchema, String sourceFormat, String targetSchema, String targetFormat) throws Exception {
+		String exportFormat = null;
+		String outputMethod = "text";
+		if(targetFormat.equals("XSD")) {
+			outputMethod = "xml";
+		}
 
+		if(Set.of("CSV", "XSD", "JSONSCHEMA").contains(sourceFormat) && targetFormat.equals("SHACL")) {
+			exportFormat = "rml";
+		}
+		else if(Set.of("CSV", "XSD", "JSONSCHEMA").contains(sourceFormat) && Set.of("CSV", "XSD", "JSONSCHEMA").contains(targetFormat)) {
+			exportFormat = "xslt";
+		}
+		else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not transform data with the given crosswalk. Supported transformations are CSV/XSD/JSONSchema -> SHACL and CSV/XSD/JSONSchema -> CSV/XSD/JSONSchema.", null);
+		}
+		// generate
+		Model crosswalkModel = jenaService.getCrosswalkContent(crosswalkInternalID);
+		Model sourceSchemaModel = jenaService.getSchemaContent(sourceSchema);
+		Model targetSchemaModel = jenaService.getSchemaContent(targetSchema);
+		
+		MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
+		formData.add("outputMethod", outputMethod);
+		
+		// forward to appropriate backend service and return results
+		switch (exportFormat) {
+		case "rml": {
+			formData.add("inputData", new String(data, "UTF-8"));
+
+			
+			crosswalkModel.add(sourceSchemaModel);
+			crosswalkModel.add(targetSchemaModel);
+			crosswalkModel.add(jenaService.getCrosswalk(crosswalkInternalID));
+			crosswalkModel.add(jenaService.getSchema(sourceSchema));
+			
+			Model outputModel = rmlGenerator.generateRMLFromMSCRGraph(crosswalkModel, crosswalkInternalID, sourceSchema);
+			
+			StringWriter writer = new StringWriter();
+			outputModel.write(writer, "TURTLE");
+			writer.flush();
+			String rmlContent = writer.toString();
+			formData.add("crosswalkData", rmlContent);
+			
+			writer.close();
+			
+			return webClient.post().uri(rmlTransformationServiceUrl)
+				.bodyValue(formData)
+				.accept(MediaType.ALL)
+				.header("Content-Type", "multipart/form-data")
+				.retrieve()
+				.toEntity(String.class).block();			
+		}
+		case "xslt": {
+			String xslt = null;
+			String inputDoc = new String(data, "UTF-8");
+			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
+				xslt = xsltGenerator.generateXMLtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}
+			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
+				xslt = xsltGenerator.generateXMLtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}			
+			if((sourceFormat.equals(SchemaFormat.XSD.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
+				xslt = xsltGenerator.generateXMLtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}
+			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
+				xslt = xsltGenerator.generateJSONtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}	
+			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
+				xslt = xsltGenerator.generateJSONtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}
+			if((sourceFormat.equals(SchemaFormat.JSONSCHEMA.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";
+				xslt = xsltGenerator.generateJSONtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}			
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.CSV.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
+				xslt = xsltGenerator.generateCSVtoCSV(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}					
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.XSD.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
+				xslt = xsltGenerator.generateCSVtoXML(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}					
+			if((sourceFormat.equals(SchemaFormat.CSV.name())) && (targetFormat.equals(SchemaFormat.JSONSCHEMA.name()))) {
+				inputDoc = "<data><![CDATA[" + inputDoc + "]]></data>";				
+				xslt = xsltGenerator.generateCSVtoJSON(sourceSchema,jenaService.getSchemaContent(sourceSchema), crosswalkModel, jenaService.getSchemaContent(targetSchema));
+			}					
+			
+			if(xslt != null) {
+				formData.add("inputData", inputDoc);
+				
+				formData.add("crosswalkData", xslt);
+
+				return webClient.post().uri(xsltTransformationServiceUrl)
+						.bodyValue(formData)
+						.accept(MediaType.ALL)
+						.header("Content-Type", "multipart/form-data")
+						.retrieve()
+						.toEntity(String.class).block();
+				
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Generated XSLT was null", null);
+			}
+		}
+		default:
+			throw new IllegalArgumentException("No export format available");
+		}
+	}
 			
 }

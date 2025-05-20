@@ -1,0 +1,134 @@
+@prefix :      <mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed#> .
+
+<mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed>
+        <http://purl.org/dc/terms/language>
+                "en" ;
+        <http://rdfs.org/ns/void#rootResource>
+                :root-Root .
+
+:root-Root-document  a  <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.document" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.document" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "document" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-document-Document ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-document .
+
+:root-Root-document-Document
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "document" ;
+        <http://www.w3.org/ns/shacl#name>
+                "document" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-document-Document-author , :root-Root-document-Document-editor , :root-Root-document-Document-header .
+
+:root-Root-document-Document-author
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.document.author" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.document.author" ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "author" ;
+        <http://www.w3.org/ns/shacl#node>
+                :root-Root-document-Document-author-Author ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-document-Document-author .
+
+:root-Root-document-Document-author-Author
+        a       <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "author" ;
+        <http://www.w3.org/ns/shacl#name>
+                "author" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-document-Document-author-Author-lastname , :root-Root-document-Document-author-Author-firstname .
+
+:root-Root-document-Document-author-Author-lastname
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.document.author.lastname" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.document.author.lastname" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "lastname" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-document-Document-author-Author-lastname .
+
+:root-Root-document-Document-author-Author-firstname
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.document.author.firstname" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.document.author.firstname" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "firstname" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-document-Document-author-Author-firstname .
+
+:root-Root-document-Document-editor
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.document.editor" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.document.editor" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "editor" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-document-Document-editor .
+
+:root-Root-document-Document-header
+        a       <http://www.w3.org/ns/shacl#PropertyShape> ;
+        <http://purl.org/dc/terms/type>
+                <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#instancePath>
+                "$.document.header" ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#schemaPath>
+                "$.document.header" ;
+        <http://www.w3.org/ns/shacl#datatype>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <http://www.w3.org/ns/shacl#maxCount>
+                1 ;
+        <http://www.w3.org/ns/shacl#name>
+                "header" ;
+        <http://www.w3.org/ns/shacl#path>
+                :root-Root-document-Document-header .
+
+:root-Root  a   <http://www.w3.org/ns/shacl#NodeShape> ;
+        <http://uri.suomi.fi/datamodel/ns/mscr#localName>
+                "root" ;
+        <http://www.w3.org/ns/shacl#name>
+                "root" ;
+        <http://www.w3.org/ns/shacl#property>
+                :root-Root-document .

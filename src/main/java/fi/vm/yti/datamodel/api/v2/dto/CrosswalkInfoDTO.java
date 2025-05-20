@@ -10,7 +10,7 @@ import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO.CrosswalkSchemaInfo;
 
 public class CrosswalkInfoDTO extends CommonCrosswalkDTO implements MSCRCommonMetadata, InternalCrosswalkMetadataDTO {
 	
-	public record CrosswalkSchemaInfo(String id, String handle, String name, String versionLabel, int versionIndex, String format) {}
+	public record CrosswalkSchemaInfo(String id, String handle, String name, String versionLabel, int versionIndex, String format, String originalFormat) {}
 	
 	private String ID;
 	private String aggregationKey;

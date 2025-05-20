@@ -372,8 +372,8 @@ public class CrosswalkMapper extends MSCRMapper {
 				dto.getLabel().get("en"),
 				dto.getVersionLabel(),
 				-1,
-				dto.getFormat().name()
-				
+				dto.getFormat().name(),
+				(dto.getOriginalFormat() != null ? dto.getOriginalFormat().name() : null) 
 				);
 		 
 		

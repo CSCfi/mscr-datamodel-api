@@ -672,6 +672,8 @@ public class JsonSchemaWriter {
 			return r.getLocalName();
 		} else if (!r.getURI().substring(r.getURI().lastIndexOf("/") + 1).equals("")) {
 			return r.getURI().substring(r.getURI().lastIndexOf("/") + 1);
+		} else if (!r.getURI().substring(r.getURI().lastIndexOf("#") + 1).equals("")) {
+			return r.getURI().substring(r.getURI().lastIndexOf("#") + 1);		
 		} else {
 			return r.getURI();
 		}
@@ -733,8 +735,18 @@ public class JsonSchemaWriter {
 		if (model.qnameFor(uri) != null) {
 			o.put("qname", model.qnameFor(uri));
 		} else {
-			o.put("qname", ":" + concept.getLocalName());
+			o.put("qname", ":" + getLocalName(concept));
 		}
+		// add refs to properties
+		Map<String, Map> props = new HashMap<String, Map>();
+		List<Resource> children = getChildren(concept, model);
+		for(Resource child: children) {
+			String cLocalName = getLocalName(child);
+			Map<String, String> ref = new HashMap<String, String>();
+			ref.put("$ref", "#/definitions/" + cLocalName);
+			props.put(cLocalName, ref);
+		}
+		o.put("properties", props);
 
 		if (!definitions.containsKey(localName)) {
 			definitions.put(localName, o);
@@ -751,46 +763,58 @@ public class JsonSchemaWriter {
 
 	}
 
-	private void traverseUp(Resource r, Model inputModel, Map<String, Object> definitions,
-			Map<String, Object> rootProps) throws Exception {
-		// Add n to A to maintain bottom up nature
-		if (r == null)
+	private void traverseUp(Resource r, List<Resource> a, List<Resource> roots, Model inputModel, Map<String, Object> definitions, Map<String, Object> rootProperties) throws Exception {		
+		if (r == null) {
 			return;
+		}
+		// Add n to A to maintain bottom up nature
+		a.add(r);
+		List<Resource> children = getChildren(r, inputModel);
+		
 		// Go to parent
 		Resource parent = getParent(r, inputModel);
 		if (parent == null) {
 			// we are at a top concept
-			String localName = getLocalName(r);
-			Object obj = definitions.get(localName);
-			if (obj == null) {
-				obj = handleConcept(r, inputModel, definitions);
+			if(!roots.contains(r)) {
+				roots.add(r);				
 			}
-			rootProps.put(localName, obj);
+			for (Resource child : children) {
+				handleConcept(child, inputModel, definitions);
+			}				
+			rootProperties.put(getLocalName(r), handleConcept(r, inputModel, definitions));
 			return;
 		}
-
-		List<Resource> children = getChildren(parent, inputModel);
-		boolean hasChildren = children.size() > 0;
-		Map<String, Object> parentObj = handleConcept(parent, inputModel, definitions);
-		Map<String, Object> props = new HashMap<String, Object>();
+		handleConcept(parent, inputModel, definitions);
+		
 		// For each child of p other than n, do a post order traversal
-
 		for (Resource child : children) {
 			handleConcept(child, inputModel, definitions);
-			// add properties to parent'
-			String localName = getLocalName(child);
-			Map<String, Object> ref = new HashMap<String, Object>();
-			ref.put("$ref", "#/definitions/" + localName);
-			props.put(localName, ref);
+			
+			if(child == r) {
+				continue;
+			}
+			postOrderTraversal(child, a, inputModel);
 		}
-		parentObj.put("properties", props);
 		// When done with adding all p's children, continue traversing up
-		traverseUp(parent, inputModel, definitions, rootProps);
+		traverseUp(parent, a, roots, inputModel, definitions, rootProperties);
+	}
+	
+	private void postOrderTraversal( Resource r, List<Resource> a, Model inputModel ) {
+		if(r == null) {
+			return;
+		}
+		for (Resource child : getChildren(r, inputModel)) {
+			postOrderTraversal(child, a, inputModel);
+			a.add(child);
+		}
+		
 	}
 
 	private void traverseDown(Resource r, Model inputModel, Map<String, Object> definitions,
 			Map<String, Object> rootProps) throws Exception {
-
+		if(r == null) {
+			return;
+		}
 		String localName = getLocalName(r);
 		Map<String, Object> obj = handleConcept(r, inputModel, definitions);
 		rootProps.put(localName, obj);
@@ -812,7 +836,6 @@ public class JsonSchemaWriter {
 		Resource metadataResource = model.getResource(pid);
 		Resource rootConcept = metadataResource.getPropertyResourceValue(VOID.rootResource);
 
-		List<Resource> leafs = getLeafConcepts(model);
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
@@ -822,10 +845,12 @@ public class JsonSchemaWriter {
 
 		Map<String, Object> schema = new HashMap<String, Object>();
 		if (rootConcept == null) {
+			List<Resource> leafs = getLeafConcepts(model);
+			List<Resource> nodes = new ArrayList<Resource>();
+			List<Resource> roots = new ArrayList<Resource>();			
 			for (Resource leaf : leafs) {
-				traverseUp(leaf, model, definitions, rootProperties);
+				traverseUp(leaf, nodes, roots, model, definitions, rootProperties );
 			}
-
 		} else {
 			traverseDown(rootConcept, model, definitions, rootProperties);
 		}
@@ -837,6 +862,24 @@ public class JsonSchemaWriter {
 
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(schema);
+	}
+
+	private void populateRoots(List<Resource> nodes, List<Resource> roots, Model inputModel) {
+		List<Resource> parents = new ArrayList<Resource>();
+		for(Resource node : nodes) {
+			Resource parent = getParent(node, inputModel);
+			if (parent == null) {
+				roots.add(node);
+			}
+			else {
+				if(!parents.contains(parent)) {
+					parents.add(parent);	
+				}
+				
+			}
+		}
+		populateRoots(parents, roots, inputModel);
+		
 	}
 
 	private void addRDFSProps(Model model, Resource s, Map<String, Object> props, Map<String, Object> definitions)

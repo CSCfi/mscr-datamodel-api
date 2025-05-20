@@ -91,7 +91,6 @@ import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2;
 import fi.vm.yti.datamodel.api.v2.transformation.SPARQLGenerator;
-import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator2;
 import fi.vm.yti.datamodel.api.v2.validator.ValidCrosswalk;
 import fi.vm.yti.datamodel.api.v2.validator.ValidMapping;
@@ -121,7 +120,6 @@ public class Crosswalk extends BaseMSCRController {
 	private final CrosswalkMapper mapper;
 	private final MappingMapper mappingMapper;
 	private final XSLTGenerator2 xsltGenerator;
-	private final XSLTGenerator xsltGenerator1;
 	private final RMLGenerator2 rmlGenerator;
 	private final SPARQLGenerator SPARQLGenerator;
 	private final AuthenticatedUserProvider userProvider;
@@ -145,7 +143,6 @@ public class Crosswalk extends BaseMSCRController {
             CrosswalkMapper mapper,
             MappingMapper mappingMapper,
             XSLTGenerator2 xsltGenerator,
-            XSLTGenerator xsltGenerator1,
             RMLGenerator2 rmlGenerator,
             SPARQLGenerator SPARQLGenerator,
             AuthenticatedUserProvider userProvider,
@@ -158,7 +155,6 @@ public class Crosswalk extends BaseMSCRController {
 		this.jenaService = jenaService;
 		this.mapper = mapper;
 		this.xsltGenerator = xsltGenerator;
-		this.xsltGenerator1 = xsltGenerator1;
 		this.rmlGenerator = rmlGenerator;
 		this.SPARQLGenerator = SPARQLGenerator;
 		this.mappingMapper = mappingMapper;
@@ -1315,11 +1311,11 @@ public class Crosswalk extends BaseMSCRController {
 					
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.XSD || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.XSD) && (targetSchemaInfo.getFormat() == SchemaFormat.XSD || targetSchemaInfo.getOriginalFormat() == SchemaFormat.XSD)) {
 						String r = xsltGenerator.generateXMLtoXML(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
-						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_XML).body(r);						
 					}
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.XSD || targetSchemaInfo.getOriginalFormat() == SchemaFormat.XSD)) {
 						String r = xsltGenerator.generateJSONtoXML(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
-						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_XML).body(r);						
 					}
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || targetSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA)) {
 						String r = xsltGenerator.generateJSONtoJSON(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
@@ -1330,16 +1326,24 @@ public class Crosswalk extends BaseMSCRController {
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
 					}
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.XSD || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.XSD) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {
-						String r = xsltGenerator1.generateXMLtoCSV(mappings, crosswalkModel);
-						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+						String r = xsltGenerator.generateXMLtoCSV(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.TEXT_PLAIN).body(r);						
 					}
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
-						String r = xsltGenerator1.generateJSONtoCSV(mappings, crosswalkModel, jenaService.getSchemaContent(crosswalk.getSourceSchema()));
-						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+						String r = xsltGenerator.generateJSONtoCSV(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.TEXT_PLAIN).body(r);						
 					}
 					if((sourceSchemaInfo.getFormat() == SchemaFormat.CSV || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.CSV) && (targetSchemaInfo.getFormat() == SchemaFormat.CSV || targetSchemaInfo.getOriginalFormat() == SchemaFormat.CSV)) {						
 						String r = xsltGenerator.generateCSVtoCSV(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.TEXT_PLAIN).body(r);						
+					}
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.CSV || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.CSV) && (targetSchemaInfo.getFormat() == SchemaFormat.JSONSCHEMA || targetSchemaInfo.getOriginalFormat() == SchemaFormat.JSONSCHEMA)) {						
+						String r = xsltGenerator.generateCSVtoJSON(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
 						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(r);						
+					}
+					if((sourceSchemaInfo.getFormat() == SchemaFormat.CSV || sourceSchemaInfo.getOriginalFormat() == SchemaFormat.CSV) && (targetSchemaInfo.getFormat() == SchemaFormat.XSD || targetSchemaInfo.getOriginalFormat() == SchemaFormat.XSD)) {						
+						String r = xsltGenerator.generateCSVtoXML(crosswalk.getSourceSchema(),jenaService.getSchemaContent(crosswalk.getSourceSchema()), crosswalkModel, jenaService.getSchemaContent(crosswalk.getTargetSchema()));
+						return ResponseEntity.status(200).contentType(MediaType.APPLICATION_XML).body(r);						
 					}
 					
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "XSLT export is not supported between " + sourceSchemaInfo.getFormat() + " and " + targetSchemaInfo.getFormat());

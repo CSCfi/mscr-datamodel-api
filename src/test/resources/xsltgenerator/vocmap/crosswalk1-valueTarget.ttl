@@ -1,0 +1,23 @@
+<mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a>
+        a       <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+
+<mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a/first>
+        a       <http://www.w3.org/2004/02/skos/core#Concept> ;
+        <http://www.w3.org/2004/02/skos/core#inScheme>
+                <mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a> ;
+        <http://www.w3.org/2004/02/skos/core#prefLabel>
+                "first"@en .
+
+<mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a/second>
+        a       <http://www.w3.org/2004/02/skos/core#Concept> ;
+        <http://www.w3.org/2004/02/skos/core#inScheme>
+                <mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a> ;
+        <http://www.w3.org/2004/02/skos/core#prefLabel>
+                "second"@en .
+
+<mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a/third>
+        a       <http://www.w3.org/2004/02/skos/core#Concept> ;
+        <http://www.w3.org/2004/02/skos/core#inScheme>
+                <mscr:schema:5928848b-aac8-48fe-9b1a-cf7a13ad534a> ;
+        <http://www.w3.org/2004/02/skos/core#prefLabel>
+                "third"@en .

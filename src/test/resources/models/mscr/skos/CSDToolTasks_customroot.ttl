@@ -650,6 +650,8 @@ csdtt:0031  a              skos:Concept ;
         dcap:preferredXMLNamespace  <urn:IAMNOTAPID:de6b13b7-ff43-47cc-9df9-a69476796c97> ;
         dcap:preferredXMLNamespacePrefix
                 "urn:IAMNOTAPID:de6b13b7-ff43-47cc-9df9-a69476796c97" ;
+        <http://rdfs.org/ns/void#rootResource>
+                csdtt:0004 ;
         iow:contentModified         "2023-11-22T11:41:27.616Z"^^xsd:dateTime ;
         iow:creator                 "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
         iow:modifier                "4ce70937-6fa4-49af-a229-b5f10328adb8" ;
