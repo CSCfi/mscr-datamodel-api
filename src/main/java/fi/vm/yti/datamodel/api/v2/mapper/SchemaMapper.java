@@ -7,10 +7,12 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.datatypes.xsd.XSDDateTime;
@@ -502,12 +504,30 @@ public class SchemaMapper extends MSCRMapper {
         		Revision latestRev = orderedRevs.get(orderedRevs.size() - 1);
         		if(latestRev.getPid().equals(pid)) {
         			indexModel.setHasRevision("false");
-        			indexModel.setNumberOfRevisions(orderedRevs.size());
         		}
         		else {
         			indexModel.setHasRevision("true");
         		}    			
     		}
+    		OptionalInt indexOpt = IntStream.range(0, orderedRevs.size())
+    			     .filter(i -> pid.equals(orderedRevs.get(i).getPid()))
+    			     .findFirst();
+			String hasDraftRevision = "false";
+
+    		if(indexOpt.isPresent()) {
+    			int revisionIndex = indexOpt.getAsInt();
+    			indexModel.setRevisionNumber(revisionIndex + 1);
+        		if((orderedRevs.size() - 1) > revisionIndex) {
+        			if(orderedRevs.get(revisionIndex + 1).getState().equals(MSCRState.DRAFT.name())) {
+        				hasDraftRevision = "true";
+        			}
+        		}
+
+    		}
+    		indexModel.setHasDraftRevision(hasDraftRevision);
+    		
+			indexModel.setNumberOfRevisions(orderedRevs.size());
+    		
     		
         }
         indexModel.setVersionLabel(resource.getProperty(MSCR.versionLabel).getString());
@@ -516,9 +536,9 @@ public class SchemaMapper extends MSCRMapper {
         indexModel.setHandle(MapperUtils.propertyToString(resource, MSCR.handle));
         indexModel.setSourceURL(MapperUtils.propertyToString(resource, MSCR.sourceURL));
         indexModel.setSubType(MapperUtils.propertyToString(resource, MSCR.subType));
-        
-        mapToIndexModel(resource, indexModel);
-        
+        if(resource.hasProperty(MSCR.hasDraftRevision)) {
+        	indexModel.setHasDraftRevision(resource.getProperty(MSCR.hasDraftRevision).getBoolean()+"");	
+        }
         return indexModel;
     }     
 	

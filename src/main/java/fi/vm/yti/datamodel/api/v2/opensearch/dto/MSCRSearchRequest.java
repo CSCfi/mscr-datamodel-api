@@ -22,9 +22,17 @@ public class MSCRSearchRequest extends BaseSearchRequest {
 	private Set<MSCRSubType> subtype;
 	
 	private boolean includeFacets = false;
+	private boolean includeOnlyLatest = true;
+	public boolean isIncludeOnlyLatest() {
+		return includeOnlyLatest;
+	}
+	public void setIncludeOnlyLatest(boolean includeOnlyLatest) {
+		this.includeOnlyLatest = includeOnlyLatest;
+	}
 	private String prefDisplayLang;
 	
 	private boolean includePersonalPrivate = false;
+	
 	
 	public boolean isIncludePersonalPrivate() {
 		return includePersonalPrivate;
