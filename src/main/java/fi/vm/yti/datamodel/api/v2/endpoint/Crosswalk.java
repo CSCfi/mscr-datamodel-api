@@ -512,7 +512,16 @@ public class Crosswalk extends BaseMSCRController {
 	        
 	
 	        jenaService.putToCrosswalk(pid, jenaModel);
-	
+			// if state change must update the prev index model too 
+			if(dto.getState() != prev.getState()) {
+				if(prev.getRevisionOf() != null && !"".equals(prev.getRevisionOf())) {
+					openSearchIndexer.updateCrosswalkToIndex(
+						mapper.mapToIndexModel(prev.getRevisionOf(), 
+								jenaService.getCrosswalk(prev.getRevisionOf())
+						)						
+					);					
+				}
+			}	
 	
 	        var indexModel = mapper.mapToIndexModel(pid, jenaModel);
 	        openSearchIndexer.updateCrosswalkToIndex(indexModel);

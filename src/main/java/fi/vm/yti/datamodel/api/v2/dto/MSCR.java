@@ -62,6 +62,7 @@ public class MSCR {
     public static final Property revisions = ResourceFactory.createProperty(URI, "revisions");
     public static final Property variants = ResourceFactory.createProperty(URI, "variants");
     public static final Property hasRevision = ResourceFactory.createProperty(URI, "hasRevision");
+    public static final Property hasDraftRevision = ResourceFactory.createProperty(URI, "hasDraftRevision");
     public static final Property numberOfRevisions = ResourceFactory.createProperty(URI, "numberOfRevisions");
     public static final Property state = ResourceFactory.createProperty(URI, "state");
     public static final Property visibility = ResourceFactory.createProperty(URI, "visibility");

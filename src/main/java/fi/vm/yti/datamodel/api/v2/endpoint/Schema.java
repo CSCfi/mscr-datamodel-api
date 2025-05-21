@@ -602,8 +602,23 @@ public class Schema extends BaseMSCRController {
 
 			jenaService.putToSchema(pid, jenaModel);
 
+			// if state change must update the prev index model too 
+			if(schemaDTO.getState() != prevSchema.getState()) {
+				if(prevSchema.getRevisionOf() != null && !"".equals(prevSchema.getRevisionOf())) {
+					openSearchIndexer.updateSchemaToIndex(
+						mapper.mapToIndexModel(prevSchema.getRevisionOf(), 
+								jenaService.getSchema(prevSchema.getRevisionOf())
+						)
+						
+					);
+					
+				}
+			}
 			var indexModel = mapper.mapToIndexModel(pid, jenaModel);
 			openSearchIndexer.updateSchemaToIndex(indexModel);
+			
+			
+			
 			return mapper.mapToSchemaDTO(pid, jenaModel, false, false, userMapper, ownerMapper);
 		} catch (RuntimeException rex) {
 			throw rex;
