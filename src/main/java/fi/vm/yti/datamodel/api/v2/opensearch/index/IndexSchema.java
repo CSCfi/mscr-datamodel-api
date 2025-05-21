@@ -60,6 +60,8 @@ public class IndexSchema extends IndexBase {
 
 	public void setHasDraftRevision(String hasDraftRevision) {
 		this.hasDraftRevision = hasDraftRevision;
+	}
+	
     private List<String> identifiers;
     private String license;
     
