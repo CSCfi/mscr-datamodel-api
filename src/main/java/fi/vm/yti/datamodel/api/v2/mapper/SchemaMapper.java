@@ -39,13 +39,13 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.ModelType;
 import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
-import fi.vm.yti.datamodel.api.v2.dto.Status;
 import fi.vm.yti.datamodel.api.v2.dto.Variant;
 import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.IndexSchema;
@@ -58,7 +58,7 @@ import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
 import fi.vm.yti.security.YtiUser;
 
 @Service
-public class SchemaMapper {
+public class SchemaMapper extends MSCRMapper {
 
 	private final Logger log = LoggerFactory.getLogger(SchemaMapper.class);
 	private final StorageService storageService;
@@ -86,8 +86,9 @@ public class SchemaMapper {
 		model.setNsPrefixes(ModelConstants.PREFIXES);
 		Resource type = MSCR.SCHEMA;
 		var creationDate = new XSDDateTime(Calendar.getInstance());
-		var modelResource = model.createResource(modelUri).addProperty(RDF.type, type)
-				.addProperty(OWL.versionInfo, schemaDTO.getStatus().name()).addProperty(DCTerms.identifier, PID);
+		Resource modelResource = model.createResource(modelUri).addProperty(RDF.type, type);
+				
+		modelResource.addProperty(MSCR.id, PID);
 
 		schemaDTO.getLanguages().forEach(lang -> modelResource.addProperty(DCTerms.language, lang));
 
@@ -163,6 +164,8 @@ public class SchemaMapper {
 			}
 		}
 		
+		mapToJenaModel(schemaDTO, modelResource);
+		
 		return model;
 	}
 
@@ -177,10 +180,6 @@ public class SchemaMapper {
 
         var langs = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.language);
 
-        var status = dto.getStatus();
-        if (status != null) {
-            MapperUtils.updateStringProperty(modelResource, OWL.versionInfo, status.name());
-        }
         var state = dto.getState();
         if (state != null) {
         	MapperUtils.updateStringProperty(modelResource, MSCR.state, state.name());
@@ -195,18 +194,6 @@ public class SchemaMapper {
         MapperUtils.updateLocalizedProperty(langs, dto.getLabel(), modelResource, RDFS.label, model);
         MapperUtils.updateLocalizedProperty(langs, dto.getDescription(), modelResource, RDFS.comment, model);
         MapperUtils.updateStringProperty(modelResource, Iow.contact, dto.getContact());
-        MapperUtils.updateLocalizedProperty(langs, dto.getDocumentation(), modelResource, Iow.documentation, model);
-
-        if(dto.getGroups() != null){
-            modelResource.removeAll(DCTerms.isPartOf);
-            var groupModel = coreRepository.getServiceCategories();
-            dto.getGroups().forEach(group -> {
-                var groups = groupModel.listResourcesWithProperty(SKOS.notation, group);
-                if (groups.hasNext()) {
-                    modelResource.addProperty(DCTerms.isPartOf, groups.next());
-                }
-            });
-        }
 
         if(dto.getOrganizations() != null){
             modelResource.removeAll(DCTerms.contributor);
@@ -251,6 +238,11 @@ public class SchemaMapper {
 			model.addLiteral(modelResource, MSCR.handle, model.createLiteral(handle));			
 		}
 		
+		// for compatibility reasons
+		modelResource.removeAll(MSCR.id);
+		modelResource.addProperty(MSCR.id, pid);
+		
+		mapToUpdateJenaModel(dto, modelResource);
 		
 		return model;
 	}
@@ -261,7 +253,7 @@ public class SchemaMapper {
 	
 	public SchemaInfoDTO mapToFrontendSchemaDTO(String PID, Model model, Consumer<OwnerDTO> ownerMapper) {
 		var schemaInfoDTO = new SchemaInfoDTO();
-		schemaInfoDTO.setPID(PID);
+		schemaInfoDTO.setID(PID);
 
 		var modelResource = model.getResource(PID);		
 		// Label
@@ -269,7 +261,7 @@ public class SchemaMapper {
 
 		// Description
 		schemaInfoDTO.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));		
-		schemaInfoDTO.setPID(PID);
+		schemaInfoDTO.setID(PID);
 		schemaInfoDTO.setFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
 		if(modelResource.hasProperty(MSCR.originalFormat)) {
 			schemaInfoDTO.setOriginalFormat(SchemaFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.originalFormat)));	
@@ -308,12 +300,10 @@ public class SchemaMapper {
 	public SchemaInfoDTO mapToSchemaDTO(String PID, Model model, boolean includeVersionData, boolean includeVarientInfo, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
 
 		var schemaInfoDTO = new SchemaInfoDTO();
-		schemaInfoDTO.setPID(PID);
+		schemaInfoDTO.setType(ModelType.SCHEMA);
+		schemaInfoDTO.setID(PID);
 
 		var modelResource = model.getResource(PID);
-
-		var status = Status.valueOf(MapperUtils.propertyToString(modelResource, OWL.versionInfo));
-		schemaInfoDTO.setStatus(status);
 
 		// Language
 		schemaInfoDTO.setLanguages(MapperUtils.arrayPropertyToSet(modelResource, DCTerms.language));
@@ -417,6 +407,8 @@ public class SchemaMapper {
 		if(modelResource.hasProperty(MSCR.subType)) {
 			schemaInfoDTO.setSubType(MSCRSubType.valueOf(MapperUtils.propertyToString(modelResource, MSCR.subType)));
 		}
+		
+		mapToMSCRModelDTO(schemaInfoDTO, modelResource, PID);
 
 		return schemaInfoDTO;
 	}
@@ -453,7 +445,6 @@ public class SchemaMapper {
         var resource = model.getResource(pid);
         var indexModel = new IndexSchema();
         indexModel.setId(pid);
-        indexModel.setStatus(Status.valueOf(resource.getProperty(OWL.versionInfo).getString()));
         indexModel.setModified(resource.getProperty(DCTerms.modified).getString());
         if(resource.getProperty(DCTerms.created) != null) {
             indexModel.setCreated(resource.getProperty(DCTerms.created).getString());        	
@@ -548,7 +539,6 @@ public class SchemaMapper {
         if(resource.hasProperty(MSCR.hasDraftRevision)) {
         	indexModel.setHasDraftRevision(resource.getProperty(MSCR.hasDraftRevision).getBoolean()+"");	
         }
-        
         return indexModel;
     }     
 	

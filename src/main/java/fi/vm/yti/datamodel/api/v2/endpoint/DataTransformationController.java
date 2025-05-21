@@ -55,6 +55,7 @@ import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.service.PIDService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
+import fi.vm.yti.datamodel.api.v2.service.TransformationService;
 import fi.vm.yti.datamodel.api.v2.transformation.RMLGenerator2;
 import fi.vm.yti.datamodel.api.v2.transformation.XSLTGenerator2;
 import fi.vm.yti.security.AuthenticatedUserProvider;
@@ -87,7 +88,7 @@ public class DataTransformationController {
 	private final PIDService PIDService;
 	private final StorageService storageService;
 	private final SchemaMapper schemaMapper;
-
+	private final TransformationService transformationService;
 	
 	@Value("${transformation.xslt.url}")
 	private String xsltTransformationServiceUrl;
@@ -107,7 +108,8 @@ public class DataTransformationController {
 			AuthenticatedUserProvider userProvider,
 			PIDService PIDService,
 			StorageService storageService,
-			SchemaMapper schemaMapper
+			SchemaMapper schemaMapper,
+			TransformationService transformationService
 
 			) {
 		this.crosswalkService = crosswalkService;
@@ -121,6 +123,7 @@ public class DataTransformationController {
 		this.PIDService = PIDService;
 		this.storageService = storageService;
 		this.schemaMapper = schemaMapper;
+		this.transformationService = transformationService;
 	}
 
 	@SecurityRequirement(name = "Bearer Authentication")
@@ -156,7 +159,7 @@ public class DataTransformationController {
 			String sourceFormat = metadata.getSourceSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getSourceSchemaInfo().originalFormat() : metadata.getSourceSchemaInfo().format();
 			String targetFormat = metadata.getTargetSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getTargetSchemaInfo().originalFormat() : metadata.getTargetSchemaInfo().format() ;
 
-			return transformInternal(pid, ((String)sample.getBody()).getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
+			return transformationService.transformInternal(pid, ((String)sample.getBody()).getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
 			
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -301,7 +304,7 @@ public class DataTransformationController {
 		String sourceFormat = metadata.getSourceSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getSourceSchemaInfo().originalFormat() : metadata.getSourceSchemaInfo().format();
 		String targetFormat = metadata.getTargetSchemaInfo().format().equals(SchemaFormat.MSCR.name()) ? metadata.getTargetSchemaInfo().originalFormat() : metadata.getTargetSchemaInfo().format() ;
 		
-		return transformInternal(crosswalkInternalID, inputFile.getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
+		return transformationService.transformInternal(crosswalkInternalID, inputFile.getBytes(), metadata.getSourceSchema(), sourceFormat, metadata.getTargetSchema(), targetFormat);
 		
 	}
 	
