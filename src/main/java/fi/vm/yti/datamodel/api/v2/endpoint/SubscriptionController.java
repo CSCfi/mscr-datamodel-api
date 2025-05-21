@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
@@ -62,6 +63,14 @@ public class SubscriptionController {
 
 	private final WebClient webClient;
 	
+	
+    @Value("${env}")
+    private String env;
+    
+    @Value("${fake.login.mail}")
+    private String fakeLoginEmail;
+    
+    
 	@Value(value = "${messaging.baseurl}")
 	private String messageAPIUrl;
 	
@@ -70,78 +79,84 @@ public class SubscriptionController {
 	
 	public SubscriptionController(WebClient.Builder webClientBuilder) {
 		this.webClient = webClientBuilder.build();
-	}
+	}	
 	
-	private String getSessionCookie(Cookie[] cookies) {
-		String sessionID = "";
+    private void addSessionId(RequestHeadersSpec<?> r, Cookie[] cookies) {
 		if(cookies != null) {
 			for(int i = 0; i < cookies.length; i++ ) {
 				Cookie c = cookies[i];
-				if(c.getName().equals("JSESSIONID")) {
-					sessionID = c.getValue();
+				if(c.getName().startsWith("_shibsession_")) {
+					r.cookie(c.getName(), c.getValue());
 				}
 			}
 			
 		}
-		return sessionID;
-			
-			
 	}
-	
-	
-	
+    
+	private String getMessagingAPIURL(String path) {
+		String url = messageAPIUrl + path;
+		if(env.equals("dev")) {
+			url = url + "?fake.login.mail=" + fakeLoginEmail;
+		}
+		return url;
+		
+	}
     @PutMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<SubscriptionResponse> add(@RequestBody AddSubscription action, HttpServletRequest request) throws Exception { 
-		return webClient.post()
-				.uri(messageAPIUrl + "subscriptions")
+		var r = webClient.post()
+				.uri(getMessagingAPIURL("subscriptions"))
 				.bodyValue(om.writeValueAsString(action))
 				.accept(MediaType.ALL)
 				.header("Authorization", request.getHeader("Authorization"))				
-				.header("Content-Type", "application/json")
-				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))
-				.retrieve()
+				.header("Content-Type", "application/json");
+		addSessionId(r, request.getCookies());
+				
+		return r.retrieve()
 				.toEntity(SubscriptionResponse.class).block();
 
-    }	
-    
-    @DeleteMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    }
+
+	@DeleteMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<SubscriptionResponse> delete(@RequestBody DeleteSubscription action, HttpServletRequest request) throws Exception { 
-		return webClient.post()
-				.uri(messageAPIUrl + "subscriptions")
+		var r = webClient.post()
+				.uri(getMessagingAPIURL("subscriptions"))
 				.bodyValue(om.writeValueAsString(action))
 				.accept(MediaType.ALL)
 				.header("Authorization", request.getHeader("Authorization"))				
-				.header("Content-Type", "application/json")
-				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))				
-				.retrieve()
+				.header("Content-Type", "application/json");
+		addSessionId(r, request.getCookies());
+				
+		return r.retrieve()
 				.toEntity(SubscriptionResponse.class).block();
 
     }    
     
     @PostMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<SubscriptionResponse> get(@RequestBody GetSubscription action, HttpServletRequest request) throws Exception { 
-		return webClient.post()
-				.uri(messageAPIUrl + "subscriptions")
+		var r = webClient.post()
+				.uri(getMessagingAPIURL("subscriptions"))
 				.bodyValue(om.writeValueAsString(action))
 				.accept(MediaType.ALL)
 				.header("Authorization", request.getHeader("Authorization"))				
-				.header("Content-Type", "application/json")
-				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))				
-				.retrieve()
+				.header("Content-Type", "application/json");
+		addSessionId(r, request.getCookies());
+				
+		return r.retrieve()
 				.toEntity(SubscriptionResponse.class).block();
 
     } 
     
     @GetMapping(path = "", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<UserInfo> getUserInfo(HttpServletRequest request) throws Exception {
-		return webClient.get()
-				.uri(messageAPIUrl + "user")
+		var r = webClient.post()
+				.uri(getMessagingAPIURL("user"))
 				.accept(MediaType.ALL)
-				.header("Authorization", request.getHeader("Authorization"))
-				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))
-				.retrieve()
+				.header("Authorization", request.getHeader("Authorization"))				
+				.header("Content-Type", "application/json");
+		addSessionId(r, request.getCookies());
+				
+		return r.retrieve()
 				.toEntity(UserInfo.class).block();
-
     }       
  
 }
