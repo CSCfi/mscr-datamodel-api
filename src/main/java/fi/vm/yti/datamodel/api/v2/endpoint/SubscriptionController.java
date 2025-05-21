@@ -37,6 +37,7 @@ import fi.vm.yti.datamodel.api.v2.opensearch.queries.ModelQueryFactory;
 import fi.vm.yti.datamodel.api.v2.service.IntegrationService;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -71,6 +72,23 @@ public class SubscriptionController {
 		this.webClient = webClientBuilder.build();
 	}
 	
+	private String getSessionCookie(Cookie[] cookies) {
+		String sessionID = "";
+		if(cookies != null) {
+			for(int i = 0; i < cookies.length; i++ ) {
+				Cookie c = cookies[i];
+				if(c.getName().equals("JSESSIONID")) {
+					sessionID = c.getValue();
+				}
+			}
+			
+		}
+		return sessionID;
+			
+			
+	}
+	
+	
 	
     @PutMapping(path = "", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<SubscriptionResponse> add(@RequestBody AddSubscription action, HttpServletRequest request) throws Exception { 
@@ -78,8 +96,9 @@ public class SubscriptionController {
 				.uri(messageAPIUrl + "subscriptions")
 				.bodyValue(om.writeValueAsString(action))
 				.accept(MediaType.ALL)
-				.header("Authorization", request.getHeader("Authorization"))
+				.header("Authorization", request.getHeader("Authorization"))				
 				.header("Content-Type", "application/json")
+				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))
 				.retrieve()
 				.toEntity(SubscriptionResponse.class).block();
 
@@ -93,6 +112,7 @@ public class SubscriptionController {
 				.accept(MediaType.ALL)
 				.header("Authorization", request.getHeader("Authorization"))				
 				.header("Content-Type", "application/json")
+				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))				
 				.retrieve()
 				.toEntity(SubscriptionResponse.class).block();
 
@@ -106,6 +126,7 @@ public class SubscriptionController {
 				.accept(MediaType.ALL)
 				.header("Authorization", request.getHeader("Authorization"))				
 				.header("Content-Type", "application/json")
+				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))				
 				.retrieve()
 				.toEntity(SubscriptionResponse.class).block();
 
@@ -116,7 +137,8 @@ public class SubscriptionController {
 		return webClient.get()
 				.uri(messageAPIUrl + "user")
 				.accept(MediaType.ALL)
-				.header("Authorization", request.getHeader("Authorization"))				
+				.header("Authorization", request.getHeader("Authorization"))
+				.cookie("JSESSIONID", getSessionCookie(request.getCookies()))
 				.retrieve()
 				.toEntity(UserInfo.class).block();
 
