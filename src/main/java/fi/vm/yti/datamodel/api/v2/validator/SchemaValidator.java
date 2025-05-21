@@ -27,7 +27,6 @@ public class SchemaValidator extends BaseValidator implements
     		return true;
     	}
         setConstraintViolationAdded(false);
-        checkStatus(context, dto.getStatus());
         checkLanguages(context, dto);
         checkLabels(context, dto);
         checkDescription(context, dto);

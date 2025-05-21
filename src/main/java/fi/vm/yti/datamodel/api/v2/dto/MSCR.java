@@ -109,6 +109,8 @@ public class MSCR {
 
 	public static final Property FnO_predicate = ResourceFactory.createProperty(FnO, "predicate");
 
+	public static final Property domain = ResourceFactory.createProperty(URI, "domain");
+
     public record Organization(String id,  Map<String, String> label) {}
 
 }

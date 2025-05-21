@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("v2/fakeable-users")
+@RequestMapping("v2/frontend/fakeable-users")
 @Tag(name = "Admin")
 public class FakeableUserController {
     private final GroupManagementService groupManagementService;
@@ -22,6 +22,7 @@ public class FakeableUserController {
         this.groupManagementService = groupManagementService;
     }
 
+    
     @GetMapping
     @Operation(description = "Get fakeable users")
     @ApiResponses(value = {

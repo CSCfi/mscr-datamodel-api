@@ -231,7 +231,7 @@ public class FrontendController {
     
     @Operation(summary = "Get schema information for the crosswalk UI")
     @ApiResponse(responseCode = "200", description = "")    
-    @GetMapping(value="/schema/{pid}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value="/schema/{pid}/content", produces = APPLICATION_JSON_VALUE)
     public CrosswalkEditorSchemaDTO getSchema(@PathVariable String pid) {   
 		Model model = jenaService.getSchema(pid);
 		model.add(jenaService.getSchema(pid+":content"));

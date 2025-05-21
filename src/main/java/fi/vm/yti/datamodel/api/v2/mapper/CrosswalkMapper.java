@@ -41,6 +41,7 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
 import fi.vm.yti.datamodel.api.v2.dto.ModelConstants;
+import fi.vm.yti.datamodel.api.v2.dto.ModelType;
 import fi.vm.yti.datamodel.api.v2.dto.OwnerDTO;
 import fi.vm.yti.datamodel.api.v2.dto.ResourceCommonDTO;
 import fi.vm.yti.datamodel.api.v2.dto.Revision;
@@ -58,7 +59,7 @@ import fi.vm.yti.datamodel.api.v2.service.impl.PostgresStorageService;
 import fi.vm.yti.security.YtiUser;
 
 @Service
-public class CrosswalkMapper {
+public class CrosswalkMapper extends MSCRMapper {
 	private final Logger log = LoggerFactory.getLogger(CrosswalkMapper.class);
 	private final StorageService storageService;
 	private final CoreRepository coreRepository;
@@ -93,8 +94,9 @@ public class CrosswalkMapper {
 		model.setNsPrefixes(ModelConstants.PREFIXES);
 		Resource type = MSCR.CROSSWALK;
 		var creationDate = new XSDDateTime(Calendar.getInstance());
-		var modelResource = model.createResource(modelUri).addProperty(RDF.type, type)
-				.addProperty(OWL.versionInfo, dto.getStatus().name()).addProperty(DCTerms.identifier, PID);
+		Resource modelResource = model.createResource(modelUri).addProperty(RDF.type, type);
+				
+		modelResource.addProperty(MSCR.id, PID);
 
 		dto.getLanguages().forEach(lang -> modelResource.addProperty(DCTerms.language, lang));
 
@@ -163,6 +165,9 @@ public class CrosswalkMapper {
 		}
 		
 		modelResource.addLiteral(MSCR.subType, subType);
+		
+		mapToJenaModel(dto, modelResource);
+
 		return model;
 	}
 	
@@ -179,7 +184,7 @@ public class CrosswalkMapper {
 
 	public CrosswalkInfoDTO mapToFrontendCrosswalkDTO(String PID, Model model, Consumer<OwnerDTO> ownerMapper) {
 		var dto = new CrosswalkInfoDTO();
-		dto.setPID(PID);
+		dto.setID(PID);
 
 		var modelResource = model.getResource(PID);		
 		// Label
@@ -187,7 +192,7 @@ public class CrosswalkMapper {
 
 		// Description
 		dto.setDescription(MapperUtils.localizedPropertyToMap(modelResource, RDFS.comment));		
-		dto.setPID(PID);
+		dto.setID(PID);
 		dto.setFormat(CrosswalkFormat.valueOf(MapperUtils.propertyToString(modelResource, MSCR.format)));
 		
 		var organizations = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.contributor);
@@ -220,12 +225,10 @@ public class CrosswalkMapper {
 	}
 	public CrosswalkInfoDTO mapToCrosswalkDTO(String PID, Model model, boolean includeVersionData, boolean includeCrosswalkSchemaInfo, Consumer<ResourceCommonDTO> userMapper, Consumer<OwnerDTO> ownerMapper) {
 		var dto = new CrosswalkInfoDTO();
-		dto.setPID(PID);
+		dto.setType(ModelType.CROSSWALK);
+		dto.setID(PID);
 
 		var modelResource = model.getResource(PID);
-
-		var status = Status.valueOf(MapperUtils.propertyToString(modelResource, OWL.versionInfo));
-		dto.setStatus(status);
 
 		// Language
 		dto.setLanguages(MapperUtils.arrayPropertyToSet(modelResource, DCTerms.language));
@@ -319,8 +322,8 @@ public class CrosswalkMapper {
 		if(dto.getFormat() == CrosswalkFormat.MSCR) {
 			List<GeneratedFileMetadata> gf = new ArrayList<GeneratedFileMetadata>();
 			// every MSCR crosswalk have a mapping files (json & ttl)
-			gf.add(new GeneratedFileMetadata("mappings graph", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=mscr"));
-			gf.add(new GeneratedFileMetadata("mappings", "application/json", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping"));
+			gf.add(new GeneratedFileMetadata("mappings graph", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getID() + "/mapping?exportFormat=mscr"));
+			gf.add(new GeneratedFileMetadata("mappings", "application/json", "/datamodel-api/v2/crosswalk/" + dto.getID() + "/mapping"));
 			
 			if(
 					(sourceSchemaDTO.getFormat() == SchemaFormat.SHACL || sourceSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL) 
@@ -328,7 +331,7 @@ public class CrosswalkMapper {
 					(targetSchemaDTO.getFormat() == SchemaFormat.CSV || targetSchemaDTO.getOriginalFormat() == SchemaFormat.CSV)
 					
 				) {
-				gf.add(new GeneratedFileMetadata("SPARQL query", "application/sparql-results", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=sparql"));
+				gf.add(new GeneratedFileMetadata("SPARQL query", "application/sparql-results", "/datamodel-api/v2/crosswalk/" + dto.getID() + "/mapping?exportFormat=sparql"));
 				
 			}
 			if(
@@ -336,14 +339,14 @@ public class CrosswalkMapper {
 				&&
 				(xsltSources.contains(targetSchemaDTO.getFormat()) || (targetSchemaDTO.getOriginalFormat() != null && xsltSources.contains(targetSchemaDTO.getOriginalFormat())))
 				) {
-				gf.add(new GeneratedFileMetadata("XSLT", "text/xml", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=xslt"));
+				gf.add(new GeneratedFileMetadata("XSLT", "text/xml", "/datamodel-api/v2/crosswalk/" + dto.getID() + "/mapping?exportFormat=xslt"));
 			}
 			if(
 					(xsltSources.contains(sourceSchemaDTO.getFormat()) || (sourceSchemaDTO.getOriginalFormat() != null && xsltSources.contains(sourceSchemaDTO.getOriginalFormat())))
 					&&
 					(targetSchemaDTO.getFormat() == SchemaFormat.SHACL || (targetSchemaDTO.getOriginalFormat() != null && targetSchemaDTO.getOriginalFormat() == SchemaFormat.SHACL))
 					) {
-					gf.add(new GeneratedFileMetadata("RML", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=rml"));
+					gf.add(new GeneratedFileMetadata("RML", "text/turtle", "/datamodel-api/v2/crosswalk/" + dto.getID() + "/mapping?exportFormat=rml"));
 				}
 			if(
 					(sssomSources.contains(sourceSchemaDTO.getFormat() == SchemaFormat.MSCR ? sourceSchemaDTO.getOriginalFormat() : sourceSchemaDTO.getFormat()))
@@ -351,12 +354,12 @@ public class CrosswalkMapper {
 					(sssomSources.contains(targetSchemaDTO.getFormat() == SchemaFormat.MSCR ? targetSchemaDTO.getOriginalFormat() : sourceSchemaDTO.getFormat()))
 					
 					) {
-				gf.add(new GeneratedFileMetadata("SSSOM", "text/plain", "/datamodel-api/v2/crosswalk/" + dto.getPID() + "/mapping?exportFormat=sssom"));
+				gf.add(new GeneratedFileMetadata("SSSOM", "text/plain", "/datamodel-api/v2/crosswalk/" + dto.getID() + "/mapping?exportFormat=sssom"));
 				
 			}
 			dto.setGeneratedFileMetadata(gf);
 		}
-		
+		mapToMSCRModelDTO(dto, modelResource, PID);
 		return dto;
 	}
 	
@@ -364,7 +367,7 @@ public class CrosswalkMapper {
 		
 		
 		return new CrosswalkSchemaInfo(
-				dto.getPID(),
+				dto.getID(),
 				dto.getHandle(),
 				dto.getLabel().get("en"),
 				dto.getVersionLabel(),
@@ -379,7 +382,6 @@ public class CrosswalkMapper {
 	public Model mapToUpdateJenaModel(String pid, String handle, CrosswalkDTO dto, Model model, YtiUser user, boolean isMetadataUpdate, boolean isStateUpdate) {
         var updateDate = new XSDDateTime(Calendar.getInstance());
         var modelResource = model.getResource(pid);
-        var modelType = MapperUtils.getModelTypeFromResource(modelResource);
 
         //update languages before getting and using the languages for localized properties
         if(dto.getLanguages() != null){
@@ -389,26 +391,10 @@ public class CrosswalkMapper {
 
         var langs = MapperUtils.arrayPropertyToSet(modelResource, DCTerms.language);
 
-        var status = dto.getStatus();
-        if (status != null) {
-            MapperUtils.updateStringProperty(modelResource, OWL.versionInfo, status.name());
-        }
-
         MapperUtils.updateLocalizedProperty(langs, dto.getLabel(), modelResource, RDFS.label, model);
         MapperUtils.updateLocalizedProperty(langs, dto.getDescription(), modelResource, RDFS.comment, model);
         MapperUtils.updateStringProperty(modelResource, Iow.contact, dto.getContact());
-        MapperUtils.updateLocalizedProperty(langs, dto.getDocumentation(), modelResource, Iow.documentation, model);
 
-        if(dto.getGroups() != null){
-            modelResource.removeAll(DCTerms.isPartOf);
-            var groupModel = coreRepository.getServiceCategories();
-            dto.getGroups().forEach(group -> {
-                var groups = groupModel.listResourcesWithProperty(SKOS.notation, group);
-                if (groups.hasNext()) {
-                    modelResource.addProperty(DCTerms.isPartOf, groups.next());
-                }
-            });
-        }
 
         if(dto.getOrganizations() != null){
             modelResource.removeAll(DCTerms.contributor);
@@ -457,6 +443,11 @@ public class CrosswalkMapper {
 			
 		}
 		
+		// for compatibility reasons
+		modelResource.removeAll(MSCR.id);
+		modelResource.addProperty(MSCR.id, pid);
+		
+		mapToUpdateJenaModel(dto, modelResource);
         return model;
 		
 
@@ -470,7 +461,6 @@ public class CrosswalkMapper {
     	var resource = model.getResource(pid);
         var indexModel = new IndexCrosswalk();
         indexModel.setId(pid);
-        indexModel.setStatus(Status.valueOf(resource.getProperty(OWL.versionInfo).getString()));
         indexModel.setModified(resource.getProperty(DCTerms.modified).getString());        
         if(resource.getProperty(DCTerms.created) != null) {
             indexModel.setCreated(resource.getProperty(DCTerms.created).getString());        	
@@ -551,12 +541,13 @@ public class CrosswalkMapper {
         
         indexModel.setSubType(MapperUtils.propertyToString(resource, MSCR.subType));
         
+        mapToIndexModel(resource, indexModel);
+
         return indexModel;
     }
 
 	public CrosswalkDTO mapToCrosswalkDTO(CrosswalkInfoDTO source) {		
 		CrosswalkDTO s = new CrosswalkDTO();
-		s.setStatus(source.getStatus());
 		s.setState(source.getState());
 		s.setVisibility(source.getVisibility());
 		s.setLabel(source.getLabel());

@@ -31,6 +31,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +63,11 @@ import fi.vm.yti.datamodel.api.v2.dto.MSCRType;
 import fi.vm.yti.datamodel.api.v2.dto.MappingDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MappingInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.PIDType;
+import fi.vm.yti.datamodel.api.v2.dto.PublicCrosswalkMetadataDTO;
+import fi.vm.yti.datamodel.api.v2.dto.PublicCrosswalkMetadataInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.PublicSchemaMetadataDTO;
+import fi.vm.yti.datamodel.api.v2.dto.PublicSchemaMetadataInfoDTO;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.endpoint.BaseMSCRController.CONTENT_ACTION;
@@ -70,6 +76,10 @@ import fi.vm.yti.datamodel.api.v2.endpoint.error.ResourceNotFoundException;
 import fi.vm.yti.datamodel.api.v2.mapper.CrosswalkMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.MappingMapper;
 import fi.vm.yti.datamodel.api.v2.mapper.SchemaMapper;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.ExternalCrosswalkMetadataToInternalConverter;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.ExternalSchemaMetadataToInternalConverter;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.InternalCrosswalkMetadataToExternalConverter;
+import fi.vm.yti.datamodel.api.v2.mapper.mscr.InternalSchemaMetadataToExternalConverter;
 import fi.vm.yti.datamodel.api.v2.opensearch.index.OpenSearchIndexer;
 import fi.vm.yti.datamodel.api.v2.service.CrosswalkService;
 import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
@@ -95,7 +105,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v2")
-@Tag(name="Crosswalk")
 @Validated
 public class Crosswalk extends BaseMSCRController {
 	private static final Logger logger = LoggerFactory.getLogger(Crosswalk.class);
@@ -118,6 +127,13 @@ public class Crosswalk extends BaseMSCRController {
     private final CrosswalkService crosswalkService;
 
 
+	@Autowired
+	private InternalCrosswalkMetadataToExternalConverter convertToExternal;
+	
+	@Autowired
+	private ExternalCrosswalkMetadataToInternalConverter convertToInternal;
+
+	
 	public Crosswalk(AuthorizationManager authorizationManager,
             OpenSearchIndexer openSearchIndexer,
             PIDService PIDService,
@@ -172,7 +188,6 @@ public class Crosswalk extends BaseMSCRController {
 		}
 		checkVisibility(dto);	
 		checkState(null, dto.getState());
-		
 		var ownerMapper = groupManagementService.mapOwner();
 		Model sourceSchemaModel = jenaService.getSchema(dto.getSourceSchema());
 		Model targetSchemaModel = jenaService.getSchema(dto.getTargetSchema());
@@ -204,12 +219,30 @@ public class Crosswalk extends BaseMSCRController {
 	
 	private CrosswalkDTO mergeMetadata(CrosswalkInfoDTO prev, CrosswalkDTO input, CONTENT_ACTION action) {				
 		CrosswalkDTO s = new CrosswalkDTO();
-		s.setStatus(input != null && input.getStatus() != null ? input.getStatus() : prev.getStatus());
-		s.setState(input != null && input.getState() != null ? input.getState() : prev.getState());
-		s.setVisibility(input != null && input.getVisibility() != null ? input.getVisibility() : prev.getVisibility());
-		s.setLabel(input != null && !input.getLabel().isEmpty()? input.getLabel() : prev.getLabel());
-		s.setDescription(input != null && !input.getDescription().isEmpty() ? input.getDescription() : prev.getDescription());
-		s.setLanguages(!input.getLanguages().isEmpty() ? input.getLanguages() : prev.getLanguages());
+		if(input != null) {
+			s.setState(input.getState() != null ? input.getState() : prev.getState());
+			s.setVisibility(input.getVisibility() != null ? input.getVisibility()
+					: prev.getVisibility());
+			s.setLabel(!input.getLabel().isEmpty() ? input.getLabel() : prev.getLabel());
+			s.setDescription(input.getDescription() != null && !input.getDescription().isEmpty() ? input.getDescription()
+					: prev.getDescription());
+			s.setLanguages(input.getLanguages() != null && !input.getLanguages().isEmpty() ? input.getLanguages()
+					: prev.getLanguages());
+			s.setContact(input.getContact() != null ? input.getContact()
+					: prev.getContact());
+			s.setDcatKeywords(input.getDcatKeywords() != null ? input.getDcatKeywords(): prev.getDcatKeywords());		
+			s.setDctContributors(input.getDctContributors() != null ? input.getDctContributors() : prev.getDctContributors());
+			s.setDctCreators(input.getDctCreators() != null ? input.getDctCreators() : prev.getDctCreators());
+			s.setDctIdentifiers(input.getDctIdentifiers() != null ? input.getDctIdentifiers() : prev.getDctIdentifiers());
+			s.setDctIssued(input.getDctIssued() != null ? input.getDctIssued(): prev.getDctIssued());
+			s.setDctLicense(input.getDctLicense() != null ? input.getDctLicense(): prev.getDctLicense());
+			s.setDctPublisher(input.getDctPublisher() != null ? input.getDctPublisher() : prev.getDctPublisher());
+			s.setDctRelations(input.getDctRelations() != null ? input.getDctRelations(): prev.getDctRelations());
+			s.setDomain(input.getDomain() != null ? input.getDomain(): prev.getDomain());
+			
+			s.setSourceURL(input.getSourceURL());
+
+		}				
 		if (action == CONTENT_ACTION.revisionOf || input == null || input.getOrganizations().isEmpty()) {
 			s.setOrganizations(prev.getOrganizations().stream().map(org ->  UUID.fromString(org.getId())).collect(Collectors.toSet()));
 		}	
@@ -230,12 +263,11 @@ public class Crosswalk extends BaseMSCRController {
 		}
 		s.setSourceSchema(prev.getSourceSchema());
 		s.setTargetSchema(prev.getTargetSchema());
-		s.setSourceURL(input.getSourceURL());
 		return s;
 		
 	}	
 	
-	private void addFileToCrosswalk(final String pid, final CrosswalkInfoDTO dto, final byte[] fileInBytes, final String contentURL,
+	private void addFileToCrosswalk(final String id, final CrosswalkInfoDTO dto, final byte[] fileInBytes, final String contentURL,
 			final String contentType) {	 
 		try {
 			Model contentModel = null;
@@ -254,7 +286,7 @@ public class Crosswalk extends BaseMSCRController {
 				SchemaInfoDTO targetSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getTargetSchema(), targetSchemaModel, userMapper, ownerMapper);
 				SchemaInfoDTO sourceSchemaInfo = schemaMapper.mapToSchemaDTO(dto.getSourceSchema(), sourceSchemaModel, userMapper, ownerMapper);
 				
-				contentModel = crosswalkService.transformSSSOMToInternal(pid, fileInBytes,  dto.getSourceSchema(), sourceSchemaInfo.getFormat().name(), sourceModel, dto.getTargetSchema(), targetSchemaInfo.getFormat().name(), targetModel);
+				contentModel = crosswalkService.transformSSSOMToInternal(dto.getHandle(), id, fileInBytes,  dto.getSourceSchema(), sourceSchemaInfo.getFormat().name(), sourceModel, dto.getTargetSchema(), targetSchemaInfo.getFormat().name(), targetModel);
 
 			}
 			else if(EnumSet.of(CrosswalkFormat.CSV, CrosswalkFormat.XSLT, CrosswalkFormat.PDF).contains(format)) {
@@ -264,8 +296,8 @@ public class Crosswalk extends BaseMSCRController {
 			else {
 				throw new Exception("Unsupported crosswalk description format. Supported formats are: " + String.join(", ", Arrays.toString(CrosswalkFormat.values()) ));
 			}
-			storageService.storeCrosswalkFile(pid, contentType, fileInBytes, generateFilename(pid, contentType));
-			jenaService.putToCrosswalk(pid + ":content", contentModel);
+			storageService.storeCrosswalkFile(id, contentType, fileInBytes, generateFilename(id, contentType));
+			jenaService.putToCrosswalk(id + ":content", contentModel);
 			
 		
 		} catch (Exception ex) {
@@ -279,11 +311,25 @@ public class Crosswalk extends BaseMSCRController {
 		return fileInBytes;
 	}
 	
+	@Tag(name = "Crosswalk")
 	@Operation(summary = "Create crosswalk metadata record.")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public CrosswalkInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody(required = false) CrosswalkDTO dto, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
+	public PublicCrosswalkMetadataInfoDTO createCrosswalk(@ValidCrosswalk @RequestBody(required = false) PublicCrosswalkMetadataDTO dto, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
+		return convertToExternal.convert(
+				createCrosswalkFrontend(
+						(CrosswalkDTO)convertToInternal.convert(dto), 
+						action, 
+						target));
+	}
+	
+	@Tag(name = "Frontend")
+	@Operation(summary = "Create crosswalk metadata record.")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/frontend/crosswalk", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public CrosswalkInfoDTO createCrosswalkFrontend(@ValidCrosswalk @RequestBody(required = false) CrosswalkDTO dto, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
 		logger.info("Create Crosswalk {}", dto);
 		validateActionParams(dto, action, target); 
 		String aggregationKey = null;
@@ -294,20 +340,20 @@ public class Crosswalk extends BaseMSCRController {
 			dto = mergeMetadata(prev, dto, action);			
 			if(action == CONTENT_ACTION.revisionOf) {
 				// revision must be made from the latest version
-				if(prev.getRevisions() != null && prev.getRevisions().size() > 0 && !prev.getRevisions().get(prev.getRevisions().size() -1).getPid().equals(prev.getPID()) ) {
+				if(prev.getRevisions() != null && prev.getRevisions().size() > 0 && !prev.getRevisions().get(prev.getRevisions().size() -1).getPid().equals(prev.getID()) ) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Revisions can only be created from the latest revision. Check your target PID.");
 				}
 				aggregationKey = prev.getAggregationKey();
 				if(prev.getFormat() == CrosswalkFormat.MSCR) {
-					if(jenaService.doesCrosswalkExist(prev.getPID() + ":content")) {
+					if(jenaService.doesCrosswalkExist(prev.getID() + ":content")) {
 						// This is very ugly temporary fix for the copying content 
 						// TODO: clean up this monstrosity - use base uri for graphs
-						Model tempModel = jenaService.getCrosswalkContent(prev.getPID());
+						Model tempModel = jenaService.getCrosswalkContent(prev.getID());
 						File tempFile = File.createTempFile("crosswalk", ".ttl");
 						OutputStream tempOutput = new FileOutputStream(tempFile);
 						tempModel.write(tempOutput, "TURTLE");
 						String tempString = FileUtils.readFileToString(tempFile);						
-						tempString = tempString.replaceAll(prev.getPID(), PID);
+						tempString = tempString.replaceAll(prev.getID(), PID);
 						FileUtils.write(tempFile, tempString); 
 						contentModel = RDFDataMgr.loadModel(tempFile.toURI().toURL().toString(), Lang.TURTLE);
 						tempOutput.close();
@@ -322,8 +368,8 @@ public class Crosswalk extends BaseMSCRController {
 							"MSCR copy can only be made from a crosswalk with a format CSV, MSCR or SSSOM");
 					
 				}
-				if(jenaService.doesCrosswalkExist(prev.getPID() + ":content")) {
-					contentModel = jenaService.getCrosswalkContent(prev.getPID());					
+				if(jenaService.doesCrosswalkExist(prev.getID() + ":content")) {
+					contentModel = jenaService.getCrosswalkContent(prev.getID());					
 				}
 				
 			}			
@@ -340,6 +386,7 @@ public class Crosswalk extends BaseMSCRController {
 			var ownerMapper = groupManagementService.mapOwner();
 			return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, false, userMapper, ownerMapper);
 		}catch(Exception ex) {
+			ex.printStackTrace();
 			// revert any possible changes
 			try { jenaService.deleteFromCrosswalk(PID); }catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
 			try { openSearchIndexer.deleteCrosswalkFromIndex(PID);}catch(Exception _ex) { logger.error(_ex.getMessage(), _ex);}
@@ -353,10 +400,11 @@ public class Crosswalk extends BaseMSCRController {
 	}
 	
 	
+	@Tag(name = "Frontend")
 	@Operation(summary = "Upload and associate a crosswalk description file to an existing crosswalk")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	@PutMapping(path = "/frontend/crosswalk/{pid}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO uploadCrosswalkFile(@PathVariable String pid,
 			@RequestParam("file") MultipartFile file) {
 		return uploadCrosswalkFile(pid, null, file);
@@ -365,7 +413,7 @@ public class Crosswalk extends BaseMSCRController {
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path = "/crosswalk/{pid}/{suffix}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	@PutMapping(path = "/frontend/crosswalk/{pid}/{suffix}/upload", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
 	public CrosswalkInfoDTO uploadCrosswalkFile(
 			@PathVariable String pid,
 			@PathVariable(name = "suffix") String suffix,
@@ -403,13 +451,36 @@ public class Crosswalk extends BaseMSCRController {
 
 		}							
 	}
-	
-	
+
+		
+	@Tag(name = "Crosswalk")
 	@Operation(summary = "Create crosswalk by uploading metadata and files in one multipart request")
 	@ApiResponse(responseCode = "200", description = "")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path = "/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
-	public CrosswalkInfoDTO createCrosswalkFull(@RequestParam("metadata") String metadataString,
+	public PublicCrosswalkMetadataInfoDTO createCrosswalkFull(@RequestParam("metadata") String metadataString,
+			@RequestParam(name = "contentURL", required = false) String contentURL,
+			@RequestParam(name = "file", required = false) MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
+		ObjectMapper m = new ObjectMapper();
+		PublicCrosswalkMetadataDTO dto = m.readValue(metadataString, PublicCrosswalkMetadataDTO.class);
+		return convertToExternal.convert(
+				createCrosswalkFullFrontend(
+						m.writeValueAsString((SchemaDTO)convertToInternal.convert(dto)), 
+						contentURL, 
+						file,
+						action,
+						target
+						));		
+	}
+	
+	
+	
+	@Tag(name = "Frontend")
+	@Operation(summary = "Create crosswalk by uploading metadata and files in one multipart request")
+	@ApiResponse(responseCode = "200", description = "")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path = "/frontend/crosswalkFull", produces = APPLICATION_JSON_VALUE, consumes = "multipart/form-data")
+	public CrosswalkInfoDTO createCrosswalkFullFrontend(@RequestParam("metadata") String metadataString,
 			@RequestParam(name = "contentURL", required = false) String contentURL,
 			@RequestParam(name = "file", required = false) MultipartFile file, @RequestParam(name = "action", required = false) CONTENT_ACTION action, @RequestParam(name = "target", required = false) String target) throws Exception {
 		
@@ -422,6 +493,18 @@ public class Crosswalk extends BaseMSCRController {
 		CrosswalkDTO dto = null;
 		try {
 			dto = objMapper.readValue(metadataString, CrosswalkDTO.class);
+			if(dto.getSourceSchema() == null) {
+				throw new RuntimeException("Source schema is required field");
+			}
+			if(dto.getTargetSchema() == null) {
+				throw new RuntimeException("Target schema is required field");
+			}
+			if(!jenaService.doesCrosswalkExist(dto.getSourceSchema())) {
+				throw new RuntimeException("Source schema not found");
+			}
+			if(!jenaService.doesCrosswalkExist(dto.getTargetSchema())) {
+				throw new RuntimeException("Target schema not found");
+			}
 			dto.setSourceURL(contentURL);
 		} catch (JsonProcessingException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse CrosswalkDTO from the metadata content. " + e.getMessage(), e);
@@ -444,38 +527,65 @@ public class Crosswalk extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}		
 		
-		CrosswalkInfoDTO infoDto = createCrosswalk(dto, action, target);
-		final String PID = infoDto.getHandle() != null ? infoDto.getHandle() : infoDto.getPID();
+		CrosswalkInfoDTO infoDto = createCrosswalkFrontend(dto, action, target);
+		final String ID = infoDto.getHandle() != null ? infoDto.getHandle() : infoDto.getID();
+		
 		if(!dto.getOrganizations().isEmpty()) {
 			Collection<UUID> orgs = dto.getOrganizations();
 			check(authorizationManager.hasRightToAnyOrganization(orgs));
 
 		}	
 		try {
-			addFileToCrosswalk(PID, infoDto, fileBytes, contentURL, contentType);
+			addFileToCrosswalk(infoDto.getID(), infoDto, fileBytes, contentURL, contentType);
 		}catch(Exception ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
 		}
 		var userMapper = groupManagementService.mapUser();
 		var ownerMapper = groupManagementService.mapOwner();
-		return mapper.mapToCrosswalkDTO(PID, jenaService.getCrosswalk(PID), false, false, userMapper, ownerMapper);
+		return mapper.mapToCrosswalkDTO(infoDto.getID(), jenaService.getCrosswalk(infoDto.getID()), false, false, userMapper, ownerMapper);
 		
 	}	
 	
+	@Tag(name = "Schema")	
     @Operation(summary = "Modify crosswalk metadata")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")
     @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
     @SecurityRequirement(name = "Bearer Authentication")
     @PatchMapping(path = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public CrosswalkInfoDTO updateModel(@RequestBody CrosswalkDTO dto,
+    public PublicCrosswalkMetadataInfoDTO updateModel(@RequestBody PublicCrosswalkMetadataDTO dto,
     		@PathVariable String pid) {
     	return updateModel(dto, pid, null);
+    }
+	
+	@Hidden
+	@Operation(summary = "Modify crosswalk")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")
+	@ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+	@PatchMapping(path = "/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public PublicCrosswalkMetadataInfoDTO updateModel(@RequestBody PublicCrosswalkMetadataDTO schemaDTO, @PathVariable String pid,
+			@PathVariable String suffix) {
+		return convertToExternal.convert(
+					updateModelFrontend(
+						(CrosswalkDTO)convertToInternal.convert(schemaDTO), pid, suffix)
+					);				
+	}	
+	
+	
+	@Tag(name = "Frontend")	
+    @Operation(summary = "Modify crosswalk metadata")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The JSON data for the new crosswalk node")
+    @ApiResponse(responseCode = "200", description = "The JSON of the update model, basically the same as the request body.")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PatchMapping(path = "/frontend/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    public CrosswalkInfoDTO updateModelFrontend(@RequestBody CrosswalkDTO dto,
+    		@PathVariable String pid) {
+    	return updateModelFrontend(dto, pid, null);
     }
     
     @Hidden
     @SecurityRequirement(name = "Bearer Authentication")
-    @PatchMapping(path = "/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-    public CrosswalkInfoDTO updateModel(@RequestBody CrosswalkDTO dto,
+    @PatchMapping(path = "/frontend/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+    public CrosswalkInfoDTO updateModelFrontend(@RequestBody CrosswalkDTO dto,
                             @PathVariable String pid,
                             @PathVariable(name = "suffix") String suffix) {
         logger.info("Updating crosswalk {}", dto);
@@ -525,23 +635,48 @@ public class Crosswalk extends BaseMSCRController {
 		}	        
     }        
 	
+    @Tag(name = "Crosswalk")	
     @Operation(summary = "Get a crosswalk metadata")
     @ApiResponse(responseCode = "200", description = "")
     @GetMapping(value = "/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getCrosswalkMetadata(@PathVariable String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
-    	return getCrosswalkMetadata(pid, null, includeVersionInfo);
+    public ResponseEntity<Object> getCrosswalkMetadata(@PathVariable String pid){
+    	return getCrosswalkMetadata(pid, null);
     }
+    
     
     @Hidden
     @GetMapping(value = "/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getCrosswalkMetadata(
+    public ResponseEntity<Object> getCrosswalkMetadata(@PathVariable String pid, @PathVariable(name = "suffix") String suffix){
+    	if(pid.indexOf("@") > 0 || (suffix != null && suffix.indexOf("@") > 0)) {
+
+    		return getMappingFrontend(pid, suffix);
+    	}
+    	else {
+    		return ResponseEntity.ok(convertToExternal.convert(
+    				(CrosswalkInfoDTO)getCrosswalkMetadataFrontend(pid, suffix, "false").getBody()
+    				));	    	
+    		
+    	}
+    }    
+    
+    @Tag(name = "Frontend")	
+    @Operation(summary = "Get a crosswalk metadata")
+    @ApiResponse(responseCode = "200", description = "")
+    @GetMapping(value = "/frontend/crosswalk/{pid}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getCrosswalkMetadataFrontend(@PathVariable String pid, @RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
+    	return getCrosswalkMetadataFrontend(pid, null, includeVersionInfo);
+    }
+    
+    @Hidden
+    @GetMapping(value = "/frontend/crosswalk/{pid}/{suffix}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getCrosswalkMetadataFrontend(
     		@PathVariable String pid, 
     		@PathVariable(name = "suffix") String suffix,
     		@RequestParam(name = "includeVersionInfo", defaultValue = "false") String includeVersionInfo){
 		// TODO: get rid of this
     	if(pid.indexOf("@") > 0 || (suffix != null && suffix.indexOf("@") > 0)) {
 
-    		return getMapping(pid, suffix);
+    		return getMappingFrontend(pid, suffix);
     	}
 		if (suffix != null) {
 			pid = pid + "/" + suffix;
@@ -563,12 +698,22 @@ public class Crosswalk extends BaseMSCRController {
 	    	
     }
     
+    @Tag(name = "Crosswalk")
     @Operation(summary = "Delete crosswalk metadata and content")
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponse(responseCode = "200", description = "")
     @DeleteMapping(value = "/crosswalk/{pid}")
     public ResponseEntity<DeleteResponseDTO> deleteCrosswalk(@PathVariable String pid){
-    	return deleteCrosswalk(pid, null);
+    	return deleteCrosswalkFrontend(pid, null);
+    }    
+    
+    @Tag(name = "Frontend")
+    @Operation(summary = "Delete crosswalk metadata and content")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ApiResponse(responseCode = "200", description = "")
+    @DeleteMapping(value = "/frontend/crosswalk/{pid}")
+    public ResponseEntity<DeleteResponseDTO> deleteCrosswalkFrontend(@PathVariable String pid){
+    	return deleteCrosswalkFrontend(pid, null);
     }
     
     @Hidden
@@ -577,9 +722,18 @@ public class Crosswalk extends BaseMSCRController {
     public ResponseEntity<DeleteResponseDTO> deleteCrosswalk(
     		@PathVariable String pid, 
     		@PathVariable(name = "suffix") String suffix){
+    	return deleteCrosswalkFrontend(pid, suffix);
+    }
+    
+    @Hidden
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping(value = "/frontend/crosswalk/{pid}/{suffix}")
+    public ResponseEntity<DeleteResponseDTO> deleteCrosswalkFrontend(
+    		@PathVariable String pid, 
+    		@PathVariable(name = "suffix") String suffix){
 		// TODO: get rid of this
     	if(pid.indexOf("@") > 0 || (suffix != null && suffix.indexOf("@") > 0)) {
-    		return deleteMapping(pid, suffix);
+    		return deleteMappingFrontend(pid, suffix);
     	}
 		if (suffix != null) {
 			pid = pid + "/" + suffix;
@@ -662,15 +816,16 @@ public class Crosswalk extends BaseMSCRController {
 		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid));
     }
     
+    @Tag(name = "Frontend")
     @Operation(summary = "Get original file version of the crosswalk (if available)", description = "If the result is only one file it is returned as is, but if the content includes multiple files they a returned as a zip file.")
     @ApiResponse(responseCode = "200", description = "")
-    @GetMapping(path = "/crosswalk/{pid}/original")
+    @GetMapping(path = "/frontend/crosswalk/{pid}/original")
     public ResponseEntity<byte[]> exportOriginalFile(@PathVariable String pid) {
     	return exportOriginalFile(pid, null);
     }
     
     @Hidden
-    @GetMapping(path = "/crosswalk/{pid}/{suffix}/original")
+    @GetMapping(path = "/frontend/crosswalk/{pid}/{suffix}/original")
     public ResponseEntity<byte[]> exportOriginalFile(
     		@PathVariable String pid,
     		@PathVariable(name = "suffix") String suffix) {
@@ -692,15 +847,16 @@ public class Crosswalk extends BaseMSCRController {
 		}	    	
 	}
     
+    @Tag(name = "Frontend")
     @Operation(summary = "Download crosswalk related file with a given id.")
     @ApiResponse(responseCode ="200")
-    @GetMapping(path = "/crosswalk/{pid}/files/{fileID}")
+    @GetMapping(path = "/frontend/crosswalk/{pid}/files/{fileID}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String pid, @PathVariable String fileID, @RequestParam(name="download", defaultValue = "false" ) String download) {
     	return downloadFile(pid, null, fileID, download); 
     }
     
     @Hidden
-    @GetMapping(path = "/crosswalk/{pid}/{suffix}/files/{fileID}")
+    @GetMapping(path = "/frontend/crosswalk/{pid}/{suffix}/files/{fileID}")
     public ResponseEntity<byte[]> downloadFile(
     		@PathVariable String pid,
     		@PathVariable String suffix,
@@ -727,17 +883,18 @@ public class Crosswalk extends BaseMSCRController {
 		}	    	
     }
     
+    @Tag(name = "Frontend")
 	@Operation(summary = "Delete file")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
-	@DeleteMapping(path="/crosswalk/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	@DeleteMapping(path="/frontend/crosswalk/{pid}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<DeleteResponseDTO> deleteFile(@PathVariable String pid, @PathVariable Long fileID) throws Exception {
 		return deleteFile(pid, null, fileID);
 	}
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@DeleteMapping(path="/crosswalk/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
+	@DeleteMapping(path="/frontend/crosswalk/{pid}/{suffix}/files/{fileID}", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<DeleteResponseDTO> deleteFile(
 			@PathVariable String pid, 
 			@PathVariable String suffix,
@@ -763,20 +920,43 @@ public class Crosswalk extends BaseMSCRController {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
 		}	
 		return ResponseEntity.ok(new DeleteResponseDTO("ok", pid + ":" + fileID));
-	}        
-    
+	}    
+	
+	@Tag(name = "Crosswalk")
 	@Operation(summary = "Create a mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public MappingInfoDTO createMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String pid) {
-		return createMapping(dto, pid, null);
+		return createMappingFrontend(dto, pid, null);
+	}	
+    
+	@Tag(name = "Crosswalk")
+	@Operation(summary = "Create a mapping")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/crosswalk/{pid}/{suffix}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO createMapping(
+			@ValidMapping @RequestBody MappingDTO dto, 
+			@PathVariable String pid,
+			@PathVariable String suffix
+			) {
+		return createMappingFrontend(dto, pid, suffix);
+	}
+	
+	@Tag(name = "Frontend")
+	@Operation(summary = "Create a mapping")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/frontend/crosswalk/{pid}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO createMappingFrontend(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String pid) {
+		return createMappingFrontend(dto, pid, null);
 	}
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
-	@PutMapping(path="/crosswalk/{pid}/{suffix}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingInfoDTO createMapping(
+	@PutMapping(path="/frontend/crosswalk/{pid}/{suffix}/mapping", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO createMappingFrontend(
 			@ValidMapping @RequestBody MappingDTO dto, 
 			@PathVariable String pid,
 			@PathVariable String suffix
@@ -823,20 +1003,28 @@ public class Crosswalk extends BaseMSCRController {
 		}		
 	}
 	
-	
-	
+	@Tag(name = "Crosswalk")
 	@Operation(summary = "Update mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public MappingInfoDTO updateMapping(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) {
-		return updateMapping(dto, mappingPID, null);
+		return updateMappingFrontend(dto, mappingPID, null);
+	}	
+	
+	@Tag(name = "Frontend")
+	@Operation(summary = "Update mapping")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@PutMapping(path="/frontend/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public MappingInfoDTO updateMappingFrontend(@ValidMapping @RequestBody MappingDTO dto, @PathVariable String mappingPID) {
+		return updateMappingFrontend(dto, mappingPID, null);
 	}
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@PutMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public MappingInfoDTO updateMapping(
+	public MappingInfoDTO updateMappingFrontend(
 			@ValidMapping @RequestBody MappingDTO dto,
 			@PathVariable String mappingPID,
 			@PathVariable String suffix) {
@@ -874,22 +1062,31 @@ public class Crosswalk extends BaseMSCRController {
 
 	}	
 	
+	@Tag(name = "Crosswalk")
 	@Operation(summary = "Get a mapping")
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getMapping(@PathVariable String mappingPID) {		
-		return getMapping(mappingPID, null);
+		return getMappingFrontend(mappingPID, null);
 	}
 	
+	@Tag(name = "Frontend")
+	@Operation(summary = "Get a mapping")
+	@ApiResponse(responseCode = "200")	
+	@GetMapping(path="/frontend/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getMappingFrontend(@PathVariable String mappingPID) {		
+		return getMappingFrontend(mappingPID, null);
+	}	
+	
 	@Hidden
-	@GetMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getMapping(
+	@GetMapping(path="/frontend/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getMappingFrontend(
 			@PathVariable String mappingPID,
 			@PathVariable String suffix
 			) {
 		// TODO: get rid of this
     	if((mappingPID.indexOf("@") < 0 && suffix == null) || (mappingPID.indexOf("@") < 0 && suffix != null && suffix.indexOf("@") < 0)) {
-    		return getCrosswalkMetadata(mappingPID, suffix, "false");
+    		return getCrosswalkMetadataFrontend(mappingPID, suffix, "false");
     	}
     	
 		if (suffix != null) {
@@ -920,18 +1117,28 @@ public class Crosswalk extends BaseMSCRController {
 		}		
 	}
 	
+	@Tag(name = "Crosswalk")
+	@Operation(summary = "Delete a mapping")
+	@ApiResponse(responseCode = "200")
+	@SecurityRequirement(name = "Bearer Authentication")
+	@DeleteMapping(path="/frontend/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE)
+	public ResponseEntity<DeleteResponseDTO> deleteMapping(@PathVariable String mappingPID) {
+		return deleteMappingFrontend(mappingPID, null);
+	}
+	
+	@Tag(name = "Frontend")
 	@Operation(summary = "Delete a mapping")
 	@ApiResponse(responseCode = "200")
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<DeleteResponseDTO> deleteMapping(@PathVariable String mappingPID) {
-		return deleteMapping(mappingPID, null);
+	public ResponseEntity<DeleteResponseDTO> deleteMappingFrontend(@PathVariable String mappingPID) {
+		return deleteMappingFrontend(mappingPID, null);
 	}
 	
 	@Hidden
 	@SecurityRequirement(name = "Bearer Authentication")
 	@DeleteMapping(path="/crosswalk/{mappingPID}/{suffix}", produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<DeleteResponseDTO> deleteMapping(
+	public ResponseEntity<DeleteResponseDTO> deleteMappingFrontend(
 			@PathVariable String mappingPID,
 			@PathVariable String suffix) {
     	if(mappingPID.indexOf("@") < 0) {
@@ -962,7 +1169,8 @@ public class Crosswalk extends BaseMSCRController {
 		}
 		return ResponseEntity.ok(new DeleteResponseDTO("ok", mappingPID));
 	}
-		
+	
+	@Tag(name = "Crosswalk")
 	@Operation(summary = "Get a mappings for a crosswalk")
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/mapping")
@@ -973,13 +1181,27 @@ public class Crosswalk extends BaseMSCRController {
 			@RequestParam(name = "includeTarget", required = false) String includeTarget			
 			
 			) {
-		return getMappings(response, pid, null, exportFormat, includeSource, includeTarget); 
+		return getMappingsFrontend(response, pid, null, exportFormat, includeSource, includeTarget); 
 	}
+	
+	@Tag(name = "Frontend")
+	@Operation(summary = "Get a mappings for a crosswalk")
+	@ApiResponse(responseCode = "200")	
+	@GetMapping(path="/frontend/crosswalk/{pid}/mapping")
+	public ResponseEntity<Object> getMappingsFrontend(
+			final HttpServletResponse response,
+			@PathVariable String pid, @RequestParam(name = "exportFormat", required = false) String exportFormat,
+			@RequestParam(name = "includeSource", required = false) String includeSource,			
+			@RequestParam(name = "includeTarget", required = false) String includeTarget			
+			
+			) {
+		return getMappingsFrontend(response, pid, null, exportFormat, includeSource, includeTarget); 
+	}	
 
 	@Hidden
 	@ApiResponse(responseCode = "200")	
 	@GetMapping(path="/crosswalk/{pid}/{suffix}/mapping")
-	public ResponseEntity<Object> getMappings(
+	public ResponseEntity<Object> getMappingsFrontend(
 			final HttpServletResponse response,
 			@PathVariable String pid, 
 			@PathVariable String suffix, 
@@ -1073,10 +1295,10 @@ public class Crosswalk extends BaseMSCRController {
 					StringWriter writer = new StringWriter();
 	
 					if(includeSource != null && includeSource.equals("true")) {
-						model.add(jenaService.getSchemaContent(sourceSchemaInfo.getPID()));
+						model.add(jenaService.getSchemaContent(sourceSchemaInfo.getID()));
 					}
 					if(includeTarget != null && includeTarget.equals("true")) {
-						model.add(jenaService.getSchemaContent(targetSchemaInfo.getPID()));
+						model.add(jenaService.getSchemaContent(targetSchemaInfo.getID()));
 					}
 					model.write(writer, "TURTLE");
 					writer.flush();
@@ -1149,7 +1371,7 @@ public class Crosswalk extends BaseMSCRController {
 					rmlGeneratorInputModel.add(sourceSchemaModel);
 					rmlGeneratorInputModel.add(targetSchemaModel);
 					
-					Model rmlModel = rmlGenerator.generateRMLFromMSCRGraph(rmlGeneratorInputModel, crosswalk.getPID(), crosswalk.getSourceSchema());
+					Model rmlModel = rmlGenerator.generateRMLFromMSCRGraph(rmlGeneratorInputModel, crosswalk.getID(), crosswalk.getSourceSchema());
 					StringWriter out = new StringWriter();
 					rmlModel.write(out, "TURTLE");
 					return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(out.toString());
