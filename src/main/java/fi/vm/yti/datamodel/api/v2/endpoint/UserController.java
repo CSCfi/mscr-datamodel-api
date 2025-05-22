@@ -41,6 +41,13 @@ public class UserController {
     public YtiUser getUser() {
         return userProvider.getUser();
     }
+    @GetMapping("v2/user")    
+    @Operation(description = "Get authenticated MSCR user")
+    @ApiResponse(responseCode = "200", description = "MSCR User object")
+    public MSCRUser getMSCRUser2() {
+    	return getMSCRUser();
+    	
+    }
     
     @GetMapping("v2/frontend/user")    
     @Operation(description = "Get authenticated MSCR user")
