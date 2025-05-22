@@ -180,7 +180,7 @@ public class MSCRQueryFactory {
         	sr.aggregations("type", QueryFactoryUtils.termAggregation("type", 2));
         	sr.aggregations("state", QueryFactoryUtils.termAggregation("state", 6));
         	sr.aggregations("format", QueryFactoryUtils.termAggregation("format", 10));
-        	sr.aggregations("subType", QueryFactoryUtils.termAggregation("subType", 5));
+        	//sr.aggregations("subType", QueryFactoryUtils.termAggregation("subType", 5));
         	//sr.aggregations("versionLabel", QueryFactoryUtils.termAggregation("versionLabel", 20));
         	sr.aggregations("organization", QueryFactoryUtils.termAggregation("organization.keyword", 1000));
         	sr.aggregations("isReferenced", QueryFactoryUtils.termAggregation("isReferenced.keyword", 2));    
