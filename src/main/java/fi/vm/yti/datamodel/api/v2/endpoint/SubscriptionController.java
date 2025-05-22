@@ -67,7 +67,7 @@ public class SubscriptionController {
     @Value("${env}")
     private String env;
     
-    @Value("${fake.login.mail}")
+    @Value("${fake.login.mail:admin@localhost}")
     private String fakeLoginEmail;
     
     
