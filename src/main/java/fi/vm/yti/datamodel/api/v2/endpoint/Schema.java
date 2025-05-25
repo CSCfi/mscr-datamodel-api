@@ -118,7 +118,7 @@ public class Schema extends BaseMSCRController {
 			OpenSearchIndexer openSearchIndexer, SchemaMapper schemaMapper, SchemaService schemaService,
 			PIDService PIDService, PostgresStorageService storageService, AuthenticatedUserProvider userProvider,
 			GroupManagementService groupManagementService, TransformationService transformationService) {
-
+		super(groupManagementService, userProvider, authorizationManager);
 		this.jenaService = jenaService;
 		this.openSearchIndexer = openSearchIndexer;
 		this.authorizationManager = authorizationManager;
@@ -269,6 +269,7 @@ public class Schema extends BaseMSCRController {
 			
 			s.setSourceURL(inputSchema.getSourceURL());
 
+			handleOwners(prevSchema, inputSchema);
 		}
 
 		
@@ -297,7 +298,7 @@ public class Schema extends BaseMSCRController {
 		s.setSubType(prevSchema.getSubType());
 		
 		
-		
+
 		return s;
 
 	}
