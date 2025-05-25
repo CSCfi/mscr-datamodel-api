@@ -204,6 +204,11 @@ public class GroupManagementService {
         return MapperUtils.arrayPropertyToList(resource, Iow.parentOrganization).stream()
                 .map(MapperUtils::getUUID).toList();
     }
+    
+    public boolean orgExists(UUID orgId) {
+        var orgUrn = ModelConstants.URN_UUID + orgId.toString();
+        return coreRepository.resourceExistsInGraph(ModelConstants.ORGANIZATION_GRAPH, orgUrn);
+    }    
 
     public List<GroupManagementUserDTO> getFakeableUsers() {
     	
