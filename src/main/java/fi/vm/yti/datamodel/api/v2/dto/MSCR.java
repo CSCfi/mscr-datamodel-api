@@ -62,6 +62,7 @@ public class MSCR {
     public static final Property revisions = ResourceFactory.createProperty(URI, "revisions");
     public static final Property variants = ResourceFactory.createProperty(URI, "variants");
     public static final Property hasRevision = ResourceFactory.createProperty(URI, "hasRevision");
+    public static final Property hasDraftRevision = ResourceFactory.createProperty(URI, "hasDraftRevision");
     public static final Property numberOfRevisions = ResourceFactory.createProperty(URI, "numberOfRevisions");
     public static final Property state = ResourceFactory.createProperty(URI, "state");
     public static final Property visibility = ResourceFactory.createProperty(URI, "visibility");
@@ -108,6 +109,8 @@ public class MSCR {
     public static final Property valuesFrom = ResourceFactory.createProperty(URI, "valuesFrom");
 
 	public static final Property FnO_predicate = ResourceFactory.createProperty(FnO, "predicate");
+
+	public static final Property domain = ResourceFactory.createProperty(URI, "domain");
 
     public record Organization(String id,  Map<String, String> label) {}
 

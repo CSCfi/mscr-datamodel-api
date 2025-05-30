@@ -15,9 +15,12 @@ import fi.vm.yti.datamodel.api.v2.repository.ImportsRepository;
 import fi.vm.yti.datamodel.api.v2.service.JenaService;
 import fi.vm.yti.datamodel.api.v2.utils.DataModelUtils;
 import fi.vm.yti.datamodel.api.v2.utils.SparqlUtils;
+
+import org.apache.jena.arq.querybuilder.AskBuilder;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.vocabulary.DCTerms;
@@ -264,7 +267,6 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDFS.label, "?prefLabel");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, RDFS.comment, "?comment");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDF.type, "?modelType");
-        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, OWL.versionInfo, "?versionInfo");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
@@ -294,14 +296,12 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDFS.label, "?prefLabel");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, RDFS.comment, "?comment");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDF.type, "?modelType");
-        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, OWL.versionInfo, "?versionInfo");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.isPartOf, "?isPartOf");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.stateModified, "?stateModified");
-        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.format, "?format");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.visibility, "?visibility");
@@ -315,6 +315,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.handle, "?handle");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceURL, "?sourceURL");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.subType, "?subType");
+        constructBuilder.addConstruct(GRAPH_VARIABLE, MSCR.hasDraftRevision, "?hasDraftRevision");
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
         constructBuilder.addConstruct(GRAPH_VARIABLE, DCTerms.language, "?language")
@@ -328,11 +329,17 @@ public class OpenSearchIndexer {
 						.addGroupBy("?aggregationKey")
 					
 					);
+			
+			constructBuilder.addBind(
+					"exists {?model <http://uri.suomi.fi/datamodel/ns/mscr#hasRevision> ?revision}"
+					, "?hasDraftRevision");
+			
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
         
-        var indexModels = jenaService.constructWithQuerySchemas(constructBuilder.build());
+        Query q = constructBuilder.build();
+        var indexModels = jenaService.constructWithQuerySchemas(q);
         var list = new ArrayList<IndexSchema>();
         indexModels.listSubjects().forEach(next -> {
             var indexModel = schemaMapper.mapToIndexModel(next.getURI(),indexModels);
@@ -348,7 +355,6 @@ public class OpenSearchIndexer {
                 .addWhere(GRAPH_VARIABLE, RDF.type, "?resourceType")
                 .addWhereValueVar("?resourceType", OWL.Class, OWL.ObjectProperty, OWL.DatatypeProperty, SH.NodeShape);
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDFS.label, "?label");
-        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, OWL.versionInfo, "?versionInfo");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
@@ -382,13 +388,11 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDFS.label, "?prefLabel");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, RDFS.comment, "?comment");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, RDF.type, "?modelType");
-        SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, OWL.versionInfo, "?versionInfo");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.modified, "?modified");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, DCTerms.created, "?created");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, DCTerms.contributor, "?contributor");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.contentModified, "?contentModified");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.stateModified, "?stateModified");        
-        SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, Iow.documentation, "?documentation");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceSchema, "?sourceSchema");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.targetSchema, "?targetSchema");
         SparqlUtils.addConstructProperty(GRAPH_VARIABLE, constructBuilder, MSCR.state, "?state");
@@ -402,6 +406,7 @@ public class OpenSearchIndexer {
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.handle, "?handle");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.sourceURL, "?sourceURL");
         SparqlUtils.addConstructOptional(GRAPH_VARIABLE, constructBuilder, MSCR.subType, "?subType");
+        constructBuilder.addConstruct(GRAPH_VARIABLE, MSCR.hasDraftRevision, "?hasDraftRevision");
         
         //TODO swap to commented text once older migration is ready
         //addProperty(constructBuilder, DCTerms.language, "?language");
@@ -413,9 +418,12 @@ public class OpenSearchIndexer {
 					new SelectBuilder()
 						.addVar("count(?aggregationKey)", "?numberOfRevisions")
 						.addWhere(GRAPH_VARIABLE, "<http://uri.suomi.fi/datamodel/ns/mscr#aggregationKey>", "?aggregationKey")
-						.addGroupBy("?aggregationKey")
-					
+						.addGroupBy("?aggregationKey")					
 					);
+			constructBuilder.addBind(
+					"exists {?model <http://uri.suomi.fi/datamodel/ns/mscr#hasRevision> ?revision}"
+					, "?hasDraftRevision");
+			
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}        

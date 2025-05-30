@@ -32,6 +32,7 @@ public class IndexSchema extends IndexBase {
     private String aggregationKey;
     private String revisionOf;
     private String hasRevision;
+    private String hasDraftRevision;
     private int numberOfRevisions;
     private List<Revision> revisions;
     private List<String> owner;
@@ -40,9 +41,50 @@ public class IndexSchema extends IndexBase {
     private String handle;
     private String sourceURL;
     private String subType;
+    private int revisionNumber;
     
     
-    public String getSubType() {
+    
+    
+    public int getRevisionNumber() {
+		return revisionNumber;
+	}
+
+	public void setRevisionNumber(int revisionNumber) {
+		this.revisionNumber = revisionNumber;
+	}
+
+	public String getHasDraftRevision() {
+		return hasDraftRevision;
+	}
+
+	public void setHasDraftRevision(String hasDraftRevision) {
+		this.hasDraftRevision = hasDraftRevision;
+	}
+	
+    private List<String> identifiers;
+    private String license;
+    
+    
+    
+    
+    public List<String> getIdentifiers() {
+		return identifiers;
+	}
+
+	public void setIdentifiers(List<String> identifiers) {
+		this.identifiers = identifiers;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public String getSubType() {
 		return subType;
 	}
 

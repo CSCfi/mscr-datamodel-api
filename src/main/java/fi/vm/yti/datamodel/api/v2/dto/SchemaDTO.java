@@ -1,85 +1,28 @@
 package fi.vm.yti.datamodel.api.v2.dto;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class SchemaDTO extends DataModelDTO implements MSCRCommonMetadata {
+public class SchemaDTO extends CommonSchemaDTO implements MSCRCommonMetadata, InternalSchemaMetadataDTO {
 
-	private MSCRState state;
-	private MSCRVisibility visibility = MSCRVisibility.PUBLIC;
-
-	private SchemaFormat format;
-	private SchemaFormat originalFormat;
-
-	private String namespace;
-	private String versionLabel;
-	private String sourceURL;
-	private MSCRSubType subType;
 	
-	public MSCRSubType getSubType() {
-		return subType;
-	}
-
-	public void setSubType(MSCRSubType subType) {
-		this.subType = subType;
-	}	
+    private Set<UUID> organizations = Set.of();
 	
-	public String getSourceURL() {
-		return sourceURL;
+	public Set<UUID> getOrganizations() {
+		return organizations;
 	}
-
-	public void setSourceURL(String sourceURL) {
-		this.sourceURL = sourceURL;
-	}	
-		
-	public MSCRVisibility getVisibility() {
-		return visibility;
-	}
-	public void setVisibility(MSCRVisibility visibility) {
-		this.visibility = visibility;
+	public void setOrganizations(Set<UUID> organizations) {
+		this.organizations = organizations;
 	}
 	
-	public MSCRState getState() {
-		return state;
-	}
-
-	public void setState(MSCRState state) {
-		this.state = state;
-	}
-
-	public SchemaFormat getFormat() {
-		return format;
-	}
-
-	public void setFormat(SchemaFormat type) {
-		this.format = type;
-	}
-
-	public String getNamespace() {
-		return namespace;
-	}
-
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	public String getVersionLabel() {
-		return versionLabel;
-	}
-
-	public void setVersionLabel(String versionLabel) {
-		this.versionLabel = versionLabel;
-	}
-
-	public SchemaFormat getOriginalFormat() {
-		return originalFormat;
-	}
-
-	public void setOriginalFormat(SchemaFormat originalFormat) {
-		this.originalFormat = originalFormat;
-	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+
+
+
 }

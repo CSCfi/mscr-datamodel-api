@@ -11,6 +11,7 @@ import org.opensearch.client.opensearch._types.SortOptions;
 import org.opensearch.client.opensearch._types.SortOptionsBuilders;
 import org.opensearch.client.opensearch._types.SortOrder;
 import org.opensearch.client.opensearch._types.mapping.FieldType;
+import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch._types.query_dsl.QueryBuilders;
@@ -113,11 +114,22 @@ public class MSCRQueryFactory {
         if(!includeOnlyPublic &&  owners != null && !owners.isEmpty()) {
         	must.add(QueryFactoryUtils.termsQuery("owner", owners.stream().toList()));        	
         }
-        // only return the latest version
-        // --> hasRevision is empty --> hasRevision = "false" 
-        must.add(QueryFactoryUtils.termQuery("hasRevision", "false"));
-        
-        
+        if(request.isIncludeOnlyLatest()) {
+            // only return the latest version
+            // --> hasRevision is empty --> hasRevision = "false"         	
+        	must.add(QueryFactoryUtils.termQuery("hasRevision", "false"));
+        }
+        else {
+        	// include ones with
+        	// hasRevision = true and hasDraftRevision = true 
+        	// OR
+        	// hasRevision = false
+        	var revisionQuery = QueryBuilders.bool();
+        	BoolQuery hasDraftRevisionQuery = QueryBuilders.bool().must(List.of(QueryFactoryUtils.termQuery("hasRevision", "true"), QueryFactoryUtils.termQuery("hasDraftRevision", "true"))).build();
+        	revisionQuery.should(hasDraftRevisionQuery._toQuery());
+        	revisionQuery.should(QueryFactoryUtils.termQuery("hasRevision", "false"));
+        	must.add(revisionQuery.build()._toQuery());
+        }
         var finalQuery = QueryBuilders.bool();                
         finalQuery.must(must);        
         if(!mustNot.isEmpty()) {        	
@@ -165,12 +177,13 @@ public class MSCRQueryFactory {
                 
 
         if(request.isIncludeFacets()) {
-        	// always add all aggregations
         	sr.aggregations("type", QueryFactoryUtils.termAggregation("type", 2));
         	sr.aggregations("state", QueryFactoryUtils.termAggregation("state", 6));
         	sr.aggregations("format", QueryFactoryUtils.termAggregation("format", 10));
+        	//sr.aggregations("subType", QueryFactoryUtils.termAggregation("subType", 5));
+        	//sr.aggregations("versionLabel", QueryFactoryUtils.termAggregation("versionLabel", 20));
         	sr.aggregations("organization", QueryFactoryUtils.termAggregation("organization.keyword", 1000));
-        	sr.aggregations("isReferenced", QueryFactoryUtils.termAggregation("isReferenced.keyword", 2));        	
+        	sr.aggregations("isReferenced", QueryFactoryUtils.termAggregation("isReferenced.keyword", 2));    
         }          
         var srFinal = sr.build();
         logPayload(srFinal);
