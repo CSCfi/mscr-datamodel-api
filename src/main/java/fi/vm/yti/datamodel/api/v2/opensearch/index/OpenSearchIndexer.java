@@ -88,8 +88,8 @@ public class OpenSearchIndexer {
 
     public void initIndexes(){
         try {
-            openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_MODEL);
-            openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_RESOURCE);
+            //openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_MODEL);
+            //openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_RESOURCE);
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_CROSSWALK);
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_SCHEMA);
             logger.info("v2 Indexes cleaned");
@@ -97,8 +97,8 @@ public class OpenSearchIndexer {
             //openSearchConnector.createIndex(OPEN_SEARCH_INDEX_RESOURCE, getResourceMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_SCHEMA, getSchemaMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_CROSSWALK, getCrosswalkMappings());
-            initModelIndex();
-            initResourceIndex();
+            //initModelIndex();
+            //initResourceIndex();
             initSchemaIndex();
             initCrosswalkIndex();
 
