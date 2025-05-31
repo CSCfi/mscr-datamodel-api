@@ -93,8 +93,8 @@ public class OpenSearchIndexer {
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_CROSSWALK);
 			openSearchConnector.cleanIndex(OPEN_SEARCH_INDEX_SCHEMA);
             logger.info("v2 Indexes cleaned");
-            openSearchConnector.createIndex(OPEN_SEARCH_INDEX_MODEL, getModelMappings());
-            openSearchConnector.createIndex(OPEN_SEARCH_INDEX_RESOURCE, getResourceMappings());
+            //openSearchConnector.createIndex(OPEN_SEARCH_INDEX_MODEL, getModelMappings());
+            //openSearchConnector.createIndex(OPEN_SEARCH_INDEX_RESOURCE, getResourceMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_SCHEMA, getSchemaMappings());
             openSearchConnector.createIndex(OPEN_SEARCH_INDEX_CROSSWALK, getCrosswalkMappings());
             initModelIndex();
