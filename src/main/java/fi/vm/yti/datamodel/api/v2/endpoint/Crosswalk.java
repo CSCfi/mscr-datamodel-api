@@ -148,6 +148,7 @@ public class Crosswalk extends BaseMSCRController {
             AuthenticatedUserProvider userProvider,
             GroupManagementService groupManagementService,
             CrosswalkService crosswalkService) {
+		super(groupManagementService, userProvider, authorizationManager);
 		this.openSearchIndexer = openSearchIndexer;
 		this.authorizationManager = authorizationManager;
 		this.PIDService = PIDService;
@@ -241,6 +242,9 @@ public class Crosswalk extends BaseMSCRController {
 			s.setDomain(input.getDomain() != null ? input.getDomain(): prev.getDomain());
 			
 			s.setSourceURL(input.getSourceURL());
+			
+			handleOwners(prev, input);
+
 
 		}				
 		if (action == CONTENT_ACTION.revisionOf || input == null || input.getOrganizations().isEmpty()) {

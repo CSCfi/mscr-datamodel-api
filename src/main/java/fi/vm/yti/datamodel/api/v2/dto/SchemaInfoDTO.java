@@ -3,6 +3,7 @@ package fi.vm.yti.datamodel.api.v2.dto;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -28,7 +29,7 @@ public class SchemaInfoDTO extends CommonSchemaDTO implements MSCRCommonMetadata
 	public Set<OrganizationDTO> getOrganizations() {
 		return organizations;
 	}
-
+	
 	public void setOrganizations(Set<OrganizationDTO> organizations) {
 		this.organizations = organizations;
 	}
