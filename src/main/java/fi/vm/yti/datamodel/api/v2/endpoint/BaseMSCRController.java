@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -17,20 +18,37 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
+import fi.vm.yti.datamodel.api.security.AuthorizationManager;
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkDTO;
+import fi.vm.yti.datamodel.api.v2.dto.CrosswalkInfoDTO;
 import fi.vm.yti.datamodel.api.v2.dto.MSCR;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRCommonMetadata;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRState;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRSubType;
 import fi.vm.yti.datamodel.api.v2.dto.MSCRVisibility;
+import fi.vm.yti.datamodel.api.v2.dto.SchemaDTO;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaFormat;
 import fi.vm.yti.datamodel.api.v2.dto.SchemaInfoDTO;
 import fi.vm.yti.datamodel.api.v2.mapper.MapperUtils;
 import fi.vm.yti.datamodel.api.v2.mapper.MimeTypes;
+import fi.vm.yti.datamodel.api.v2.service.GroupManagementService;
 import fi.vm.yti.datamodel.api.v2.service.StorageService.StoredFile;
+import fi.vm.yti.security.AuthenticatedUserProvider;
+import fi.vm.yti.security.YtiUser;
 
 
 public abstract class BaseMSCRController {
 
+	private final GroupManagementService groupManagementService;
+	private final AuthenticatedUserProvider userProvider;
+	private final AuthorizationManager authorizationManager;
+	
+	
+	public BaseMSCRController(GroupManagementService groupManagementService, AuthenticatedUserProvider userProvider, AuthorizationManager authorizationManager) {
+		this.groupManagementService = groupManagementService;
+		this.authorizationManager = authorizationManager;
+		this.userProvider = userProvider;
+	}
 	private static final Logger logger = LoggerFactory.getLogger(BaseMSCRController.class);
 	@io.swagger.v3.oas.annotations.media.Schema(name = "Content actions", description = "")
 	public enum CONTENT_ACTION { create, copyOf, revisionOf, mscrCopyOf, update, delete }
@@ -289,9 +307,88 @@ public abstract class BaseMSCRController {
 		else {
 			throw new IllegalArgumentException("Source schema subtype : " + sourceSubtype + ", target schema subtype:" + targetSubtype);
 		}			
-		
+				
+	}
+	
+	protected void handleOwners(SchemaInfoDTO prev, SchemaDTO current) {
+		if(current.getOwner() != null && current.getOwner().size() > 0) {
+			String newOwner = current.getOwner().iterator().next();			
+			String currentOwner = prev.getOwner().iterator().next();
+			if(!newOwner.equals(currentOwner)) {
+				// new owner must be an org uuid 
+				UUID newOwnerUUID = UUID.fromString(newOwner);
+				UUID currentOwnerUUID = UUID.fromString(currentOwner);
+				if(!groupManagementService.orgExists(newOwnerUUID)) {
+					// TODO: Add logging
+					return;
+				}
+				YtiUser user = userProvider.getUser();
+				if(currentOwner.equals(user.getId().toString())) {
+					// from personal to group
+					if(authorizationManager.hasRightToAnyOrganization(Set.of(newOwnerUUID))) {
+						current.setOwner(Set.of(newOwner));
+						current.setOrganizations(Set.of(newOwnerUUID));
 
-		
-		
+					}
+					else {
+						throw new RuntimeException("Cannot change owner to " + newOwner + ". User does not have write access to the group.");
+					}
+				}
+				else {
+					// group to group
+					if(authorizationManager.hasRightToAnyOrganization(Set.of(newOwnerUUID)) 
+							&&
+						authorizationManager.hasRightToAnyOrganization(Set.of(currentOwnerUUID))) {
+						current.setOwner(Set.of(newOwner));
+						current.setOrganizations(Set.of(newOwnerUUID));						
+					}
+					else {
+						throw new RuntimeException("Cannot change owner to " + newOwner + ". User does not have write access to source and target groups.");
+					}					
+				}
+				
+			}
+		}
+	}
+	
+	protected void handleOwners(CrosswalkInfoDTO prev, CrosswalkDTO current) {
+		if(current.getOwner() != null && current.getOwner().size() > 0) {
+			String newOwner = current.getOwner().iterator().next();			
+			String currentOwner = prev.getOwner().iterator().next();
+			if(!newOwner.equals(currentOwner)) {
+				// new owner must be an org uuid 
+				UUID newOwnerUUID = UUID.fromString(newOwner);
+				UUID currentOwnerUUID = UUID.fromString(currentOwner);
+				if(!groupManagementService.orgExists(newOwnerUUID)) {
+					// TODO: Add logging
+					return;
+				}
+				YtiUser user = userProvider.getUser();
+				if(currentOwner.equals(user.getId().toString())) {
+					// from personal to group
+					if(authorizationManager.hasRightToAnyOrganization(Set.of(newOwnerUUID))) {
+						current.setOwner(Set.of(newOwner));
+						current.setOrganizations(Set.of(newOwnerUUID));
+
+					}
+					else {
+						throw new RuntimeException("Cannot change owner to " + newOwner + ". User does not have write access to the group.");
+					}
+				}
+				else {
+					// group to group
+					if(authorizationManager.hasRightToAnyOrganization(Set.of(newOwnerUUID)) 
+							&&
+						authorizationManager.hasRightToAnyOrganization(Set.of(currentOwnerUUID))) {
+						current.setOwner(Set.of(newOwner));
+						current.setOrganizations(Set.of(newOwnerUUID));						
+					}
+					else {
+						throw new RuntimeException("Cannot change owner to " + newOwner + ". User does not have write access to source and target groups.");
+					}					
+				}
+				
+			}
+		}			
 	}
 }
