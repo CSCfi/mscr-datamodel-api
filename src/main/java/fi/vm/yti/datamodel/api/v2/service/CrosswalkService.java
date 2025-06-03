@@ -148,6 +148,7 @@ public class CrosswalkService {
 		
 		try(StringWriter strWriter = new StringWriter();ICSVWriter writer = new CSVWriterBuilder(strWriter).withSeparator(';').build() ) {
 			writer.writeNext(new String[] { "subject_id", "subject_label", "subject_type", "predicate_id", "object_id", "object_label", "object_type", "mapping_justification", "confidence", "comment"});
+			
 			for(MappingInfoDTO mapping : mappings) {
 				
 				for(NodeInfo sourceNode : mapping.getSource()) {
@@ -166,7 +167,7 @@ public class CrosswalkService {
 							objectType = "rdfs literal";							
 						}
 						else {
-							objectId = sourceNode.getUri();
+							objectId = targetNode.getUri();
 						}
 						writer.writeNext(new String[] { 
 								subjectId,
@@ -182,16 +183,13 @@ public class CrosswalkService {
 
 					}
 				}
-				strWriter.flush();
-				String content = strWriter.toString();
-				return header + content;
 				
 			}
-			return "";
+			strWriter.flush();
+			String content = strWriter.toString();
+			return header + content;			
 
 		}
-		
-		
 		
 	}
 	
