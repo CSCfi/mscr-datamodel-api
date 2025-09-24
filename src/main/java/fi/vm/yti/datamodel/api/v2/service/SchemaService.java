@@ -119,7 +119,7 @@ public class SchemaService {
 		if(rootType.equals("array")) {
 			rootInstancePath = rootInstancePath + "[*]";
 		}
-		jsonSchemaMapper.handleObject("root", "root", root, schemaPID, model, definitions, "$", rootInstancePath);
+		jsonSchemaMapper.handleObject("root", root, schemaPID, model, definitions, "$", rootInstancePath);
 		addDefaultRootResourceForJSONSchema(modelResource, model);		
 		return model;
 
