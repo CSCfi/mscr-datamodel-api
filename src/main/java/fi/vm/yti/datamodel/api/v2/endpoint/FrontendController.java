@@ -186,8 +186,7 @@ public class FrontendController {
     @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks")
     @GetMapping(value = "/mscrSearch", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> mscrSearch(MSCRSearchRequest request) {
-    	
-    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, true, userProvider.getUser() != null ? Set.of(userProvider.getUser().getId().toString()): null);
+    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, true, userProvider.getUser() != null && !userProvider.getUser().isAnonymous() ? Set.of(userProvider.getUser().getId().toString()): null);
     	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);
     	
     	
