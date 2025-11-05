@@ -1,5 +1,6 @@
 package fi.vm.yti.datamodel.api.v2.mapper.mscr;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class JSONSchemaMapper {
 	
 	private final Set<String> JSONSchemaBooleanProperties = Set.of("additionalProperties");
 
-	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID) {
+	private void checkAndAddPropertyFeature(JsonNode node, Model model, Resource propertyResource, String propID, String propKey) {
 		for (String key : JSONSchemaToSHACLMap.keySet()) {
 			JsonNode propertyNode = node.get(key);
 			// the second condition ensures that an object's children properties are not added to that object
@@ -106,13 +107,13 @@ public class JSONSchemaMapper {
 				}
 			}
 		}
-		checkAndDefaultName(propertyResource, propID);
+		checkAndDefaultName(propertyResource, propID, propKey);
 	}
 
-	private void checkAndDefaultName(Resource propertyResource, String propID) {
+	private void checkAndDefaultName(Resource propertyResource, String propID, String propKey) {
 		if(!propertyResource.hasProperty(SH.name)) {
-			String defaultName = propID.substring(propID.lastIndexOf("-")+1);
-			propertyResource.addLiteral(SH.name, ResourceFactory.createPlainLiteral(defaultName));
+			propKey = URLDecoder.decode(propKey);
+			propertyResource.addLiteral(SH.name, ResourceFactory.createPlainLiteral(propKey));
 		}
 		
 	}
@@ -132,7 +133,7 @@ public class JSONSchemaMapper {
 	 * @param schemaPID The schema PID.
 	 * @return The created resource representing the datatype property.
 	 */
-	private Resource addDatatypeProperty(String propID, JsonNode node, Model model, String schemaPID, String type) {
+	private Resource addDatatypeProperty(String propID, JsonNode node, Model model, String schemaPID, String type, String propKey) {
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
 		if(node.has("@id")) {
 			propertyResource.addProperty(MSCR.qname, model.createResource(node.get("@id").asText()));			
@@ -156,7 +157,7 @@ public class JSONSchemaMapper {
 		
 		propertyResource.addProperty(SH.path, ResourceFactory.createResource(schemaPID + "#" + propID));
 
-		checkAndAddPropertyFeature(node, model, propertyResource, propID);
+		checkAndAddPropertyFeature(node, model, propertyResource, propID, propKey);
 
 		return propertyResource;
 	}
@@ -173,12 +174,12 @@ public class JSONSchemaMapper {
 	 * @return The created resource representing the object property.
 	 */
 	private Resource addObjectProperty(String propID, JsonNode node, Model model, String schemaPID,
-			String targetShape) {
+			String targetShape, String propKey) {
 		propID = URLEncoder.encode(propID);		
 		Resource propertyResource = model.createResource(schemaPID + "#" + propID);
 		propertyResource.addProperty(RDF.type, SH.PropertyShape);
 		propertyResource.addProperty(DCTerms.type, OWL.ObjectProperty);
-		checkAndAddPropertyFeature(node, model, propertyResource, propID);
+		checkAndAddPropertyFeature(node, model, propertyResource, propID, propKey);
 		propertyResource.addProperty(SH.path, ResourceFactory.createResource(schemaPID + "#" + propID));
 		propertyResource.addProperty(SH.node, model.createResource(targetShape));
 
@@ -191,7 +192,7 @@ public class JSONSchemaMapper {
 		String entryType = entry.has("type") ? entry.get("type").asText() : "string"; 
 		//final String key = URLEncoder.encode(entryKey);
 		Resource propertyResource = addDatatypeProperty(propID + "-" + key, entry, model,
-				schemaPID, entryType);
+				schemaPID, entryType, key);
 		nodeShapeResource.addProperty(SH.property, propertyResource);
 		if (!isArrayItem) {
 			handleRequiredProperty(entry, model, propertyResource, isRequired);
@@ -254,7 +255,7 @@ public class JSONSchemaMapper {
 		}					
 		else {
 			propertyShape = addObjectProperty(propIDCapitalised + "-" + key, entry, model, schemaPID,
-					schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key));
+					schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key), key);
 			
 			propertyShape.addLiteral(MSCR.schemaPath, model.createLiteral(schemaPath));
 			propertyShape.addLiteral(MSCR.instancePath, model.createLiteral(instancePath));
@@ -269,7 +270,7 @@ public class JSONSchemaMapper {
 			nodeShapeResource.addProperty(SH.property, propertyShape);
 			
 			if (hasObjectItems(entry)) {
-				handleObject(propIDCapitalised + "-" + key, entry.get("items"), schemaPID, model, definitions, schemaPath, instancePath);
+				handleObject(propIDCapitalised + "-" + key, entry.get("items"), schemaPID, model, definitions, schemaPath, instancePath, key);
 			}
 			else {
 				if(!entry.has("items")) {
@@ -297,6 +298,10 @@ public class JSONSchemaMapper {
 	 * @param model     The RDF model.
 	 */
 	public void handleObject(String propID, JsonNode node, String schemaPID, Model model, Map<String, JsonNode> definitions, String schemaPath, String instancePath) {
+		handleObject(propID, node, schemaPID, model, definitions, schemaPath, instancePath, null); 
+	}
+
+	public void handleObject(String propID, JsonNode node, String schemaPID, Model model, Map<String, JsonNode> definitions, String schemaPath, String instancePath, String propKey) {
 		String propIDCapitalised = capitaliseNodeIdentifier(propID);		
 		String nameProperty = propID.substring(propID.lastIndexOf("-") + 1);		
 		Resource nodeShapeResource = model.createResource(schemaPID + "#" + propIDCapitalised);
@@ -311,8 +316,17 @@ public class JSONSchemaMapper {
 				nodeShapeResource.addProperty(MSCR.localName, nodeTitle);
 			}
 			else {
-				nodeShapeResource.addProperty(SH.name, nameProperty);
-				nodeShapeResource.addProperty(MSCR.localName, nameProperty);
+				if(propKey != null) {
+					propKey = URLDecoder.decode(propKey);
+					nodeShapeResource.addProperty(SH.name, propKey);
+					nodeShapeResource.addProperty(MSCR.localName, propKey);
+					
+				}
+				else {
+					nodeShapeResource.addProperty(SH.name, nameProperty);
+					nodeShapeResource.addProperty(MSCR.localName, nameProperty);
+					
+				}
 			}
 		}
 		
@@ -367,7 +381,7 @@ public class JSONSchemaMapper {
 				
 				if (valueType.equals("object")) {
 					propertyShape = addObjectProperty(propIDCapitalised + "-" + key, entry.getValue(), model, schemaPID,
-							schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key));
+							schemaPID + "#" + propIDCapitalised + "-" + key +"-" + StringUtils.capitalise(key), key);
 					if(entry.getValue().has("@id")) {
 						propertyShape.addProperty(MSCR.qname, model.createResource(entry.getValue().get("@id").asText()));			
 					}
@@ -386,7 +400,7 @@ public class JSONSchemaMapper {
 					}
 
 					nodeShapeResource.addProperty(SH.property, propertyShape);
-					handleObject(propIDCapitalised + "-" + key, entry.getValue(), schemaPID, model,definitions, newSchemaPath, newInstancePath);	
+					handleObject(propIDCapitalised + "-" + key, entry.getValue(), schemaPID, model,definitions, newSchemaPath, newInstancePath, entry.getKey());	
 				}
 				else if (valueType.equals("array")) {
 					newInstancePath = newInstancePath + "[*]";
@@ -489,7 +503,7 @@ public class JSONSchemaMapper {
 			String defName = defNames.next();
 			//System.out.println(defName);
 			Model m = ModelFactory.createDefaultModel();
-			handleObject(defName, defs.get(defName), schemaPID + ":definition", m, defs, "", "");
+			handleObject(defName, defs.get(defName), schemaPID + ":definition", m, defs, "", "", defName);
 			//m.write(System.out, "TURTLE");
 			model.add(m);
 		}
