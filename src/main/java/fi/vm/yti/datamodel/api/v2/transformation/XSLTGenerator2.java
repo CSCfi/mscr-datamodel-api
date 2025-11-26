@@ -71,11 +71,6 @@ public class XSLTGenerator2 {
 	private final JenaService jenaService;
 	private final SearchIndexService searchService;
 	
-	public XSLTGenerator2() {		
-		this.jenaService = null;
-		this.searchService = null;
-	}
-	
 	public XSLTGenerator2(JenaService jenaService, SearchIndexService searchService) {		
 		this.jenaService = jenaService;
 		this.searchService = searchService;

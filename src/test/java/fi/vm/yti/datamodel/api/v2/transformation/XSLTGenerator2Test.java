@@ -151,7 +151,7 @@ class XSLTGenerator2Test {
 
 	@Test
 	void testPersonSimpleJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/person-json2xml-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/person-json.ttl") ;
@@ -185,7 +185,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testPersonSplitJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/person-split-json2xml-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/person3-json.ttl") ;
@@ -219,7 +219,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testPersonSplitXMLtoJSON() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/person-split-xml2.json-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/person3-xml.ttl") ;
@@ -242,7 +242,7 @@ class XSLTGenerator2Test {
 		
 	@Test
 	void testPersonConcatJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/person-concat-json2xml-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/person-json.ttl") ;
@@ -273,7 +273,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testPersonConcatAddPrefixJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/person-concataddprefix-json2xml-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/person-json.ttl") ;
@@ -305,7 +305,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testPersonConcatPrefixSuffixJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/person-concatprefixsuffix-json2xml-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/person-json.ttl") ;
@@ -335,7 +335,7 @@ class XSLTGenerator2Test {
 	}		
 	@Test
 	void testSimpleXMLtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/arrays-xml2xml-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/arrays-xml.ttl") ;
@@ -374,7 +374,7 @@ class XSLTGenerator2Test {
 
 	@Test
 	void testComplexXMLtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 	
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/arrays-xml-xml-crosswalk-functions.ttl") ;
@@ -415,7 +415,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testSimpleJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0";
 
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/arrays-json2xml-crosswalk.ttl") ;
@@ -441,7 +441,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testComplexJSONtoXML() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0";
 
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/arrays-json2xml-crosswalk-functions.ttl") ;
@@ -481,7 +481,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testSimpleXMLtoJSON() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:5afc2153-ad54-440c-a16f-0854bd77285b";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/arrays-xml2json-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/arrays-xml.ttl") ;
@@ -519,7 +519,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testSimpleJSONtoJSON() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:fd0b6d7a-86b3-45f6-aa90-050164cfbed0";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/arrays-json2json-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/arrays-json.ttl") ;
@@ -547,7 +547,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	void testClimate() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:3b24ee60-73b5-425f-990b-18351687d567";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/climate-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/climate-source.ttl") ;
@@ -597,7 +597,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	public void testzbMath() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:3b24ee60-73b5-425f-990b-18351687d567";
 		Model crosswalkModel = RDFDataMgr.loadModel("zbmath/zbmath-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("zbmath/zbmath-source.ttl") ;
@@ -624,7 +624,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	public void testSample() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
@@ -660,7 +660,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	public void testSample2() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk2.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
@@ -704,7 +704,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	public void testSample3() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk3.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
@@ -745,7 +745,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	public void testSample4() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:02ecb697-255b-4a49-b0bf-3db47f90d771";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/sample-crosswalk4.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/sample-generated.ttl") ;
@@ -788,7 +788,7 @@ class XSLTGenerator2Test {
 	
 	@Test
 	public void testCSVtoCSV() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:eddcc67e-6c5d-494d-973a-65a2024d2acd";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/csv1-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/csv1-source.ttl") ;
@@ -877,7 +877,7 @@ name;test
 	}
 
 	public void testJSONtoCSV() throws Exception {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:1c1e5342-d5c4-4b02-8f82-a5e2eb3874ed";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/json-to-csv-1-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/json-to-csv-1-source.ttl") ;
@@ -917,7 +917,7 @@ name;test
 	
 	@Test
 	void testSimpleJSONtoJSONNoArrays() {
-		XSLTGenerator2 g = new XSLTGenerator2();
+		XSLTGenerator2 g = new XSLTGenerator2(null, null);
 		String sourceSchemaURI = "mscr:schema:d9c7641a-5a41-4c70-b771-2a8db0cd1c0e";
 		Model crosswalkModel = RDFDataMgr.loadModel("xsltgenerator/noarrays-json2json-crosswalk.ttl") ;
 		Model sourceSchemaModel = RDFDataMgr.loadModel("xsltgenerator/noarrays-source-json.ttl") ;
