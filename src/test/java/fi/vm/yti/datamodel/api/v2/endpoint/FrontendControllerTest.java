@@ -68,56 +68,6 @@ class FrontendControllerTest {
         when(userProvider.getUser()).thenReturn(EndpointUtils.mockUser);
     }
 
-    @Test
-    void getCounts() throws Exception {
-        this.mvc.perform(get("/v2/frontend/counts")
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-        verify(searchIndexService).getCounts(any(CountRequest.class));
-    }
-
-    @Test
-    void searchInternalResourcesTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/search-internal-resources")
-                            .contentType("application/json")
-                        .content(EndpointUtils.convertObjectToJsonString(new ResourceSearchRequest())))
-                        .andExpect(status().isOk());
-        verify(searchIndexService).searchInternalResources(any(ResourceSearchRequest.class), any(YtiUser.class));
-
-    }
-
-    @Test
-    void searchInternalResourcesInfoTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/search-internal-resources-info")
-                        .contentType("application/json")
-                        .content(EndpointUtils.convertObjectToJsonString(new ResourceSearchRequest())))
-                .andExpect(status().isOk());
-        verify(searchIndexService).searchInternalResourcesWithInfo(any(ResourceSearchRequest.class), any(YtiUser.class));
-    }
-
-
-    @Test
-    void searchModelsTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/search-models")
-                        .contentType("application/json")
-                        .content(EndpointUtils.convertObjectToJsonString(new ModelSearchRequest())))
-                .andExpect(status().isOk());
-        verify(searchIndexService).searchModels(any(ModelSearchRequest.class), any(YtiUser.class));
-    }
-
-    @Test
-    void getServiceCategories() throws Exception {
-        this.mvc.perform(get("/v2/frontend/service-categories")
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-        verify(frontendService).getServiceCategories("fi");
-
-        this.mvc.perform(get("/v2/frontend/service-categories")
-                        .param("sortLang", "en")
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-        verify(frontendService).getServiceCategories("en");
-    }
 
     @Test
     void getOrganizations() throws Exception {
@@ -139,12 +89,5 @@ class FrontendControllerTest {
         verify(frontendService).getOrganizations(anyString(), eq(true));
     }
 
-    @Test
-    void getNamespacesTest() throws Exception {
-        this.mvc.perform(get("/v2/frontend/namespaces")
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-        verify(namespaceService).getResolvedNamespaces();
-    }
 
 }

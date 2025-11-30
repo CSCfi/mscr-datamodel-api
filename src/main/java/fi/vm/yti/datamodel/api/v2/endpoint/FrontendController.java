@@ -100,14 +100,6 @@ public class FrontendController {
         this.schemaWriter = schemaWriter;        
     }
 
-    @Operation(summary = "Get counts", description = "List counts of data model grouped by different search results")
-    @ApiResponse(responseCode = "200", description = "Counts response container object as JSON")
-    @GetMapping(path = "/counts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CountSearchResponse getCounts(CountRequest request) {
-        logger.info("GET /counts requested");
-        return searchIndexService.getCounts(request);
-    }
-
     @Operation(summary = "Get organizations", description = "List of organizations sorted by name")
     @ApiResponse(responseCode = "200", description = "Organization list as JSON")
     @GetMapping(path = "/organizations", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -118,75 +110,12 @@ public class FrontendController {
         return frontendService.getOrganizations(sortLang, includeChildOrganizations);
     }
 
-    @Operation(summary = "Get service categories", description = "List of service categories sorted by name")
-    @ApiResponse(responseCode = "200", description = "Service categories as JSON")
-    @GetMapping(path = "/service-categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Collection<ServiceCategoryDTO> getServiceCategories(@RequestParam(value = "sortLang", required = false, defaultValue = ModelConstants.DEFAULT_LANGUAGE) String sortLang) {
-        logger.info("GET /serviceCategories requested");
-        return frontendService.getServiceCategories(sortLang);
-    }
-
-    @Hidden
-    @Operation(summary = "Search models")
-    @ApiResponse(responseCode = "200", description = "List of data model objects")
-    @GetMapping(value = "/search-models", produces = APPLICATION_JSON_VALUE)
-    public SearchResponseDTO<IndexModel> getModels(ModelSearchRequest request) {
-        return searchIndexService.searchModels(request, userProvider.getUser());
-    }
-
-    @Hidden
-    @Operation(summary = "Search resources", description = "List of resources")
-    @ApiResponse(responseCode = "200", description = "List of resources as JSON")
-    @GetMapping(path = "/search-internal-resources", produces = APPLICATION_JSON_VALUE)
-    public SearchResponseDTO<IndexResource> getInternalResources(ResourceSearchRequest request) throws IOException {
-        return searchIndexService.searchInternalResources(request, userProvider.getUser());
-    }
-
-    @Hidden
-    @Operation(summary = "Search resources", description = "List of resources")
-    @ApiResponse(responseCode = "200", description = "List of resources as JSON")
-    @GetMapping(path = "/search-internal-resources-info", produces = APPLICATION_JSON_VALUE)
-    public SearchResponseDTO<IndexResourceInfo> getInternalResourcesInfo(ResourceSearchRequest request) throws IOException {
-        return searchIndexService.searchInternalResourcesWithInfo(request, userProvider.getUser());
-    }
-
-    @Operation(summary = "Get supported data types")
-    @ApiResponse(responseCode = "200", description = "List of supported data types")
-    @GetMapping(path = "/data-types", produces = APPLICATION_JSON_VALUE)
-    public List<String> getSupportedDataTypes() {
-        return ModelConstants.SUPPORTED_DATA_TYPES;
-    }
-
-    @Hidden
-    @Operation(summary = "Search schemas")
-    @ApiResponse(responseCode = "200", description = "List of schema objects")
-    @GetMapping(value = "/searchSchemas", produces = APPLICATION_JSON_VALUE)
-    public SearchResponseDTO<IndexSchema> getSchemas(ModelSearchRequest request) {
-        return searchIndexService.searchSchemas(request, userProvider.getUser());
-    }
-    
-    @Hidden
-    @Operation(summary = "Search crosswalks")
-    @ApiResponse(responseCode = "200", description = "List of crosswalk objects")
-    @GetMapping(value = "/searchCrosswalks", produces = APPLICATION_JSON_VALUE)
-    public SearchResponseDTO<IndexCrosswalk> getCrosswalkss(CrosswalkSearchRequest request) {
-        return searchIndexService.searchCrosswalks(request, userProvider.getUser());
-    }
-
-    @Hidden
-    @Operation(summary = "Get resolved external namespaces")
-    @ApiResponse(responseCode = "200", description = "List of resolved namespaces")
-    @GetMapping(path = "/namespaces", produces = APPLICATION_JSON_VALUE)
-    public Set<String> getResolvedNamespaces() {
-        return namespaceService.getResolvedNamespaces();
-    }
-    
-
     @Operation(summary = "MSCR Search")
     @ApiResponse(responseCode = "200", description = "Search for schemas and crosswalks")
     @GetMapping(value = "/mscrSearch", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> mscrSearch(MSCRSearchRequest request) {
-    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, true, userProvider.getUser() != null && !userProvider.getUser().isAnonymous() ? Set.of(userProvider.getUser().getId().toString()): null);
+    	
+    	SearchResponse<ObjectNode> r = searchIndexService.mscrSearch(request, true, userProvider.getUser() != null && !userProvider.getUser().isAnonymous()? Set.of(userProvider.getUser().getId().toString()): null);
     	return new ResponseEntity<String>(OpenSearchUtil.serializePayload(r), HttpStatus.OK);
     	
     	

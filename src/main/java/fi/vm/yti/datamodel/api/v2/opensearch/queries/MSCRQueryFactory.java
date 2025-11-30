@@ -35,7 +35,7 @@ public class MSCRQueryFactory {
 		var mustNot = new ArrayList<Query>();
 
         var queryString = request.getQuery();
-        if(queryString != null && !queryString.isBlank()){
+        if(queryString != null && !queryString.isBlank() && !queryString.equals("undefined")){
             must.add(QueryFactoryUtils.labelQuery(queryString));
         }
         
