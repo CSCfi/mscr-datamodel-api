@@ -6,6 +6,7 @@ import java.text.Normalizer.Form;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -651,6 +652,7 @@ public class JsonSchemaWriter {
 			QuerySolution qs = rs.next();
 			r.add(inputModel.getResource(qs.get("uri").toString()));
 		}
+		Collections.sort(r, new ConceptComparator());
 		return r;
 	}
 
@@ -666,6 +668,16 @@ public class JsonSchemaWriter {
 			return r.getURI();
 		}
 	}
+	
+	private String getDefinition(Resource r) {
+		if (r.getProperty(SKOS.definition, "en") != null) {
+			return r.getRequiredProperty(SKOS.definition, "en").getString();
+		} else if (r.getProperty(SKOS.definition) != null) {
+			return r.getProperty(SKOS.definition).getString();
+		} else {
+			return "";
+		}
+	}	
 
 	private String getLocalName(Resource r) {
 		if (r.getLocalName() != null && !r.getLocalName().equals("")) {
@@ -713,7 +725,7 @@ public class JsonSchemaWriter {
 
 	private Map<String, Object> handleConcept(Resource concept, Model model, Map<String, Object> definitions) {
 		String prefLabel = getPrefLabel(concept);
-		String description = MapperUtils.propertyToString(concept, SKOS.definition);
+		String description = getDefinition(concept);
 		if (description == null) {
 			description = "";
 		}
@@ -738,8 +750,9 @@ public class JsonSchemaWriter {
 			o.put("qname", ":" + getLocalName(concept));
 		}
 		// add refs to properties
-		Map<String, Map> props = new HashMap<String, Map>();
+		Map<String, Map> props = new LinkedHashMap<String, Map>();
 		List<Resource> children = getChildren(concept, model);
+		Collections.sort(children, new ConceptComparator());
 		for(Resource child: children) {
 			String cLocalName = getLocalName(child);
 			Map<String, String> ref = new HashMap<String, String>();
@@ -763,6 +776,17 @@ public class JsonSchemaWriter {
 
 	}
 
+	public class ConceptComparator implements Comparator<Resource> {
+
+		@Override
+		public int compare(Resource o1, Resource o2) {
+			String label1 = getPrefLabel(o1);
+			String label2 = getPrefLabel(o2);
+			return label1.compareToIgnoreCase(label2);
+		}
+		
+	}
+	
 	private void traverseUp(Resource r, List<Resource> a, List<Resource> roots, Model inputModel, Map<String, Object> definitions, Map<String, Object> rootProperties) throws Exception {		
 		if (r == null) {
 			return;
@@ -770,6 +794,7 @@ public class JsonSchemaWriter {
 		// Add n to A to maintain bottom up nature
 		a.add(r);
 		List<Resource> children = getChildren(r, inputModel);
+ 		Collections.sort(children, new ConceptComparator() );
 		
 		// Go to parent
 		Resource parent = getParent(r, inputModel);
@@ -780,7 +805,8 @@ public class JsonSchemaWriter {
 			}
 			for (Resource child : children) {
 				handleConcept(child, inputModel, definitions);
-			}				
+			}	
+			Collections.sort(roots, new ConceptComparator() );
 			rootProperties.put(getLocalName(r), handleConcept(r, inputModel, definitions));
 			return;
 		}
@@ -803,7 +829,10 @@ public class JsonSchemaWriter {
 		if(r == null) {
 			return;
 		}
-		for (Resource child : getChildren(r, inputModel)) {
+		List<Resource> children = getChildren(r, inputModel);
+ 		Collections.sort(children, new ConceptComparator() );
+		
+		for (Resource child : children) {
 			postOrderTraversal(child, a, inputModel);
 			a.add(child);
 		}
@@ -839,7 +868,7 @@ public class JsonSchemaWriter {
 		Map<String, Object> definitions = new HashMap<String, Object>();
 
 		Map<String, Object> rootDefinition = new HashMap<String, Object>();
-		Map<String, Object> rootProperties = new HashMap<String, Object>();
+		Map<String, Object> rootProperties = new LinkedHashMap<String, Object>();
 		rootDefinition.put("properties", rootProperties);
 		definitions.put("Root", rootDefinition);
 
