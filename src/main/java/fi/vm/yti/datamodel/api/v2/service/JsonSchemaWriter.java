@@ -850,6 +850,7 @@ public class JsonSchemaWriter {
 		Map<String, Object> props = new HashMap<String, Object>();
 
 		List<Resource> children = getChildren(r, inputModel);
+		Collections.sort(children, new ConceptComparator());
 		for (Resource child : children) {
 			handleConcept(child, inputModel, definitions);
 			String childlocalName = getLocalName(child);
